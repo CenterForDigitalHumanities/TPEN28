@@ -26,7 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import textdisplay.Metadata;
 
 /**
- *
+ * Update metadata by project id. 
+ * This is a transformation of tpen function to web service. It's using tpen MySQL database. 
  * @author hanyan
  */
 public class UpdateMetadataByProjectIDServlet extends HttpServlet {
@@ -48,7 +49,7 @@ public class UpdateMetadataByProjectIDServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("project id =========== " + request.getParameter("projectID"));
+//        System.out.println("project id =========== " + request.getParameter("projectID"));
         this.projectID = Integer.parseInt(request.getParameter("projectID"));
         try {
             if(null != projectID && -1 != projectID && projectID != 0){

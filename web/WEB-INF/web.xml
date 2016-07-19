@@ -12,6 +12,10 @@
         <filter-name>UTF8Filter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+    <listener>
+        <description>Session listener to put session in servlet context (used for paleo auth)</description>
+        <listener-class>edu.slu.util.SessionListener</listener-class>
+    </listener>
     <servlet>
         <servlet-name>imageResize</servlet-name>
         <servlet-class>imageLines.ImageResize</servlet-class>
@@ -182,6 +186,30 @@
     <servlet>
         <servlet-name>updateMetadataByProjectIDServlet</servlet-name>
         <servlet-class>edu.slu.tpen.servlet.UpdateMetadataByProjectIDServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateProjectCharacter</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.UpdateProjectCharacter</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RemoveProjectCharacter</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.RemoveProjectCharacter</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateProjectTag</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.UpdateProjectTag</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RemoveProjectTag</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.RemoveProjectTag</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SaveNewProjectCharacter</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.SaveNewProjectCharacter</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SaveNewProjectXML</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.SaveNewProjectXML</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>imageResize</servlet-name>
@@ -416,6 +444,35 @@
         <servlet-name>removeUserToolServlet</servlet-name>
         <servlet-class>edu.slu.tpen.servlet.RemoveUserToolServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>updateAnnoListServlet</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.UpdateAnnoListServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetAnnotationByPropertiesServlet</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.GetAnnotationByPropertiesServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LoginHookServlet</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.LoginHookServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetSharedProjectsByUserServlet</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.GetSharedProjectsByUserServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LogoutHookServlet</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.LogoutHookServlet</servlet-class>
+    </servlet>
+    <!-- Depricated.  This turned in to CopyProjectAndAnnos    
+    <servlet>
+        <servlet-name>copyProjWithAnnoServlet</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.CopyProjWithAnnoServlet</servlet-class>
+    </servlet>-->
+    <servlet>
+        <servlet-name>CopyProjectAndAnnos</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.CopyProjectAndAnnos</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>imageParsing</servlet-name>
         <url-pattern>/imageParsing</url-pattern>
@@ -500,11 +557,59 @@
         <servlet-name>removeUserToolServlet</servlet-name>
         <url-pattern>/removeUserToolServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>updateAnnoListServlet</servlet-name>
+        <url-pattern>/updateAnnoList</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetAnnotationByPropertiesServlet</servlet-name>
+        <url-pattern>/getAnno</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginHookServlet</servlet-name>
+        <url-pattern>/loginHook</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetSharedProjectsByUserServlet</servlet-name>
+        <url-pattern>/getSharedProjectsByUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LogoutHookServlet</servlet-name>
+        <url-pattern>/logoutHook</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CopyProjectAndAnnos</servlet-name>
+        <url-pattern>/copyProjectWithAnnotations</url-pattern>
+    </servlet-mapping>
     <!-- tpen webservices for newberry ends -->
+    <servlet-mapping>
+        <servlet-name>UpdateProjectCharacter</servlet-name>
+        <url-pattern>/updateProjectCharacter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RemoveProjectCharacter</servlet-name>
+        <url-pattern>/removeProjectCharacter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateProjectTag</servlet-name>
+        <url-pattern>/updateProjectTag</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RemoveProjectTag</servlet-name>
+        <url-pattern>/removeProjectTag</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SaveNewProjectCharacter</servlet-name>
+        <url-pattern>/saveNewProjectCharacter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SaveNewProjectXML</servlet-name>
+        <url-pattern>/saveNewProjectXML</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>3000</session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>login.html</welcome-file>
     </welcome-file-list>
 </web-app>

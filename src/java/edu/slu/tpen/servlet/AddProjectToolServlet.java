@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import utils.UserTool;
 
 /**
- *
+ * Add project tools to project. This is a transformation of tpen function to web service. It's using tpen MySQL database. 
  * @author hanyan
  */
 public class AddProjectToolServlet extends HttpServlet {

@@ -86,7 +86,7 @@ public class Group {
          if (rs.next()) {
             groupID = rs.getInt(1);
             
-            try (PreparedStatement membersStmt = j.prepareStatement("INSERT INTO groupMembers (UID, GID, role) VALUES (?, ?, ?)")) {
+            try (PreparedStatement membersStmt = j.prepareStatement("INSERT INTO groupmembers (UID, GID, role) VALUES (?, ?, ?)")) {
                membersStmt.setInt(1, uid);
                membersStmt.setInt(2, groupID);               
                membersStmt.setString(3, roles.Leader.toString());   // The creator of a group gets leader, otherwise noone else could be invited.
@@ -126,19 +126,22 @@ public class Group {
       qry = null;
       try {
          j = DatabaseWrapper.getConnection();
-
-         qry = j.prepareStatement("select UID from groupMembers where GID=?");
+          //System.out.println("group ID in group ======== " + this.groupID);
+         qry = j.prepareStatement("select UID from groupmembers where GID=?");
          qry.setInt(1, groupID);
+          //System.out.println("sql ====== " + qry);
          ResultSet rs = qry.executeQuery();
          int recordCount = 0;
          while (rs.next()) {
             recordCount++;
          }
+          //System.out.println("member count result count ==== " + recordCount);
          User[] users = new User[recordCount];
          rs.beforeFirst();
          int i = 0;
          while (rs.next()) {
             users[i] = new User(rs.getInt("UID"));
+             //System.out.println("find user member id ===== " + rs.getInt("UID"));
             i++;
          }
          return users;
@@ -161,7 +164,7 @@ public class Group {
       try {
          j = DatabaseWrapper.getConnection();
 
-         qry = j.prepareStatement("select UID from groupMembers where GID=? and role='Leader'");
+         qry = j.prepareStatement("select UID from groupmembers where GID=? and role='Leader'");
          qry.setInt(1, groupID);
          ResultSet rs = qry.executeQuery();
          int recordCount = 0;
@@ -192,9 +195,9 @@ public class Group {
     */
    public String getMembersTable() throws SQLException {
       String toret = "";
-      User[] groupMembers = this.getMembers();
-      for (int i = 0; i < groupMembers.length; i++) {
-         User thisUser = groupMembers[i];
+      User[] groupmembers = this.getMembers();
+      for (int i = 0; i < groupmembers.length; i++) {
+         User thisUser = groupmembers[i];
          toret += "<tr><td>" + thisUser.getUID() + "</td><td>" + thisUser.getFname() + thisUser.getLname() + "</td></tr>";
       }
       return toret;
@@ -213,7 +216,7 @@ public class Group {
       try {
          j = DatabaseWrapper.getConnection();
 
-         qry = j.prepareStatement("Delete from groupMembers where GID=? and UID=? LIMIT 1", PreparedStatement.RETURN_GENERATED_KEYS);
+         qry = j.prepareStatement("Delete from groupmembers where GID=? and UID=? LIMIT 1", PreparedStatement.RETURN_GENERATED_KEYS);
          qry.setInt(1, groupID);
          qry.setInt(2, UID);
          qry.execute();
@@ -254,13 +257,14 @@ public class Group {
     * @throws SQLException
     */
    public void addMember(int UID) throws SQLException {
+      // System.out.println("add member SQL stuff.  GID to be a member of: "+groupID);
       Connection j = null;
       PreparedStatement qry = null;
       qry = null;
       try {
          j = DatabaseWrapper.getConnection();
-
-         qry = j.prepareStatement("insert into groupMembers (GID,UID,role) values(?,?,?)");
+         qry = j.prepareStatement("insert into groupmembers (GID,UID,role) values(?,?,?)");
+         //System.out.println("groupmembers row add with GID, UID, contributor: "+groupID+", "+UID+", contributor");
          qry.setInt(1, groupID);
          qry.setInt(2, UID);
          qry.setString(3, roles.Contributor.toString());
@@ -285,7 +289,7 @@ public class Group {
       try {
          j = DatabaseWrapper.getConnection();
 
-         qry = j.prepareStatement("insert into groupMembers (GID,UID,role) values(?,?,?)");
+         qry = j.prepareStatement("insert into groupmembers (GID,UID,role) values(?,?,?)");
          qry.setInt(1, groupID);
          qry.setInt(2, UID);
          qry.setString(3, thisRole.toString());
@@ -310,7 +314,7 @@ public class Group {
          PreparedStatement qry = null;
          qry = null;
          try {
-            String query = "Update groupMembers set role=? where GID=? and UID=?";
+            String query = "Update groupmembers set role=? where GID=? and UID=?";
             j = DatabaseWrapper.getConnection();
 
             qry = j.prepareStatement(query);
@@ -333,9 +337,12 @@ public class Group {
     */
    public Boolean isMember(int UID) {
       try {
-         User[] groupMembers = this.getMembers();
-         for (int i = 0; i < groupMembers.length; i++) {
-            User thisUser = groupMembers[i];
+          //System.out.println("sample ============== " + UID);
+          //System.out.println("memeber len ===== " + this.getMembers().length);
+         User[] groupmembers = this.getMembers();
+         for (int i = 0; i < groupmembers.length; i++) {
+            User thisUser = groupmembers[i];
+            // System.out.println("mem user ID ====== " + thisUser.getUID());
             if (thisUser.getUID() == UID) {
                return true;
             }
@@ -361,7 +368,7 @@ public class Group {
       try {
          j = DatabaseWrapper.getConnection();
 
-         qry = j.prepareStatement("select role from groupMembers where UID=? and GID=?");
+         qry = j.prepareStatement("select role from groupmembers where UID=? and GID=?");
          qry.setInt(1, UID);
          qry.setInt(2, groupID);
          ResultSet rs = qry.executeQuery();

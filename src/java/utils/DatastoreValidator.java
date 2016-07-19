@@ -179,7 +179,7 @@ public class DatastoreValidator {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            String query = "select * from projectFolios where not exists(select * from folios where pageNumber=projectFolios.folio)";
+            String query = "select * from projectfolios where not exists(select * from folios where pageNumber=projectfolios.folio)";
             j = DatabaseWrapper.getConnection();
             stmt = j.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
@@ -204,8 +204,8 @@ public class DatastoreValidator {
         PreparedStatement stmt = null;
         PreparedStatement deleteStmt = null;
         try {
-            String query = "select * from projectFolios where not exists(select * from folios where pageNumber=projectFolios.folio)";
-            String deleteQuery = "delete from projectFolios where project=? and folio=?";
+            String query = "select * from projectfolios where not exists(select * from folios where pageNumber=projectfolios.folio)";
+            String deleteQuery = "delete from projectfolios where project=? and folio=?";
             j = DatabaseWrapper.getConnection();
             stmt = j.prepareStatement(query);
             deleteStmt = j.prepareStatement(deleteQuery);
@@ -236,7 +236,7 @@ public class DatastoreValidator {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            String query = "select * from project where not exists(select * from projectFolios where project=project.id)";
+            String query = "select * from project where not exists(select * from projectfolios where project=project.id)";
             j = DatabaseWrapper.getConnection();
             stmt = j.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
@@ -264,7 +264,7 @@ public class DatastoreValidator {
         PreparedStatement stmt = null;
         PreparedStatement deleteStmt = null;
         try {
-            String query = "select * from project where not exists(select * from projectFolios where project=project.id)";
+            String query = "select * from project where not exists(select * from projectfolios where project=project.id)";
             String deleteQuery = "delete from project where id=?";
             j = DatabaseWrapper.getConnection();
             stmt = j.prepareStatement(query);

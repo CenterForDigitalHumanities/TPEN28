@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <style>
+            h3{
+                color: #002a5c !important;
+            }
+            
+            /* jQuery.css overwrites for the tab interface */
+/*        .ui-tabs .ui-tabs-nav {
+            background: #BFBFBF !important;
+            border: 1px solid #002a5c;
+        }
+        
+        
+        .ui-state-default, .ui-widget-content, .ui-widget-header .ui-state-default{
+            background: white !important;
+        }
+        
+        .ui-tabs-panel{
+            color: #002a5c !important;
+            background: white !important;
+        }
+        
+        #tabs{
+            border: 1px solid #002a5c;
+            margin: 0px 1%;
+        }
+        .ui-corner-bottom{
+            background-color: #BFBFBF !important;
+            white-space: nowrap;
+        }
+        .topTabs li{
+             color: #002a5c !important;
+             background-color: #D14836;
+        }*/
+        
+        #metadataUpdate input{
+            margin-bottom: 5px;
+            width: 70%;
+        }
+        
+        </style>
+    </head>
+    <body>
+        <div id="projectMetadataWrapper">
+            <div class="closeBtn" onclick="$('#projectMetadataWrapper').hide(); $('.pageCover').hide();">X</div>
+            <div class="ui-widget ui-widget-content ui-corner-all ui-tabs ui-helper-reset ui-helper-clearfix">
+                <h3 class="popHdr">Update Your Project Metadata</h3>
+
+<!--            <a class="tpenButton ui-button" href="projectMetadata.jsp?resetHeader=true&projectID=<%out.print(projectID);%>" id="emptyHeader">Remove Custom Header</a>
+            <p>You have uploaded a custom header for this project, which is displayed below. This header is read-only. To change it, remove the current header and upload a new file.</p>
+            <span id='customHeader'></span>-->
+        <!--    if (header.length()>thisProject.getLinebreakCharacterLimit()-1){
+                out.print("<span class='ui-state-error-text'>Preview limited to first "+thisProject.getLinebreakCharacterLimit()+" characters.</span>");
+            };-->
+            <!--<p>Update the metadata for this project below.</p>-->
+            <div style="white-space: nowrap;overflow: hidden;" class="ui-tabs ui-widget-content ui-corner-bl ui-corner-tr left">
+                <!-- NEED AN UPDATE PROJECT METADATA API CALL -->
+                <div id="metadataUpdate">
+                    <p>
+                        <span class="label">Title:</span> <input class="metadataTitle" id="newTitle" type="text" name="title" value=""> <br>
+                        <span class="label ">Subtitle:</span> <input class="metadataSubtitle" id="newSubtitle" type="text" name="subtitle" value=""><br>
+                        <span class="label ">MS identifier:</span> <input class="metadataMSID" id="newMSID" type="text" name="MSidentifier" value=""><br>
+                        <span class="label ">MS settlement:</span> <input class="metadataSettlement" id="newSettlement" type="text" name="settlement" value=""><br>
+                        <span class="label ">MS Repository:</span> <input class="metadataRepository" id="newRepository" type="text" name="repository" value=""><br>
+                        <span class="label ">MS Collection:</span> <input class="metadataCollection" id="newCollection" type="text" name="collection" value=""><br>
+                        <span class="label ">MS id number:</span> <input class="metadataMSIDnum" id="newMSIDnum" type="text" name="idno" value=""><br>
+                        <span class="label ">Subject:</span> <input class="metadataSubject" id="newSubject" type="text" name="subject" value=""><br>
+                        <span class="label ">Author:</span> <input class="metadataAuthor" id="newAuthor" type="text" name="author" value=""><br>
+                        <span class="label ">Date:</span> <input class="metadataDate" id="newDate" type="text" name="date" value=""><br>
+                        <span class="label ">Location:</span> <input class="metadataLocation" id="newLocation" type="text" name="location" value=""><br>
+                        <span class="label ">Language:</span> <input class="metadataLanguage" id="newLanguage" type="text" name="language" value=""><br>
+                        <span class="label ">Description:</span> <input class="metadataDescription" id="newDescription" type="text" name="description" value=""><br>
+                    </p>
+                    <!--<span class="right"><input onclick="alert('This is a scheduled feature not yet tested and implemented in T&#8209;PEN.');return false;" id="import" class="tpenButton ui-button ui-state-disabled" type="button" value="Import from Schema" name="import" />-->
+                    <button class="" id="newProjectMetadata" onclick="updateProjectMetadata();"> Save and Update </button></span>
+                </div>
+            </div>
+<!--                <div class="left" style="margin-left: 10px;">
+                    <form id="fileUpload" action="uploadHeader?projectID=PROJECTID">
+                        <input class="ui-button tpenButton" type="file" id="file" name="file"/>
+                        <br/><input class="ui-button tpenButton" type="submit" value="Upload" name="Upload"/>
+                        <input class="ui-button tpenButton" type="reset" value="Cancel" name="cancel" onclick="history.back();return false;" />
+                    </form>
+                    <h3>Current Metadata</h3>
+                    <p>
+                        <span class="label">Title: <span class="metadataTitle"></span></span><br />
+                        <span class="label">Subtitle: <span class="metadataSubtitle"></span></span><br />
+                        <span class="label">MS&nbsp;Identifier: <span class="metadataMSID"></span></span><br />
+                        <span class="label">MS&nbsp;Settlement: <span class="metadataSettlement"></span></span><br />
+                        <span class="label">MS&nbsp;Repository: <span class="metadataRepository"></span></span><br />
+                        <span class="label">MS&nbsp;Collection: <span class="metadataCollection"></span></span><br />
+                        <span class="label">MS&nbsp;ID&nbsp;number: <span class="metadataMSIDnum"></span></span><br />
+                        <span class="label">Subject: <span class="metadataSubject"></span></span><br>
+                        <span class="label">Author: <span class="metadataAuthor"></span></span><br>
+                        <span class="label">Date: <span class="metadataDate"></span></span><br>
+                        <span class="label">Location: <span class="metadataLocation"></span></span><br>
+                        <span class="label">Language: <span class="metadataLanguage"></span></span><br>
+                        <span class="label">Description: <span class="metadataDescription"></span></span>
+                    </p>
+                </div>-->
+            </div>
+<!--            <a class="returnButton" href="project.jsp?selecTab=0&projectID=PROJECTID">Return to Project Management</a>-->
+        </div>
+    </body>
+</html>
+        
+<script>
+    function updateProjectMetadata(){
+        var msIdentifier = $('#newMSID').val();
+        var msSettlement = $('#newSettlement').val();
+        var msRepository = $("#newRepository").val();
+        var msCollection = $("#newCollection").val();
+        var msIdNumber = $("#newMSIDnum").val();
+        var author = $("#newAuthor").val();
+        var date = $("#newDate").val();
+        var language = $("#newLanguage").val();
+        var description = $("#newDescription").val();
+        var location = $("#newLocation").val();
+        var subject =$('#newSubject').val();
+        var title = $("#newTitle").val();
+        var subtitle = $("#newSubtitle").val();
+        
+        //TODO: FIX: msIdNumber = 0 will probably cause issues down the road.
+        if(msIdNumber === null || msIdNumber==="" || msIdNumber === 0){
+            alert("The MSID number should not be changed, but we allow it.  However, the ID provided is invalid.");
+            return false;
+        }
+        
+        var url = "updateMetadataByProjectIDServlet";
+        var params={"projectID":currentProjectID, "location":location, "msIdentifier":msIdentifier, "msSettlement":msSettlement, "msRepository":msRepository, "msCollection":msCollection, "msIdNumber":msIdNumber, "author":author, "date":date, "language":language, "description":description, "subject":subject, "title":title, "subtitle":subtitle};
+        $.post(url, params);
+        
+    }
+</script>

@@ -46,7 +46,7 @@ public class FolioSet {
       folios = new Vector();
       imageNames = new Vector();
       String query = "select distinct(pageNumber), imageName from folios where collection=? order by pageNumber";
-      String joinQuery = "select distinct(pageNumber), imageName  from folios join folioScribes on pageName=pageName where collection=? order by pageNumber";
+      String joinQuery = "select distinct(pageNumber), imageName  from folios join folioscribes on pageName=pageName where collection=? order by pageNumber";
       Connection j = null;
       PreparedStatement stmt = null;
       try {

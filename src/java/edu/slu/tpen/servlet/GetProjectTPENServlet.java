@@ -14,23 +14,26 @@
  */
 package edu.slu.tpen.servlet;
 
-import com.google.gson.Gson;
-import edu.slu.tpen.transfer.JsonImporter;
 import static edu.slu.util.ServletUtils.getBaseContentType;
 import static edu.slu.util.ServletUtils.getUID;
 import static edu.slu.util.ServletUtils.reportInternalError;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import net.sf.json.JSONObject;
 import textdisplay.Folio;
 import textdisplay.Hotkey;
@@ -38,13 +41,22 @@ import textdisplay.Manuscript;
 import textdisplay.Metadata;
 import textdisplay.Project;
 import textdisplay.ProjectPermissions;
+import textdisplay.TagButton;
 import user.Group;
 import user.User;
 import utils.Tool;
 import utils.UserTool;
 
+import com.google.gson.Gson;
+
+import edu.slu.tpen.transfer.JsonImporter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+
 /**
- *
+ * Get tpen project. 
+ * This is a transformation of tpen function to web service. It's using tpen MySQL database. 
  * @author hanyan
  */
 public class GetProjectTPENServlet extends HttpServlet {
@@ -60,19 +72,33 @@ public class GetProjectTPENServlet extends HttpServlet {
    @Override
    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int uid = getUID(request, response);
-        PrintWriter out = response.getWriter();
-        response.setContentType("application/ld+json; charset=UTF-8");
+        HttpSession session = request.getSession();
+        boolean isTPENAdmin = false;
+        try {
+        	isTPENAdmin = (new User(uid)).isAdmin();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+// Force PrintWriter to use UTF-8 encoded strings.
+        response.setContentType("application/json; charset=UTF-8");
+        //PrintWriter out = response.getWriter();
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), "UTF8"), true);
+        
         Gson gson = new Gson();
         Map<String, String> jsonMap = new HashMap();
+//        JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
         if (uid >= 0) {
+//            System.out.println("UID ================= "+uid);
             try {
 //                System.out.println("project id =============== " + request.getParameter("projectID"));
                 int projID = Integer.parseInt(request.getParameter("projectID"));
                 Project proj = new Project(projID);
                 if (proj.getProjectID() > 0) {
                     Group group = new Group(proj.getGroupID());
-                    if (group.isMember(uid)) {
+//                    System.out.println("group Id ===== " + proj.getGroupID() + " is member " + group.isMember(uid));
+                    if (group.isMember(uid) || isTPENAdmin) {
                         if (checkModified(request, proj)) {
+                            
                             jsonMap.put("project", gson.toJson(proj));
 //                            System.out.println("project json ====== " + gson.toJson(proj));
                             int projectID = proj.getProjectID();
@@ -97,6 +123,25 @@ public class GetProjectTPENServlet extends HttpServlet {
 //                            System.out.println("users json ========= " + gson.toJson(users));
                             //get group leader
                             User[] leaders = group.getLeader();
+                            
+                            // if current user is admin AND not in leaders, add them to leaders array
+                            boolean isLeader = false;
+                            for (User u: leaders) {
+                                if (u.getUID() == uid) {
+                                    isLeader = true;
+                                    break;
+                                }
+                            }
+                            Object role = session.getAttribute("role");
+                            if (!isLeader) {
+	                            if (role != null && role.toString().equals("1")) {
+	                                User currentUser = new User(uid);
+	                                ArrayList<User> leaderList = new ArrayList<User>(Arrays.asList(leaders));
+	                                leaderList.add(currentUser);
+	                                leaders = leaderList.toArray(new User[leaderList.size()]);
+	                            }
+                            }
+//                            System.out.println("project leaders json ========= " + gson.toJson(leaders));
                             jsonMap.put("ls_leader", gson.toJson(leaders));
                             //get project permission
                             ProjectPermissions pms = new ProjectPermissions(proj.getProjectID());
@@ -119,8 +164,13 @@ public class GetProjectTPENServlet extends HttpServlet {
                             Metadata metadata = new Metadata(proj.getProjectID());
                             jsonMap.put("metadata", gson.toJson(metadata));
                             
+                            String allProjectButtons = TagButton.getAllProjectButtons(projID);
+                            jsonMap.put("xml", allProjectButtons);
+                            //get special characters
+                            jsonMap.put("projectButtons", hk.javascriptToAddProjectButtonsRawData(projectID));
+                            
                             response.setStatus(HttpServletResponse.SC_OK);
-                            out.print(JSONObject.fromObject(jsonMap));
+                            out.println(JSONObject.fromObject(jsonMap));
                         } else {
                            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
                         }

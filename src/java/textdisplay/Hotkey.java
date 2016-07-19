@@ -17,6 +17,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**customizable hotkeys for transcribing non enlgish texts*/
 public class Hotkey {
@@ -71,6 +73,32 @@ public class Hotkey {
             stmt.setInt(3, code);
             stmt.setInt(1, uid);
             stmt.setInt(2, position);
+            stmt.execute();
+        } finally {
+            DatabaseWrapper.closeDBConnection(j);
+            DatabaseWrapper.closePreparedStatement(stmt);
+        }
+
+    }
+    
+    /**
+     * Add a new Hotkey based on project
+     * @param code the integer keycode for the character
+     * @param uid user unique id under which this should be stored
+     * @param position position this button falls in, used to order the output of all buttons
+     * @throws SQLException
+     */
+    public Hotkey(int code, int projectID, int position, boolean hello, boolean isProject) throws SQLException {
+        String query = "insert into hotkeys(projectID, position,`key`, uid) values (?,?,?,?)";
+        Connection j = null;
+        PreparedStatement stmt = null;
+        try {
+            j = DatabaseWrapper.getConnection();
+            stmt = j.prepareStatement(query);
+            stmt.setInt(3, code);
+            stmt.setInt(1, projectID);
+            stmt.setInt(2, position);
+            stmt.setInt(4, 0);
             stmt.execute();
         } finally {
             DatabaseWrapper.closeDBConnection(j);
@@ -143,7 +171,6 @@ public class Hotkey {
         PreparedStatement stmt = null;
         try {
             j = DatabaseWrapper.getConnection();
-
             stmt = j.prepareStatement(query);
             stmt.setInt(1, projectID);
             ResultSet rs = stmt.executeQuery();
@@ -313,7 +340,7 @@ public class Hotkey {
                 int button = rs.getInt("position") + buttonOffset;
                 //toret+="<script>if(pressedkey=="+(buttonOffset+rs.getInt("position"))+"){addchar('&#"+rs.getInt("key")+";');  return false;}</script>";
                 vars += "var char" + button + "=\"" + rs.getInt("key") + "\";\n";
-                toret += "<span class=\"lookLikeButtons\"  onclick=\"Interaction.addchar('&#" + rs.getInt("key") + ";');\">&#" + rs.getInt("key") + ";<sup>" + rs.getInt("position") + "</sup></span>";
+                toret += "&#" + rs.getInt("key");
             }
             if (ctr == 0) {
 
@@ -329,7 +356,47 @@ public class Hotkey {
                 return this.javascriptToAddButtons(uid);
             }
             vars += "</script>";
-            return vars + toret;
+            return toret;
+        } finally {
+            DatabaseWrapper.closeDBConnection(j);
+            DatabaseWrapper.closePreparedStatement(stmt);
+        }
+    }
+    
+    /**Build the javascript used to drive all hotkeys that are part of this project*/
+    public String javascriptToAddProjectButtonsRawData(int projectID) throws SQLException {
+        String query = "select * from hotkeys where uid=0 and projectID=? order by position";
+        Connection j = null;
+        PreparedStatement stmt = null;
+        try {
+            j = DatabaseWrapper.getConnection();
+            stmt = j.prepareStatement(query);
+            stmt.setInt(1, projectID);
+            ResultSet rs = stmt.executeQuery();
+            int ctr = 0;
+            JSONArray ja = new JSONArray();
+            while (rs.next()) {
+                ctr++;
+                JSONObject jo = new JSONObject();
+                jo.element("key", rs.getInt("key"));
+                jo.element("position", rs.getInt("position"));
+                jo.element("uid", rs.getInt("uid"));
+                ja.add(jo);
+            }
+            if (ctr == 0) {
+
+                new Hotkey(222, projectID, 1, true);
+                new Hotkey(254, projectID, 2, true);
+                new Hotkey(208, projectID, 3, true);
+                new Hotkey(240, projectID, 4, true);
+                new Hotkey(503, projectID, 5, true);
+                new Hotkey(447, projectID, 6, true);
+                new Hotkey(198, projectID, 7, true);
+                new Hotkey(230, projectID, 8, true);
+                new Hotkey(540, projectID, 9, true);
+//                return this.javascriptToAddButtons(uid);
+            }
+            return ja.toString();
         } finally {
             DatabaseWrapper.closeDBConnection(j);
             DatabaseWrapper.closePreparedStatement(stmt);

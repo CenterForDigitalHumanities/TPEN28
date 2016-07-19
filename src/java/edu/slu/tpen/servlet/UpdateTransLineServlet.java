@@ -30,7 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- *
+ * Update trans-line to rerum,io. Please distinguish this to UpdateLineServlet.java. 
+ * NOTE! This is not inherited from tpen. It utilizes rerum.io as its repository. 
  * @author hanyan
  */
 public class UpdateTransLineServlet extends HttpServlet {
@@ -38,23 +39,9 @@ public class UpdateTransLineServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Annotation anno = new Annotation();
-        anno.setObjectID(req.getParameter("objectID"));
-        anno.setNamespace(req.getParameter("namespace"));
         anno.setContent(req.getParameter("content"));
-        anno.setSelector(req.getParameter("selector"));
-        anno.setTitle(req.getParameter("title"));
-        anno.setResource(req.getParameter("resource"));
-        anno.setResourceType(req.getParameter("resourceType"));
-        anno.setOutterRelative(req.getParameter("outterRelative"));
-        anno.setAddedTime(System.currentTimeMillis());
-        anno.setFontColor(req.getParameter("fontColor"));
-        anno.setFontType(req.getParameter("fontType"));
-        anno.setPermission(Integer.parseInt(req.getParameter("permission")));
-        anno.setOriginalAnnoID(req.getParameter("originalAnnoID"));
-        anno.setVersionNum(Integer.parseInt(req.getParameter("versionNum")));
-        anno.setForkFromID(req.getParameter("forkFromID"));
         try {
-            URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "annotationstore/anno/saveNewAnnotation");
+            URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "annotationstore/annotation/updateAnnotation");
             HttpURLConnection connection = (HttpURLConnection) postUrl
                 .openConnection();  
             // Output to the connection. Default is  
@@ -86,7 +73,7 @@ public class UpdateTransLineServlet extends HttpServlet {
 //            System.out.println("=============================");  
             while ((line = reader.readLine()) != null){  
                 //line = new String(line.getBytes(), "utf-8");  
-                System.out.println(line);
+//                System.out.println(line);
                 sb.append(line);
             }  
 //            System.out.println("=============================");  

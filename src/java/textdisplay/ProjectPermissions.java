@@ -23,7 +23,7 @@ public class ProjectPermissions {
 public ProjectPermissions(int projectID) throws SQLException
 {
     this.projectID=projectID;
-    String query="select * from ProjectPermissions where projectID=?";
+    String query="select * from projectpermissions where projectID=?";
     Connection j = null;
 PreparedStatement ps=null;
         try
@@ -48,7 +48,7 @@ PreparedStatement ps=null;
             }
             else
             {
-                query="insert into ProjectPermissions (projectID,allow_OAC_read,allow_OAC_write,allow_export,allow_public_copy,allow_public_modify,allow_public_modify_buttons,allow_public_modify_annotation,allow_public_modify_notes,allow_public_modify_line_parsing,allow_public_modify_metadata,allow_public_read_transcription) values (?,false,false,false,false,false,false,false,false,false,false,false)";
+                query="insert into projectpermissions (projectID,allow_OAC_read,allow_OAC_write,allow_export,allow_public_copy,allow_public_modify,allow_public_modify_buttons,allow_public_modify_annotation,allow_public_modify_notes,allow_public_modify_line_parsing,allow_public_modify_metadata,allow_public_read_transcription) values (?,false,false,false,false,false,false,false,false,false,false,false)";
                 ps=j.prepareStatement(query);
                 ps.setInt(1, projectID);
                 ps.execute();
@@ -70,7 +70,7 @@ public int getProjectID()
     }
 
     public void setAllow_export(Boolean allow_export) throws SQLException {
-    String query="update ProjectPermissions set allow_export=? where projectID=?";
+    String query="update projectpermissions set allow_export=? where projectID=?";
     Connection j = null;
     PreparedStatement ps=null;
         try
@@ -93,7 +93,7 @@ public int getProjectID()
     }
 
     public void setAllow_OAC_read(Boolean a) throws SQLException {
-        String query="update ProjectPermissions set allow_OAC_read=? where projectID=?";
+        String query="update projectpermissions set allow_OAC_read=? where projectID=?";
     Connection j = null;
     PreparedStatement ps=null;
         try
@@ -116,7 +116,7 @@ public int getProjectID()
     }
 
     public void setAllow_OAC_write(Boolean a) throws SQLException {
-        String query="update ProjectPermissions set allow_OAC_write=? where projectID=?";
+        String query="update projectpermissions set allow_OAC_write=? where projectID=?";
     Connection j = null;
     PreparedStatement ps=null;
         try
@@ -140,7 +140,7 @@ public int getProjectID()
     }
 
     public void setAllow_public_copy(Boolean a) throws SQLException {
-        String query="update ProjectPermissions set allow_public_copy=? where projectID=?";
+        String query="update projectpermissions set allow_public_copy=? where projectID=?";
     Connection j = null;
     PreparedStatement ps=null;
         try
@@ -164,7 +164,7 @@ public int getProjectID()
     }
 
     public void setAllow_public_modify(Boolean a) throws SQLException {
-        String query="update ProjectPermissions set allow_public_modify=? where projectID=?";
+        String query="update projectpermissions set allow_public_modify=? where projectID=?";
     Connection j = null;
     PreparedStatement ps=null;
         try
@@ -188,7 +188,7 @@ public int getProjectID()
     }
 
     public void setAllow_public_modify_buttons(Boolean allow_public_modify_buttons) throws SQLException {
-        String query="update ProjectPermissions set allow_public_modify_buttons=? where projectID=?";
+        String query="update projectpermissions set allow_public_modify_buttons=? where projectID=?";
     Connection j = null;
     PreparedStatement ps=null;
         try
@@ -213,7 +213,7 @@ public int getProjectID()
     }
 
     public void setAllow_public_modify_line_parsing(Boolean allow_public_modify_line_parsing) throws SQLException {
-               String query="update ProjectPermissions set allow_public_modify_line_parsing=? where projectID=?";
+               String query="update projectpermissions set allow_public_modify_line_parsing=? where projectID=?";
     Connection j = null;
     PreparedStatement ps=null;
         try
@@ -236,7 +236,7 @@ public int getProjectID()
     }
 
     public void setAllow_public_modify_metadata(Boolean allow_public_modify_metadata) throws SQLException {
-               String query="update ProjectPermissions set allow_public_modify_metadata=? where projectID=?";
+               String query="update projectpermissions set allow_public_modify_metadata=? where projectID=?";
     Connection j = null;
     PreparedStatement ps=null;
         try
@@ -259,7 +259,7 @@ public int getProjectID()
     }
 
     public void setAllow_public_read_transcription(Boolean allow_public_read_transcription) throws SQLException {
-               String query="update ProjectPermissions set allow_public_read_transcription=? where projectID=?";
+               String query="update projectpermissions set allow_public_read_transcription=? where projectID=?";
     Connection j = null;
     PreparedStatement ps=null;
         try
@@ -293,7 +293,7 @@ public int getProjectID()
     }
 
     public void setAllow_public_modify_annotation(Boolean allow_public_modify_annotation) throws SQLException {
-         String query="update ProjectPermissions set allow_public_modify_annotation=? where projectID=?";
+         String query="update projectpermissions set allow_public_modify_annotation=? where projectID=?";
     Connection j = null;
     PreparedStatement ps=null;
         try
@@ -316,7 +316,7 @@ public int getProjectID()
     }
 
     public void setAllow_public_modify_notes(Boolean allow_public_modify_notes) throws SQLException {
-        String query="update ProjectPermissions set allow_public_modify_notes=? where projectID=?";
+        String query="update projectpermissions set allow_public_modify_notes=? where projectID=?";
     Connection j = null;
     PreparedStatement ps=null;
         try

@@ -27,7 +27,8 @@ import javax.servlet.http.HttpServletResponse;
 import utils.UserTool;
 
 /**
- *
+ * Remove project relatd tools by project id. 
+ * This is a transformation of tpen function to web service. It's using tpen MySQL database. 
  * @author hanyan
  */
 public class RemoveProjectToolServlet extends HttpServlet {

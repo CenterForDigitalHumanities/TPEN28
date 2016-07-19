@@ -258,7 +258,7 @@ DatabaseWrapper.closePreparedStatement(ps);
    }
    private void createArchiveCopy() throws SQLException
    {
-       String query="insert into archivedAnnotation(folio,projectID,text,x,y,h,w,id) (select folio,projectID,text,x,y,h,w,id from annotation where id=?)";
+       String query="insert into archivedannotation(folio,projectID,text,x,y,h,w,id) (select folio,projectID,text,x,y,h,w,id from annotation where id=?)";
        Connection j=null;
 PreparedStatement ps=null;
        try{

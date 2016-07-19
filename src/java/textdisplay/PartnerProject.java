@@ -36,7 +36,7 @@ private String name;
 public PartnerProject(int id) throws SQLException
 {
     this.id=id;
-    String query="select * from partnerProject where id=?";
+    String query="select * from partnerproject where id=?";
     Connection j=null;
 PreparedStatement ps=null;
     try{
@@ -67,7 +67,7 @@ DatabaseWrapper.closePreparedStatement(ps);
  this pipeline.*/
 public PartnerProject(String name, String description, String url, int controllingUser, int projectID) throws SQLException
 {
-    String query="insert into partnerProject(name,url,user,description,projectID) values(?,?,?,?,?)";
+    String query="insert into partnerproject(name,url,user,description,projectID) values(?,?,?,?,?)";
     Connection j=null;
 PreparedStatement ps=null;
     try{
@@ -99,7 +99,7 @@ DatabaseWrapper.closePreparedStatement(ps);
         Connection j=null;
 PreparedStatement ps=null;
         try{
-            String query="update partnerProject set user=? where id=?";
+            String query="update partnerproject set user=? where id=?";
             j=DatabaseWrapper.getConnection();
             ps=j.prepareStatement(query);
             ps.setInt(1, controllingUser);
@@ -117,7 +117,7 @@ DatabaseWrapper.closePreparedStatement(ps);
          Connection j=null;
 PreparedStatement ps=null;
         try{
-            String query="update partnerProject set description=? where id=?";
+            String query="update partnerproject set description=? where id=?";
             j=DatabaseWrapper.getConnection();
             ps=j.prepareStatement(query);
             ps.setString(1, description);
@@ -135,7 +135,7 @@ DatabaseWrapper.closePreparedStatement(ps);
         Connection j=null;
 PreparedStatement ps=null;
         try{
-            String query="update partnerProject set name=? where id=?";
+            String query="update partnerproject set name=? where id=?";
             j=DatabaseWrapper.getConnection();
             ps=j.prepareStatement(query);
             ps.setString(1, name);
@@ -153,7 +153,7 @@ DatabaseWrapper.closePreparedStatement(ps);
         Connection j=null;
 PreparedStatement ps=null;
         try{
-            String query="update partnerProject set projectID=? where id=?";
+            String query="update partnerproject set projectID=? where id=?";
             j=DatabaseWrapper.getConnection();
             ps=j.prepareStatement(query);
             ps.setInt(1, templateProject);
@@ -171,7 +171,7 @@ DatabaseWrapper.closePreparedStatement(ps);
         Connection j=null;
 PreparedStatement ps=null;
         try{
-            String query="update partnerProject set url=? where id=?";
+            String query="update partnerproject set url=? where id=?";
             j=DatabaseWrapper.getConnection();
             ps=j.prepareStatement(query);
             ps.setString(1, url);
@@ -203,7 +203,7 @@ DatabaseWrapper.closePreparedStatement(ps);
         Connection j=null;
 PreparedStatement ps=null;
         try{
-            String query="delete from partnerProject where id=?";
+            String query="delete from partnerproject where id=?";
             j=DatabaseWrapper.getConnection();
             ps=j.prepareStatement(query);
             ps.setInt(1, id);
@@ -249,7 +249,7 @@ public String getName()
 public static PartnerProject [] getAllPartnerProjects() throws SQLException
 {
     PartnerProject [] all;
-    String query="select id from partnerProject";
+    String query="select id from partnerproject";
     Connection j=null;
 PreparedStatement ps=null;
     Stack<PartnerProject> tmp=new Stack();

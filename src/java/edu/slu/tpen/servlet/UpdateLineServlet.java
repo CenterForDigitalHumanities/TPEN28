@@ -35,8 +35,9 @@ import textdisplay.Transcription;
 import user.Group;
 
 /**
- *
- * @author jdeerin1
+ * Update trans-line servlet. 
+ * This is a transformation of tpen function to web service. It's using tpen MySQL database. 
+ * @author Han Yan
  */
 public class UpdateLineServlet extends HttpServlet {
 

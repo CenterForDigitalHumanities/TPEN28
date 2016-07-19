@@ -26,7 +26,7 @@ public class WelcomeMessage {
     {
         Connection j=null;
         PreparedStatement ps=null;
-        String query="update WelcomeMessage set msg=?";
+        String query="update welcomemessage set msg=?";
         
         try
         {
@@ -46,7 +46,7 @@ public class WelcomeMessage {
     
         Connection j=null;
         PreparedStatement ps=null;
-        String query="select msg from WelcomeMessage";
+        String query="select msg from welcomemessage";
         
         try
         {
@@ -69,7 +69,7 @@ public class WelcomeMessage {
     
         Connection j=null;
         PreparedStatement ps=null;
-        String query="select msg from WelcomeMessage";
+        String query="select msg from welcomemessage";
         if(!this.getMessagePlain().contains(this.PasswordPlaceholder))
             throw new Exception("no password placeholder in welcome message! include "+this.PasswordPlaceholder+" somewhere!");
             

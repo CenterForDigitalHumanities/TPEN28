@@ -44,7 +44,7 @@ public class iframeTool {
         {
             return;
         }
-        String insertQuery="insert into iframeTools(url, name, projectID) values(?,?,?)";
+        String insertQuery="insert into iframetools(url, name, projectID) values(?,?,?)";
         Connection j=null;
 PreparedStatement ps=null;
         try{
@@ -72,7 +72,7 @@ DatabaseWrapper.closePreparedStatement(ps);
      */
     public iframeTool(int id) throws SQLException
     {
-        String selectQuery="select * from iframeTools where id=?";
+        String selectQuery="select * from iframetools where id=?";
         
         Connection j=null;
 PreparedStatement ps=null;
@@ -102,7 +102,7 @@ DatabaseWrapper.closePreparedStatement(ps);
      */
     public iframeTool [] getAllProjectTools(Project p) throws SQLException
     {
-        String query="select id from iframeTools where projectID=?";
+        String query="select id from iframetools where projectID=?";
         Connection j=null;
 PreparedStatement ps=null;
         try{
@@ -133,7 +133,7 @@ DatabaseWrapper.closePreparedStatement(ps);
     {
         if(this.id>0)
         {
-            String delQuery="delete from iframeTools where id=?";
+            String delQuery="delete from iframetools where id=?";
             Connection j=null;
 PreparedStatement ps=null;
             try{

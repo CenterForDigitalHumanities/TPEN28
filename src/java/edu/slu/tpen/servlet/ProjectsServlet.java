@@ -33,7 +33,7 @@ import user.User;
 
 /**
  * Servlet to retrieve information about all a user's projects.
- *
+ * This is a transformation of tpen function to web service. It's using tpen MySQL database. 
  * @author tarkvara
  */
 public class ProjectsServlet extends HttpServlet {
@@ -57,7 +57,7 @@ public class ProjectsServlet extends HttpServlet {
             Project[] projs = u.getUserProjects();
             List<Map<String, Object>> result = new ArrayList<>();
             for (Project p: projs) {
-               result.add(buildQuickMap("id", "project/" + p.getProjectID(), "name", p.getProjectName()));
+               result.add(buildQuickMap("id", "projects/" + p.getProjectID(), "name", p.getProjectName()));
             }
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(resp.getOutputStream(), result);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Saint Louis University. Licensed under the
+ * Copyright 2013-2014 Saint Louis University. Licensed under the
  *	Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
@@ -30,9 +30,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import imageLines.ImageCache;
 import org.apache.commons.lang.StringUtils;
 import org.owasp.esapi.ESAPI;
-import imageLines.ImageCache;
 import textdisplay.Folio;
 import textdisplay.Project;
 import user.User;
@@ -62,30 +62,15 @@ public class JsonLDExporter {
       Folio[] folios = proj.getFolios();
 
       try {
-         String projName = "http://t-pen.org/" + URLEncoder.encode(proj.getProjectName(), "UTF-8");
+         String projName = Folio.getRbTok("SERVERURL") + proj.getProjectName();
          manifestData = new LinkedHashMap<>();
-         manifestData.put("@context", "http://iiif.io/api/presentation/1/context.json");
-//         manifestData.put("@context", "http://www.shared-canvas.org/ns/context.json");
-         manifestData.put("@id", "http://t-pen.org/TPEN/project/"+ proj.getProjectID());
-//         manifestData.put("@id", projName + "/manifest.json");
+         manifestData.put("@context", "http://www.shared-canvas.org/ns/context.json");
+         manifestData.put("@id", projName + "/manifest.json");
          manifestData.put("@type", "sc:Manifest");
-         textdisplay.Metadata mdata = proj.getMetadata();
-         String label = (mdata.getTitle()!=null)
-                 ? mdata.getTitle()
-                 : proj.getProjectName();
-         if(mdata.getSubtitle()!=null){
-             label = label + ": " + mdata.getSubtitle();
-         }
-         String description = (mdata.getDescription()!=null)
-                 ? mdata.getDescription()
-                 : proj.getProjectName()+" created by t-pen.org for JSON-LD export.";
-         manifestData.put("label", label);
-         manifestData.put("description", description);
-         // List<Map<String, Object>> metadata = new ArrayList<>();
-         // TODO: iterate through mdata to add to "metadata" on manifest.
+         manifestData.put("label", proj.getProjectName());
+
          Map<String, Object> pages = new LinkedHashMap<>();
-//         pages.put("@id", projName + "/sequence/normal");
-         pages.put("@id","http://t-pen.org/TPEN/project/"+ proj.getProjectID() + "/sequence/normal");
+         pages.put("@id", projName + "/sequence/normal");
          pages.put("@type", "sc:Sequence");
          pages.put("label", "Current Page Order");
 
@@ -96,7 +81,6 @@ public class JsonLDExporter {
          pages.put("canvases", pageList);
          manifestData.put("sequences", new Object[] { pages });
       } catch (UnsupportedEncodingException ignored) {
-         LOG.info("Never happens, because UTF-8 support is built in.");
       }
    }
 
@@ -115,8 +99,7 @@ public class JsonLDExporter {
     */
    private Map<String, Object> buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
 
-      String pageName = URLEncoder.encode(f.getPageName(), "UTF-8");
-      String canvasID = projName + "/canvas/" + pageName;
+      String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
 
       Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
       if (pageDim == null) {
@@ -137,47 +120,50 @@ public class JsonLDExporter {
          int canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
          result.put("width", canvasWidth);
       }
-      List<Object> images = new ArrayList<>();
+      List<Object> resources = new ArrayList<>();
       Map<String, Object> imageAnnot = new LinkedHashMap<>();
-      imageAnnot.put("@id", projName + "/image/" + pageName);
       imageAnnot.put("@type", "oa:Annotation");
       imageAnnot.put("motivation", "sc:painting");
       
       Map<String, Object> imageResource = buildQuickMap("@id", String.format("%s%s&user=%s", Folio.getRbTok("SERVERURL"), f.getImageURLResize(), u.getUname()), "@type", "dctypes:Image", "format", "image/jpeg");
+//      imageResource.put("iiif", ?);
       if (pageDim != null) {
          imageResource.put("height", pageDim.height);
          imageResource.put("width", pageDim.width);
       }
       imageAnnot.put("resource", imageResource);
-      imageAnnot.put("on", canvasID);
-      images.add(imageAnnot);
-// cubap: This looks like it should already be working!
-      result.put("images", images);
 
-      List<Object> transcription = null;
+      imageAnnot.put("on", canvasID);
+      resources.add(imageAnnot);
+
+      // lineID, textUnencoded, x, y, width, height, comment
       try (Connection conn = getDBConnection()) {
          try (PreparedStatement stmt = conn.prepareStatement("SELECT * FROM transcription WHERE projectID = ? AND folio = ? ORDER BY x, y")) {
             stmt.setInt(1, projID);
             stmt.setInt(2, f.getFolioNumber());
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-               if (transcription == null) {
-                  transcription = new ArrayList<>();
-               }
                // Body of the annotation.  Contains the actual text.
+/*            text = rs.getString("text");
+            comment = rs.getString("comment");
+            UID = rs.getInt("creator");
+            lineID = rs.getInt("id");
+            x = rs.getInt("x");
+            y = rs.getInt("y");
+            width = rs.getInt("width");
+            height = rs.getInt("height");
+            this.projectID = rs.getInt("projectID");
+            this.folio = rs.getInt("folio");
+            date = rs.getDate("date"); */
                int lineID = rs.getInt("id");
                Map<String, Object> lineAnnot = new LinkedHashMap<>();
                String lineURI = projName + "/line/" + lineID;
                lineAnnot.put("@id", lineURI);
                lineAnnot.put("@type", "oa:Annotation");
-               lineAnnot.put("motivation", "http://filteredpush.org/ontologies/oa/oad#transcribing");
-               String lineText = rs.getString("text");
-               if (StringUtils.isNotBlank(lineText)) {
-                  lineText = ESAPI.encoder().decodeForHTML(lineText);
-               }
-               lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "chars", lineText));
+               lineAnnot.put("motivation", "sc:painting");
+               lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(rs.getString("text"))));
                lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, rs.getInt("x"), rs.getInt("y"), rs.getInt("width"), rs.getInt("height")));
-               transcription.add(lineAnnot);
+               resources.add(lineAnnot);
 
                String note = rs.getString("comment");
                if (StringUtils.isNotBlank(note)) {
@@ -185,19 +171,14 @@ public class JsonLDExporter {
                   noteAnnot.put("@id", projName + "/note/" + lineID);
                   noteAnnot.put("@type", "oa:Annotation");
                   noteAnnot.put("motivation", "oa:commenting");
-                  noteAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "chars", note));
+                  noteAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", note));
                   noteAnnot.put("on", lineURI);
-                  transcription.add(noteAnnot);
+                  resources.add(noteAnnot);
                }
             }
          }
       }
-      if (transcription != null) {
-         Map<String, Object> otherContent = buildQuickMap("@id", projName + "/transcription/" + pageName, "@type", "sc:AnnotationList");
-         otherContent.put("resources", transcription);
-         result.put("otherContent", new Object[] { otherContent });
-      }
-      // FIXME: technically, the standard does not want the AnnotationList embedded, but that makes this more difficult.
+      result.put("resources", resources);
       return result;
    }
 

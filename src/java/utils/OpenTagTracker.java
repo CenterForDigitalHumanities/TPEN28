@@ -59,12 +59,12 @@ PreparedStatement ps=null;
             try{
                 j=DatabaseWrapper.getConnection();
                 ps=null;
-                String query="select * from tagTracking where folio in (";
+                String query="select * from tagtracking where folio in (";
                 int count=projectFolios.length-i-1;
-                //build a query that says select * from tagTracking where Folio in (projectFolios[i+1].getFolioNumber(),projectFolios[i+2].getFolioNumber(), ...)
+                //build a query that says select * from tagtracking where Folio in (projectFolios[i+1].getFolioNumber(),projectFolios[i+2].getFolioNumber(), ...)
                 if(count>0)
                 {
-                    query="select * from tagTracking where folio in (?";
+                    query="select * from tagtracking where folio in (?";
                     while(count>0)
                     {
                         count--;
@@ -134,12 +134,12 @@ PreparedStatement ps=null;
             try{
                 j=DatabaseWrapper.getConnection();
                 ps=null;
-                String query="select * from tagTracking where folio in (";
+                String query="select * from tagtracking where folio in (";
                 
-                //build a query that says select * from tagTracking where Folio in (projectFolios[i+1].getFolioNumber(),projectFolios[i+2].getFolioNumber(), ...)
+                //build a query that says select * from tagtracking where Folio in (projectFolios[i+1].getFolioNumber(),projectFolios[i+2].getFolioNumber(), ...)
                 if(count>0)
                 {
-                    query="select * from tagTracking where folio in (?";
+                    query="select * from tagtracking where folio in (?";
                     for(int ctr=1;ctr<count;ctr++)
                     {
                         
@@ -181,7 +181,7 @@ PreparedStatement ps=null;
             //find the first occurance of this tag by getting the Folio/line identifiers for all of them, then looking for which Folio occurs first in the Project
             
             //the limit 1 shouldnt be needed, and could be removed after testing.
-            ps=j.prepareStatement("delete from tagTracking where id=?");
+            ps=j.prepareStatement("delete from tagtracking where id=?");
             ps.setInt(1, id);
             ps.execute();
         }
@@ -200,7 +200,7 @@ PreparedStatement ps=null;
         try{
             j=DatabaseWrapper.getConnection();
 
-            ps=j.prepareStatement("insert into tagTracking(tag,folio,line, projectID) values(?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
+            ps=j.prepareStatement("insert into tagtracking(tag,folio,line, projectID) values(?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setString(1, tag);
             ps.setInt(2, folio);
             ps.setInt(3, line);

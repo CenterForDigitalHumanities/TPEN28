@@ -29,7 +29,8 @@ import user.Group;
 import user.User;
 
 /**
- *
+ * Delete user from project. 
+ * This is a transformation of tpen function to web service. It's using tpen MySQL database. 
  * @author hanyan
  */
 public class DelUserFromProjectServlet extends HttpServlet {

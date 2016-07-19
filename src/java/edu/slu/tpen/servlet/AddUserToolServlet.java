@@ -14,9 +14,7 @@
  */
 package edu.slu.tpen.servlet;
 
-import edu.slu.util.ServletUtils;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,10 +23,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import utils.Tool;
-import utils.UserTool;
 
 /**
- *
+ * Attach user tools to user. This is a transformation of tpen function to web service. 
+ * It's using tpen MySQL database. 
  * @author hanyan
  */
 public class AddUserToolServlet extends HttpServlet {

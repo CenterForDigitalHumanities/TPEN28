@@ -634,7 +634,7 @@ public class Transcription {
     * Archive the current Transcription. This is done before saving changes.
     */
    public void archive() throws SQLException {
-      String query = "insert into archivedTranscription (folio,line,comment,text,date,creator,projectID,id,x,y,width,height)  (SELECT * FROM `transcription` WHERE id=?)";
+      String query = "insert into archivedtranscription (folio,line,comment,text,date,creator,projectID,id,x,y,width,height)  (SELECT * FROM `transcription` WHERE id=?)";
       Connection j = null;
       PreparedStatement ps = null;
       try {

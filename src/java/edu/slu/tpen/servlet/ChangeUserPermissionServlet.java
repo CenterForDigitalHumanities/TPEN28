@@ -29,7 +29,8 @@ import textdisplay.ProjectPermissions;
 import user.Group.roles;
 
 /**
- *
+ * Change user permission in a project (group). This is a transformation of tpen function to web service. 
+ * It's using tpen MySQL database. 
  * @author hanyan
  */
 public class ChangeUserPermissionServlet extends HttpServlet {
@@ -59,7 +60,9 @@ public class ChangeUserPermissionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int result = 0;
         if (request.getParameter("projectID") != null && null != request.getSession().getAttribute("UID")) {
-            int currentUserId = Integer.parseInt((String) request.getSession().getAttribute("UID"));
+            System.out.println("UID !!!!!!!!!!!!!!!!!!!!");
+            System.out.println(request.getSession().getAttribute("UID"));
+            int currentUserId = Integer.parseInt(request.getSession().getAttribute("UID") + "");
             int projectId = new Integer(request.getParameter("projectID")).intValue();
             if(null != request.getParameter("uid")){
                 //change user permission for other user
@@ -172,7 +175,7 @@ public class ChangeUserPermissionServlet extends HttpServlet {
     }
     
     /**
-     * Add user to a project
+     * Add user to a project by saving user to project group.
      * @param projectId
      * @param userId
      * @return 1: user added, 11: user is already in project
@@ -201,7 +204,7 @@ public class ChangeUserPermissionServlet extends HttpServlet {
     }
     
     /**
-     * Remove a user from project
+     * Remove a user from project by deleting user from project group.
      * @param projectId
      * @param userId
      * @param currentUid (uid from session)

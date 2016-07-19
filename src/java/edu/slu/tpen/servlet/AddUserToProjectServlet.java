@@ -29,7 +29,8 @@ import user.Group;
 import user.User;
 
 /**
- *
+ * Add user to project and add this user to project group. This is a transformation of tpen function to web service.  
+ * It's using tpen MySQL database. 
  * @author hanyan
  */
 public class AddUserToProjectServlet extends HttpServlet {
@@ -37,6 +38,7 @@ public class AddUserToProjectServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
+        //System.out.println("Add user to project ID:"+request.getParameter("projectID"));
         if (session.getAttribute("UID") != null) {
             int UID = Integer.parseInt(session.getAttribute("UID").toString());
             try {
@@ -50,7 +52,7 @@ public class AddUserToProjectServlet extends HttpServlet {
                         if (g.isAdmin(thisUser.getUID())) {
                             User newUser = new User(request.getParameter("uname"));
                             g.addMember(newUser.getUID());
-                            response.getWriter().print("success");
+                            response.getWriter().print(newUser.getUID());
                         }else{
                             //if user is not admin, return unauthorized. 
                             response.getWriter().print(response.SC_UNAUTHORIZED);
@@ -61,31 +63,47 @@ public class AddUserToProjectServlet extends HttpServlet {
                         if (g.isAdmin(thisUser.getUID())) {
                             User newUser = new User(request.getParameter("uname"));
                             g.addMember(newUser.getUID());
-                            response.getWriter().print("success");
+                            response.getWriter().print(newUser.getUID());
                         }else{
                             //if user is not admin, return unauthorized. 
                             response.getWriter().print(response.SC_UNAUTHORIZED);
                         }
+                    }else if(result == 1){
+                        //user exits
+                        user.Group g = new user.Group(thisProject.getGroupID());
+                        if (g.isAdmin(thisUser.getUID())) {
+                            User newUser = new User(request.getParameter("uname"));
+                            g.addMember(newUser.getUID());
+                            response.getWriter().print(newUser.getUID());
+                        }else{
+                            //if user is not admin, return unauthorized. 
+                            System.out.println("user not admin error");
+                            response.getWriter().print(response.SC_UNAUTHORIZED);
+                        }
                     }else{
                         //user doesn't exist
+                        System.out.println("user doesnt exist error");
                         response.getWriter().print(response.SC_NOT_ACCEPTABLE);
                     }
                 }else{
                     //if there is no uname
+                    System.out.println("There is no uname error.");
                     response.getWriter().print(response.SC_NOT_ACCEPTABLE);
                 }
             } catch (SQLException ex) {
+                System.out.println("SQL exception");
                 Logger.getLogger(AddUserToProjectServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         }else{
             //if user doesn't log in, return unauthorized. 
+            System.out.println("No user logged in.");
             response.getWriter().print(response.SC_UNAUTHORIZED);
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doGet(req, resp); //To change body of generated methods, choose Tools | Templates.
+        this.doPost(req, resp);
     }
     
 }

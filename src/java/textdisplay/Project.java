@@ -133,9 +133,9 @@ public class Project {
     * Add the standard latin tools to a project
     */
    private void initializeTools(Connection conn) throws SQLException {
-      addUserTool(conn, "Latin Vulgate", "http://vulsearch.sourceforge.net/cgi-bin/vulsearch");
-      addUserTool(conn, "Latin Dictionary", "http://www.perseus.tufts.edu/hopper/resolveform?lang=latin");
-      addUserTool(conn, "Enigma", "http://ciham-digital.huma-num.fr/enigma/");
+//      addUserTool(conn, "Latin Vulgate", "http://vulsearch.sourceforge.net/cgi-bin/vulsearch");
+//      addUserTool(conn, "Latin Dictionary", "http://www.perseus.tufts.edu/hopper/resolveform?lang=latin");
+//      addUserTool(conn, "Enigma", "http://ciham-digital.huma-num.fr/enigma/");
    }
 
    /**
@@ -222,7 +222,7 @@ public class Project {
    /*
     public int addFolio(int folioNum)
     {
-    String query="insert into projectFolios";
+    String query="insert into projectfolios";
     }*/
 
    /**
@@ -232,10 +232,10 @@ public class Project {
       Connection j = null;
       PreparedStatement qry = null;
       try {
-         String query = "update projectFolios set position=? where project=? and folio=?";
+         String query = "update projectfolios set position=? where project=? and folio=?";
          j = DatabaseWrapper.getConnection();
          qry = j.prepareStatement(query);
-         //qry.execute("delete from projectSequence where Project="+this.projectID);
+         //qry.execute("delete from projectsequence where Project="+this.projectID);
          for (int i = 0; i < orderedFolios.length; i++) {
             qry.setInt(1, i + 1);
             qry.setInt(2, this.projectID);
@@ -285,14 +285,14 @@ public class Project {
     */
    public synchronized void copyButtonsFromProject(Connection conn, Project p) throws SQLException {
 
-      try (PreparedStatement table = conn.prepareStatement("CREATE TEMPORARY TABLE tmpbuttons LIKE projectButtons")) {
+      try (PreparedStatement table = conn.prepareStatement("CREATE TEMPORARY TABLE tmpbuttons LIKE projectbuttons")) {
          table.executeUpdate();
 
-         try (PreparedStatement del = conn.prepareStatement("DELETE FROM projectButtons WHERE project=?")) {
+         try (PreparedStatement del = conn.prepareStatement("DELETE FROM projectbuttons WHERE project=?")) {
             del.setInt(1, projectID);
             del.executeUpdate();
 
-            try (PreparedStatement ins = conn.prepareStatement("INSERT INTO tmpbuttons (SELECT * FROM projectButtons where project=?)")) {
+            try (PreparedStatement ins = conn.prepareStatement("INSERT INTO tmpbuttons (SELECT * FROM projectbuttons where project=?)")) {
                ins.setInt(1, p.projectID);
                ins.executeUpdate();
                
@@ -301,7 +301,7 @@ public class Project {
                   upd.setInt(1, projectID);
                   upd.executeUpdate();
                   
-                  try (PreparedStatement reins = conn.prepareStatement("INSERT INTO projectButtons (SELECT * FROM tmpbuttons)")) {
+                  try (PreparedStatement reins = conn.prepareStatement("INSERT INTO projectbuttons (SELECT * FROM tmpbuttons)")) {
                      reins.executeUpdate();
                   }
                }
@@ -464,8 +464,10 @@ public class Project {
     * Retrieve the Project name from the Project Metadata
     */
    public String getProjectName() throws SQLException {
-      String toret = new Metadata(this.projectID).title;
+      String toret = new Metadata(this.projectID).getTitle();
+ //     System.out.println("metadata from project "+this.projectID+". title must have a value or it will use project name: "+toret);
       if (toret.compareTo("") == 0) {
+          System.out.println("non title, gotta get name: "+this.projectName);
          toret = this.projectName;
          if (toret == null || toret.compareTo("") == 0) {
             toret = "unknown project";
@@ -504,7 +506,7 @@ public class Project {
    public Date getModification() throws SQLException {
       Date result = null;
       try (Connection conn = getDBConnection()) {
-         try (PreparedStatement stmt = conn.prepareStatement("SELECT MAX(date) FROM transcription JOIN projectFolios ON transcription.folio = projectFolios.folio WHERE project = ?")) {
+         try (PreparedStatement stmt = conn.prepareStatement("SELECT MAX(date) FROM transcription JOIN projectfolios ON transcription.folio = projectfolios.folio WHERE project = ?")) {
             stmt.setInt(1, projectID);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -528,7 +530,7 @@ public class Project {
          qry = j.prepareStatement(query);
          qry.setInt(1, folio);
          ResultSet rs = qry.executeQuery();
-         String insertQuery = "insert into projectImagePositions(folio, project, line, top, bottom, colstart, width) values(?,?,?,?,?,?,?)";
+         String insertQuery = "insert into projectimagepositions(folio, project, line, top, bottom, colstart, width) values(?,?,?,?,?,?,?)";
          insertStatement = j.prepareStatement(insertQuery);
          while (rs.next()) {
             insertStatement.setInt(1, rs.getInt("folio"));
@@ -552,7 +554,7 @@ public class Project {
     * Get all projects with public read access ordered by project name
     */
    public static Project[] getPublicProjects() throws SQLException {
-      String query = "select distinct(project.id) from project join ProjectPermissions on project.id=ProjectPermissions.projectID where ProjectPermissions.allow_public_read_transcription=true order by project.name desc";
+      String query = "select distinct(project.id) from project join projectpermissions on project.id=projectpermissions.projectID where projectpermissions.allow_public_read_transcription=true order by project.name desc";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -610,7 +612,7 @@ public class Project {
     * Check to see if this project contains user uploaded manuscript images.
     */
    public Boolean containsUserUploadedManuscript() throws SQLException {
-      String query = "select * from projectFolios join folios on projectFolios.folio=folios.pageNumber join manuscript on folios.msID=manuscript.id where projectFolios.project=? and manuscript.restricted=-999";
+      String query = "select * from projectfolios join folios on projectfolios.folio=folios.pageNumber join manuscript on folios.msID=manuscript.id where projectfolios.project=? and manuscript.restricted=-999";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -633,11 +635,11 @@ public class Project {
     * and schema
     */
    public int copyProject(Connection conn, int leaderUID) throws SQLException, Exception {
-      if (containsUserUploadedManuscript()) {
-         throw new Exception("Cannot copy a project with user uploaded images!");
-      }
-      Group g = new Group(conn, "Copy of " + projectName, leaderUID);
-      Project p = new Project(conn, "Copy of " + projectName, g.getGroupID());
+      //if (containsUserUploadedManuscript()) {
+      //   throw new Exception("Cannot copy a project with user uploaded images!");
+      //}
+      Group g = new Group(conn, projectName, leaderUID);
+      Project p = new Project(conn, projectName, g.getGroupID());
       p.setFolios(conn, getFolios());
       p.copyButtonsFromProject(conn, this);
       p.copyHotkeysFromProject(conn, this);
@@ -673,10 +675,11 @@ public class Project {
     * @since 2014
     */
    public int copyProjectWithoutTranscription(Connection conn, int leaderUID) throws SQLException, Exception {
-      if (containsUserUploadedManuscript()) {
-         throw new Exception("Cannot copy a project with user uploaded images!");
-      }
-      Group g = new Group(conn, "Copy of " + projectName, leaderUID);
+      //if (containsUserUploadedManuscript()) {
+      //   throw new Exception("Cannot copy a project with user uploaded images!");
+      //}
+      System.out.println("Creating a project template from "+projectName);
+      Group g = new Group(conn, projectName, leaderUID);
       int groupID = this.getGroupID();
       //find group leaders from template group, and if they are not in the new group, add them into new group. 
       Group templateGroup = new Group(groupID);
@@ -687,11 +690,14 @@ public class Project {
         }
       }
       
-      Project p = new Project(conn, "Copy of " + projectName, g.getGroupID());
+      
+      Project p = new Project(conn, projectName, g.getGroupID());
       p.setFolios(conn, getFolios());
       p.copyButtonsFromProject(conn, this);
       p.copyHotkeysFromProject(conn, this);
       p.setSchemaURL(conn, getSchemaURL());
+      System.out.println("Done.  What is the ID:  "+p.projectID);
+      System.out.println("Get project id method: "+p.getProjectID());
 
       try (PreparedStatement selectStmt = conn.prepareStatement("select * from transcription where projectID=?")) {
          selectStmt.setInt(1, projectID);
@@ -806,8 +812,8 @@ public class Project {
     * Set the linebreak text to this value, should only be used by the upload process
     */
    public void setLinebreakText(String txt) throws SQLException {
-      String query = "insert into linebreakingText (projectID,remainingText) values (?,?)";
-      String deleteQuery = "delete from linebreakingText where projectID=?";
+      String query = "insert into linebreakingtext (projectID,remainingText) values (?,?)";
+      String deleteQuery = "delete from linebreakingtext where projectID=?";
       Connection j = null;
       PreparedStatement ps = null;
       PreparedStatement del = null;
@@ -832,8 +838,8 @@ public class Project {
     * Set the linebreak text to this value, should only be used by the upload process
     */
    public void setHeaderText(String txt) throws SQLException {
-      String query = "insert into projectHeader (projectID,header) values (?,?)";
-      String deleteQuery = "delete from projectHeader where projectID=?";
+      String query = "insert into projectheader (projectID,header) values (?,?)";
+      String deleteQuery = "delete from projectheader where projectID=?";
       Connection j = null;
       PreparedStatement ps = null;
       PreparedStatement del = null;
@@ -860,8 +866,8 @@ public class Project {
     returnedText
     */
    public void setLinebreakTextWithReturnedText(String returnedText) throws SQLException {
-      String query = "update linebreakingText set remainingText=? where projectID=?";
-      String selectQuery = "select remainingText  from linebreakingText where projectID=?";
+      String query = "update linebreakingtext set remainingText=? where projectID=?";
+      String selectQuery = "select remainingText  from linebreakingtext where projectID=?";
       Connection j = null;
       PreparedStatement ps = null;
       PreparedStatement selectStatement = null;
@@ -895,7 +901,7 @@ public class Project {
     * Retrieve Project.linebreakCharacterLimit characters of from the uploaded text file
     */
    public String getLinebreakText() throws SQLException {
-      String query = "select remainingText  from linebreakingText where projectID=?";
+      String query = "select remainingText  from linebreakingtext where projectID=?";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -925,7 +931,7 @@ public class Project {
     * Retrieve a stored header that was uploaded by the user.
     */
    public String getHeader() throws SQLException {
-      String query = "select header  from projectHeader where projectID=?";
+      String query = "select header  from projectheader where projectID=?";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -1040,7 +1046,7 @@ public class Project {
       PreparedStatement qry = null;
       try {
          Stack<Folio> t = new Stack();
-         String query = "select * from projectFolios where project=? order by position";
+         String query = "select * from projectfolios where project=? order by position";
          j = DatabaseWrapper.getConnection();
          qry = j.prepareStatement(query);
          qry.setInt(1, this.projectID);
@@ -1184,11 +1190,11 @@ public class Project {
     */
    public void setFolios(Connection conn, Folio[] f) throws SQLException {
       
-      try (PreparedStatement deletionStmt = conn.prepareStatement("Delete from projectFolios where project=?")) {
+      try (PreparedStatement deletionStmt = conn.prepareStatement("Delete from projectfolios where project=?")) {
          deletionStmt.setInt(1, projectID);
          deletionStmt.executeUpdate();
          
-         try (PreparedStatement insertionStmt = conn.prepareStatement("insert into projectFolios (project, folio, position) values(?,?,?)")) {
+         try (PreparedStatement insertionStmt = conn.prepareStatement("insert into projectfolios (project, folio, position) values(?,?,?)")) {
             insertionStmt.setInt(1, projectID);
             for (int i = 0; i < f.length; i++) {
                if (f[i] != null) {
@@ -1208,7 +1214,7 @@ public class Project {
       Connection j = null;
       PreparedStatement qry = null;
       try {
-         String query = "select count(folio) from projectFolios where project=?";
+         String query = "select count(folio) from projectfolios where project=?";
          j = DatabaseWrapper.getConnection();
          qry = j.prepareStatement(query);
 
@@ -1563,13 +1569,13 @@ public class Project {
     * Add a new Project log comment
     */
    public void addLogEntry(Connection conn, String text, int uid) throws SQLException {
-      try (PreparedStatement deleteStmt = conn.prepareStatement("delete from projectLog where content=? and uid=? and projectID=?")) {
+      try (PreparedStatement deleteStmt = conn.prepareStatement("delete from projectlog where content=? and uid=? and projectID=?")) {
          deleteStmt.setInt(3, projectID);
          deleteStmt.setInt(2, uid);
          deleteStmt.setString(1, text);
          deleteStmt.executeUpdate();
          
-         try (PreparedStatement insertStmt = conn.prepareStatement("insert into projectLog(projectID, uid, content) values(?,?,?)")) {
+         try (PreparedStatement insertStmt = conn.prepareStatement("insert into projectlog(projectID, uid, content) values(?,?,?)")) {
             insertStmt.setInt(1, projectID);
             insertStmt.setInt(2, uid);
             insertStmt.setString(3, text);
@@ -1582,7 +1588,7 @@ public class Project {
     * Retrieve the log of Project comments in order by date.
     */
    public String getProjectLog() throws SQLException {
-      String query = "select content,creationDate,uid from projectLog where projectID=? order by creationDate desc limit 1000";
+      String query = "select content,creationDate,uid from projectlog where projectID=? order by creationDate desc limit 1000";
       StringBuilder toret = new StringBuilder("");
       Connection j = null;
       PreparedStatement qry = null;
@@ -1610,7 +1616,7 @@ public class Project {
     * Retrieve the requested number of Project comments in order by date, from date.
     */
    public String getProjectLog(int recordCount, int firstRecord) throws SQLException {
-      String query = "select content,creationDate,uid from projectLog where projectID=? order by creationDate desc limit ?,?";
+      String query = "select content,creationDate,uid from projectlog where projectID=? order by creationDate desc limit ?,?";
       StringBuilder toret = new StringBuilder("");
       Connection j = null;
       PreparedStatement qry = null;

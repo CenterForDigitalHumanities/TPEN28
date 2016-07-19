@@ -77,7 +77,7 @@ public class ArchivedAnnotation {
      */
     public ArchivedAnnotation(int archivedID) throws SQLException
     {
-        String query="select * from archivedAnnotation where achrivedID=?";
+        String query="select * from archivedannotation where achrivedID=?";
         Connection j=null;
 PreparedStatement ps=null;
         try{
@@ -112,7 +112,7 @@ DatabaseWrapper.closePreparedStatement(ps);
     public static ArchivedAnnotation[] getAllArchivedVersions(int annotationID) throws SQLException
     {
         ArchivedAnnotation [] toret=null;
-        String query="select archivedID from archivedAnnotation where id=? order by archivedID";
+        String query="select archivedID from archivedannotation where id=? order by archivedID";
         Connection j=null;
 PreparedStatement ps=null;
         Stack<ArchivedAnnotation> tmp=new Stack();

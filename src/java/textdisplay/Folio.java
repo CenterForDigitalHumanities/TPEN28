@@ -627,10 +627,10 @@ public class Folio {
                if (url.startsWith("/")) {
                   url = "file://" + url;
                } else {
-						// If it's a reference to the T-PEN pageImage servlet, point it at the
-						// current T-PEN instance.
-						url = url.replace("http://t-pen.org/TPEN/", getRbTok("SERVERURL"));
-					}
+                        // If it's a reference to the T-PEN pageImage servlet, point it at the
+                        // current T-PEN instance.
+                        url = url.replace("http://t-pen.org/TPEN/", getRbTok("SERVERURL"));
+                }
             }
          }
       }
@@ -788,7 +788,7 @@ public class Folio {
     * loads over a given period of time for the paleography UI
     */
    public Boolean isCached() throws SQLException {
-      String query = "select folio from imageCache where folio=? ";
+      String query = "select folio from imagecache where folio=? ";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -914,7 +914,7 @@ public class Folio {
    private void detect() throws SQLException, IOException {
       try (InputStream stream = getUncachedImageStream(false)) {
          BufferedImage img = ImageIO.read(stream);
-         writeDebugImage(img, "uncached");
+//         writeDebugImage(img, "uncached");
 
          // @TODO:  BOZO:  What do do when the BI is null?
 

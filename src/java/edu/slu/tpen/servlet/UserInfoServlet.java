@@ -28,7 +28,8 @@ import net.sf.json.JSONObject;
 import user.User;
 
 /**
- *
+ * Get user info by user id. 
+ * This is a transformation of tpen function to web service. It's using tpen MySQL database. 
  * @author hanyan
  */
 public class UserInfoServlet extends HttpServlet {
@@ -38,7 +39,7 @@ public class UserInfoServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession();
         if(null != session && null != session.getAttribute("UID")){
-            int uid = Integer.parseInt((String)session.getAttribute("UID"));
+            int uid = Integer.parseInt(session.getAttribute("UID").toString());
             try {
                 User user = new User(uid);
                 JSONObject jo = new JSONObject();

@@ -91,15 +91,15 @@ public class ImageUtils {
       return null;
    }
    
-   public static void writeDebugImage(RenderedImage img, String label) {
-      if (textdisplay.Folio.getRbTok("debug").equals("true")) {
-         try {
-            ImageIO.write(img, "jpg", new File(DEBUG_DIR, label + ".jpg"));
-         } catch (IOException ex) {
-            LOG.log(Level.WARNING, "Error writing debug image for " + label, ex);
-         }
-      }
-   }
+//   public static void writeDebugImage(RenderedImage img, String label) {
+//      if (textdisplay.Folio.getRbTok("debug").equals("true")) {
+//         try {
+//            ImageIO.write(img, "jpg", new File(DEBUG_DIR, label + ".jpg"));
+//         } catch (IOException ex) {
+//            LOG.log(Level.WARNING, "Error writing debug image for " + label, ex);
+//         }
+//      }
+//   }
    
    private static final Logger LOG = Logger.getLogger(ImageUtils.class.getName());
 }

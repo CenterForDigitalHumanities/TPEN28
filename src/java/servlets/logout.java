@@ -38,6 +38,7 @@ public class logout extends HttpServlet {
         PrintWriter out = response.getWriter();
         try {
             request.getSession().setAttribute("UID", null);
+            request.getSession().invalidate();
             out.print("Logout complete");
         } finally { 
             out.close();

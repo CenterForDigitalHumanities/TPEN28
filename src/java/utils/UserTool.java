@@ -35,7 +35,7 @@ public class UserTool {
      * Add a new iframe based tool to this project
      */
     public UserTool(Connection conn, String name, String url, int project) throws SQLException {
-       try (PreparedStatement ps = conn.prepareStatement("insert into userTools (name, url, projectID) values(?,?,?)")) {
+       try (PreparedStatement ps = conn.prepareStatement("insert into usertools (name, url, projectID) values(?,?,?)")) {
           ps.setString(1, name);
           ps.setString(2, url);
           ps.setInt(3, project);
@@ -52,7 +52,7 @@ public class UserTool {
      * Add a new iframe based tool to this project
      */
     public void saveUserTool(Connection conn, String name, String url, int project) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("insert into userTools (name, url, projectID) values(?,?,?)");
+        PreparedStatement ps = conn.prepareStatement("insert into usertools (name, url, projectID) values(?,?,?)");
         ps.setString(1, name);
         ps.setString(2, url);
         ps.setInt(3, project);
@@ -84,7 +84,7 @@ public class UserTool {
     * Remove the tool
     */
    public static void removeUserTool(String url, int project) throws SQLException {
-      String query = "delete from userTools where projectID=? and url=?";
+      String query = "delete from usertools where projectID=? and url=?";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -104,7 +104,7 @@ public class UserTool {
     */
    public static UserTool[] getUserTools(int project) throws SQLException {
       UserTool[] toret = null;
-      String query = "select url,name from userTools where projectID=?";
+      String query = "select url,name from usertools where projectID=?";
       Stack<UserTool> tmp = new Stack();
       Connection j = null;
       PreparedStatement ps = null;
@@ -133,7 +133,7 @@ public class UserTool {
     * Delete all tools assciated with a project
     */
    public static void removeAll(int projectID) throws SQLException {
-      String query = "delete from userTools where projectID=?";
+      String query = "delete from usertools where projectID=?";
       Connection j = null;
       PreparedStatement ps = null;
       try {

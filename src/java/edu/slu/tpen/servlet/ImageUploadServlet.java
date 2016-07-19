@@ -27,10 +27,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import textdisplay.DatabaseWrapper;
-import textdisplay.Folio;
 
 /**
- *
+ * Upload image to tpen. 
+ * This is a transformation of tpen function to web service. It's using tpen MySQL database. 
  * @author hanyan
  */
 public class ImageUploadServlet extends HttpServlet {

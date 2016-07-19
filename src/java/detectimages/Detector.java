@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static edu.slu.util.ImageUtils.cloneImage;
-import static edu.slu.util.ImageUtils.writeDebugImage;
+//import static edu.slu.util.ImageUtils.writeDebugImage;
 
 /**
  * This is the column and line detector. It is old, so it has a fair amount of legacy code and some really
@@ -183,7 +183,7 @@ public class Detector {
             }
          }
       }
-      writeDebugImage(smeared, "smear");
+//      writeDebugImage(smeared, "smear");
    }
 
    /**
@@ -222,7 +222,7 @@ public class Detector {
             }
          }
       }
-      writeDebugImage(smeared, "vsmear.smeared");
+//      writeDebugImage(smeared, "vsmear.smeared");
    }
 
    /**
@@ -343,8 +343,8 @@ public class Detector {
          }
       }
 
-      writeDebugImage(bin, "detect.bin");
-      writeDebugImage(onlySmearedPortions, "detect.onlySmearedPortions");
+//      writeDebugImage(bin, "detect.bin");
+//      writeDebugImage(onlySmearedPortions, "detect.onlySmearedPortions");
       binstor = cloneImage(bin);//imageHelpers.binaryThreshold(img, 0);
 
       findingCols = true;
@@ -448,7 +448,7 @@ public class Detector {
             //System.out.print("column is:" + l.getStartHorizontal() + "," + l.getWidth() + "," + l.getStartVertical() + "," + l.getDistance() + "\n");
             BufferedImage thisColumnOnly = img.getSubimage(l.getStartHorizontal(), l.getStartVertical(), l.getWidth(), l.getDistance());
             BufferedImage thisColumnOnlyBin = binstor.getSubimage(l.getStartHorizontal(), l.getStartVertical(), l.getWidth(), l.getDistance());
-            writeDebugImage(thisColumnOnlyBin, debugLabel + "_col" + ctr + ".jpg");
+//            writeDebugImage(thisColumnOnlyBin, debugLabel + "_col" + ctr + ".jpg");
             Detector colLines = new Detector(thisColumnOnly, thisColumnOnlyBin);
             colLines.hsmearDist = this.hsmearDist;
             colLines.vsmearDist = this.vsmearDist;
@@ -467,7 +467,7 @@ public class Detector {
             }
          }
       }
-      writeDebugImage(bin, debugLabel + "_last_step.jpg");
+//      writeDebugImage(bin, debugLabel + "_last_step.jpg");
 
       colLinesWithWidth = new int[2000];
       findingCols = false;

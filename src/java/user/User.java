@@ -571,12 +571,15 @@ PreparedStatement qry=null;
         this.openID = openID;
         if (!this.exists())
             {
+            //System.out.println("User being invited does NOT exist.  Create a new user.");
             this.commit(password);
             this.UID = new User(Uname).UID;
-            } else
-            {
+            } 
+        else
+        {
+            //System.out.println("User being invited does exist.");
             this.UID = -1;
-            }
+        }
 
         }
 
@@ -925,7 +928,7 @@ PreparedStatement qry=null;
             j = DatabaseWrapper.getConnection();
 
             
-            qry = j.prepareStatement("select * from groupMembers where UID=?");
+            qry = j.prepareStatement("select * from groupmembers where UID=?");
             qry.setInt(1, UID);
             ResultSet rs = qry.executeQuery();
             int recordCount = 0;
@@ -993,7 +996,7 @@ DatabaseWrapper.closePreparedStatement(ps);
     public Project[] getUserProjects() throws SQLException
         {
         new ProjectPriority(UID).verifyPriorityContents();
-        String query = "select distinct(project.id) from project join groupMembers on grp=GID join projectPriorities on id=projectID where groupMembers.UID=? and projectPriorities.uid=?  order by projectPriorities.priority desc, project.name desc";
+        String query = "select distinct(project.id) from project join groupmembers on grp=GID join projectpriorities on id=projectID where groupmembers.UID=? and projectpriorities.uid=?  order by projectpriorities.priority desc, project.name desc";
         Connection j = null;
 PreparedStatement ps=null;
         try
@@ -1062,11 +1065,14 @@ DatabaseWrapper.closePreparedStatement(qry);
         {
         Boolean emailFailure = false;
         User newUser = new User(uname, lname, fname, "");
+        //System.out.println("Defined user to continue on.  Can we?");
         if (newUser.getUID() > 0)
             {
+                //System.out.println("Yes.  We made a new user.");
+                //System.out.println(this.getFname() + " " + this.getLname() + " (" + this.getUname() + ") has invited  " + newUser.getFname() + " " + newUser.getLname() + " (" + newUser.getUname() + ") to join TPEN.");
+
             textdisplay.mailer m = new textdisplay.mailer();
             String body = this.getFname() + " " + this.getLname() + " (" + this.getUname() + ") has invited  " + newUser.getFname() + " " + newUser.getLname() + " (" + newUser.getUname() + ") to join TPEN, which needs your approval.\n";
-            body += "Proceed to http://t-pen.org/TPEN/admin.jsp to approve their account";
             try
                 {
                 m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org", Folio.getRbTok("NOTIFICATIONEMAIL"), "new user request", body);
@@ -1075,7 +1081,7 @@ DatabaseWrapper.closePreparedStatement(qry);
                 emailFailure = true;
                 }
             //send a notification email to the invitee
-            body = this.getFname() + " " + this.getLname() + " (" + this.getUname() + ") has invited you to join their transcription project on TPEN. At this early stage in testing, an administrator must activate your account before you will recieve an email with your password.\n Thank you for your patience.\nThe TPEN team";
+            body = this.getFname() + " " + this.getLname() + " (" + this.getUname() + ") has invited you to join their transcription project on TPEN.  Your initial password is blank, please log in and set a password.  \nThe TPEN team";
             try
                 {
                 m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org", newUser.getUname(), "An invitation to transcribe on TPEN", body);
@@ -1083,6 +1089,7 @@ DatabaseWrapper.closePreparedStatement(qry);
                 {
                 emailFailure = true;
                 }
+            //System.out.println("What is email failure: "+emailFailure);
             if (!emailFailure)
                 {
                 return 0;
@@ -1091,6 +1098,10 @@ DatabaseWrapper.closePreparedStatement(qry);
                 return 2;
                 }
             }
+        else{
+            //This is where invite did not have to make a new user.  The user being invited is already a part of T-PEN.  Send an email still?  Right now, no.  
+            //System.out.println("No.  We did not make a new user, do not send an email.");
+        }
 
         return 1;
         }

@@ -201,6 +201,8 @@ public class Metadata {
             this.projectID = projectID;
             title = rs.getString("title");
             subtitle = rs.getString("subtitle");
+            //we could decode here.
+          //  System.out.println("title from metadata table for project "+projectID+" put into Metadata object: "+title);
             msIdentifier = rs.getString("msIdentifier");
             msSettlement = rs.getString("msSettlement");
             msRepository = rs.getString("msRepository");
@@ -234,6 +236,8 @@ public class Metadata {
       try {
          j = DatabaseWrapper.getConnection();
          updater = j.prepareStatement(query);
+         //what if we did an ecode here for the specified fields and decoded them on the way out?  Or leave them encoded and let the front end decode?
+         //System.out.println("commit new title "+this.title);
          updater.setString(1, this.title);
          updater.setString(2, this.subtitle);
          updater.setString(3, this.msIdentifier);

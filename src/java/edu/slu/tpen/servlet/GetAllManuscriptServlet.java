@@ -28,7 +28,8 @@ import net.sf.json.JSONObject;
 import textdisplay.Manuscript;
 
 /**
- *
+ * Get all manuscripts in database. 
+ * This is a transformation of tpen function to web service. It's using tpen MySQL database. 
  * @author hanyan
  */
 public class GetAllManuscriptServlet extends HttpServlet {

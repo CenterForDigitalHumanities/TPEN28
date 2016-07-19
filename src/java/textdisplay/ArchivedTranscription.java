@@ -71,7 +71,7 @@ public class ArchivedTranscription {
     * @throws SQLException
     */
    private ArchivedTranscription(int uniqueID) throws SQLException {
-      String query = "Select * from archivedTranscription where uniqueID=?";
+      String query = "Select * from archivedtranscription where uniqueID=?";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -102,7 +102,7 @@ public class ArchivedTranscription {
     * Get all older versions of a transcription created by a particular person.
     */
    public static ArchivedTranscription[] getAllVersionsByCreator(int transcriptionID, int uid) throws SQLException {
-      String query = "select uniqueID from archivedTranscription where id=? and creator=?";
+      String query = "select uniqueID from archivedtranscription where id=? and creator=?";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -129,7 +129,7 @@ public class ArchivedTranscription {
     * Get all older versions of a particular transcription.
     */
    public static ArchivedTranscription[] getAllVersions(int transcriptionID) throws SQLException {
-      String query = "select uniqueID from archivedTranscription where id=?";
+      String query = "select uniqueID from archivedtranscription where id=?";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -159,7 +159,7 @@ public class ArchivedTranscription {
     * @param date yyyy-MM-dd HH:mm:ss formatted date
     */
    public static ArchivedTranscription getVersionAsOf(int transcriptionID, String date) throws SQLException {
-      String query = "select uniqueID from archivedTranscription where id=? and date <? order by date desc limit 1";
+      String query = "select uniqueID from archivedtranscription where id=? and date <? order by date desc limit 1";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -187,7 +187,7 @@ public class ArchivedTranscription {
     */
    public static Map<Integer, List<ArchivedTranscription>> getAllVersionsForPage(int projID, int folioID) throws SQLException {
       try (Connection j = DatabaseWrapper.getConnection()) {
-         try (PreparedStatement ps = j.prepareStatement("SELECT * FROM archivedTranscription "
+         try (PreparedStatement ps = j.prepareStatement("SELECT * FROM archivedtranscription "
                  + "WHERE projectID = ? AND folio = ? "
                  + "ORDER BY x, y")) {
             ps.setInt(1, projID);

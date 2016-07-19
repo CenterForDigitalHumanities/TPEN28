@@ -38,7 +38,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- *
+ * Auto parse image from image url. Parsing function is inherited from tpen. Annotation saving function is new and using rerum.io. 
  * @author hanyan
  */
 public class ImageAutoParsingServlet extends HttpServlet {
@@ -54,7 +54,7 @@ public class ImageAutoParsingServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String imgurl = (String) request.getParameter("imgurl");
-        System.out.println("url ========== " + imgurl);
+//        System.out.println("url ========== " + imgurl);
         URL url = new URL(imgurl);
 //        String imgurl = "https://cdm.csbsju.edu/cgi-bin/getimage.exe?CISOROOT=/ArcaArt&CISOPTR=6918";
 //        URL url = new URL(imgurl);
@@ -62,7 +62,7 @@ public class ImageAutoParsingServlet extends HttpServlet {
         InputStream in = httpConn.getInputStream();
         BufferedImage img = ImageIO.read(in);
         int height = 1000;
-        System.out.println("img ======= " + img);
+//        System.out.println("img ======= " + img);
         BufferedImage scaledImg = ImageHelpers.scale(img, 1000);
         imageProcessor proc = new imageProcessor(img, height);
         List<line> ls_detectedLines = proc.detectLines(false);
@@ -75,7 +75,7 @@ public class ImageAutoParsingServlet extends HttpServlet {
                 tl.setW(l.getWidth());
                 tl.setH(l.getDistance());
                 ls_transLine.add(tl);
-                System.out.println(l.toString());
+                //System.out.println(l.toString());
             }
         }
         JSONObject jo_canvas = new JSONObject();
@@ -119,7 +119,7 @@ public class ImageAutoParsingServlet extends HttpServlet {
                 tl.setW(l.getWidth());
                 tl.setH(l.getDistance());
                 ja_line.add(tl.toJSON());
-                System.out.println(l.toString());
+                //System.out.println(l.toString());
             }
         }
         jo_otherContent.element("resources", ja_line);

@@ -22,7 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import imageLines.ImageHelpers;
 import static edu.slu.util.ImageUtils.cloneImage;
-import static edu.slu.util.ImageUtils.writeDebugImage;
+//import static edu.slu.util.ImageUtils.writeDebugImage;
 
 /**
  * @author Jon Deering
@@ -68,10 +68,10 @@ public class imageProcessor {
    public List<line> detectLines(boolean doBlobExtract) {
 
       orig = ImageHelpers.scale(untouchedImage, maxHeight);
-      writeDebugImage(orig, "detectLines.orig");
+//      writeDebugImage(orig, "detectLines.orig");
       BufferedImage stored = ImageHelpers.scale(orig, 1000);
       BufferedImage bin = ImageHelpers.scale(ImageHelpers.binaryThreshold(untouchedImage, 4), maxHeight);
-      writeDebugImage(bin, "detectLines.bin");
+//      writeDebugImage(bin, "detectLines.bin");
       for (int i = 0; i < bin.getWidth(); i++) {
          for (int j = 0; j < bin.getHeight(); j++) {
             orig.setRGB(i, j, -1);
@@ -161,7 +161,7 @@ public class imageProcessor {
             }
          }
       }
-      writeDebugImage(stored, "detectLines.stored");
+//      writeDebugImage(stored, "detectLines.stored");
       return allLines;
    }
 
@@ -177,7 +177,7 @@ public class imageProcessor {
       int white = 0xff000000;
       int black = 0xffffffff;
       BufferedImage toret = cloneImage(bin);
-      writeDebugImage(bin, "createViewableVerticalProfile.bin");
+//      writeDebugImage(bin, "createViewableVerticalProfile.bin");
       int[] vals = new int[toret.getWidth()];
       for (int i = 0; i < vals.length; i++) {
          vals[i] = 0;
@@ -209,7 +209,7 @@ public class imageProcessor {
             }
          }
       }
-      writeDebugImage(toret, "createViewableVerticalProfile.toret");
+//      writeDebugImage(toret, "createViewableVerticalProfile.toret");
       for (int i = 0; i < vals.length; i++) {
          if (vals[i] <= median) {
             // w.append("0\n");
@@ -269,7 +269,7 @@ public class imageProcessor {
             l.setStartVertical(0);
             l.setDistance(bin.getHeight() - 1);
 
-            writeDebugImage(highlightBlock(bin, l.getStartHorizontal(), l.getStartVertical(), l.getDistance(), l.getWidth(), 0xff0000), "createViewableVerticalProfile.column" + (v.size() - 1));
+//            writeDebugImage(highlightBlock(bin, l.getStartHorizontal(), l.getStartVertical(), l.getDistance(), l.getWidth(), 0xff0000), "createViewableVerticalProfile.column" + (v.size() - 1));
          }
       }
 

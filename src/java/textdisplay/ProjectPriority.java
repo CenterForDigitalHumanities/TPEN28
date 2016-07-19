@@ -24,7 +24,7 @@ this.uid=uid;
     }
     public int [][] getOrderedProjects() throws SQLException
     {int [][] toret=new int [0][0];
-     String query="select * from projectPriorities where uid=? order by priority desc";
+     String query="select * from projectpriorities where uid=? order by priority desc";
      Stack<Integer> projectIDs=new Stack();
      Stack<Integer> priorities=new Stack();
      Connection j = null;
@@ -67,7 +67,7 @@ PreparedStatement ps=null;
     }
     public Boolean setPriority(int projectID,int priority) throws SQLException
     {
-        String checkQuery="select * from projectPriorities where projectID=? and uid=?";
+        String checkQuery="select * from projectpriorities where projectID=? and uid=?";
         Connection j = null;
 PreparedStatement ps=null;
         try
@@ -80,7 +80,7 @@ PreparedStatement ps=null;
             if(rs.next())
             {
 
-                String query="update projectPriorities set priority=? where projectID=? and uid=?";
+                String query="update projectpriorities set priority=? where projectID=? and uid=?";
                 ps=j.prepareStatement(query);
                 ps.setInt(1, priority);
                 ps.setInt(2, projectID);
@@ -101,9 +101,9 @@ PreparedStatement ps=null;
     }
     public void verifyPriorityContents() throws SQLException
     {
-        String projectSelector="select * from project join groupMembers on project.grp=groupMembers.GID where groupMembers.UID=?";
-        String insertQuery="insert into projectPriorities(uid,projectID, priority) values(?,?,?)";
-        String checkQuery="select * from projectPriorities where uid=? and projectID=?";
+        String projectSelector="select * from project join groupmembers on project.grp=groupmembers.GID where groupmembers.UID=?";
+        String insertQuery="insert into projectpriorities(uid,projectID, priority) values(?,?,?)";
+        String checkQuery="select * from projectpriorities where uid=? and projectID=?";
 
         Connection j = null;
 PreparedStatement ps=null;

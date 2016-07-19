@@ -52,7 +52,7 @@ public class ImageRequest {
       startTime = System.currentTimeMillis();
       Folio f = new Folio(folioNumber);
       cacheHit = f.isCached();
-      String query = "insert into imageRequest(UID,folio,cacheHit,elapsedTime,date,succeeded,msg) values (?,?,?,?,NOW(),?,?)";
+      String query = "insert into imagerequest(UID,folio,cacheHit,elapsedTime,date,succeeded,msg) values (?,?,?,?,NOW(),?,?)";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -86,7 +86,7 @@ public class ImageRequest {
       if (id > 0) {
          long timeElapsed = System.currentTimeMillis() - startTime;
          try (Connection j = DatabaseWrapper.getConnection()) {
-            try (PreparedStatement ps = j.prepareStatement("update imageRequest set elapsedTime=?, succeeded=true, msg='' where id=?")) {
+            try (PreparedStatement ps = j.prepareStatement("update imagerequest set elapsedTime=?, succeeded=true, msg='' where id=?")) {
                ps.setInt(1, (int)timeElapsed);
                ps.setInt(2, id);
                ps.executeUpdate();
@@ -109,7 +109,7 @@ public class ImageRequest {
       }
       if (id > 0) {
          long timeElapsed = System.currentTimeMillis() - startTime;
-         String query = "update imageRequest set elapsedTime=?, succeeded=false, msg=? where id=?";
+         String query = "update imagerequest set elapsedTime=?, succeeded=false, msg=? where id=?";
          try (Connection j = DatabaseWrapper.getConnection()) {
             try (PreparedStatement ps = j.prepareStatement(query)) {
                ps.setInt(1, (int) timeElapsed);
@@ -132,7 +132,7 @@ public class ImageRequest {
     * @throws SQLException
     */
    public static int getAverageElapsedTime(String archive) throws SQLException {
-      String query = "select elapsedTime from imageRequest join folios on imageRequest.folio=folios.pageNumber where archive=? and cacheHit=false order by date limit 10";
+      String query = "select elapsedTime from imagerequest join folios on imagerequest.folio=folios.pageNumber where archive=? and cacheHit=false order by date limit 10";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -159,7 +159,7 @@ public class ImageRequest {
    public static void EmailReport(int minutes) throws SQLException {
       minutes++;
       try (Connection j = DatabaseWrapper.getConnection()) {
-         try (PreparedStatement ps = j.prepareStatement("select distinct(folio) from imageRequest where succeeded=false and date>DATE_SUB(now(), INTERVAL ? MINUTE) and date<DATE_SUB(now(), INTERVAL 1 MINUTE )")) {
+         try (PreparedStatement ps = j.prepareStatement("select distinct(folio) from imagerequest where succeeded=false and date>DATE_SUB(now(), INTERVAL ? MINUTE) and date<DATE_SUB(now(), INTERVAL 1 MINUTE )")) {
             ps.setInt(1, minutes);
             ResultSet rs = ps.executeQuery();
             String body = "";

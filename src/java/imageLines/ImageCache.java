@@ -64,12 +64,12 @@ public class ImageCache {
    
    public static InputStream getImageStream(int folioNum) throws SQLException, IOException {
       try (Connection j = DatabaseWrapper.getConnection()) {
-         try (PreparedStatement ps = j.prepareStatement("select image from imageCache where folio=?")) {
+         try (PreparedStatement ps = j.prepareStatement("select image from imagecache where folio=?")) {
             ps.setInt(1, folioNum);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                // The image is in the cache
-               try (PreparedStatement updateHitCount = j.prepareStatement("update imageCache set count=count+1 where folio=?")) {
+               try (PreparedStatement updateHitCount = j.prepareStatement("update imagecache set count=count+1 where folio=?")) {
                   updateHitCount.setInt(1, folioNum);
                   updateHitCount.execute();
                }
@@ -92,7 +92,7 @@ public class ImageCache {
     */
    public static Dimension getImageDimension(int folioNum) throws SQLException, IOException {
       try (Connection j = DatabaseWrapper.getConnection()) {
-         try (PreparedStatement ps = j.prepareStatement("select image from imageCache where folio = ?")) {
+         try (PreparedStatement ps = j.prepareStatement("select image from imagecache where folio = ?")) {
             ps.setInt(1, folioNum);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -112,11 +112,11 @@ public class ImageCache {
     * @throws IOException
     */
    private static void cleanup(Connection j) throws SQLException {
-      try (PreparedStatement ps = j.prepareStatement("SELECT MAX(id) FROM imageCache")) {
+      try (PreparedStatement ps = j.prepareStatement("SELECT MAX(id) FROM imagecache")) {
          ResultSet rs = ps.executeQuery();
          if (rs.next()) {
             int maxID = rs.getInt(1);
-            try (PreparedStatement ps2 = j.prepareStatement("DELETE FROM imageCache WHERE id < ?")) {
+            try (PreparedStatement ps2 = j.prepareStatement("DELETE FROM imagecache WHERE id < ?")) {
                ps2.setInt(1, maxID - CACHE_SIZE);
                ps2.executeUpdate();
             }
@@ -135,11 +135,11 @@ public class ImageCache {
    public static void setImage(int folioNum, BufferedImage img) throws SQLException, IOException {
 
       try (Connection j = DatabaseWrapper.getConnection()) {
-         try (PreparedStatement ps = j.prepareStatement("select folio from imageCache where folio=?")) {
+         try (PreparedStatement ps = j.prepareStatement("select folio from imagecache where folio=?")) {
             ps.setInt(1, folioNum);
             if (!ps.executeQuery().next()) {
                // Not already in cache, so set up the insertion.
-               try (PreparedStatement ps2 = j.prepareStatement("insert into imageCache (folio, image) values(?,?)")) {
+               try (PreparedStatement ps2 = j.prepareStatement("insert into imagecache (folio, image) values(?,?)")) {
                   // Write the image to a binary array to send to the DB
                   ByteArrayOutputStream baos = new ByteArrayOutputStream(1000);
                   ImageIO.write(img, "jpg", baos);

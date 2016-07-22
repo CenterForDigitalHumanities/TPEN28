@@ -82,8 +82,10 @@ public class manuscriptListings extends HttpServlet {
                             }
                         }
                         if (resume) {
+                        // TODO: Find project from the MS and then send to transcription.html?projectID=##
                             out.print("<a href=transcription.jsp?ms=" + mss[i].getID() + ">Resume transcribing</a>" + "\n");
                         } else {
+                        // TODO: Build a project from the MS and then send to transcription.html?projectID=##
                             out.print("(Not marked)<a href=transcription.jsp?ms=" + mss[i].getID() + ">Start transcribing</a>" + "\n");
                         }
                         
@@ -127,8 +129,10 @@ public class manuscriptListings extends HttpServlet {
                             }
                         }
                         if (resume) {
+                        // TODO: Find the project from the MS and then send to transcription.html?projectID=##
                             out.print("<a href=transcription.jsp?ms=" + mss[i].getID() + " class=\"resume\">Resume transcribing</a>" + "\n");
                         } else {
+                        // TODO: Build a project from the MS and then send to transcription.html?projectID=##
                             out.print("<a href=transcription.jsp?ms=" + mss[i].getID() + " class=\"unmarked\">Start transcribing</a>" + "\n");
                         }
                         out.print("<a href=addMStoProject.jsp?ms=" + mss[i].getID() + ">Add to project</a>" + "\n<br>");
@@ -170,8 +174,10 @@ public class manuscriptListings extends HttpServlet {
                             }
                         }
                         if (resume) {
+                        // TODO: Find the project from the MS and then send to transcription.html?projectID=##
                             out.print("<a href=transcription.jsp?ms=" + mss[i].getID() + ">Resume transcribing</a>" + "\n");
                         } else {
+                        // TODO: Build a project from the MS and then send to transcription.html?projectID=##
                             out.print("<a href=transcription.jsp?ms=" + mss[i].getID() + ">(Not marked)Start transcribing</a>" + "\n");
                         }
                         //out.print("<a href=transcription.jsp?ms=" + mss[i].getID() + ">Start transcribing</a>" + "\n");

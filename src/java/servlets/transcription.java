@@ -47,7 +47,7 @@ public class transcription extends HttpServlet {
         try {
             String text="dicat si deus est qui iustificat quis est qui condempnet something else";
             text=ESAPI.encoder().encodeForURL(text);
-            String url="http://t-pen.org/TPENFRESH/updateLine?projectID=56&line=100002000&text="+text+"&comment=test";
+            String url="http://t-pen.org/TPEN/updateLine?projectID=56&line=100002000&text="+text+"&comment=test";
             try {
                 URL testURL=new URL(url);
                 try {

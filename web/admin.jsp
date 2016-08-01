@@ -61,7 +61,7 @@
             #about li {height: 400px;overflow: auto;}
             #contact,#FBextra {width:100%;height:6em;}
             .contactCOMMENT{padding:2px;text-align: center;position: relative;z-index: 2;cursor: pointer;}
-            .contactDiv{margin:-4px 5px 2px;clear:left;background: url(images/linen.png);padding:6px 2px 2px;
+            .contactDiv{margin:-4px 5px 2px;clear:left;background: #FAF0E6;padding:6px 2px 2px;
 /*                        display:none;*/
                         overflow: hidden;z-index: 1; border: 1px solid #A68329;
                        -moz-box-shadow: -1px -1px 2px black;
@@ -545,7 +545,7 @@
                                                 var src = [
                                                     "https://maps.googleapis.com/maps/api/staticmap?",
                                                     "center=",city,
-                                                    "&markers=icon:http://www.t-pen.org/TPENFRESH/images/quillpin.png|",city,
+                                                    "&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png|",city,
                                                     "&sensor=false&scale=1&zoom=3&visibility=simplified&maptype=terrain",
                                                     "&size=",$("#cityMap").width(),"x",$("#cityMap").height()
                                                 ].join("");
@@ -586,9 +586,9 @@
                                 <h3>Display City Map</h3>
                                 <form id="updateCityMap" class="cityMap" action="admin.jsp" method="post" onsubmit="mapFilter();">
                                     <div id="cityMapContain">
-                                        <img id="cityMap" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=3&sensor=false&scale=1&size=300x200&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPENFRESH/images/quillpin.png%257St.%20Louis" />
+                                        <img id="cityMap" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=3&sensor=false&scale=1&size=300x200&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis" />
                                         <div id="cityMapZoom">
-                                            <img src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=10&sensor=false&scale=1&size=100x140&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPENFRESH/images/quillpin.png%257St.%20Louis" />
+                                            <img src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=10&sensor=false&scale=1&size=100x140&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis" />
                                         </div>
                                     </div>
                                     <div class="right" id="mapSearch">

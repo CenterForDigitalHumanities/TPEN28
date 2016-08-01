@@ -28,7 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.hp.hpl.jena.rdf.model.*;
 import org.owasp.esapi.ESAPI;
-import Search.TranscriptionIndexer;
 
 
 /**
@@ -101,7 +100,7 @@ public class Transcription {
             this.y = y;
             this.width = width;
             this.height = height;
-            TranscriptionIndexer.add(this);
+//            TranscriptionIndexer.add(this);
          } finally {
             DatabaseWrapper.closeDBConnection(j);
             DatabaseWrapper.closePreparedStatement(ps);
@@ -182,7 +181,7 @@ public class Transcription {
             if (rs.next()) {
                lineID = rs.getInt(1);
             }
-            TranscriptionIndexer.add(this);
+   //         TranscriptionIndexer.add(this);
          }
       }
    }
@@ -701,11 +700,11 @@ public class Transcription {
                stmt.setInt(8, lineID);
 
                stmt.execute();
-               try {
-                  TranscriptionIndexer.update(this);
-               } catch (IOException ex) {
-                  LOG.log(Level.SEVERE, null, ex);
-               }
+//               try {
+//       //           TranscriptionIndexer.update(this);
+//               } catch (IOException ex) {
+//                  LOG.log(Level.SEVERE, null, ex);
+//               }
                return true;
             }
 
@@ -724,11 +723,11 @@ public class Transcription {
 
 
             stmt.execute();
-            try {
-               TranscriptionIndexer.update(this);
-            } catch (IOException ex) {
-               LOG.log(Level.SEVERE, null, ex);
-            }
+//            try {
+// //              TranscriptionIndexer.update(this);
+//            } catch (IOException ex) {
+//               LOG.log(Level.SEVERE, null, ex);
+//            }
             return true;
 
          } else {
@@ -753,11 +752,11 @@ public class Transcription {
             stmt.setInt(7, width);
             stmt.setInt(8, lineID);
             stmt.execute();
-            try {
-               TranscriptionIndexer.update(this);
-            } catch (IOException ex) {
-               LOG.log(Level.SEVERE, null, ex);
-            }
+//            try {
+//  //             TranscriptionIndexer.update(this);
+//            } catch (IOException ex) {
+//               LOG.log(Level.SEVERE, null, ex);
+//            }
             return true;
 
 

@@ -149,64 +149,20 @@
                 width: 50%;
                 float: left;
             }
-            #newArticle {
-                display: none;
-                position: absolute;
-                left: 40%;
-                width: 20%;
-                top: 15px;
-                z-index: 600;
-                cursor: pointer;
-            }
-            #newArticle a {
-                color: white;
-                text-decoration: none;
-                line-height: 1.5;
-                font-weight: 700;
-                font-size: 125%;
-            }
-            #newArticle:hover {
-                background-color: rgba(255,255,255,.5);
-            }
             td > a {
                 text-decoration: none;
             }
         </style>
         <script type="text/javascript">
-            var recentArticleDate;
             $(function() {
                 $( "#tabs" ).tabs({
                     show: tabSize
 		});
                 tabSize();
                 $(window).resize(tabSize);
-                $("#browseListings").click(function(){
-                    $("#browseMS").css({
-                        "top"   : Page.height() * .15,
-                        "left"  : Page.width() * .15,
-                        "width" : Page.width() * .7,
-                        "height": Page.height() * .75
-                    });
-                    $("#listings").height($("#browseMS").height()-109);
-                    $("#browseMS,#overlay").show('fade',500);
-                });
                 $("#closePopup").click(function(){
                     $("#browseMS,#overlay").hide('fade',500,function(){
                     });
-                });
-                $("#blogTitles").on("mouseenter",".blogTitle",function(){
-                    $(this).addClass("blogTitleHover").siblings().removeClass("blogTitleHover");
-                    $(".blogEntry").eq($(this).index()).show().siblings().hide();
-                });
-                $("#blogTags").change(function(){
-                    var selectedCategory = $("#blogTags").find("option").filter(":selected").text();
-                    $(".blogTitle").each(function(){
-                        $(this).show();
-                        if (!$(this).hasClass(selectedCategory)){
-                            $(this).hide();
-                        }
-                    });
-                    $(".blogTitle").filter(":visible").eq(0).trigger("mouseover");
                 });
                 $(".msSelect").on({
                     click:  function(){
@@ -240,7 +196,7 @@
                         var src = [
                             "https://maps.googleapis.com/maps/api/staticmap?",
                             "center=",city,
-                            "&markers=icon:http://www.t-pen.org/TPENFRESH/images/quillpin.png|",city,
+                            "&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png|",city,
                             "&sensor=false&scale=1&zoom=3&visibility=simplified&maptype=terrain",
                             "&size=",$("#cityMapContain").width(),"x",$("#cityMapContain").height()
                         ].join("");
@@ -261,14 +217,6 @@
                     $("#browseMS,#overlay").hide('fade',500,function(){
                     });
                 });        
-                if (previousLogin < recentArticleDate){
-                    $("#newArticle")
-                    .show()
-                    .click(function(){
-                        $("#updateBtn").click();
-                        $(this).fadeOut("slow");
-                    });
-                }
             });
             // Date.prototype.format v1.0
             // John Strickler						
@@ -375,18 +323,6 @@ $(window).load(function(){gapi.plusone.go();});
 </script>
     </head>
     <body id="landing2">
-        <div id="versionFlag">
-            <%out.println("Version " + Folio.getRbTok("VERSION") + " Build " + Folio.getRbTok("BUILD") + "<br/>(Built " + Folio.getRbTok("DATE") + ")");%>
-            <div id="fb-root"></div>
-            <div class="fb-like" data-href="http://www.t-pen.org" data-send="false" data-layout="button_count" data-width="20" data-show-faces="false" data-action="recommend" data-font="segoe ui"></div>
-            <div class="g-plusone" data-size="small" data-href="http://www.t-pen.org"></div>
-        </div>
-        <div id="newArticle">
-            <a>
-                <img alt="New Article" src="images/sharing/blogger-new.png" class="left" />
-                A new article has been published since your last login
-            </a>
-        </div>
         <div id="wrapper2">
 <%
     if (thisUser == null){%>
@@ -394,7 +330,7 @@ $(window).load(function(){gapi.plusone.go();});
                         <form action="login.jsp" method="POST">
                             <label for="uname">Email</label><input class="text" type="text" name="uname">
                             <label for="password">Password</label><input class="text" type="password" name="password">
-                            <input type="hidden" name="ref" value="http://t-pen.org/TPENFRESH/login.jsp">
+                            <input type="hidden" name="ref" value="http://t-pen.org/TPEN/login.jsp">
                             <input class="ui-state-default ui-button ui-corner-all" type="submit" title="Log In" value="Log In">
                         </form>
                             <h6 id="forgetFormBtn" class="loud caps left">Reset your Password<span class="left ui-icon ui-icon-arrowstop-1-s"></span></h6>
@@ -484,7 +420,6 @@ $(window).load(function(){gapi.plusone.go();});
                 <%
                                }
                 %>
-                        <li><a title="T-PEN Team Blog" id="updateBtn" href="#updates">Updates</a></li>
                         <li><a title="Browse all available manuscripts by city or repository" href="#manuscripts">Browse Manuscripts</a></li>
                         <span class="right caps" id="msCount"><%out.print(textdisplay.Manuscript.getTotalManuscriptCount());%> Manuscripts Available</span>
                 </ul>
@@ -513,9 +448,9 @@ $(window).load(function(){gapi.plusone.go();});
                         <h3>Available Repositories</h3>
                         <div class="lists">
                           <div id="cityMapContain">
-                                          <img id="cityMap" alt="map" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=3&sensor=false&scale=1&size=300x200&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPENFRESH/images/quillpin.png%257St.%20Louis" />
+                                          <img id="cityMap" alt="map" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=3&sensor=false&scale=1&size=300x200&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis" />
                                           <div id="cityMapZoom">
-                                              <img alt="inset" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=10&sensor=false&scale=1&size=100x140&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPENFRESH/images/quillpin.png%257St.%20Louis" />
+                                              <img alt="inset" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=10&sensor=false&scale=1&size=100x140&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis" />
                                           </div>
                           </div>
                             <%
@@ -525,18 +460,6 @@ $(window).load(function(){gapi.plusone.go();});
                             }
                             %>
                         </div>
-                    </div>
-                </div>
-                <div id="updates">
-                    <div id="blogEntries">
-                    <select id="blogTags" class="right">
-                        <option>T-PEN</option>
-                    </select>
-                    <h2>Updates</h2>
-                        <a id="blogLink" href="http://digital-editor.blogspot.com" target="_blank">Visit the T-PEN blog to read more <span class='ui-icon ui-icon-extlink left'>(new window)</span></a>
-                        <ul id="blogTitles">
-                        </ul>
-                        <ul id="blogContent"></ul>
                     </div>
                 </div>
                 <%

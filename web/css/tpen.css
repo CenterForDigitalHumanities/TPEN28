@@ -53,24 +53,24 @@ a img {
 :focus {
     outline:0;
 }
-button { 
-    background: none; 
-    border: none; 
-    margin: 0; 
-    padding: 0; 
-    font-size: 0; 
-    line-height: inherit; 
-    width: auto; 
-    overflow: visible; 
+button {
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0;
+    line-height: inherit;
+    width: auto;
+    overflow: visible;
 }
-button div { 
-    border: 1px solid; 
-    font-size: 12px; 
-    line-height: 12px; 
+button div {
+    border: 1px solid;
+    font-size: 12px;
+    line-height: 12px;
 }
-button::-moz-focus-inner { 
-    border: 0; 
-    padding: 0; 
+button::-moz-focus-inner {
+    border: 0;
+    padding: 0;
 }
 
 /* Animation
@@ -144,9 +144,9 @@ td {
     position: fixed;
     overflow: visible;
     box-shadow:0 5px 15px black;
-    -moz-box-shadow:0 5px 15px black; 
-    width: 300%; 
-    text-align: center; 
+    -moz-box-shadow:0 5px 15px black;
+    width: 300%;
+    text-align: center;
     color: white;
     text-shadow:0 -1px 0 darkred;
     background-color: red;
@@ -183,35 +183,35 @@ td {
     text-decoration: none;
 }
 #sharing img {
-    margin: 0; 
+    margin: 0;
     width:26px;
     position: relative;
     z-index: 1;
 }
 #sharing a:hover img{
-    margin: -3px; 
+    margin: -3px;
     width:32px;
     z-index: 2;
     box-shadow: -1px -1px 4px black;
 }
 #wrapper {
-    width:1000px; 
+    width:1000px;
     margin:0px auto;
     overflow: hidden;
 }
-#content {                                                /* Main content div */ 
+#content {                                                /* Main content div */
     padding:0 10px;
     display:block;
     margin:0 auto;
-    background: url('../images/linen.png') 0 0 repeat fixed;
+    background: #FAF0E6;
     clear:both;
     border-radius: 8px;
     padding-bottom: 10px !important;
 }
 #tabs {
     display: none;                         /* hiding unstyled tab content */
-} 
-#tabs,#main {                      /* general content body */ 
+}
+#tabs,#main {                      /* general content body */
     overflow: hidden;
     box-shadow:-1px -1px 2px gray;
 }
@@ -237,11 +237,11 @@ td {
     /* forgotten password */
 #forgetForm {
     margin:-4px 5px 2px;
-    background: url(images/linen.png) whitesmoke;
+    background: #FAF0E6;
     padding:6px 2px 2px;
     display:none;
     overflow: hidden;
-    z-index: 6; 
+    z-index: 6;
     border: 1px solid #A68329;
     position: absolute;
     text-align:left;
@@ -275,7 +275,7 @@ td {
 }
 /* maps for repository listings */
 .msSelect {
-    display:block; 
+    display:block;
     white-space: nowrap;
     padding: 2px;
     text-decoration: none;
@@ -283,7 +283,7 @@ td {
     width:32%;
     text-overflow:ellipsis;
     overflow: hidden;
-    cursor: pointer; 
+    cursor: pointer;
     background-color: rgb(228,218,180); /* IE */
     background: rgba(168, 210, 228, .35);
     margin: .666%;
@@ -334,7 +334,7 @@ td {
     z-index: 6;
     width:70%;
     max-width: 675px;
-    min-width: 200px; 
+    min-width: 200px;
     position: fixed;
     margin: 0 auto;
     left:0;
@@ -358,14 +358,14 @@ td {
 }
 #agreement {
     max-height: 300px;
-    overflow: auto; 
+    overflow: auto;
     background: whitesmoke;
     border: inset gray thin;
     padding: 10px;
 }
 #browseMS {
     position: fixed;
-    top:25%; 
+    top:25%;
     left:15%;
     width:70%;
     display: none;
@@ -525,8 +525,8 @@ td {
 }
 #projectList tr:hover td * {
     display:block;
-    text-shadow: 0 1px 0 white;                
-}           
+    text-shadow: 0 1px 0 white;
+}
 #projectList td:first-child,#publicProjectList td:first-child {
     text-shadow: 0 1px 0 white;
     font-size: larger;
@@ -540,7 +540,7 @@ td {
     width:38%;
     height:500px;
     min-height:150px;
-    text-decoration:none; 
+    text-decoration:none;
     border:thin solid;
     display:block;
     position: relative;
@@ -620,7 +620,7 @@ td {
     color:white;
     text-shadow:0 1px 0px #761109;
     padding: 10px 20px;
-    font-size: larger; 
+    font-size: larger;
     font-weight: bold;
     width:100%;
     box-shadow:0 -1px 3px black;
@@ -709,7 +709,7 @@ td {
     display: inline-block;
 }
 .restricted {
-    color:red; 
+    color:red;
     font-style: italic;
 }
 #count {
@@ -798,7 +798,7 @@ td {
     position: relative !important;
 }
 #projectOrderingSubmit {
-    height: 5%; 
+    height: 5%;
     min-height: 5%;
     width:100% !important;
     overflow: visible;
@@ -809,7 +809,7 @@ td {
     bottom:2px;
     padding: .4em;
     z-index: 501;
-    box-shadow:-1px -1px 2px black;  
+    box-shadow:-1px -1px 2px black;
 }
 .orderProject {
     margin: .2em;
@@ -825,11 +825,11 @@ html {
 body {
     font-size:75%;
     color:#222;
-    background:#69ACC9 
+    background:#69ACC9
         url(../images/tpen_badgeEmergeClear.png)
-        bottom 
-        right 
-        no-repeat 
+        bottom
+        right
+        no-repeat
         fixed;
     font-family:"Helvetica Neue", Arial, Helvetica, sans-serif;
 }
@@ -892,8 +892,8 @@ p .right {
     padding:0;
 }
 .center {
-    margin: 0 auto; 
-    right:0; 
+    margin: 0 auto;
+    right:0;
     left:0;
 }
 .clear {
@@ -1055,11 +1055,11 @@ caption {
     visibility: hidden;
 }
 .boom {
-    font-family: "Blackadder", "Blackadder ITC", serif; 
-    color: #69ACC9; 
-    position: fixed; 
-    bottom: 0px; 
-    left: 0px; 
+    font-family: "Blackadder", "Blackadder ITC", serif;
+    color: #69ACC9;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
     font-size: 160px;
     height:1.2em;
     z-index: -1;
@@ -1077,7 +1077,7 @@ caption {
     text-align: center;
 }
 .helpText {
-    color:#A64129; 
+    color:#A64129;
     border-bottom: thin dotted;
     cursor: default;
 }
@@ -1087,9 +1087,9 @@ caption {
     max-width: 300px;
 }
 .loadingBook {
-    background: 
-        url('custom-theme/images/loaderBook.gif') 
-        top center 
+    background:
+        url('custom-theme/images/loaderBook.gif')
+        top center
         no-repeat !important;
 }
 label {
@@ -1149,14 +1149,14 @@ form.inline p {
     margin-bottom:0;
 }
 .label {
-    font-weight: bold; 
+    font-weight: bold;
     background: transparent;
-    border-width:0; 
+    border-width:0;
     border-style: none;
     width:1em;
 }
 p span.label {
-    display:block; 
+    display:block;
     min-width: 110px;
     float:left;
     clear:left;
@@ -1270,8 +1270,8 @@ p span.label {
     background: -o-linear-gradient(top,  rgba(168,210,228,1) 0%,rgba(229,229,229,1) 100%); /* Opera 11.10+ */
     background: -ms-linear-gradient(top,  rgba(168,210,228,1) 0%,rgba(229,229,229,1) 100%); /* IE10+ */
     background: linear-gradient(top,  rgba(168,210,228,1) 0%,rgba(229,229,229,1) 100%); /* W3C */
-    font-weight: normal; 
-    color: #a64129; 
+    font-weight: normal;
+    color: #a64129;
     white-space: nowrap;
     display: inline-block;}
 .lookLikeButtons:hover{
@@ -1376,22 +1376,22 @@ div.logEntry:nth-child(2n-1) {
     background-color: #ffe49f;
     border-bottom: none !important;
 }
-#logContent {                   
+#logContent {
     height: 4em;
     width: 95%;
     font-family: sans-serif;
 }
-.logDate {                      
+.logDate {
     color:#bfab78;
     font-size:x-small;
     float: right;
 }
-.logAuthor {                    
+.logAuthor {
     text-transform: capitalize;
     color:#bfab78;
     font-size:x-small;
 }
-.logContent {                   
+.logContent {
     font-family: sans-serif;
     margin-left: 20px;
 }
@@ -1401,10 +1401,10 @@ div.logEntry:nth-child(2n-1) {
 }
 #noteForm {                     /* Form for new Log Entry */
     background:
-        url("custom-theme/images/ui-bg_dots-medium_75_ffebb9_4x4.png") 
-        repeat 
-        scroll 
-        50% 50% 
+        url("custom-theme/images/ui-bg_dots-medium_75_ffebb9_4x4.png")
+        repeat
+        scroll
+        50% 50%
         #FFEBB9;
     border:1px solid #A68329;
     position:absolute;
@@ -1413,7 +1413,7 @@ div.logEntry:nth-child(2n-1) {
     width: 90%;
     box-shadow: 0 0 0 400px rgba(0,0,0,.6);
 }
-/* Transcription buttons and tools */ 
+/* Transcription buttons and tools */
 .listEnd {
     padding-right: 5px !important;
     border-top-right-radius: 10px;
@@ -1602,15 +1602,15 @@ div.logEntry:nth-child(2n-1) {
     -moz-animation-iteration-count:1;
     -moz-animation-direction:linear;
     content: "Requesting Image...";
-    -webkit-transition: all 20000ms cubic-bezier(0.225, 0.985, 0.740, 0.035); 
-    -moz-transition: all 20000ms cubic-bezier(0.225, 0.985, 0.740, 0.035); 
-    -ms-transition: all 20000ms cubic-bezier(0.225, 0.985, 0.740, 0.035); 
-    -o-transition: all 20000ms cubic-bezier(0.225, 0.985, 0.740, 0.035); 
+    -webkit-transition: all 20000ms cubic-bezier(0.225, 0.985, 0.740, 0.035);
+    -moz-transition: all 20000ms cubic-bezier(0.225, 0.985, 0.740, 0.035);
+    -ms-transition: all 20000ms cubic-bezier(0.225, 0.985, 0.740, 0.035);
+    -o-transition: all 20000ms cubic-bezier(0.225, 0.985, 0.740, 0.035);
     transition: all 20000ms cubic-bezier(0.225, 0.985, 0.740, 0.035); /* custom */
-    -webkit-transition-timing-function: cubic-bezier(0.225, 0.985, 0.740, 0.035); 
-    -moz-transition-timing-function: cubic-bezier(0.225, 0.985, 0.740, 0.035); 
-    -ms-transition-timing-function: cubic-bezier(0.225, 0.985, 0.740, 0.035); 
-    -o-transition-timing-function: cubic-bezier(0.225, 0.985, 0.740, 0.035); 
+    -webkit-transition-timing-function: cubic-bezier(0.225, 0.985, 0.740, 0.035);
+    -moz-transition-timing-function: cubic-bezier(0.225, 0.985, 0.740, 0.035);
+    -ms-transition-timing-function: cubic-bezier(0.225, 0.985, 0.740, 0.035);
+    -o-transition-timing-function: cubic-bezier(0.225, 0.985, 0.740, 0.035);
     transition-timing-function: cubic-bezier(0.225, 0.985, 0.740, 0.035); /* custom */
 }
 @-webkit-keyframes load_text{

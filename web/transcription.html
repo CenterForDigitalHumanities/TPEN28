@@ -77,18 +77,14 @@
             </span>
             <span class="trimSection">USER: <span id="trimCurrentUser"></span></span>
 <!--            <span class="trimSection">Help</span> -->
-            <span class="trimSection"><a href="https://paleography.library.utoronto.ca/contact" target="_blank">Contact</a></span> 
+<!--             <span class="trimSection"><a href="https://paleography.library.utoronto.ca/contact" target="_blank">Contact</a></span> 
+ -->        
         </div>
 
         <div class="instructions">
+            <!-- TODO: Are we logged in to see this? -->            
             <p>
-                The area below accepts a local project ID number, a project or IIIF manifest url, or a valid T-PEN or IIIF manifest JSON object as valid input.  It will then load a manifest
-                to the interface for you to interact with the transcription tool.  You can click 'correct parsing' to edit the line parsings.  
-                You can click the forward and backwards button in the transcription
-                workspace to move through the lines on the current page or the pages in the manifest.  You can use the same arrows at the very top next to the 
-                'jump to page' module to do this as well.  You can also select the specific page you want to jump to.  
-                The split page tools allow you to place something next to your transcription interface.  You can view other pages in the manifest or tools from outside sources
-                (like dictionaries or an abbreviation list).  Try them out.  If you get stuck or want to load a new manifest, refresh the page.  
+                The area below accepts a local project ID number, a project or IIIF manifest url, or a valid T-PEN or IIIF manifest JSON object as valid input.
             </p>
             <p>
                 Once you have decided what to put into the area, click 'Load Transcription' to have the input created into the transcription interface.  
@@ -96,12 +92,12 @@
         </div>
         
         <div id="setTranscriptionObjectArea">
-            <textarea id="transcriptionText" placeholder="Enter a line transcription"></textarea>
+            <textarea id="transcriptionText" placeholder="Transcribe this line"></textarea>
         </div>
         
         <button id="loadBtn" class="hideme" onclick="loadTranscription();"> Load Transcription </button> 
         <div id="transTemplateLoading">
-            <p>Please wait while we load the transcription interface.  This may take up to 2 minutes.</p>
+            <p>Please wait while we load the transcription interface.</p>
         </div>
         <div id="transcriptionTemplate">
             <div id="parsingCover"></div>

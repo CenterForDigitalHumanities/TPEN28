@@ -50,7 +50,7 @@
             /*                #listings {padding-top: 15px;}*/
             #userKnown2, #userUnknown2,#blogEntries,#browseListings {margin: 8px 0; overflow: hidden; padding: 5px;}
             #userUnknown2 a,#userUnknown2 input[type="submit"] {margin: 3px 0; width: 150px;}
-            #forgetForm {margin:-4px 5px 2px;background: url(images/linen.png);padding:6px 2px 2px;display:none;overflow: hidden;z-index: 1; border: 1px solid #A68329;
+            #forgetForm {margin:-4px 5px 2px;background: #FAF0E6;padding:6px 2px 2px;display:none;overflow: hidden;z-index: 1; border: 1px solid #A68329;
                          -moz-box-shadow: -1px -1px 2px black;
                          -webkit-box-shadow: -1px -1px 2px black; 
                          box-shadow:-1px -1px 2px black;}

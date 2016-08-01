@@ -53,11 +53,11 @@ public class quoteSearch extends HttpServlet {
             {
                 minLength=Integer.parseInt(request.getParameter("minLength"));
             }
-            try {
-                out.print(Search.TextSearcher.search(searchText, minLength, fuzzy));
-            } catch (SQLException ex) {
-                Logger.getLogger(quoteSearch.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//            try {
+//    //            out.print(Search.TextSearcher.search(searchText, minLength, fuzzy));
+//            } catch (SQLException ex) {
+//                Logger.getLogger(quoteSearch.class.getName()).log(Level.SEVERE, null, ex);
+//            }
         } finally {            
             out.close();
         }

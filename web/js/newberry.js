@@ -7,7 +7,7 @@
     var liveTool = "none";
     var zoomMultiplier = 2;
     var isMagnifying = false;
-    var currentFolio = 0; //The current folio number.  It runs from 1 -> infinity, remember to subtract 1 when referring to index.  
+    var currentFolio = 0; //The current folio number.  It runs from 1 -> infinity, remember to subtract 1 when referring to index.
     var isFullscreen = true;
     var line = false;
     var isAddingLines = false;
@@ -20,7 +20,7 @@
     var userIsAdmin = false;
     var adjustRatio = 0;
     //var basePath = window.location.protocol + "//" + window.location.host;
-    
+
     /* Load the interface to the first page of the manifest. */
     function firstFolio(parsing){
         currentFolio = parseInt(currentFolio);
@@ -41,11 +41,11 @@
                 currentFolio = 1;
                 loadTranscriptionCanvas(transcriptionFolios[0], "");
             }
-            
-            
+
+
         }
     }
-    
+
     /* Load the interface to the last page of the manifest. */
     function lastFolio(parsing){
         currentFolio = parseInt(currentFolio);
@@ -94,7 +94,7 @@
             //console.log("BUGGER");
         }
     }
-    
+
     /* Load the interface to the next page from the one you are on. */
     function nextFolio(parsing){
         currentFolio = parseInt(currentFolio);
@@ -102,7 +102,7 @@
             if(parsing === "parsing"){
                 $(".pageTurnCover").show();
                 fullPage();
-                focusItem = [null, null];  
+                focusItem = [null, null];
                 currentFolio += 1;
                 loadTranscriptionCanvas(transcriptionFolios[currentFolio-1], parsing);
                 setTimeout(function(){
@@ -111,17 +111,17 @@
                 }, 800);
             }
             else{
-                focusItem = [null, null];  
+                focusItem = [null, null];
                 currentFolio += 1;
                 loadTranscriptionCanvas(transcriptionFolios[currentFolio-1], "");
             }
-            
+
         }
         else{
             //console.log("BOOGER");
         }
     }
-    
+
     /* Test if a given string can be parsed into a valid JSON object.
      * @param str  A string
      * @return bool
@@ -135,21 +135,21 @@
             try {
                 JSON.parse(str);
                 r=true;
-            } 
+            }
             catch (e) {
                r = false;
             }
         }
         return r;
     };
-    
+
 
     function resetTranscription(){
         window.location.reload();
 
     }
     /* The tools for newberry are hard set in the html page, no need for this function. */
-    
+
 //    function getProjectTools(projectID){
 //        var url = "http://localhost:8080/getProjectTPENServlet?projectID="+projectID;
 //        $.ajax({
@@ -170,14 +170,14 @@
 ////                });
 //                var userTools = activeProject.userTool; //These are tools chosen by the project creator for users to have access to.  They may not be iframe tools.
 ////                $.each(userTools, function(){
-////                    
+////
 ////                });
 //            }
 //        });
 //    }
-    
+
     /* Populate the split page for Text Preview.  These are the transcription lines' text. */
-    function createPreviewPages(){  
+    function createPreviewPages(){
        // console.log("Creating preview pages");
         $(".previewPage").remove();
         var noLines = true;
@@ -193,24 +193,24 @@
            var lines = [];
            if(currentFolioToUse.resources && currentFolioToUse.resources.length > 0){
                lines = currentFolioToUse.resources;
-                populatePreview(lines, pageLabel, currentPage);    
+                populatePreview(lines, pageLabel, currentPage);
            }
 //           else{
 //               if(currentFolioToUse.otherContent && currentFolioToUse.otherContent.length>0){
 ////                //console.log("this is the tester")
 //                    lines = annoListTester.resources;
 //                    pageLabel = annoListTester.label;
-//                    populatePreview(lines, pageLabel, currentPage);    
+//                    populatePreview(lines, pageLabel, currentPage);
 //                }
 //                else{
 //                    //console.log("Gotta get annos on " + currentOn);
-//                    gatherAndPopulate(currentOn, pageLabel, currentPage, i);                   
+//                    gatherAndPopulate(currentOn, pageLabel, currentPage, i);
 //                }
 //           }
 
         }
     }
-    
+
     /* Gather the annotations for a canvas and populate the preview interface with them. */
     function gatherAndPopulate(currentOn, pageLabel, currentPage, i){
         //console.log("get annos on "+currentOn);
@@ -225,7 +225,7 @@
 
          });
     }
-    
+
     /* Check for which annotation list to use either by project ID or if its the master */
     function checkForMaster(annoList, pageLabel, currentPage, j){
         var lines = [];
@@ -256,12 +256,12 @@
                 else{
                  //   console.log("No matching list by projectID and no master found for "+pageLabel);
                 }
-                
+
                 return false;
             }
         }
     }
-    
+
     /* Populate the line preview interface. */
     function populatePreview(lines, pageLabel, currentPage, order){
         var letterIndex = 0;
@@ -291,7 +291,7 @@
                     num = 0;
                 }
             }
-            
+
             var previewLine = $('<div class="previewLine" data-lineNumber="'+j+'">\n\
                          <span class="previewLineNumber" lineserverid="'+lineID+'" data-lineNumber="'+j+'"  data-column="'+col+'"  data-lineOfColumn="'+j+'">\n\
                             '+col+''+num+'\n\
@@ -303,7 +303,7 @@
          }
          $("#previewDiv").append(previewPage);
     }
-    
+
     function populateSpecialCharacters(specialCharacters){
         specialCharacters = JSON.parse(specialCharacters);
         var speCharactersInOrder = new Array(specialCharacters.length);
@@ -315,9 +315,9 @@
             else{
                 var keyVal = thisChar.key;
                 var position2 = parseInt(thisChar.position);
-                var newCharacter = "<option class='character'>&#"+keyVal+";</option>";  // onclick=\"addchar('&#"+keyVal+";');\" 
+                var newCharacter = "<option class='character'>&#"+keyVal+";</option>";  // onclick=\"addchar('&#"+keyVal+";');\"
                 if(position2-1 >= 0 && (position2-1) < specialCharacters.length){
-                    speCharactersInOrder[position2-1] = newCharacter; 
+                    speCharactersInOrder[position2-1] = newCharacter;
                 }
             }
 
@@ -328,9 +328,9 @@
         });
 
     }
-    
+
     function populateXML(xmlTags){
-        xmlTags = xmlTags.split(","); 
+        xmlTags = xmlTags.split(",");
         var tagsInOrder = [];
         for (var tag = 0; tag < xmlTags.length; tag++){
             var newTagBtn = xmlTags[tag];
@@ -342,17 +342,17 @@
         $.each(tagsInOrder, function(){
             var button2 = $(''+this);
             $(".xmlTags").append(button2);
-        }); 
+        });
     }
     /*
-     * Load the trnascription from the text in the text area. 
+     * Load the trnascription from the text in the text area.
      */
     function loadTranscription(){
         //Object validation here.
             projectID = 4080;
             var userTranscription = $('#transcriptionText').val();
             currentFolio = 1;
-            
+
             if($.isNumeric(userTranscription)){ //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
                 projectID = userTranscription;
                 theProjectID = projectID;
@@ -364,7 +364,7 @@
                         var projectTools = activeProject.projectTool;
                         projectTools = JSON.parse(projectTools);
                         var count = 0;
-                        var url  = ""; 
+                        var url  = "";
                         var currentUser = activeProject.cuser;
                         var leaders = activeProject.ls_leader;
                         leaders = JSON.parse(leaders);
@@ -417,28 +417,28 @@
                                         });
                                         loadTranscriptionCanvas(transcriptionFolios[0],"");
                                         var projectTitle = projectData.label;
-                                        $("#trimTitle").html(projectTitle);
+                                $("#trimTitle").text(projectTitle);
                                         $("#trimTitle").attr("title", projectTitle);
                                         $('#transcriptionTemplate').css("display", "inline-block");
                                         $('#setTranscriptionObjectArea').hide();
                                         $(".instructions").hide();
                                         $(".hideme").hide();
-                                        //load Iframes after user check and project information data call    
+                                        //load Iframes after user check and project information data call
                                         loadIframes();
                                         //getProjectTools(projectID);
                                     }
                                     else{
-                                        //ERROR! It is a malformed transcription object.  There is no canvas sequence defined.  
+                                        //ERROR! It is a malformed transcription object.  There is no canvas sequence defined.
                                     }
                                 },
-                                error: function(jqXHR,error, errorThrown) {  
+                                error: function(jqXHR,error, errorThrown) {
                                     if(jqXHR.status && jqXHR.status==400){
-                                         alert(jqXHR.responseText); 
+                                         alert(jqXHR.responseText);
                                     }
                                     else{
                                         alert("Something went wrong. Could not get the project. 1");
                                     }
-                                    //load Iframes after user check and project information data call    
+                                    //load Iframes after user check and project information data call
                                     loadIframes();
                                }
                             });
@@ -447,7 +447,7 @@
                             alert("No Manifest Found");
                         }
                         $.each(projectTools, function(){
-                            if(count < 4){ //allows 5 tools.  
+                            if(count < 4){ //allows 5 tools.
                                 var splitHeight = window.innerHeight + "px";
                                 var toolLabel = this.name;
                                 var toolSource = this.url;
@@ -463,9 +463,9 @@
                         populateSpecialCharacters(activeProject.projectButtons);
                         populateXML(activeProject.xml);
                     },
-                    error: function(jqXHR,error, errorThrown) {  
+                    error: function(jqXHR,error, errorThrown) {
                             if(jqXHR.status && jqXHR.status==400){
-                                 alert(jqXHR.responseText); 
+                                 alert(jqXHR.responseText);
                             }
                             else{
                                 alert("Something went wrong. Could not get the project. 2");
@@ -506,22 +506,22 @@
                             $('#setTranscriptionObjectArea').hide();
                             $(".instructions").hide();
                             $(".hideme").hide();
-                            //load Iframes after user check and project information data call    
+                            //load Iframes after user check and project information data call
                             loadIframes();
                         }
                         else{
                             //ERROR!  It is a valid JSON object, but it is malformed and cannot be read as a transcription object.
-                            //load Iframes after user check and project information data call    
+                            //load Iframes after user check and project information data call
                             loadIframes();
                         }
-                        
+
                 }
                 else if (userTranscription.indexOf("http://") >= 0 || userTranscription.indexOf("https://") >= 0){
                     var localProject = false;
                     if(userTranscription.indexOf("/project/") > -1){
                         if(userTranscription.indexOf("t-pen.org") > -1){
                             localProject = false;
-                            projectID = 0;  //This way, it will not grab the t-pen project id.  
+                            projectID = 0;  //This way, it will not grab the t-pen project id.
                         }
                         else{
                             localProject = true; //Well, probably anyway.  I forsee this being an issue like with t-pen.
@@ -580,36 +580,36 @@
                                                 $("#trimTitle").attr("title", projectTitle);$('#transcriptionTemplate').css("display", "inline-block");
                                                 $('#setTranscriptionObjectArea').hide();
                                                 $(".instructions").hide();
-                                                $(".hideme").hide(); 
+                                                $(".hideme").hide();
                                                 //getProjectTools(projectID);
-                                                //load Iframes after user check and project information data call    
+                                                //load Iframes after user check and project information data call
                                                 loadIframes();
                                             }
                                             else{
-                                                //ERROR! It is a malformed transcription object.  There is no canvas sequence defined.  
-                                                //load Iframes after user check and project information data call    
+                                                //ERROR! It is a malformed transcription object.  There is no canvas sequence defined.
+                                                //load Iframes after user check and project information data call
                                                 loadIframes();
                                             }
                                         },
-                                        error: function(jqXHR,error, errorThrown) {  
+                                        error: function(jqXHR,error, errorThrown) {
                                             if(jqXHR.status && jqXHR.status==400){
-                                                 alert(jqXHR.responseText); 
+                                                 alert(jqXHR.responseText);
                                             }
                                             else{
                                                 alert("Something went wrong 2");
                                             }
-                                            //load Iframes after user check and project information data call    
+                                            //load Iframes after user check and project information data call
                                             loadIframes();
                                        }
                                 });
                             }
                             else{
                                 alert("No Manifest Found");
-                                //load Iframes after user check and project information data call    
+                                //load Iframes after user check and project information data call
                                 loadIframes();
                             }
                             $.each(projectTools, function(){
-                                if(count < 4){ //allows 5 tools.  
+                                if(count < 4){ //allows 5 tools.
                                     var splitHeight = window.innerHeight + "px";
                                     var toolLabel = this.name;
                                     var toolSource = this.url;
@@ -625,9 +625,9 @@
                             populateSpecialCharacters(activeProject.projectButtons);
                             populateXML(activeProject.xml);
                         },
-                        error: function(jqXHR,error, errorThrown) {  
+                        error: function(jqXHR,error, errorThrown) {
                                     if(jqXHR.status && jqXHR.status==400){
-                                         alert(jqXHR.responseText); 
+                                         alert(jqXHR.responseText);
                                     }
                                     else{
                                         alert("Something went wrong. Could not get the project. 4");
@@ -635,7 +635,7 @@
                                }
                     });
                     }
-                    else{ //it is not a local project, so just grab the url that was input and request the manifst. 
+                    else{ //it is not a local project, so just grab the url that was input and request the manifst.
                         var url  = userTranscription;
                         $.ajax({
                             url: url,
@@ -665,29 +665,29 @@
                                         }
                                     });
                                     loadTranscriptionCanvas(transcriptionFolios[0],"");
-                                    
+
                                     var projectTitle = projectData.label;
                                     $("#trimTitle").html(projectTitle);
                                     $("#trimTitle").attr("title", projectTitle);$('#transcriptionTemplate').css("display", "inline-block");
                                     $('#setTranscriptionObjectArea').hide();
                                     $(".instructions").hide();
-                                    $(".hideme").hide(); 
+                                    $(".hideme").hide();
                                     //getProjectTools(projectID);
                                 }
                                 else{
-                                    //ERROR! It is a malformed transcription object.  There is no canvas sequence defined.  
+                                    //ERROR! It is a malformed transcription object.  There is no canvas sequence defined.
                                 }
-                                //load Iframes after user check and project information data call    
+                                //load Iframes after user check and project information data call
                                 loadIframes();
                             },
-                            error: function(jqXHR,error, errorThrown) {  
+                            error: function(jqXHR,error, errorThrown) {
                                 if(jqXHR.status && jqXHR.status==400){
-                                     alert(jqXHR.responseText); 
+                                     alert(jqXHR.responseText);
                                 }
                                 else{
                                     alert("Something went wrong 5");
                                 }
-                                //load Iframes after user check and project information data call    
+                                //load Iframes after user check and project information data call
                                 loadIframes();
                            }
                         });
@@ -695,14 +695,14 @@
                 }
                 else{
                     alert("The input was invalid.");
-                    //load Iframes after user check and project information data call.  Maybe only after valid page load parameters.  uncomment this line if necessary.    
+                    //load Iframes after user check and project information data call.  Maybe only after valid page load parameters.  uncomment this line if necessary.
                     //loadIframes();
                 }
-            
-    } 
-    
+
+    }
+
     /*
-     * Load a canvas from the manifest to the transcription interface. 
+     * Load a canvas from the manifest to the transcription interface.
      */
     function loadTranscriptionCanvas(canvasObj, parsing){
         var noLines = true;
@@ -762,9 +762,9 @@
                             $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
                             $("#imgTop").css("height", "0%");
                             $("#imgBottom img").css("top", "0px");
-                            $("#imgBottom").css("height", "inherit"); 
+                            $("#imgBottom").css("height", "inherit");
                             $("#parsingButton").attr("disabled", "disabled");
-                            
+
                             alert("No image for this canvas or it could not be resolved.  Not drawing lines.");
                             $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
                             $("#parsingBtn").attr("disabled", "disabled");
@@ -776,7 +776,7 @@
         else{
              $('.transcriptionImage').attr('src',"images/missingImage.png");
              alert("The canvas is malformed.  No 'images' field in canvas object or images:[0]['@id'] does not exist.  Cannot draw lines.");
-            //ERROR!  Malformed canvas object.  
+            //ERROR!  Malformed canvas object.
         }
         $(".previewText").removeClass("currentPage");
         $.each($("#previewDiv").children(".previewPage:eq("+(parseInt(currentFolio)-1)+")").find(".previewLine"),function(){
@@ -784,9 +784,9 @@
         });
         createPreviewPages(); //each time you load a canvas to the screen with all of its updates, remake the preview pages.
     }
-    
+
       /*
-     * @paran canvasObj  A canvas object to extrac transcription lines from and draw to the interface. 
+     * @paran canvasObj  A canvas object to extrac transcription lines from and draw to the interface.
      */
     function drawLinesToCanvas(canvasObj, parsing){
         var lines = [];
@@ -879,10 +879,10 @@
                         $("#parsingBtn").css("box-shadow", "0px 0px 6px 5px yellow");
                     }
                 });
-            
+
         }
     }
-    
+
     /* Take line data, turn it into HTML elements and put them to the DOM */
     function linesToScreen(lines){
         $("#noLineWarning").hide();
@@ -934,7 +934,7 @@
                 lineID = line['@id']; //.slice(line['@id'].lastIndexOf('line/') + 5)
             }
             else{
-                //ERROR.  Malformed line. 
+                //ERROR.  Malformed line.
                 update = false;
             }
             thisContent = "";
@@ -945,7 +945,7 @@
                     lastLineWidth = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[2];
                     lastLineTop = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[1];
                     lastLineHeight = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[3];
-                }                
+                }
                 else if(i===0 && lines.length > 1){ /* Check for the variance with the first line */
                     lastLine = lines[0];
                      if(lastLine.on){
@@ -970,7 +970,7 @@
                                 var newLineOn = lineOn.substr(0, index) + newString + lineOn.substr(index + newString.length);
                                 lines[i].on = newLineOn;
                             }
-                            
+
                         }
                         else{
                             //console.log("no difference");
@@ -981,20 +981,20 @@
                         w = numberArray[2];
                         if(lastLineX !== x){ //check if the last line's x value is equal to this line's x value (means same column)
                             if(Math.abs(x - lastLineX) <= 3){ //allow a 3 pixel  variance and fix this variance when necessary...
-                                //align them, call them the same Column. 
+                                //align them, call them the same Column.
                                 /*
                                  * This is a consequence of #xywh for a resource needing to be an integer.  When I calculate its intger position off of
                                  * percentages, it is often a float and I have to round to write back.  This can cause a 1 or 2 pixel discrenpency, which I account
-                                 * for here.  There may be better ways of handling this, but this is a good solution for now. 
+                                 * for here.  There may be better ways of handling this, but this is a good solution for now.
                                  */
                                 if(lastLineWidth !== w){ //within "same" column (based on 3px variance).  Check the width
                                     if(Math.abs(w - lastLineWidth) <= 5){ //If the width of the line is within five pixels, automatically make the width equal to the last line's width.
 
-                                        //align them, call them the same Column. 
+                                        //align them, call them the same Column.
                                         /*
                                          * This is a consequence of #xywh for a resource needing to be an integer.  When I calculate its intger position off of
                                          * percentages, it is often a float and I have to round to write back.  This can cause a 1 or 2 pixel discrenpency, which I account
-                                         * for here.  There may be better ways of handling this, but this is a good solution for now. 
+                                         * for here.  There may be better ways of handling this, but this is a good solution for now.
                                          */
                                         w = lastLineWidth;
                                         numberArray[2] = w;
@@ -1003,7 +1003,7 @@
                                 x = lastLineX;
                                 numberArray[0] = x;
                             }
-                            else{ //we are in a new column, column indicator needs to increase. 
+                            else{ //we are in a new column, column indicator needs to increase.
                                 if(lines.length > 1){
                                     letterIndex++;
                                     col = letters[letterIndex];
@@ -1011,15 +1011,15 @@
                                 }
                             }
                         }
-                        else{ //If the X value matches, we are in the same column and don't have to account for any variance or update the array.  Still check for slight width variance.. 
+                        else{ //If the X value matches, we are in the same column and don't have to account for any variance or update the array.  Still check for slight width variance..
                             if(lastLineWidth !== w){
                                 if(Math.abs(w - lastLineWidth) <= 5){ //within 5 pixels...
 
-                                    //align them, call them the same Column. 
+                                    //align them, call them the same Column.
                                     /*
                                      * This is a consequence of #xywh for a resource needing to be an integer.  When I calculate its intger position off of
                                      * percentages, it is often a float and I have to round to write back.  This can cause a 1 or 2 pixel discrenpency, which I account
-                                     * for here.  There may be better ways of handling this, but this is a good solution for now. 
+                                     * for here.  There may be better ways of handling this, but this is a good solution for now.
                                      */
                                     w = lastLineWidth;
                                     numberArray[2] = w;
@@ -1044,7 +1044,7 @@
                 //ERROR!  Malformed line.
                 update = false;
             }
-            
+
             if(line.resource['cnt:chars'] !== undefined && line.resource['cnt:chars'] !== "" && line.resource['cnt:chars'] != "Enter a line transcription"){
                 thisContent = line.resource['cnt:chars'];
             }
@@ -1063,23 +1063,23 @@
                     lineHeight: height,
                     counter: counter
                 });
-                
+
                 colCounter+=1;
                 $("#transcriptletArea").append(newAnno);
-                
+
                 var lineColumnIndicator = $("<div onclick='loadTranscriptlet("+counter+");' pair='"+col+""+colCounter+"' lineserverid='"+lineID+"' lineID='"+counter+"' class='lineColIndicator' style='left:"+left+"%; top:"+top+"%; width:"+width+"%; height:"+height+"%;'><div class\n\
                 ='lineColOnLine' >"+col+""+colCounter+"</div></div>");
                 var fullPageLineColumnIndicator = $("<div pair='"+col+""+colCounter+"' lineserverid='"+lineID+"' lineID='"+counter+"' class='lineColIndicator fullP'\n\
                 onclick=\"updatePresentation($('#transcriptlet_"+counter+"'));\" style='left:"+left+"%; top:"+top+"%; width:"+width+"%; height:"+height+"%;'><div class\n\
                 ='lineColOnLine' >"+col+""+colCounter+"</div></div>"); //TODO add click event to update presentation
-                //Make sure the col/line pair sits vertically in the middle of the outlined line.  
+                //Make sure the col/line pair sits vertically in the middle of the outlined line.
                 var lineHeight = theHeight * (height/100) + "px";
                 lineColumnIndicator.find('.lineColOnLine').attr("style", "line-height:"+lineHeight+";");
                 //Put to the DOM
                 $(".lineColIndicatorArea").append(lineColumnIndicator);
                 $("#fullPageSplitCanvas").append(fullPageLineColumnIndicator);
-                
-            
+
+
         }
         if(update && $(".transcriptlet").eq(0) !== undefined){
             updatePresentation($(".transcriptlet").eq(0));
@@ -1099,7 +1099,7 @@
             }, 2000);
         });
     }
-    
+
     /* Make the transcription interface focus to the transcriptlet passed in as the parameter. */
     function updatePresentation(transcriptlet) {
         if(transcriptlet === undefined || transcriptlet === null){
@@ -1137,7 +1137,7 @@
                 $("#prevColLine").html("**");
                 $("#captionsText").html("You are on the first line.");
             }
-            
+
         }
         else{ //there is no previous line
             $("#prevColLine").html("**");
@@ -1152,7 +1152,7 @@
           $('#captions').animate({
             opacity: 1
           }, 100);
-        } 
+        }
         else {
           this.adjustImgs(this.setPositions());
           focusItem[1].prevAll(".transcriptlet").addClass("transcriptletBefore").removeClass("transcriptletAfter");
@@ -1162,7 +1162,7 @@
         //prevent textareas from going invisible and not moving out of the workspace
         focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
       };
-     
+
     /* Helper for position focus onto a specific transcriptlet */
     function setPositions() {
     //Determine size of section above workspace
@@ -1196,7 +1196,7 @@
         };
         return positions;
     };
-  
+
   /**
    * Removes previous textarea and slides in the new focus.
    *
@@ -1222,7 +1222,7 @@
            $('#previousTranscriptlet').show();
       }
     };
-    
+
   /**
    * Aligns images and workspace using defined dimensions.
    *
@@ -1265,9 +1265,9 @@
               'box-shadow': '0px 0px 15px 8px '+colorThisTime
               //'background-color':activeLineColor
           });
-          
-    }  
-   
+
+    }
+
    /* Update the line information of the line currently focused on, then load the focus to a line that was clicked on */
    function loadTranscriptlet(lineid){
         var currentLineServerID = focusItem[1].attr("lineserverid");
@@ -1296,9 +1296,9 @@
             setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8');  $("#captionsText").html(captionText); }, 1500);
         }
    }
-  
+
     /*
-     * The UI control for going the the next transcriptlet in the transcription. 
+     * The UI control for going the the next transcriptlet in the transcription.
      */
     function nextTranscriptlet() {
           var nextID = parseInt(focusItem[1].attr('lineID')) + 1;
@@ -1317,7 +1317,7 @@
                 setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
                 setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8');  $("#captionsText").html(captionText1); }, 1500);
               }
-              
+
           }
           else{ //blink a caption warning
               var captionText = $("#captionsText").html();
@@ -1328,9 +1328,9 @@
               setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8');  $("#captionsText").html(captionText); }, 1500);
           }
     }
-    
+
     /*
-     * The UI control for going the the previous transcriptlet in the transcription. 
+     * The UI control for going the the previous transcriptlet in the transcription.
      */
     function previousTranscriptlet() {
           var prevID = parseFloat(focusItem[1].attr('lineID')) - 1;
@@ -1350,14 +1350,14 @@
                 setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
                 setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8');  $("#captionsText").html(captionText1); }, 1500);
               }
-              
+
           }
           else{
               //captions already say "You are on the first line"
           }
     }
 
-    
+
     function scrub(thisText){
         var workingText = $("<div/>").text(thisText).html();
         var encodedText = [workingText];
@@ -1378,7 +1378,7 @@
                 i++;
             }
             //use endTags because it might be 1 shorter than beginTags
-            var oeLen = endTags.length; 
+            var oeLen = endTags.length;
             encodedText = [workingText.substring(0, beginTags[0])];
             for (i=0;i<oeLen;i++){
                 encodedText.push("<span class='previewTag'>",
@@ -1392,10 +1392,10 @@
         }
         return encodedText.join("");
     }
-  
-    
-    /** 
-     * 
+
+
+    /**
+     *
      * Allows workspace to be moved up and down on the screen.
      * Requires shift key to be held down.
      */
@@ -1434,7 +1434,7 @@
             isUnadjusted = false;
         });
     };
-    
+
     /* Start event listening to move the image in the transcirption interface */
      function startMoveImg(){
        if($(".transcriptlet:first").hasClass("moveImage")){
@@ -1451,10 +1451,10 @@
             $("#imgTop, #imgBottom").css("cursor", "url("+"images/open_grab.png),auto");
             $("#imgTop,#imgBottom").mousedown(function(event){moveImg(event);});
        }
-        
+
     }
-    
-    /** 
+
+    /**
      * Allows manuscript image to be moved around.
      * Requires shift key to be held down.
      * Synchronizes movement of top and bottom images.
@@ -1501,7 +1501,7 @@
             isUnadjusted = false;
         });
     };
-    
+
     function restoreWorkspace(){
             $("#imgBottom").show();
             $("#imgTop").show();
@@ -1521,9 +1521,9 @@
             $("#nextCanvas").attr("onclick", "nextFolio();");
             $("#pageJump").removeAttr("disabled");
         }
-        
-    
-    
+
+
+
     function hideWorkspaceToSeeImage(){
         $("#transWorkspace").hide();
         $("#imgTop").hide();
@@ -1537,7 +1537,7 @@
         $(".hideMe").hide();
         $(".showMe").show();
     }
-    
+
     function magnify(img, event){
 //For separating out different imgs on which to zoom.  Right now it is just the transcription canvas.
         if(img === "trans"){
@@ -1569,9 +1569,9 @@
         mouseZoom(img,event);
 //        });
     };
-    /** 
+    /**
      * Creates a zoom on the image beneath the mouse.
-     *  
+     *
      * @param img jQuery img element to zoom on
      */
     function mouseZoom($img, event){
@@ -1583,7 +1583,7 @@
         var imgDims = new Array($img.offset().left,$img.offset().top,$img.width(),$img.height());
         //build the zoomed div
         var zoomSize = (page.height()/3 < 120) ? 120 : page.height()/3;
-       
+
         var zoomPos = new Array(event.pageX, event.pageY );
         $("#zoomDiv").css({
             "box-shadow"    : "2px 2px 5px black,15px 15px "+zoomSize/3+"px rgba(230,255,255,.8) inset,-15px -15px "+zoomSize/3+"px rgba(0,0,15,.4) inset",
@@ -1614,7 +1614,7 @@
           }, $img
         );
     };
-    
+
     function removeTransition(){
         $("#imgTop img").css("-webkit-transition", "");
         $("#imgTop img").css("-moz-transition", "");
@@ -1636,7 +1636,7 @@
         $("#imgBottom").css("-o-transition", "");
         $("#imgBottom").css("transition", "");
     };
-    
+
     function restoreTransition(){
         $("#imgTop img").css("-webkit-transition", "left .5s, top .5s, width .5s");
         $("#imgTop img").css("-moz-transition", "left .5s, top .5s, width .5s");
@@ -1658,12 +1658,12 @@
         $("#imgBottom").css("-o-transition", "left .5s, top .5s, width .5s");
         $("#imgBottom").css("transition", "left .5s, top .5s, width .5s");
     };
-    
-        /** 
+
+        /**
      * Sets screen for parsing tool use.
      * Slides the workspace down and scales the top img
      * to full height. From here, we need to load to interface
-     * for the selected tool. 
+     * for the selected tool.
      */
      function hideWorkspaceForParsing(){
         $("#parsingBtn").css("box-shadow: none;");
@@ -1678,7 +1678,7 @@
             pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
         $("#prevCanvas").attr("onclick", "");
         $("#nextCanvas").attr("onclick", "");
-        
+
         //$("#pageJump").siblings().removeAttr("onclick").css("color", "red");
 //        bookmarkInfo = {"top": $("#bookmark").position().top, "left":$("#bookmark").position().left,
 //            "height": $("#bookmark").height()+"px", "width":$("#bookmark").width+"px"};
@@ -1688,14 +1688,14 @@
         imgRatio = topImg.width() / topImg.height();
         var wrapWidth = imgRatio*$("#transcriptionTemplate").height();
         var PAGEWIDTH = $("#transcriptionTemplate").width();
-        
+
         if (wrapWidth > PAGEWIDTH-350)wrapWidth = PAGEWIDTH-350;
         $("#tools").children("[id$='Split']").hide();
         $("#parsingSplit").css({
             "display": "inline-block",
             "height": window.innerHeight+"px"
         }).fadeIn();
-        
+
         topImg.css({
                 "top":"0px",
                 "left":"0px",
@@ -1706,7 +1706,7 @@
             "top":"0px",
             "left":"0px"
         });
-        
+
         $("#transcriptionTemplate").css("max-width", "57%");
         //the width and max-width here may need to be played with a bit.
         $("#transcriptionTemplate").resizable({
@@ -1730,15 +1730,15 @@
                   //$(".lineColIndicator .lineColOnLine").css("line-height", $(this).height()+"px");
               }
             });
-        
+
         $("#transWorkspace,#imgBottom").hide();
         $("#noLineWarning").hide();
             window.setTimeout(function(){
-                $("#imgTop, #imgTop img").height($(window).innerHeight()); 
+                $("#imgTop, #imgTop img").height($(window).innerHeight());
                 $("#imgTop img").css("width" , "auto");
                 $("#imgTop").css("width" , $("#imgTop img").width());
                 $("#imgTop").css("height" , $("#imgTop img").height());
-                //At this point, transcription canvas is the original height and width of the full page image.  We can use that for when we resume transcription. 
+                //At this point, transcription canvas is the original height and width of the full page image.  We can use that for when we resume transcription.
                 $("#transcriptionCanvas").css("height" , $(window).innerHeight());
                 $(".lineColIndicatorArea").css("height", $(window).innerHeight());
                 $("#transcriptionCanvas").css("display" , "block");
@@ -1748,13 +1748,13 @@
                 $('.lineColIndicatorArea').hide();
                 writeLines($("#imgTop img"));
             },1200);
-         
+
     };
-    
-    /** 
+
+    /**
      * Overlays divs for each parsed line onto img indicated.
-     * Divs receive different classes in different 
-     *  
+     * Divs receive different classes in different
+     *
      * @param imgToParse img element lines will be represented over
      */
     function writeLines(imgToParse){
@@ -1768,7 +1768,7 @@
         });
         imgToParse.parent().append($(setOfLines.join("")));
     }
-    
+
     function makeOverlayDiv(thisLine,originalX, cnt){
         var Y = parseFloat(thisLine.attr("lineTop"));
         var X = parseFloat(thisLine.attr("lineLeft"));
@@ -1778,7 +1778,7 @@
         var newX = (X);
         var newH = (H);
         var newW = (W);
-        
+
         var lineOverlay = "<div class='parsing' linenum='"+cnt+"' style='\n\
         top:"+newY+"%; \n\
         left:"+newX+"%; \n\
@@ -1819,7 +1819,7 @@
         $(".split").hide();
         $(".split").css("width", "43%");
 //        //console.log("RESTORE WORKSPACE");
-        
+
         restoreWorkspace();
         $("#splitScreenTools").show();
         var screenWidth = $(window).width();
@@ -1838,7 +1838,7 @@
           if(focusItem[0] == null && focusItem[1] == null){
               updatePresentation($("#transcriptlet_1"));
         }
-        
+
     }
 
     function splitPage(event, tool) {
@@ -1885,7 +1885,7 @@
                   var height = 1/originalRatio * width;
                   $("#transcriptionCanvas").css("height", height+"px").css("width", width+"px");
                   $(".lineColIndicatorArea").css("height", height+"px");
-                  
+
                   var splitWidth = window.innerWidth - (width+35) + "px";
                   $(".split img").css("max-width", splitWidth);
                   $(".split:visible").css("width", splitWidth);
@@ -1994,7 +1994,7 @@
             $("#compareSplit").css({
                 "display": "block"
             });
-            //When comparing, you need to be able to see the whole image, so I restrict it to window height.  To allow it to continue to grow, comment out the code below.  
+            //When comparing, you need to be able to see the whole image, so I restrict it to window height.  To allow it to continue to grow, comment out the code below.
             $(".compareImage").css({
                 "max-height":window.innerHeight+"px",
                 "max-width":$("#compareSplit").width()+"px"
@@ -2011,7 +2011,7 @@
           case "start":
               $("#startSplit").css("display", "inline-table");
           default:
-              //This is a user added iframe tool.  tool is toolID= attribute of the tool div to show.  
+              //This is a user added iframe tool.  tool is toolID= attribute of the tool div to show.
               $('div[toolName="'+tool+'"]').css("display", "inline-table");
 
         }
@@ -2027,7 +2027,7 @@
         $("#prevCanvas").attr("onclick", "");
         $("#nextCanvas").attr("onclick", "");
     }
-    
+
     function forceOrderPreview(){
         var ordered = [];
         var length = $(".previewPage").length;
@@ -2058,7 +2058,7 @@
      * Go through all of the parsing lines and put them into columns;
      * @see linesToColumns()
      * Global Arrray: gatheredColumns
-     * 
+     *
      */
     function gatherColumns(startIndex){
         var colX,colY,colW,colH;
@@ -2071,7 +2071,7 @@
 //            //console.log(line);
             colX = parseFloat($(line).attr("lineleft"));
             colY = parseFloat($(line).attr("linetop"));
-            colW = parseFloat($(line).attr("linewidth"));  
+            colW = parseFloat($(line).attr("linewidth"));
             var $lastLine = $(".parsing[lineleft='"+colX+"']:last");
 //            //console.log("END");
 //            //console.log($lastLine);
@@ -2083,8 +2083,8 @@
 //            //console.log("RECURSIVE!");
             gatherColumns(lastLineIndex);
         }
-        
-        
+
+
     }
     function removeColumn(column, destroy){
         ////console.log("Called removed column for this column");
@@ -2103,10 +2103,10 @@
         lines.addClass("deletable");
         removeColumnTranscriptlets(lines);
         column.remove();
-     
+
     }
-    
-       
+
+
     function destroyPage(){
         nextColumnToRemove = $(".parsingColumn:first");
         var colX = nextColumnToRemove.attr("lineleft");
@@ -2118,7 +2118,7 @@
             cleanupTranscriptlets(true);
         }
     }
-    
+
     /* Make parsing interface turn the lines in the view into columns */
     function linesToColumns(){
         //update lines in case of changes
@@ -2188,7 +2188,7 @@
         $('#imgTop').find('.parsing').css({
           'z-index': '-10'
         });
-        
+
         $(".parsingColumn")
             .mouseenter(function(){
 //                //console.log("mouse enter column");
@@ -2207,7 +2207,7 @@
             .click(function(event){
             });
         }
-    
+
     /**
      * Allows for column adjustment in the parsing interface.
      */
@@ -2261,13 +2261,13 @@
                     if (Math.abs(originalY-newY)>5) adjustment = "top";     // a top change would affect h and y, order matters
                     offsetForBtm = (offsetForBtm / $("#imgTop img").height()) * 100;
                     newH = (newH / $("#imgTop img").height()) * 100;
-                    var actualBottom = newH + offsetForBtm;                   
+                    var actualBottom = newH + offsetForBtm;
                     $("#progress").html("Adjusting "+adjustment+" - unsaved");
                 }
             },
             stop        : function(event,ui){
                 $("#progress").html("Column Resized - Saving...");
-               
+
                 var parseRatio = $("#imgTop img").width() / $("#imgTop img").height();
 //                console.log("ratio for adjust");
 //                console.log($("#imgTop img").width()+"/"+$("#imgTop img").height());
@@ -2300,7 +2300,7 @@
                         "top"    : newY +"%",
                         "height" : oldHeight + oldTop - newY +"%"
                     });
-                    
+
                     if (parseFloat(startLine.attr("lineheight"))<0){
                             // top of the column is below the bottom of its top line
                             var newTopLine = startLine;
@@ -2311,7 +2311,7 @@
                                 startLine = newTopLine;
                                 oldHeight = parseFloat(startLine.attr("lineheight"));
                                 oldTop = parseFloat(startLine.attr("linetop"));
-                                
+
                             } while (parseFloat(startLine.attr("linetop")) + parseFloat(startLine.attr("lineheight")) < newY );
                             //Got through all the ones that needed removing, now I am on the one that needs resizing.
                             startLine.attr({
@@ -2325,18 +2325,18 @@
                             thisColumn.attr("startid", startLine.attr("lineserverid"));
                         };
                             $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
-                    } 
+                    }
                     else if(adjustment=="bottom"){
                         //console.log("bottom");
                         //technically, we want to track the bottom.  The bottom if the height + top offset
                         var offsetForBtm = $(event.target).position().top;
                         offsetForBtm = (offsetForBtm / $("#imgTop img").height()) * 100;
                         newH = (newH / $("#imgTop img").height()) * 100;
-                        
+
                         var actualBottom = newH + offsetForBtm;
                         //save a new height for the bottom line
                         var endLine = $(".parsing[lineserverid='"+thisColumnID[1]+"']");
-                        
+
                         oldHeight = parseFloat(endLine.attr("lineheight"));
                         oldTop = parseFloat(endLine.attr("linetop"));
 
@@ -2355,10 +2355,10 @@
                                 var nextline = endLine.prev(".parsing");
                                 endLine.remove();
                                 removeLine(endLine, true);
-                                removeTranscriptlet(endLine.attr("lineserverid"),endLine.attr("lineserverid"), true);                           
+                                removeTranscriptlet(endLine.attr("lineserverid"),endLine.attr("lineserverid"), true);
                                 endLine=nextline;
                             } while (parseFloat(endLine.attr("linetop"))>actualBottom);
-                            
+
                                 var currentLineTop = parseFloat(endLine.attr("linetop"));
                                 endLine.attr({
                                     "lineheight" : actualBottom - currentLineTop
@@ -2387,16 +2387,16 @@
                                     "left" : newLeft + "%",
                                     "width": newWidth + "%"
                                 });
-                                
+
                             });
                             updateLinesInColumn(thisColumnID);
                             $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
                             cleanupTranscriptlets(true);
-                        } 
+                        }
                         else if (adjustment=="right"){
                             //save a new width for all these lines
                             var rightGuide = $(".parsing[lineserverid='"+thisColumnID[0]+"']");
-                            
+
                             oldLeft = parseFloat(rightGuide.attr("lineleft"));
                             var ratio = originalPercentW / originalW;
                             newWidth = newW * ratio; //new percent width
@@ -2407,24 +2407,24 @@
                                 $(this).css({
                                     "width": newWidth + "%"
                                 });
-                                
+
                             });
                             updateLinesInColumn(thisColumnID);
                             $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
-                            cleanupTranscriptlets(true);                            
+                            cleanupTranscriptlets(true);
                         } else {
                             $("#progress").html("No changes made.").delay(3000).fadeOut(1000);
                         }
                         $("#lineResizing").delay(3000).fadeOut(1000);
                         adjustment = "";
-                        
+
                     }
             });
      }
-     
+
      /**
      * Determines action based on transcription line clicked and tool in use.
-     * Alerts 'unknown click' if all fails. Calls lineChange(e,event) for 
+     * Alerts 'unknown click' if all fails. Calls lineChange(e,event) for
      * parsing tool. Jumps to transcriptlet for full page tool.
      */
     function clickedLine(e,event) {
@@ -2437,10 +2437,10 @@
             }
         }
         else{
-            
+
         }
     }
-    
+
     function reparseColumns(){
         $.each($('.parsingColumn'),function(){
             var colX = $(this).attr("lineleft");
@@ -2454,8 +2454,8 @@
             }
         });
     }
-     
-      
+
+
    function insertTag(tagName,fullTag){
         if (tagName.lastIndexOf("/") == (tagName.length-1)) {
             //transform self-closing tags
@@ -2466,9 +2466,9 @@
         if (!addchar(escape(fullTag),escape(tagName))) {
             closeTag(escape(tagName), escape(fullTag));
         }
-        
+
     }
-    
+
     function closeTag(tagName,fullTag){
             // Do not create for self-closing tags
             if (tagName.lastIndexOf("/") == (tagName.length-1)) return false;
@@ -2492,9 +2492,9 @@
                 }).text("/"+tagName);
                 focusItem[1].children(".xmlClosingTags").append(closeTag);
             });
-        
+
     }
-    
+
     function addchar(theChar, closingTag)
     {
         //console.log("Add Char Called");
@@ -2506,7 +2506,7 @@
         }
         return false;
     }
-    
+
     function setCursorPosition(e, position)
     {
         //console.log("set cursor pos.");
@@ -2529,7 +2529,7 @@
         }
         return wrapped;
     }
-    
+
     function insertAtCursor (myField, myValue, closingTag) {
         //console.log("insert at cursor");
         var closeTag = (closingTag == undefined) ? "" : unescape(closingTag);
@@ -2557,7 +2557,7 @@
                // Preview.updateLine(myField);
                 var insertLength = startPos + unescape(myValue).length +
                     toWrap.length + 3 + closeTag.length;
-                return "wrapped" + insertLength;              
+                return "wrapped" + insertLength;
             } else {
                 myField.value = myField.value.substring(0, startPos)
                     + unescape(myValue)
@@ -2577,7 +2577,7 @@ function toggleCharacters(){
         $("#charactersPopin .character").fadeOut(400);
     }
     else{
-       $("#charactersPopin .character").fadeIn(400).css("display", "block"); 
+       $("#charactersPopin .character").fadeIn(400).css("display", "block");
     }
 }
 function toggleTags(){
@@ -2585,7 +2585,7 @@ function toggleTags(){
         $("#xmlTagPopin .lookLikeButtons").fadeOut(400);
     }
     else{
-       $("#xmlTagPopin .lookLikeButtons").fadeIn(400).css("display", "block"); 
+       $("#xmlTagPopin .lookLikeButtons").fadeIn(400).css("display", "block");
     }
 
 }
@@ -2594,7 +2594,7 @@ function togglePageJump(){
         $("#pageJump .folioJump").fadeOut(400);
     }
     else{
-       $("#pageJump .folioJump").fadeIn(400).css("display", "block"); 
+       $("#pageJump .folioJump").fadeIn(400).css("display", "block");
     }
 }
 
@@ -2602,12 +2602,12 @@ function togglePageJump(){
 function pageJump(page,parsing){
     var folioNum = parseInt(page); //1,2,3...
     var canvasToJumpTo = folioNum - 1; //0,1,2...
-    if(currentFolio !== folioNum && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio 
+    if(currentFolio !== folioNum && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio
         currentFolio = folioNum;
         if(parsing == "parsing"){
             $(".pageTurnCover").show();
             fullPage();
-            focusItem = [null, null];  
+            focusItem = [null, null];
             loadTranscriptionCanvas(transcriptionFolios[canvasToJumpTo], parsing);
             setTimeout(function(){
                 hideWorkspaceForParsing();
@@ -2616,9 +2616,9 @@ function pageJump(page,parsing){
         }
         else{
             currentFolio = folioNum;
-            focusItem = [null, null];  
+            focusItem = [null, null];
             loadTranscriptionCanvas(transcriptionFolios[canvasToJumpTo], "");
-        } 
+        }
     }
     else{
         //console.log("Loaded current or invalid page");
@@ -2651,7 +2651,7 @@ function markerColors(){
 
 /* Toggle the line/column indicators in the transcription interface. (A1, A2...) */
 function toggleLineMarkers(){
-    if($('.lineColIndicator:first').is(":visible") && $('.lineColIndicator:eq(1)').is(":visible")){ //see if a pair of lines are visible just in case you checked the active line first. 
+    if($('.lineColIndicator:first').is(":visible") && $('.lineColIndicator:eq(1)').is(":visible")){ //see if a pair of lines are visible just in case you checked the active line first.
         $('.lineColIndicator').hide();
         $(".activeLine").show().addClass("linesHidden");
     }
@@ -2660,11 +2660,11 @@ function toggleLineMarkers(){
         $(".lineColIndicator").removeClass("linesHidden");
         $.each($(".lineColOnLine"),function(){$(this).css("line-height", $(this).height()+"px");});
     }
-}  
+}
 
 /* Toggle the drawn lines in the transcription interface. */
 function toggleLineCol(){
-    if($('.lineColOnLine:first').is(":visible")){ 
+    if($('.lineColOnLine:first').is(":visible")){
         $('.lineColOnLine').hide();
     }
     else{
@@ -2680,20 +2680,20 @@ function toggleLineCol(){
         var startLine = $(".parsing[lineserverid='"+startLineID+"']"); //Get the start line
         var nextLine = startLine.next(".parsing"); //Get the next line (potentially)
         var linesToUpdate = [];
-        
+
         linesToUpdate.push(startLine); //push first line
-        
+
         while(nextLine.length >0 && nextLine.attr("lineserverid") !== endLineID){ //if there is a next line and its not the last line in the column...
             linesToUpdate.push(nextLine);
             nextLine = nextLine.next(".parsing");
         }
-        
+
         if(startLineID !== endLineID){ //push the last line, so long as it was also not the first line
             linesToUpdate.push($(".parsing[lineserverid='"+endLineID+"']")); //push last line
         }
-        columnUpdate(linesToUpdate);  
+        columnUpdate(linesToUpdate);
     }
-    
+
     /* Bulk update for lines in a column. */
     function columnUpdate(linesInColumn){
         //console.log("Doing batch update from column resize")
@@ -2702,14 +2702,14 @@ function toggleLineCol(){
         var currentAnnoListID = annoLists[currentFolio - 1];
         var currentAnnoListResources = [];
         var lineTop, lineLeft, lineWidth, lineHeight = 0;
-        var ratio = originalCanvasWidth2 / originalCanvasHeight2; 
+        var ratio = originalCanvasWidth2 / originalCanvasHeight2;
         var annosURL = "getAnno";
         var properties = {"@id": currentAnnoListID};
         var paramOBJ = {"content": JSON.stringify(properties)};
         $.post(annosURL, paramOBJ, function(annoLists){
             //console.log("got anno list.  Here are the current resources");
             annoLists = JSON.parse(annoLists);
-            var currentAnnoList; 
+            var currentAnnoList;
             $.each(annoLists, function(){
                 if(this.proj === "master"){
                      currentAnnoListResources =this.resources;
@@ -2743,7 +2743,7 @@ function toggleLineCol(){
                 var currentLineServerID = line.attr('lineserverid');
                 var currentLineText = $(".transcriptlet[lineserverid='"+currentLineServerID+"']").find("textarea").val();
 
-                var dbLine = 
+                var dbLine =
                 {
                     "@id" : currentLineServerID,
                     "@type" : "oa:Annotation",
@@ -2756,7 +2756,7 @@ function toggleLineCol(){
                     "otherContent" : [],
                     "forProject": "TPEN_NL"
                 };
-                
+
                 var index = - 1;
                 //find the line in the anno list resources and replace its position with the new line resource.
                 //console.log("Need to find line in anno list resources and update the array...");
@@ -2768,7 +2768,7 @@ function toggleLineCol(){
                         return false;
                     }
                 });
-            
+
             });
             //Now that all the resources are edited, update the list.
             var url = "updateAnnoList";
@@ -2781,12 +2781,12 @@ function toggleLineCol(){
                 currentFolio = parseInt(currentFolio);
                 annoLists[currentFolio - 1]= currentAnnoListID;
             });
-            
+
         });
-        
-        
+
+
     }
-    
+
     /* Update line information for a particular line. */
     function updateLine(line, cleanup){
         var onCanvas = $("#transcriptionCanvas").attr("canvasid");
@@ -2794,24 +2794,24 @@ function toggleLineCol(){
         var currentAnnoListID = annoLists[currentFolio - 1];
         var currentAnnoList = "";
         var lineTop, lineLeft, lineWidth, lineHeight = 0;
-        var ratio = originalCanvasWidth2 / originalCanvasHeight2; 
+        var ratio = originalCanvasWidth2 / originalCanvasHeight2;
 
         lineTop = parseFloat(line.attr("linetop")) * 10 ;
         lineLeft = parseFloat(line.attr("lineleft")) * (10*ratio);
         lineWidth = parseFloat(line.attr("linewidth")) * (10*ratio);
         lineHeight = parseFloat(line.attr("lineheight")) * 10;
-        
+
         //round up.
         lineTop = Math.round(lineTop,0);
         lineLeft = Math.round(lineLeft,0);
         lineWidth = Math.round(lineWidth,0);
         lineHeight = Math.round(lineHeight,0);
-        
+
         //line.css("width", line.attr("linewidth") + "%");
         var lineString = lineLeft+","+lineTop+","+lineWidth+","+lineHeight;
         var currentLineServerID = line.attr('lineserverid');
         var currentLineText = $(".transcriptlet[lineserverid='"+currentLineServerID+"']").find("textarea").val();
-        var dbLine = 
+        var dbLine =
         {
             "@id" : currentLineServerID,
             "@type" : "oa:Annotation",
@@ -2826,7 +2826,7 @@ function toggleLineCol(){
         };
 
         var index = -1;
-        
+
         if(currentAnnoListID !== "noList" && currentAnnoListID !== "empty"){ // if its IIIF, we need to update the list
             var annosURL = "getAnno";
             var properties = {"@id": currentAnnoListID};
@@ -2856,7 +2856,7 @@ function toggleLineCol(){
                             $("#parsingCover").hide();
                         });
                     }
-                });                    
+                });
             });
         }
         else if(currentAnnoList == "empty"){
@@ -2870,13 +2870,13 @@ function toggleLineCol(){
                     transcriptionFolios[currentFolio - 1].resources[index] = dbLine;
                 }
             });
-            //Should we do an update here to support old data? 
+            //Should we do an update here to support old data?
         }
        if(cleanup !== "no") cleanupTranscriptlets(true);
         //$(".previewLineNumber[lineserverid='"+currentLineServerID+"']").siblings(previewText).html(scrub(line.val()));
     }
-    
-    
+
+
     function saveNewLine(lineBefore, newLine){
         var theURL = window.location.href;
         var projID = -1;
@@ -2886,33 +2886,33 @@ function toggleLineCol(){
         else{
             projID = theURL.substring(theURL.indexOf("projectID=")+10);
         }
-        
+
         var beforeIndex = -1;
         if(lineBefore !== undefined && lineBefore !== null){
             beforeIndex = parseInt(lineBefore.attr("linenum"));
         }
         var onCanvas = $("#transcriptionCanvas").attr("canvasid");
         var newLineTop, newLineLeft, newLineWidth, newLineHeight = 0;
-        var ratio = originalCanvasWidth2 / originalCanvasHeight2; 
+        var ratio = originalCanvasWidth2 / originalCanvasHeight2;
         newLineTop = parseFloat(newLine.attr("linetop"));
         newLineLeft = parseFloat(newLine.attr("lineleft"));
         newLineWidth = parseFloat(newLine.attr("linewidth"));
         newLineHeight = parseFloat(newLine.attr("lineheight"));
-        
+
         newLineTop = newLineTop * 10 ;
         newLineLeft = newLineLeft * (10*ratio);
         newLineWidth = newLineWidth * (10*ratio);
         newLineHeight = newLineHeight * 10;
-        
+
         //round up.
         newLineTop = Math.round(newLineTop , 0);
         newLineLeft = Math.round(newLineLeft,0);
         newLineWidth = Math.round(newLineWidth,0);
         newLineHeight = Math.round(newLineHeight,0);
-                       
+
         var lineString = onCanvas + "#xywh=" +newLineLeft+","+newLineTop+","+newLineWidth+","+newLineHeight;
         var currentLineText = "";
-        var dbLine = 
+        var dbLine =
             {
                 "@id" : "",
                 "@type" : "oa:Annotation",
@@ -2974,7 +2974,7 @@ function toggleLineCol(){
                             $.post(url1, params1, function(data){
     //                            //console.log("Updated list on anno store");
                                 if(lineBefore !== undefined && lineBefore !== null){
-                                    //This is the good case.  We called split line and saved the new line, now we need to update the other one. 
+                                    //This is the good case.  We called split line and saved the new line, now we need to update the other one.
                                     updateLine(lineBefore);
                                     $("#parsingCover").hide(); //doesnt always fire, so this is to be sure
                                 }
@@ -2983,11 +2983,11 @@ function toggleLineCol(){
                                 }
                             });
                         });
-                    
+
                 }
-                else if(currentAnnoList == "empty"){ 
-                    //This means we know no AnnotationList was on the store for this canvas, and otherContent stored with the canvas object did not have the list.  Make a new one in this case. 
-                      var newAnnoList = 
+                else if(currentAnnoList == "empty"){
+                    //This means we know no AnnotationList was on the store for this canvas, and otherContent stored with the canvas object did not have the list.  Make a new one in this case.
+                      var newAnnoList =
                         {
                             "@type" : "sc:AnnotationList",
                             "on" : onCanvas,
@@ -3041,23 +3041,23 @@ function toggleLineCol(){
                         transcriptionFolios[currentFolio - 1].resources.splice(beforeIndex + 1, 0, dbLine);
                     }
                     $("#parsingCover").hide();
-                    //should we write to the DB here?  This would be in support of old data.  
+                    //should we write to the DB here?  This would be in support of old data.
                 }
                 console.log("call cleanup from save line");
                 cleanupTranscriptlets(true);
-                 
+
             });
         }
         else{
             alert("Cannot save line.  Canvas id is not present.");
         }
-        
+
     }
-   
+
     /**
      * Inserts new transcriptlet when line is added.
      * Cleans up inter-transcriptlet relationships afterwards.
-     * 
+     *
      * @param e line element to build transcriptlet from
      * @param afterThisID lineid of line before new transcriptlet
      * @param newLineID lineid of new line
@@ -3079,7 +3079,7 @@ function toggleLineCol(){
             }
           });
             isNotColumn = false;
-        } 
+        }
         var $afterThis = $(".transcriptlet[lineserverid='"+afterThisID+"']");
         var newTranscriptlet = [
             "<div class='transcriptlet transcriptletBefore' id='transciptlet_",newLineID,
@@ -3097,31 +3097,31 @@ function toggleLineCol(){
             "</div>"];
         if (isNotColumn){
             //update transcriptlet that was split
-            $afterThis.after(newTranscriptlet.join("")).find(".lineHeight").val($(".parsing[lineserverid='"+afterThisID+"']").attr("lineheight"));                    
-        } 
+            $afterThis.after(newTranscriptlet.join("")).find(".lineHeight").val($(".parsing[lineserverid='"+afterThisID+"']").attr("lineheight"));
+        }
         else {
             if (afterThisID === -1) {
             $   ("#entry").prepend(newTranscriptlet.join(""));
-            } 
+            }
             else {
                     $afterThis.after(newTranscriptlet.join(""));
             }
         }
         $(e).attr("lineserverid", newServerID);
-        
+
     }
     /**
      * Adds a line by splitting the current line where it was clicked.
-     * 
+     *
      * @param e clicked line element
      * @see organizePage(e)
      */
-     function splitLine(e,event){        
+     function splitLine(e,event){
         //e is the line that was clicked in
-        //This is where the click happened relative to img top.  In other words, where the click happened among the lines. 
+        //This is where the click happened relative to img top.  In other words, where the click happened among the lines.
         var originalLineHeight = $(e).height(); //-1 take one px off for the border
         $(".parsing").attr("newline", "false");
-        var originalLineTop = $(e).offset().top - $("#imgTop").offset().top; // +1 Move down one px for the border.  
+        var originalLineTop = $(e).offset().top - $("#imgTop").offset().top; // +1 Move down one px for the border.
         //var originalLineTop = parseFloat($(e).css("top"));
         var clickInLines = event.pageY - $("#imgTop").offset().top;
         var lineOffset = $(e).offset().top - $("#imgTop").offset().top;
@@ -3130,14 +3130,14 @@ function toggleLineCol(){
         var newLineHeight = (originalLineHeight - (clickInLines - originalLineTop))/$("#imgTop").height() * 100;
         var newLineTop = (clickInLines/$("#imgTop").height()) * 100;
         var newLine = $(e).clone(true);
-        
+
          $(e).css({
             "height"    :   oldLineHeight + "%"
         }).attr({
             "newline"   :   true,
             "lineheight" :  oldLineHeight
         });
-              
+
         $(newLine).css({
             "height"    :   newLineHeight + "%",
             "top"       :   newLineTop + "%"
@@ -3146,22 +3146,22 @@ function toggleLineCol(){
             "linetop"   :   newLineTop,
             "lineheight" : newLineHeight
         });
-        
+
         $(e).after(newLine);
         var newNum = -1;
         $.each($(".parsing"), function(){
             newNum++;
             $(this).attr("linenum", newNum);
-        });        
-         saveNewLine($(e),newLine); 
+        });
+         saveNewLine($(e),newLine);
         $("#progress").html("Line Added").fadeIn(1000).delay(3000).fadeOut(1000);
     }
-    
+
     function removeLine(e, columnDelete){
         /**
      * Removes clicked line, merges if possible with the following line.
      * updateLine(e,additionalParameters) handles the original, resized line.
-     * 
+     *
      * @param e clicked line element from lineChange(e) via saveNewLine(e)
      * @see lineChange(e)
      * @see saveNewLine(e)
@@ -3196,18 +3196,18 @@ function toggleLineCol(){
                     return false;
                 }
                 isDestroyingLine = true;
-            } 
+            }
             var params = new Array({name:"remove",value:removedLine.attr("lineserverid")});
-            removedLine.remove(); 
+            removedLine.remove();
             removeTranscriptlet(removedLine.attr("lineserverid"),$(e).attr("lineserverid"), true, "cover");
             return params;
         }
-    
+
     }
      /**
      * Removes transcriptlet when line is removed. Updates transcriplet
      * if line has been merged with previous.
-     * 
+     *
      * @param lineid lineid to remove
      * @param updatedLineID lineid to be updated
      */
@@ -3237,7 +3237,7 @@ function toggleLineCol(){
             console.log("line height for update is line clicked height "+ toUpdate.attr("lineheight") + " + line being removed height " + parseFloat(removedLine2.attr("lineheight")));
             var lineHeightForUpdate = parseFloat(toUpdate.attr("lineheight")) + parseFloat(removedLine2.attr("lineheight"));
             console.log(lineHeightForUpdate);
-            toUpdate.attr("lineheight", lineHeightForUpdate);   
+            toUpdate.attr("lineheight", lineHeightForUpdate);
         }
         else{
             console.log("yes it is. delete!");
@@ -3246,7 +3246,7 @@ function toggleLineCol(){
         var index = -1;
         currentFolio = parseInt(currentFolio);
         var currentAnnoList = annoLists[currentFolio -1];
-        
+
          if(currentAnnoList !== "noList" && currentAnnoList !== "empty"){ // if it IIIF, we need to update the list
             console.log("Get anno list");
             var annosURL = "getAnno";
@@ -3288,10 +3288,10 @@ function toggleLineCol(){
                                     console.log("now we have to update the line that was clicked with the new line height from the one we removed.")
                                     updateLine(toUpdate);
                                 }
-                                
+
                             });
                         }
-                    });                       
+                    });
                 });
         }
         else if(currentAnnoList == "empty"){
@@ -3306,13 +3306,13 @@ function toggleLineCol(){
                     //update forreal
                 }
             });
-        } 
-        //When it is just one line being removed, we need to redraw.  When its the whole column, we just delete. 
+        }
+        //When it is just one line being removed, we need to redraw.  When its the whole column, we just delete.
         console.log("call cleanup from remove.  Draw: "+draw);
         cleanupTranscriptlets(draw);
-    
+
      }
-     
+
      /* Remove all transcriptlets in a column */
      function removeColumnTranscriptlets(lines, recurse){
         var index = -1;
@@ -3368,11 +3368,11 @@ function toggleLineCol(){
                     }
                 }
             });
-                
+
          }
          else{
-             //It was not a part of the list, but we can still cleanup the transcriptlets from the interface.  This could happen when a object is fed to the 
-             //transcription textarea who instead of using an annotation list used the resources[] field to store anno objects directly with the canvas.  
+             //It was not a part of the list, but we can still cleanup the transcriptlets from the interface.  This could happen when a object is fed to the
+             //transcription textarea who instead of using an annotation list used the resources[] field to store anno objects directly with the canvas.
              //These changes will not save, they are purely UI manipulation.  An improper, view only object has been fed to the interface at this point, so this is intentional.
              for(var l=lines.length-1; l>=0; l--){
                   var theLine = $(lines[l]);
@@ -3387,9 +3387,9 @@ function toggleLineCol(){
                   $(".previewLineNumber[lineserverid='"+lineID+"']").parent().remove(); //Remove the line in text preview of transcription.
                 }
          }
-         
+
      }
-    
+
     /* Re draw transcriptlets from the Annotation List information. */
     function cleanupTranscriptlets(draw) {
         console.log("cleanup.  draw:"+draw);
@@ -3399,17 +3399,17 @@ function toggleLineCol(){
               $(".lineColIndicatorArea").children(".lineColIndicator").remove();
               $("#parsingSplit").find('.fullScreenTrans').unbind();
               $("#parsingSplit").find('.fullScreenTrans').bind("click", function(){
-                fullPage(); 
+                fullPage();
                 currentFolio = parseInt(currentFolio);
                 drawLinesToCanvas(transcriptionFolios[currentFolio-1], "");
               });
           }
 
     }
- 
+
  /* Make some invalid information inside of folios valid empties */
 function scrubFolios(){
-    //you could even force create anno lists off of the existing resource here if you would like.  
+    //you could even force create anno lists off of the existing resource here if you would like.
     var cnt1 = -1;
     $.each(transcriptionFolios, function(){
         cnt1++;
@@ -3470,8 +3470,8 @@ function stopMagnify(){
 /*
  * Load all included Iframes on the page.  This function should be strategically placed so that the Iframes load after user and project information
  * are gathered.  This should help avoid timeouts caused by embedded Iframes wait times mixed with many calls to the annotation store and calls for images.
- * See the Network console in the Browser deveoper tools for problems with wait times on embedded content.  
- * 
+ * See the Network console in the Browser deveoper tools for problems with wait times on embedded content.
+ *
  * @see newberryTrans.html to find the iframe elements.
  */
 function loadIframes(){

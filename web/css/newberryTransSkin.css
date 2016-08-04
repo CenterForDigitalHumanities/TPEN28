@@ -3,7 +3,7 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 */
-/* 
+/*
     Created on : Jan 27, 2015, 10:05:37 AM
     Author     : bhaberbe
 */
@@ -182,7 +182,7 @@ body{
     top: 30px;
     font-size: 20px;
 }
-    
+
     .transcriptlet {
       display:block;
 /*      left:0;
@@ -261,7 +261,7 @@ body{
         position:absolute;
         top:0;
         /*width:100%;*/
-        max-height: none !important; 
+        max-height: none !important;
         z-index:inherit;
         max-width: 100%;
     }
@@ -294,9 +294,9 @@ body{
         padding-top: 7px;
         padding-bottom: 7px;
     }
-   
+
     /*
-    * Transcription transition movements.  
+    * Transcription transition movements.
     */
 
    #bookmark {
@@ -329,20 +329,20 @@ body{
        -o-transition: opacity .5s, top .5s;
        transition: opacity .5s, top .5s;
    }
-   
+
    #transcriptionText{
        height:100px;
        width:80%;
        position: relative;
    }
-   
+
    #transcriptionCanvas{
        position:relative;
        height:inherit;
        width: 100%;
        background-color: rgba(1,51,90,.5);
    }
-   
+
    .instructions{
        position: relative;
        height:auto;
@@ -352,7 +352,7 @@ body{
        margin-bottom:10px;
        display: none;
    }
-   
+
 
 .slideHandleLeft{
     position: absolute;
@@ -586,7 +586,7 @@ body{
 .actions{
     margin:10px 6px;background: url(images/linen.png);padding:6px 2px 2px;overflow: visible;z-index: 1; border: 1px solid #A68329;
     -moz-box-shadow: -1px 1px 2px black;
-    -webkit-box-shadow: -1px 1px 2px black; 
+    -webkit-box-shadow: -1px 1px 2px black;
     box-shadow:-1px 1px 2px black;}*/
 label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 #linebreakText {clear:left;width:auto;max-height:120px;height:40%;overflow: auto;background: white fixed repeat; border: 2px inset #FFDB7F;margin-bottom:4px;position:relative;}
@@ -605,9 +605,9 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 #abbrevImg {position:absolute;right:0;left:0;margin:0 auto;height: 100%;width:auto;}
 #abbreviations {position:relative; top:0;left:0;margin:5px 30px;overflow: visible;z-index: 15;display: inline-block;max-width: 200px;width:100%;
                 -moz-box-shadow: 0 0 5px #A64129;
-                -webkit-box-shadow: 0 0 5px #A64129; 
+                -webkit-box-shadow: 0 0 5px #A64129;
                 box-shadow:0 0 5px #A64129;}
-#abbreviations select {width:100%;}      
+#abbreviations select {width:100%;}
 iframe {background: url('images/linen.png') white scroll repeat; position: relative;width: 100%;height:100%; margin-top:32px;}
 .xmlClosingTags {position: absolute; bottom:0;right:10px;z-index: 20;}
 .tags {font-size: 80%; padding: 1px;margin: 0px -1px 1px 0px;display: inline-block;z-index: 20;cursor: pointer;position: relative;}
@@ -616,7 +616,7 @@ iframe {background: url('images/linen.png') white scroll repeat; position: relat
 #loadingCompare {position:relative;}
 .previewPage {border:thin solid black; margin-bottom: 5px;clear: both; padding: 10px;overflow: auto; background: white;
                 -moz-box-shadow: -1px -1px 3px rgba(0,0,0,.4);
-                -webkit-box-shadow: -1px -1px 3px rgba(0,0,0,.4); 
+                -webkit-box-shadow: -1px -1px 3px rgba(0,0,0,.4);
                 box-shadow:-1px -1px 3px rgba(0,0,0,.4);
 }
 .previewFolioNumber {float: left;font-weight: bold; display: block;padding-left: 20px;}
@@ -636,20 +636,20 @@ iframe {background: url('images/linen.png') white scroll repeat; position: relat
 .previewTag {color:#488AC7;display:inline-block;}
 #saveReport,#contribution {position: absolute; z-index: 4;width:18em;cursor: pointer;bottom:0;right:0;color:#226683;text-transform: capitalize;padding: 1px;margin: 0px;max-height:18px;overflow: hidden;}
 #contribution {right:auto;left:0;}
-#contribution:before {content:'Last edit by: '} 
+#contribution:before {content:'Last edit by: '}
 .saveLog:first-child {color:#618797;}
 #saveReport:hover {box-shadow: -4px -4px 8px -4px #666666;max-height: 95px;overflow:auto;
-    /* IE10 */ 
+    /* IE10 */
     background-image: -ms-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
-    /* Mozilla Firefox */ 
+    /* Mozilla Firefox */
     background-image: -moz-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
-    /* Opera */ 
+    /* Opera */
     background-image: -o-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
-    /* Webkit (Safari/Chrome 10) */ 
+    /* Webkit (Safari/Chrome 10) */
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(.25, whitesmoke), color-stop(1, rgba(255,255,255,0)));
-    /* Webkit (Chrome 11+) */ 
+    /* Webkit (Chrome 11+) */
     background-image: -webkit-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
-    /* Proposed W3C Markup */ 
+    /* Proposed W3C Markup */
     background-image: linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
 }
 #clickDivs {position: relative;height:auto;clear:both;}
@@ -675,7 +675,7 @@ iframe {background: url('images/linen.png') white scroll repeat; position: relat
 .actions{
     margin:10px 6px;background: url(images/linen.png);padding:6px 2px 2px;overflow: visible;z-index: 1; border: 1px solid #A68329;
     -moz-box-shadow: -1px 1px 2px black;
-    -webkit-box-shadow: -1px 1px 2px black; 
+    -webkit-box-shadow: -1px 1px 2px black;
     box-shadow:-1px 1px 2px black;}*/
 label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 #linebreakText {clear:left;width:auto;max-height:120px;height:40%;overflow: auto;background: white fixed repeat; border: 2px inset #FFDB7F;margin-bottom:4px;position:relative;}
@@ -693,7 +693,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 #requestAccess a.returnButton {position: absolute;bottom: -36px;}
 #iprAgreement {background-color: whitesmoke;padding: 3px;overflow: auto; max-height: 200px;border: thin inset black;}
 #iprAgreement h1,#iprAgreement h2,#iprAgreement h3,#iprAgreement h4,#iprAgreement h5,#iprAgreement h6{
-    text-shadow: none; 
+    text-shadow: none;
     color: #226683;
 /*    font-family: Tahoma, Geneva, sans-serif;*/
 }
@@ -812,7 +812,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#abb7bc', endColorstr='#e8e9ea',GradientType=1 ); /* IE6-9 */
     -moz-transition: all .5s; /* Firefox 4 */
     -webkit-transition: all .5s; /* Safari and Chrome */
-    -o-transition: all .5s; /* Opera */             
+    -o-transition: all .5s; /* Opera */
     transition: all .5s;
     }
 #fullscreenBtn:hover{
@@ -874,7 +874,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     z-index: 3;
     transition: height 1s;
     border: 2px solid black;
-    margin-left: 6px; 
+    margin-left: 6px;
     color: rgba(0,42,92,1);
 }
 #charactersPopin, #xmlTagPopin{
@@ -1040,6 +1040,7 @@ button.imgTool{
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
     width: auto;
     position:relative;
     cursor: default;
@@ -1088,7 +1089,7 @@ button.imgTool{
 }
 .hideme{
     position: relative;
-    display: none; 
+    display: none;
 }
 .toolLinks{
     position: relative;
@@ -1167,7 +1168,7 @@ button.imgTool{
 
 
 
-/* 
+/*
 * Paleography Site Skinning
 *
 */
@@ -1205,7 +1206,7 @@ p{
     display: block;
 }
 .lineColIndicator{
-    z-index:10; 
+    z-index:10;
     position: absolute;
     border:1px solid white;
     font-size:.8em;

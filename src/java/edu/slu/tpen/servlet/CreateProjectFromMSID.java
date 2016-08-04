@@ -78,31 +78,12 @@ public class CreateProjectFromMSID {
             }
             Integer msID = Integer.parseInt(msID_str);
             Integer projectID = -1;
-            Project thisProject = null;
             man = new Manuscript(msID, true);
-            int [] msIDs=new int[0];
-            User u = new User(UID);
-            Project[] p = u.getUserProjects();
-            msIDs = new int[p.length];
-            for (int i = 0; i < p.length; i++) {
-                try {
-                    msIDs[i] = new textdisplay.Manuscript(p[i].firstPage()).getID();
-                } catch (Exception e) {
-                    msIDs[i] = -1;
-                }
-            }
-            for (int l = 0; l < msIDs.length; l++) {
-                if (msIDs[l] == man.getID()) {
-                    projectID=p[l].getProjectID();
-                    thisProject=p[l];
-                }
-            }
-            if(projectID>1) {
+            Integer projID = man.checkExistingProjects(msID, UID);
+            if(projID>1) { //-1 if no project existed for this user with this MSID.  
                 return "project/" + projectID;
             }
-            
             Folio[] array_folios = null;
-            
             archive = man.getArchive();     
             city = man.getCity();
             collection = man.getCollection();

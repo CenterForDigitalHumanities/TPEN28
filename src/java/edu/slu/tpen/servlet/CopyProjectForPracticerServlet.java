@@ -78,10 +78,19 @@ public class CopyProjectForPracticerServlet extends HttpServlet {
                         for(int i = 0; i < folios.length; i++)
                         {
                             Folio folio = folios[i];
-                            //Parse folio.getImageURL() to retrieve paleography pid, and then generate new canvas id
-                            String imageURL = folio.getImageURL();
-                            // use regex to extract paleography pid
-                            String canvasID = Constant.PALEO_CANVAS_ID_PREFIX + imageURL.replaceAll("^.*(paleography[^/]+).*$", "/$1");
+                            Integer msID = folio.getMSID();
+                            String msID_str = msID.toString();
+                            //This needs to be the same one the JSON Exporter creates and needs to be unique and unchangeable.
+                            String canvasID_check = folio.getCanvas();
+                            String canvasID = "";
+                            String str_folioNum = Folio.getRbTok("SERVERURL")+"/MS"+msID_str+"/canvas/"+folio.getFolioNumber();
+                            if(canvasID_check == ""){
+                                canvasID = str_folioNum;
+                            }
+                            else{
+                                canvasID = canvasID_check;
+                            }
+                            //String canvasID = Folio.getRbTok("SERVERURL") + templateProject.getProjectName() + "/canvas/" + URLEncoder.encode(folio.getPageName(), "UTF-8"); // for slu testing
                             //create canvas list for original canvas
                             JSONObject annoList = CreateAnnoListUtil.createEmptyAnnoList(thisProject.getProjectID(), canvasID, new JSONArray());
                             URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/getAnnotationByProperties.action");

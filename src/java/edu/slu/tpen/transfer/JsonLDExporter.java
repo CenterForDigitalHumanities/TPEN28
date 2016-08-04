@@ -98,9 +98,11 @@ public class JsonLDExporter {
     * serialisation
     */
    private Map<String, Object> buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
-
-      String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
-
+       
+      Integer msID = f.getMSID();
+      String msID_str = msID.toString();
+      String canvasID = Folio.getRbTok("SERVERURL")+"/MS"+msID_str+"/canvas/"+f.getFolioNumber();
+      //String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
       Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
       if (pageDim == null) {
          LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());

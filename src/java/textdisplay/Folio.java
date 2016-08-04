@@ -712,6 +712,26 @@ public class Folio {
          DatabaseWrapper.closePreparedStatement(stmt);
       }
    }
+   
+    public Integer getMSID() throws SQLException {
+      Connection j = null;
+      PreparedStatement stmt = null;
+      try {
+         Integer toret = -1;
+         String qry = "select * from folios where pageNumber=?";
+         j = DatabaseWrapper.getConnection();
+         stmt = j.prepareStatement(qry);
+         stmt.setInt(1, folioNumber);
+         ResultSet rs = stmt.executeQuery();
+         if (rs.next()) {
+            toret = rs.getInt("msID");
+         }
+         return toret;
+      } finally {
+         DatabaseWrapper.closeDBConnection(j);
+         DatabaseWrapper.closePreparedStatement(stmt);
+      }
+   }
 
    public String getCanvas() throws SQLException {
       Connection j = null;
@@ -1416,4 +1436,5 @@ public class Folio {
    }
 
    private static final Logger LOG = Logger.getLogger(Folio.class.getName());
+
 }

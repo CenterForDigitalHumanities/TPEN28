@@ -397,12 +397,6 @@ $(window).load(function(){gapi.plusone.go();});
                         <img alt="youtube"
                              src="images/sharing/youtube-128.png"/>
                     </a>
-                    <a id="shareBlogger" class="share" 
-                       href="http://digital-editor.blogspot.com/"
-                       target="_blank">
-                        <img alt="blogger"
-                             src="images/sharing/blogger-128.png"/>
-                    </a>
                 </div>
             </div>
             <div id="tabs">
@@ -416,7 +410,6 @@ $(window).load(function(){gapi.plusone.go();});
                 %>
                         <li><a title="Active Projects" href="#projects">Active Projects</a></li>
                         <li><a title="Public Projects" href="#publicProjects">Public Projects</a></li>
-                        <li><a title="T-PEN Advanced" href="#advancedTpen">Advanced</a></li>
                 <%
                                }
                 %>
@@ -641,67 +634,6 @@ $(window).load(function(){gapi.plusone.go();});
                         }
                    %>
                 </div>
-                <div id="advancedTpen" class="lists">
-                    <div>
-                        <h2>Tools for Advanced Users</h2>
-                    </div>
-                    <p class="gloss ui-state-active ui-corner-all left">
-                        T&#8209;PEN includes several advanced features that 
-                        allow a user to accomplish even more. As they are
-                        available, these options will be listed here. These
-                        useful tools are in good working order, but may require
-                        technical knowledge or preparation to use.</p>
-                    <div class="clear-left">
-                        <h3>Private Collections</h3>
-                        <p>
-                        Private collections of images can be hosted by 
-                        T&#8209;PEN, analyzed by our tools, and transcribed as
-                        if loaded from a repository.
-                        </p>
-                        <p>
-                        Project with private images may not be made public or copied.
-                            <%@include file="WEB-INF/includes/privateUpload.jspf" %>
-                    </div>
-                    <div>
-                        <h3>Switchboard</h3>
-                        <p>
-                            Your institution can use T&#8209;PEN as a workspace. 
-                            Create a template project for interested users with
-                            a customized set of buttons and project tools. After
-                            setting up a web service, all users with connected 
-                            projects can submit directly with a simple button in
-                            the export tool.
-                        </p>
-                        <p>
-                            You can set up a template on the 
-                            <a href="project.jsp?selecTab=2">Project
-                            Management</a> page, but you will need to contact us
-                            to set up a web service. The 
-                            <a
-                            title="Carolingian Canon Law project" 
-                            href="http://ccl.rch.uky.edu/transcribe" 
-                            target="_blank">CCL</a> 
-                            already has a Switchboard!
-                        </p>
-                    </div>
-                    <div>
-                        <h3>Public Projects</h3>
-                        <p>
-                            Any project that does not contain any private images
-                            can become a Public Project, allowing users who are
-                            not members access to all or part of the project.
-                            The permissions of any project can be changed at any
-                            time by the group leader.
-                        </p>
-                        <p>
-                            View all Public Projects on the tab above. Set
-                            permissions for your eligible project by using the
-                            "Share Publicly" button at the top of the 
-                            "Collaboration" tab on the 
-                            <a href="project.jsp">Project Management page.</a>
-                        </p>
-                    </div>
-                </div>
                 <%} else {%>
                 <div id="projects">
                     <div id="requestAccount">
@@ -803,6 +735,9 @@ $(window).load(function(){gapi.plusone.go();});
             </div>
         </div>
                 <script type="text/javascript">
+                    function createProject(msid){
+                        // generate and start a new project
+                    }
 if ( $.browser.msie ) {
     $("html").addClass("IE");
         document.write('<div id="IEflag" class="ui-state-error">T&#8209;PEN has been optimized in webkit and gecko (Chrome, Firefox, Safari, Camino, etc.). <br/><strong>Old versions of Internet Explorer and many mobile browsers are not supported</strong>. <br/>To take advantage of all the tools on T&#8209;PEN, use the latest version of a supported browser.<br/><input onclick="$(this).parent().slideUp();" class="ui-button tpenButton" value="Thanks, got it." /></div>');

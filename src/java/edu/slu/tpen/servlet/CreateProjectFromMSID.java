@@ -35,6 +35,7 @@ import textdisplay.Folio;
 import textdisplay.Manuscript;
 import textdisplay.Project;
 import user.Group;
+import user.User;
 /**
  *
  * @author bhaberbe
@@ -52,7 +53,7 @@ public class CreateProjectFromMSID {
     }
 
     /**
-     * Create manuscript, folio and project using given MSID data.
+     * Create project from given MSID.  Return projectID if a project already exists for this user with this MSID.
      * @param msid
      */
     public String creatManuscriptFolioProject(HttpServletRequest request, HttpServletResponse response)
@@ -76,8 +77,32 @@ public class CreateProjectFromMSID {
                 return "500: No MSID";
             }
             Integer msID = Integer.parseInt(msID_str);
-            Folio[] array_folios = null;
+            Integer projectID = -1;
+            Project thisProject = null;
             man = new Manuscript(msID, true);
+            int [] msIDs=new int[0];
+            User u = new User(UID);
+            Project[] p = u.getUserProjects();
+            msIDs = new int[p.length];
+            for (int i = 0; i < p.length; i++) {
+                try {
+                    msIDs[i] = new textdisplay.Manuscript(p[i].firstPage()).getID();
+                } catch (Exception e) {
+                    msIDs[i] = -1;
+                }
+            }
+            for (int l = 0; l < msIDs.length; l++) {
+                if (msIDs[l] == man.getID()) {
+                    projectID=p[l].getProjectID();
+                    thisProject=p[l];
+                }
+            }
+            if(projectID>1) {
+                return "project/" + projectID;
+            }
+            
+            Folio[] array_folios = null;
+            
             archive = man.getArchive();     
             city = man.getCity();
             collection = man.getCollection();
@@ -142,12 +167,12 @@ public class CreateProjectFromMSID {
                 }
                 newProject.setFolios(conn, array_folios);
                 newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + man.getShelfMark(), UID);
-                int projectID = newProject.getProjectID();
+                int projectID_return = newProject.getProjectID();
                 newProject.importData(UID);
                 conn.commit();
                 //String propVal = Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN");
                 //return trimed project url
-                return "project/" + projectID;
+                return "project/" + projectID_return;
             }
         } catch (SQLException ex) {
             Logger.getLogger(createManuscript.class.getName()).log(Level.SEVERE, null, ex);

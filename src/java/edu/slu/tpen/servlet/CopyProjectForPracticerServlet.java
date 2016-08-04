@@ -124,8 +124,8 @@ public class CopyProjectForPracticerServlet extends HttpServlet {
                             uc.disconnect();
                         }
                     }
-                    String propVal = textdisplay.Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN"); 
-                    result = propVal + "/project/" + thisProject.getProjectID();
+                    //String propVal = textdisplay.Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN"); 
+                    result = "/project/" + thisProject.getProjectID();
                 }
             } catch(Exception e){
                 e.printStackTrace();

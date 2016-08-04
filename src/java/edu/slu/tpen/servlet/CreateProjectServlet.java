@@ -201,9 +201,9 @@ public class CreateProjectServlet extends HttpServlet {
                 int projectID = newProject.getProjectID();
                 newProject.importData(UID);
                 conn.commit();
-                String propVal = Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN");
+                //String propVal = Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN");
                 //return trimed project url
-                return propVal + "/project/" + projectID;
+                return "/project/" + projectID;
             }
         } catch (SQLException ex) {
             Logger.getLogger(createManuscript.class.getName()).log(Level.SEVERE, null, ex);

@@ -32,6 +32,7 @@ import net.sf.json.JSONObject;
 import servlets.createManuscript;
 import textdisplay.Folio;
 import textdisplay.Manuscript;
+import textdisplay.Metadata;
 import textdisplay.Project;
 import user.Group;
 /**
@@ -67,9 +68,10 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
              }*/
             UID = ServletUtils.getUID(request, response);
             String repository = "T-PEN 2.8";
-            String archive = "";
+            String archive = "unknown";
             String city = "unknown";
             String collection = "unknown";
+            String label = "";
 
             Manuscript man = null;
             String msID_str = request.getParameter("msID");
@@ -77,11 +79,10 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
                 return "500: No MSID";
             }
             Integer msID = Integer.parseInt(msID_str);
-            Integer projectID = -1;
             man = new Manuscript(msID, true);
-            Integer projID = man.checkExistingProjects(msID, UID);
-            if(projID>1) { //-1 if no project existed for this user with this MSID.  
-                return "project/" + projectID;
+            Integer existing_projID = man.checkExistingProjects(msID, UID);
+            if(existing_projID>1) { //-1 if no project existed for this user with this MSID.  
+                return "existing project/" + existing_projID.toString();
             }
             Folio[] array_folios = null;
             archive = man.getArchive();     
@@ -150,6 +151,12 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
                 newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + man.getShelfMark(), UID);
                 int projectID_return = newProject.getProjectID();
                 newProject.importData(UID);
+                Metadata metadata = new Metadata(projectID_return);
+                label = tmpProjName;
+                metadata.setTitle(label);
+                metadata.setMsRepository(repository);
+                metadata.setMsCollection(collection);
+                metadata.setMsIdNumber(msID_str);
                 conn.commit();
                 //String propVal = Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN");
                 //return trimed project url

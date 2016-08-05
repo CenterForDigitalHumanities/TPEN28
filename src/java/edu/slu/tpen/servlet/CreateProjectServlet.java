@@ -42,6 +42,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import servlets.createManuscript;
 import textdisplay.Folio;
+import textdisplay.Metadata;
 import textdisplay.Project;
 import user.Group;
 
@@ -82,15 +83,16 @@ public class CreateProjectServlet extends HttpServlet {
          }*/
         try {
             //receive parameters.
-            String repository = "newBerry";
-            String archive = "";
+            String repository = "unknown";
+            String archive = "unknown";
             String city = "unknown";
             String collection = "unknown";
+            String label = "unknown";
 
             city = request.getParameter("city");
-            if (null == city) {
-                city = "fromWebService";
-            }
+//            if (null == city) {
+//                city = "fromWebService";
+//            }
             textdisplay.Manuscript m = null;
 //            System.out.println("msID ============= " + m.getID());
 //            String urls = request.getParameter("urls");
@@ -102,9 +104,18 @@ public class CreateProjectServlet extends HttpServlet {
             List<Integer> ls_folios_keys = new ArrayList();
             if (null != str_manifest) {
                 JSONObject jo = JSONObject.fromObject(str_manifest);
-                archive = jo.getString("@id");
+                if(jo.has("@id")){
+                    archive = jo.getString("@id");
+                }
+                else{
+                    return "500: Malformed Manifest";
+                }
+                if(jo.has("label")){
+                    label = jo.getString("label");
+                }
+                
                 //create a manuscript
-                m = new textdisplay.Manuscript("newBerry", archive, city, city, -999);
+                m = new textdisplay.Manuscript("TPEN 2.8", archive, city, city, -999);
                 JSONArray sequences = (JSONArray) jo.get("sequences");
                 List<String> ls_pageNames = new LinkedList();
                 for (int i = 0; i < sequences.size(); i++) {
@@ -200,6 +211,13 @@ public class CreateProjectServlet extends HttpServlet {
                 newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + m.getShelfMark(), UID);
                 int projectID = newProject.getProjectID();
                 newProject.importData(UID);
+                Metadata metadata = new Metadata(projectID);
+                metadata.setTitle(label);
+                metadata.setMsRepository(repository);
+                metadata.setMsCollection(collection);
+                Integer manID = m.getID();
+                String manID_str = manID.toString();
+                metadata.setMsIdNumber(manID_str);
                 conn.commit();
                 //String propVal = Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN");
                 //return trimed project url

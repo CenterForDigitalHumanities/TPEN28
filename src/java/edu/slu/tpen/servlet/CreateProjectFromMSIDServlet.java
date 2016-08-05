@@ -113,7 +113,6 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
                         else{
                             canvasID = canvasID_check;
                         }
-                        
                         //create anno list for original canvas
                         JSONObject annoList = CreateAnnoListUtil.createEmptyAnnoList(newProject.getProjectID(), canvasID, new JSONArray());
                         URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/saveNewAnnotation.action");

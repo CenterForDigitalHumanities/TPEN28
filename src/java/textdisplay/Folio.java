@@ -232,7 +232,7 @@ public class Folio {
     * @return
     * @throws SQLException
     */
-    public static int createFolioRecordFromNewBerry(String collection, String pageName, String imageName, String archive, int msID, int sequence) throws SQLException {
+    public static int createFolioRecordFromManifest(String collection, String pageName, String imageName, String archive, int msID, int sequence) throws SQLException {
         Connection j = null;
         PreparedStatement stmt = null;
 

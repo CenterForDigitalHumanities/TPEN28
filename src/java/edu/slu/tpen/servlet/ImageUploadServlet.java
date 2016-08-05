@@ -82,7 +82,7 @@ public class ImageUploadServlet extends HttpServlet {
                     while(rs.next()){
                         maxSequence = rs.getInt("sequence");
                     }
-                    int num = textdisplay.Folio.createFolioRecordFromNewBerry(collection, pageName, 
+                    int num = textdisplay.Folio.createFolioRecordFromManifest(collection, pageName, 
                             imageURL, archive, Integer.parseInt(request.getParameter("msID")), maxSequence+1);
                     rs.close();
                     ps.close();
@@ -95,7 +95,7 @@ public class ImageUploadServlet extends HttpServlet {
                 try {
                     //create a manuscript
                     textdisplay.Manuscript m = new textdisplay.Manuscript(repository, archive, city, city, -999);
-                    int num = textdisplay.Folio.createFolioRecordFromNewBerry(collection, pageName, 
+                    int num = textdisplay.Folio.createFolioRecordFromManifest(collection, pageName, 
                             imageURL, archive, m.getID(), 0);
                 } catch (SQLException ex) {
                     Logger.getLogger(ImageUploadServlet.class.getName()).log(Level.SEVERE, null, ex);

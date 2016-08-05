@@ -40,7 +40,7 @@ import user.User;
  *
  * @author bhaberbe
  */
-public class CreateProjectFromMSID {
+public class CreateProjectFromMSIDServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter writer = response.getWriter();

@@ -17,7 +17,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,18 +34,19 @@ import textdisplay.Folio;
 import textdisplay.Manuscript;
 import textdisplay.Project;
 import user.Group;
-import user.User;
 /**
  *
  * @author bhaberbe
  */
-public class CreateProjectFromMSIDServlet {
-
+public class CreateProjectFromMSIDServlet extends HttpServlet {
+    
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter writer = response.getWriter();
         writer.print(creatManuscriptFolioProject(request, response)); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 //        super.doGet(request, response); //To change body of generated methods, choose Tools | Templates.
         this.doPost(request, response);

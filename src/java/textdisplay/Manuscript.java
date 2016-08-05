@@ -166,6 +166,10 @@ public class Manuscript {
          }
       }
    }
+   
+   public void setArchive(String archive_str) {
+      this.archive= archive_str;
+   }
 
    public String getArchive() {
       return archive;

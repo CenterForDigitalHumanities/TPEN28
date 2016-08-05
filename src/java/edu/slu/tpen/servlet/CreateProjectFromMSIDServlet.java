@@ -85,7 +85,7 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
                 return "existing project/" + existing_projID.toString();
             }
             Folio[] array_folios = null;
-            archive = man.getArchive();     
+            
             city = man.getCity();
             collection = man.getCollection();
             repository = man.getRepository();
@@ -100,6 +100,7 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
                 conn.setAutoCommit(false);
                 Group newgroup = new Group(conn, tmpProjName, UID);
                 Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
+                man.setArchive(Folio.getRbTok("SERVERURL")+"/project/"+newProject.getProjectID());
                 if (array_folios.length > 0) {
                     for(int i = 0; i < array_folios.length; i++) {
                         Folio folio = array_folios[i];

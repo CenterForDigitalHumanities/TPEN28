@@ -117,7 +117,10 @@ public class GetProjectTPENServlet extends HttpServlet {
                             List<JSONObject> ls_ms = new ArrayList();
                             Manuscript man = new Manuscript(folios[0].folioNumber);
                             String manifest_uri = man.getArchive(); //All the manifest URIs are stored in manuscript.archive field. See createProject servlets to see how/why.  
-                            if(!manifest_uri.equals("")){
+                            if(manifest_uri.equals("")){
+                                ls_ms.add(jo_error);
+                            }
+                            else{
                                 try{
                                     URL manifest_data = new URL(manifest_uri);
                                     BufferedReader in = new BufferedReader(
@@ -130,12 +133,14 @@ public class GetProjectTPENServlet extends HttpServlet {
                                     }
                                     in.close();
                                     man_obj = JSONObject.fromObject(manifest_obj_str);
+                                    ls_ms.add(man_obj);
                                 }
                                 catch (Exception e){
                                     jo_error.element("error" , "Could not resolve manifest.");
+                                    ls_ms.add(jo_error);
                                 }
                             }
-                            ls_ms.add(man_obj);
+                            
                             
                             jsonMap.put("manifest", gson.toJson(ls_ms));
 //                            System.out.println("manuscript json ======= " + gson.toJson(ls_ms));

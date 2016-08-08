@@ -1,193 +1,123 @@
-    var transcriptionCanvases = [];
-    var focusItem = [null,null];
-    var transcriptionFile = "";
-    var transcriptionObject = {};
-    var projectID = 0;
+var tpen = {
+    project: {},
+    manifest: {},
+    screen:{
+        focusItem:[null,null],
+        liveTool: "none",
+        zoomMultiplier: 2,
+        isMagnifying: false,
+        isFullscreen: true,
+        isAddingLines: false,
+        colorList: [
+            "rgba(153,255,0,.4)",
+            "rgba(0,255,204,.4)",
+            "rgba(51,0,204,.4)",
+            "rgba(204,255,0,.4)",
+            "rgba(0,0,0,.4)",
+            "rgba(255,255,255,.4)",
+            "rgba(255,0,0,.4)"],
+        colorThisTime: "rgba(255,255,255,.4)",
+        currentFolio: -1
+    },
+    user: {
+        current: false,
+        isAdmin: false
+    }
+};
     var dragHelper = "<div id='dragHelper'></div>";
-    var liveTool = "none";
-    var zoomMultiplier = 2;
-    var isMagnifying = false;
-    var currentFolio = 0; //The current folio number.  It runs from 1 -> infinity, remember to subtract 1 when referring to index.
-    var isFullscreen = true;
-    var line = false;
-    var isAddingLines = false;
-    var charactersForButton = "";
-    var tagsForButton = "";
-    var colorList = ["rgba(153,255,0,.4)", "rgba(0,255,204,.4)", "rgba(51,0,204,.4)", "rgba(204,255,0,.4)", "rgba(0,0,0,.4)", "rgba(255,255,255,.4)", "rgba(255,0,0,.4)"];
-    var colorThisTime = "rgba(255,255,255,.4)";
-    var annoLists = [];
-    var loggedInUser = false;
-    var userIsAdmin = false;
-    var adjustRatio = 0;
+var adjustRatio = 0; // QUERY: not sure what this is -cubap
     //var basePath = window.location.protocol + "//" + window.location.host;
 
-    /* Load the interface to the first page of the manifest. */
-    function firstFolio(parsing){
-        currentFolio = parseInt(currentFolio);
-        if(parseInt(currentFolio) !== 1){
-            if(parsing === "parsing"){
-                $(".pageTurnCover").show();
-                fullPage();
-                focusItem = [null,null];
-                currentFolio = 1;
-                loadTranscriptionCanvas(transcriptionFolios[0], parsing);
-                setTimeout(function(){
+/*
+ * Redraw the screen for use after updating the current line, folio, or
+ * tools being used. Expects all screen variables to be set.
+ *
+ * @return {undefined}
+ */
+function redraw () {
+    tpen.screen.focusItem = [null, null];
+    if (tpen.screen.currentFolio > -1) {
+        if (tpen.screen.liveTool === "parsing") {
+            $(".pageTurnCover").show();
+            fullPage();
+            tpen.screen.currentFolio = parseInt(tpen.screen.currentFolio);
+            var canvas = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio];
+            if (!canvas) {
+                canvas = tpen.manifest.sequences[0].canvases[0];
+                console.warn("Folio was not found in Manifest. Loading first page...");
+            }
+            loadTranscriptionCanvas(canvas, true);
+            setTimeout(function () {
                 hideWorkspaceForParsing();
-                    $(".pageTurnCover").fadeOut(1500);
-                }, 800);
-            }
-            else{
-                focusItem = [null,null];
-                currentFolio = 1;
-                loadTranscriptionCanvas(transcriptionFolios[0], "");
-            }
-
-
+                $(".pageTurnCover").fadeOut(1500);
+            }, 800);
         }
+    } else {
+        // failed to draw, no Canvas selected
     }
+}
+    /* Load the interface to the first page of the manifest. */
+function firstFolio () {
+    tpen.screen.currentFolio = 0;
+    redraw();
+}
 
     /* Load the interface to the last page of the manifest. */
-    function lastFolio(parsing){
-        currentFolio = parseInt(currentFolio);
-        var lastFolio = transcriptionFolios.length;
-        if(parseInt(currentFolio) !== parseInt(lastFolio)){
-            if(parsing === "parsing"){
-                $(".pageTurnCover").show();
-                fullPage();
-                focusItem = [null,null];
-                currentFolio = lastFolio;
-                loadTranscriptionCanvas(transcriptionFolios[lastFolio-1], parsing);
-                setTimeout(function(){
-                    hideWorkspaceForParsing();
-                    $(".pageTurnCover").fadeOut(1500);
-                }, 800);
-            }
-            else{
-                focusItem = [null,null];
-                currentFolio = lastFolio;
-                loadTranscriptionCanvas(transcriptionFolios[lastFolio-1], "");
-            }
-        }
-    }
+    function lastFolio(){
+    tpen.screen.currentFolio = tpen.manifest.sequences[0].canvases.length - 1;
+    redraw();
+}
     /* Load the interface to the previous page from the one you are on. */
-    function previousFolio(parsing){
-        currentFolio = parseInt(currentFolio);
-        if(parseInt(currentFolio) > 1){
-            if(parsing === "parsing"){
-                $(".pageTurnCover").show();
-                fullPage();
-                focusItem = [null, null];
-                currentFolio -= 1;
-                loadTranscriptionCanvas(transcriptionFolios[currentFolio - 1], parsing);
-                setTimeout(function(){
-                    hideWorkspaceForParsing();
-                    $(".pageTurnCover").fadeOut(1500);
-                }, 800);
-            }
-            else{
-                focusItem = [null, null];
-                currentFolio -= 1;
-                loadTranscriptionCanvas(transcriptionFolios[currentFolio - 1], "");
-            }
-        }
-        else{
-            //console.log("BUGGER");
-        }
+function previousFolio (parsing) {
+    if (tpen.screen.currentFolio === 0) {
+        throw new Error("You are already on the first page.");
+    }
+    tpen.screen.currentFolio--;
+    redraw();
     }
 
     /* Load the interface to the next page from the one you are on. */
-    function nextFolio(parsing){
-        currentFolio = parseInt(currentFolio);
-        if(parseInt(currentFolio) !== transcriptionFolios.length){
-            if(parsing === "parsing"){
-                $(".pageTurnCover").show();
-                fullPage();
-                focusItem = [null, null];
-                currentFolio += 1;
-                loadTranscriptionCanvas(transcriptionFolios[currentFolio-1], parsing);
-                setTimeout(function(){
-                    hideWorkspaceForParsing();
-                    $(".pageTurnCover").fadeOut(1500);
-                }, 800);
-            }
-            else{
-                focusItem = [null, null];
-                currentFolio += 1;
-                loadTranscriptionCanvas(transcriptionFolios[currentFolio-1], "");
-            }
-
-        }
-        else{
-            //console.log("BOOGER");
-        }
+function nextFolio (parsing) {
+    if (tpen.screen.currentFolio >= tpen.manifest.sequences[0].canvases.length - 1) {
+        throw new Error("That page is beyond the last page.");
     }
+    tpen.screen.currentFolio++;
+    redraw();
+}
 
     /* Test if a given string can be parsed into a valid JSON object.
      * @param str  A string
      * @return bool
      */
     function isJSON(str) {
-        var r = true;
         if(typeof str === "object"){
-            r = true;
+        return true;
         }
         else{
             try {
                 JSON.parse(str);
-                r=true;
+            return true;
             }
             catch (e) {
-               r = false;
+            return false;
             }
         }
-        return r;
+    return false;
     };
-
-
     function resetTranscription(){
         window.location.reload();
-
     }
-    /* The tools for newberry are hard set in the html page, no need for this function. */
-
-//    function getProjectTools(projectID){
-//        var url = "http://localhost:8080/getProjectTPENServlet?projectID="+projectID;
-//        $.ajax({
-//            url: url,
-//            type:"GET",
-//            success: function(activeProject){
-//                var toolArea = $("#iTools");
-//                var projectTools = activeProject.projectTool; //These are all iframe tools
-////                $.each(projectTools, function(){
-////                    var toolLabel = this.label;
-////                    var toolSource = this.source;
-////                    var projectTool = $('<div id="userTool_'+toolLabel+'" class="split iTool">\n\
-////                        <div class="fullScreenTrans">Full Screen Transcription</div>\n\
-////                        <iframe id="tool_'+toolLabel+'" src="'+toolSource+'">\n\
-////                        </iframe>\n\
-////                    </div>');
-////                    toolArea.append(projectTool);
-////                });
-//                var userTools = activeProject.userTool; //These are tools chosen by the project creator for users to have access to.  They may not be iframe tools.
-////                $.each(userTools, function(){
-////
-////                });
-//            }
-//        });
-//    }
 
     /* Populate the split page for Text Preview.  These are the transcription lines' text. */
     function createPreviewPages(){
-       // console.log("Creating preview pages");
         $(".previewPage").remove();
-        var noLines = true;
-        var pageLabel = "";
-        for(var i = 0; i<transcriptionFolios.length; i++){
+    var pageLabel = "";
+    var transcriptionFolios = tpen.manifest.sequences[0].canvases;
+    for (var i = 0; i < transcriptionFolios.length; i++) {
             var currentFolioToUse = transcriptionFolios[i];
             pageLabel = currentFolioToUse.label;
-            var currentOn = currentFolioToUse["@id"];
             var currentPage = "";
-            if(i===0){
+        if (i === tpen.screen.currentFolio) {
                 currentPage = "currentPage";
             }
            var lines = [];
@@ -195,19 +125,6 @@
                lines = currentFolioToUse.resources;
                 populatePreview(lines, pageLabel, currentPage);
            }
-//           else{
-//               if(currentFolioToUse.otherContent && currentFolioToUse.otherContent.length>0){
-////                //console.log("this is the tester")
-//                    lines = annoListTester.resources;
-//                    pageLabel = annoListTester.label;
-//                    populatePreview(lines, pageLabel, currentPage);
-//                }
-//                else{
-//                    //console.log("Gotta get annos on " + currentOn);
-//                    gatherAndPopulate(currentOn, pageLabel, currentPage, i);
-//                }
-//           }
-
         }
     }
 
@@ -219,47 +136,7 @@
         var paramOBJ = {"content": JSON.stringify(properties)};
          $.post(annosURL, paramOBJ, function(annoList){
              annoList = JSON.parse(annoList);
-             if(annoList.length > 0){
-                 checkForMaster(annoList, pageLabel, currentPage, i);
-             }
-
          });
-    }
-
-    /* Check for which annotation list to use either by project ID or if its the master */
-    function checkForMaster(annoList, pageLabel, currentPage, j){
-        var lines = [];
-        var masterList = undefined;
-        for(var i=0; i<annoList.length; i++){
-            var thisList = annoList[i];
-            if(thisList.proj === "master"){
-                //console.log("master");
-                masterList = thisList; //The last list happens to be the master list, so set it.
-            }
-            if(thisList.proj !== undefined && thisList.proj == theProjectID){
-               //console.log("proj == "+theProjectID);
-               if(thisList.resources !== undefined){
-                   if(thisList.resources.length > 0){ //can be an empty list.
-                       lines = thisList.resources;
-                   }
-                   populatePreview(lines, pageLabel, currentPage, j);
-                   return false;
-               }
-            }
-            else if(lines.length===0 && i===annoList.length-1){
-                //console.log("must default to master");
-                if(masterList !== undefined){
-                    lines = masterList.resources;
-                    //TODO we do not want a user who is not an admin to alter this list.  A general user could end up being able to edit the master list.
-                    populatePreview(lines, pageLabel, currentPage, j);
-                }
-                else{
-                 //   console.log("No matching list by projectID and no master found for "+pageLabel);
-                }
-
-                return false;
-            }
-        }
     }
 
     /* Populate the line preview interface. */
@@ -303,7 +180,7 @@
          }
          $("#previewDiv").append(previewPage);
     }
-
+### CONTINUE CUBAP
     function populateSpecialCharacters(specialCharacters){
         specialCharacters = JSON.parse(specialCharacters);
         var speCharactersInOrder = new Array(specialCharacters.length);

@@ -6,6 +6,15 @@
 
 package edu.slu.tpen.entity.Image;
 
+import edu.slu.tpen.servlet.Constant;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -138,4 +147,50 @@ public class Canvas {
         this.ls_otherContent = ls_otherContent;
     }
     
+    /**
+     * Check the annotation store for the annotation list on this canvas for this project.
+     * @param projectID : the projectID the canvas belongs to
+     * @param canavsID: The canvas ID the annotation list is on
+     * @param UID: The current UID of the user in session.
+     * @return : The annotation list.
+     */
+    public static String[] getAnnotationListsForProject(Integer projectID, String canvasID, Integer UID) throws MalformedURLException, IOException {
+         URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/getAnnotationByProperties.action");
+         JSONObject parameter = new JSONObject();
+         parameter.element("@type", "sc:AnnotationList");
+         parameter.element("proj", projectID);
+         parameter.element("on", canvasID);
+        HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.setRequestMethod("POST");
+        connection.setUseCaches(false);
+        connection.setInstanceFollowRedirects(true);
+        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        connection.connect();
+        DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+        //value to save
+        out.writeBytes("content=" + URLEncoder.encode(parameter.toString(), "utf-8"));
+        out.flush();
+        out.close(); // flush and close
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
+        String line="";
+        StringBuilder sb = new StringBuilder();
+        while ((line = reader.readLine()) != null){
+            //line = new String(line.getBytes(), "utf-8");
+            sb.append(line);
+        }
+        reader.close();
+        connection.disconnect();
+        JSONArray theLists = JSONArray.fromObject(sb.toString());
+        String[] annotationLists = new String[theLists.size()];
+        for(int i=0; i<theLists.size(); i++){
+            JSONObject currentList = theLists.getJSONObject(i);
+            String id = currentList.getString("@id");
+            annotationLists[i] = id;
+        }
+        System.out.println("We are returning the annotation list...");
+        System.out.println(annotationLists);
+        return annotationLists;
+    }
 }

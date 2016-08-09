@@ -232,7 +232,7 @@ public class Folio {
     * @return
     * @throws SQLException
     */
-    public static int createFolioRecordFromNewBerry(String collection, String pageName, String imageName, String archive, int msID, int sequence) throws SQLException {
+    public static int createFolioRecordFromManifest(String collection, String pageName, String imageName, String archive, int msID, int sequence) throws SQLException {
         Connection j = null;
         PreparedStatement stmt = null;
 
@@ -705,6 +705,26 @@ public class Folio {
          ResultSet rs = stmt.executeQuery();
          if (rs.next()) {
             toret += rs.getString("collection");
+         }
+         return toret;
+      } finally {
+         DatabaseWrapper.closeDBConnection(j);
+         DatabaseWrapper.closePreparedStatement(stmt);
+      }
+   }
+   
+    public Integer getMSID() throws SQLException {
+      Connection j = null;
+      PreparedStatement stmt = null;
+      try {
+         Integer toret = -1;
+         String qry = "select * from folios where pageNumber=?";
+         j = DatabaseWrapper.getConnection();
+         stmt = j.prepareStatement(qry);
+         stmt.setInt(1, folioNumber);
+         ResultSet rs = stmt.executeQuery();
+         if (rs.next()) {
+            toret = rs.getInt("msID");
          }
          return toret;
       } finally {
@@ -1416,4 +1436,5 @@ public class Folio {
    }
 
    private static final Logger LOG = Logger.getLogger(Folio.class.getName());
+
 }

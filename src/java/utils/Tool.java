@@ -33,7 +33,7 @@ import user.User;
 public class Tool {
 
    public enum tools {
-      preview, compare, parsing, abbreviation, history, linebreak, annotation, paleography, sciat
+      preview, compare, parsing, abbreviation, history, linebreak, annotation, paleography, sciat, unknown
    };
 
    public Tool(tools toolName, int UID) throws SQLException {
@@ -90,7 +90,7 @@ public class Tool {
 
    public static void initializeTools(int uid) throws SQLException {
       for (Tool.tools iter : tools.values()) {
-         if (iter != tools.sciat && iter != tools.annotation) {
+         if (iter != tools.sciat && iter != tools.annotation && iter != tools.unknown) {
             Tool t = new Tool(iter, uid);
          }
       }
@@ -134,24 +134,29 @@ public class Tool {
          toret = new tools[res.size()];
          int ctr = 0;
          while (!res.empty()) {
-            String tmp = res.pop();
-            if (tmp.compareTo("preview") == 0) {
-               toret[ctr] = tools.preview;
-            }
-            if (tmp.compareTo("compare") == 0) {
-               toret[ctr] = tools.compare;
-            }
-            if (tmp.compareTo("parsing") == 0) {
-               toret[ctr] = tools.parsing;
-            }
-            if (tmp.compareTo("abbreviation") == 0) {
-               toret[ctr] = tools.abbreviation;
-            }
-            if (tmp.compareTo("history") == 0) {
-               toret[ctr] = tools.history;
-            }
-            if (tmp.compareTo("linebreak") == 0) {
-               toret[ctr] = tools.linebreak;
+            String tmp = res.pop().toLowerCase();
+            //We do not want to return an array with null in it, so we added an unknown enum and made this switch.
+            switch(tmp){
+                case "preview":
+                    toret[ctr] = tools.preview;
+                break;
+                case "compare":
+                    toret[ctr] = tools.compare;        
+                break;
+                case "parsing":
+                    toret[ctr] = tools.parsing;        
+                break;
+                case "abbreviation":
+                    toret[ctr] = tools.abbreviation;        
+                break;
+                case "history":
+                    toret[ctr] = tools.history;        
+                break;
+                case "linebreak":
+                    toret[ctr] = tools.linebreak;        
+                break;
+                default:
+                    toret[ctr] = tools.unknown;
             }
             ctr++;
          }

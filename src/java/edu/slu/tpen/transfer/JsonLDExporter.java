@@ -60,9 +60,9 @@ public class JsonLDExporter {
     */
    public JsonLDExporter(Project proj, User u) throws SQLException, IOException {
       Folio[] folios = proj.getFolios();
-
+      int projID = proj.getProjectID();
       try {
-         String projName = Folio.getRbTok("SERVERURL") + proj.getProjectName();
+         String projName = Folio.getRbTok("SERVERURL") + "manifest/"+projID;
          manifestData = new LinkedHashMap<>();
          manifestData.put("@context", "http://www.shared-canvas.org/ns/context.json");
          manifestData.put("@id", projName + "/manifest.json");
@@ -70,7 +70,7 @@ public class JsonLDExporter {
          manifestData.put("label", proj.getProjectName());
 
          Map<String, Object> pages = new LinkedHashMap<>();
-         pages.put("@id", projName + "/sequence/normal");
+         pages.put("@id", Folio.getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
          pages.put("@type", "sc:Sequence");
          pages.put("label", "Current Page Order");
 
@@ -98,9 +98,11 @@ public class JsonLDExporter {
     * serialisation
     */
    private Map<String, Object> buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
-
-      String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
-
+       
+      Integer msID = f.getMSID();
+      String msID_str = msID.toString();
+      String canvasID = Folio.getRbTok("SERVERURL")+"/MS"+msID_str+"/canvas/"+f.getFolioNumber();
+      //String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
       Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
       if (pageDim == null) {
          LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());

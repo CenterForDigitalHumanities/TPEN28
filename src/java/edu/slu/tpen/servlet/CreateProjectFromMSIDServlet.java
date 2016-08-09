@@ -1,19 +1,9 @@
 /*
- * Copyright 2014- Saint Louis University. Licensed under the
- *	Educational Community License, Version 2.0 (the "License"); you may
- * not use this file except in compliance with the License. You may
- * obtain a copy of the License at
- *
- * http://www.osedu.org/licenses/ECL-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an "AS IS"
- * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing
- * permissions and limitations under the License.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package edu.slu.tpen.servlet;
-
 import edu.slu.tpen.servlet.util.CreateAnnoListUtil;
 import edu.slu.util.ServletUtils;
 
@@ -27,7 +17,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -42,23 +31,22 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import servlets.createManuscript;
 import textdisplay.Folio;
+import textdisplay.Manuscript;
 import textdisplay.Metadata;
 import textdisplay.Project;
 import user.Group;
-
 /**
- * Create a manuscript, folio and project for New Berry. This part is a transformation of tpen function to web service. 
- * Servlet also adds annotation list to each canvas (also known as foliio in old tpen) using rerum.io. 
- * @author hanyan
+ *
+ * @author bhaberbe
  */
-public class CreateProjectServlet extends HttpServlet {
-
+public class CreateProjectFromMSIDServlet extends HttpServlet {
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter writer = response.getWriter();
         writer.print(creatManuscriptFolioProject(request, response)); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 //        super.doGet(request, response); //To change body of generated methods, choose Tools | Templates.
@@ -66,90 +54,45 @@ public class CreateProjectServlet extends HttpServlet {
     }
 
     /**
-     * Create manuscript, folio and project using given json data.
-     *
-     * @param repository (optional)
-     * @param archive (optional)
-     * @param city (optional)
-     * @param collection (optional)
-     * @param title (optional)
-     * @param urls
-     * @param names
+     * Create project from given MSID.  Return projectID if a project already exists for this user with this MSID.
+     * @param msid
      */
     public String creatManuscriptFolioProject(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        /*if(null != request.getSession().getAttribute("UID")){
-         UID = (Integer) request.getSession().getAttribute("UID");
-         }*/
         try {
             //receive parameters.
-            String repository = "unknown";
-            String archive = "unknown";
-            String city = "unknown";
-            String collection = "unknown";
-            String label = "unknown";
-
-            city = request.getParameter("city");
-//            if (null == city) {
-//                city = "fromWebService";
-//            }
-            textdisplay.Manuscript m = null;
-//            System.out.println("msID ============= " + m.getID());
-//            String urls = request.getParameter("urls");
-//            String [] seperatedURLs = urls.split(";");
-//            String names = request.getParameter("names");
-//            String [] seperatedNames = names.split(",");
-
-            String str_manifest = request.getParameter("scmanifest");
-            List<Integer> ls_folios_keys = new ArrayList();
-            if (null != str_manifest) {
-                JSONObject jo = JSONObject.fromObject(str_manifest);
-                if(jo.has("@id")){
-                    archive = jo.getString("@id");
-                }
-                else{
-                    return "500: Malformed Manifest";
-                }
-                if(jo.has("label")){
-                    label = jo.getString("label");
-                }
-                
-                //create a manuscript
-                m = new textdisplay.Manuscript("TPEN 2.8", archive, city, city, -999);
-                JSONArray sequences = (JSONArray) jo.get("sequences");
-                List<String> ls_pageNames = new LinkedList();
-                for (int i = 0; i < sequences.size(); i++) {
-                    JSONObject inSequences = (JSONObject) sequences.get(i);
-                    JSONArray canvases = inSequences.getJSONArray("canvases");
-                    if (null != canvases && canvases.size() > 0) {
-                        for (int j = 0; j < canvases.size(); j++) {
-                            JSONObject canvas = canvases.getJSONObject(j);
-                            ls_pageNames.add(canvas.getString("label"));
-                            JSONArray images = canvas.getJSONArray("images");
-                            if (null != images && images.size() > 0) {
-                                for (int n = 0; n < images.size(); n++) {
-                                    JSONObject image = images.getJSONObject(n);
-                                    JSONObject resource = image.getJSONObject("resource");
-                                    String imageName = resource.getString("@id");
-                                    int folioKey = textdisplay.Folio.createFolioRecordFromManifest(city, canvas.getString("label"), imageName.replace('_', '&'), archive, m.getID(), 0);
-                                    ls_folios_keys.add(folioKey);
-                                }
-                            }
-                        }
-                    }
-                }
-
-            } else {
-                return "You need a manifest to create a project.";
-            }
-
             //create a project
             int UID = 0;
             /*if(null != request.getSession().getAttribute("UID")){
              UID = (Integer) request.getSession().getAttribute("UID");
              }*/
             UID = ServletUtils.getUID(request, response);
-            String tmpProjName = m.getShelfMark() + " project";
+            String repository = "T-PEN 2.8";
+            String archive = "unknown";
+            String city = "unknown";
+            String collection = "unknown";
+            String label = "";
+
+            Manuscript man = null;
+            String msID_str = request.getParameter("msID");
+            if(msID_str == null){
+                return "500: No MSID";
+            }
+            Integer msID = Integer.parseInt(msID_str);
+            man = new Manuscript(msID, true);
+            Integer existing_projID = man.checkExistingProjects(msID, UID);
+            if(existing_projID>1) { //-1 if no project existed for this user with this MSID.  
+                return "existing project/" + existing_projID.toString();
+            }
+            Folio[] array_folios = null;
+            
+            city = man.getCity();
+            collection = man.getCollection();
+            repository = man.getRepository();
+            //create a manuscript
+            List<String> ls_pageNames = new LinkedList();
+            array_folios = man.getFolios();
+            String tmpProjName = man.getShelfMark() + " project";
             if (request.getParameter("title") != null) {
                 tmpProjName = request.getParameter("title");
             }
@@ -157,13 +100,10 @@ public class CreateProjectServlet extends HttpServlet {
                 conn.setAutoCommit(false);
                 Group newgroup = new Group(conn, tmpProjName, UID);
                 Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
-                Folio[] array_folios = new Folio[ls_folios_keys.size()];
-                if (ls_folios_keys.size() > 0) {
-                    for (int i = 0; i < ls_folios_keys.size(); i++) {
-                        Folio folio = new Folio(ls_folios_keys.get(i));
-                        array_folios[i] = folio;
-                        Integer msID = folio.getMSID();
-                        String msID_str = msID.toString();
+                man.setArchive(Folio.getRbTok("SERVERURL")+"/project/"+newProject.getProjectID());
+                if (array_folios.length > 0) {
+                    for(int i = 0; i < array_folios.length; i++) {
+                        Folio folio = array_folios[i];
                         //This needs to be the same one the JSON Exporter creates and needs to be unique and unchangeable.
                         String canvasID_check = folio.getCanvas();
                         String canvasID = "";
@@ -208,20 +148,19 @@ public class CreateProjectServlet extends HttpServlet {
                     }
                 }
                 newProject.setFolios(conn, array_folios);
-                newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + m.getShelfMark(), UID);
-                int projectID = newProject.getProjectID();
+                newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + man.getShelfMark(), UID);
+                int projectID_return = newProject.getProjectID();
                 newProject.importData(UID);
-                Metadata metadata = new Metadata(projectID);
+                Metadata metadata = new Metadata(projectID_return);
+                label = tmpProjName;
                 metadata.setTitle(label);
                 metadata.setMsRepository(repository);
                 metadata.setMsCollection(collection);
-                Integer manID = m.getID();
-                String manID_str = manID.toString();
-                metadata.setMsIdNumber(manID_str);
+                metadata.setMsIdNumber(msID_str);
                 conn.commit();
                 //String propVal = Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN");
                 //return trimed project url
-                return "/project/" + projectID;
+                return "project/" + projectID_return;
             }
         } catch (SQLException ex) {
             Logger.getLogger(createManuscript.class.getName()).log(Level.SEVERE, null, ex);

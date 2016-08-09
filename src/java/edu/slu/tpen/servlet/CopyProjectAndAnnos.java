@@ -74,10 +74,18 @@ public class CopyProjectAndAnnos extends HttpServlet {
                             //get annotation list for each canvas
                             JSONObject annoLsQuery = new JSONObject();
                             annoLsQuery.element("@type", "sc:AnnotationList");
-                            //Parse folio.getImageURL() to retrieve paleography pid, and then generate new canvas id
-                            String imageURL = folio.getImageURL();
-                            // use regex to extract paleography pid
-                            String canvasID = Constant.PALEO_CANVAS_ID_PREFIX + imageURL.replaceAll("^.*(paleography[^/]+).*$", "/$1"); //for paleo
+                            Integer msID = folio.getMSID();
+                            String msID_str = msID.toString();
+                            //This needs to be the same one the JSON Exporter creates and needs to be unique and unchangeable.
+                            String canvasID_check = folio.getCanvas();
+                            String canvasID = "";
+                            String str_folioNum = Folio.getRbTok("SERVERURL")+"/MS"+msID_str+"/canvas/"+folio.getFolioNumber();
+                            if(canvasID_check == ""){
+                                canvasID = str_folioNum;
+                            }
+                            else{
+                                canvasID = canvasID_check;
+                            }
                             //String canvasID = Folio.getRbTok("SERVERURL") + templateProject.getProjectName() + "/canvas/" + URLEncoder.encode(folio.getPageName(), "UTF-8"); // for slu testing
                             annoLsQuery.element("on", canvasID);
                             //System.out.println(annoLsQuery.toString());
@@ -231,8 +239,8 @@ public class CopyProjectAndAnnos extends HttpServlet {
                         }
                     }
                     //System.out.println("Copy proj and annos finished.  Whats the ID to return: "+thisProject.getProjectID());
-                    String propVal = textdisplay.Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN"); 
-                    result = propVal + "/project/" + thisProject.getProjectID();
+                    //String propVal = textdisplay.Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN"); 
+                    result = "/project/" + thisProject.getProjectID();
                 }
             } catch(Exception e){
                 e.printStackTrace();

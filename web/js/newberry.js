@@ -266,13 +266,11 @@ project: {},
                         if (this.otherContent){
                     if (this.otherContent.length > 0){
                     annoLists.push(this.otherContent[0]);
-                    }
-                    else{
+                    } else {
                     //otherContent was empty (IIIF says otherContent should have URI's to AnnotationLists).  We will check the store for these lists still.
                     annoLists.push("empty");
                     }
-                    }
-                    else{
+                    } else{
                     annoLists.push("noList");
                     }
                     });

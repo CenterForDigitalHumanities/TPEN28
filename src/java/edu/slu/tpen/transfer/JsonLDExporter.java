@@ -152,9 +152,9 @@ public class JsonLDExporter {
       //If this list was somehow stored in the SQL DB, we could skip calling to the store every time. 
       otherContent = Canvas.getAnnotationListsForProject(projID, canvasID, u.getUID());
       System.out.println("JSON exporter other content...");
-      System.out.println(otherContent);
-      
-      if(otherContent.length == 0){
+      System.out.println(otherContent.toString());
+      result.put("otherContent", otherContent);
+      if(otherContent.length == 0){ //No list on store
           System.out.println("Need to gather lines off the sql, save them, add them to a list, and save the list to the store for the folios");
          try (Connection conn = getDBConnection()) {
          try (PreparedStatement stmt = conn.prepareStatement("SELECT * FROM transcription WHERE projectID = ? AND folio = ? ORDER BY x, y")) {
@@ -199,11 +199,11 @@ public class JsonLDExporter {
             }
             resources_array = JSONArray.fromObject(resources);
             annotationList.element("resources", resources_array);
-            //TODO: Save this annotation list into the annotation store!
+            //TODO: Save this annotation list into the annotation store.  otherContent = ["new_@id_created_by_save"]; result.put("otherContent", otherContent);!
          }
         } 
       }
-      else{
+      else{ //could maybe break this else away, but make sure to set the otherContent field of result in the "if" if you do.
           System.out.println("Found a list on the store, no need to update from sql");
       }
       // lineID, textUnencoded, x, y, width, height, comment

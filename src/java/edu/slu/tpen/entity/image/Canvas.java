@@ -160,6 +160,7 @@ public class Canvas {
          parameter.element("@type", "sc:AnnotationList");
          parameter.element("proj", projectID);
          parameter.element("on", canvasID);
+         System.out.println("Get anno list for proj "+projectID+" on canvas "+canvasID);
         HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
         connection.setDoOutput(true);
         connection.setDoInput(true);
@@ -183,14 +184,14 @@ public class Canvas {
         reader.close();
         connection.disconnect();
         JSONArray theLists = JSONArray.fromObject(sb.toString());
+        System.out.println("Found "+theLists.size()+" lists matching those params.");
         String[] annotationLists = new String[theLists.size()];
         for(int i=0; i<theLists.size(); i++){
             JSONObject currentList = theLists.getJSONObject(i);
             String id = currentList.getString("@id");
+            System.out.println("List ID: "+id);
             annotationLists[i] = id;
         }
-        System.out.println("We are returning the annotation list...");
-        System.out.println(annotationLists);
         return annotationLists;
     }
 }

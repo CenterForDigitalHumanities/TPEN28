@@ -149,6 +149,7 @@ public class JsonLDExporter {
       imageAnnot.put("resource", imageResource);
       imageAnnot.put("on", canvasID);
       images.add(imageAnnot);
+      //If this list was somehow stored in the SQL DB, we could skip calling to the store every time. 
       otherContent = Canvas.getAnnotationListsForProject(projID, canvasID, u.getUID());
       System.out.println("JSON exporter other content...");
       System.out.println(otherContent);

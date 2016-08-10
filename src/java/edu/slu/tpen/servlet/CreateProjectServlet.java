@@ -174,7 +174,7 @@ public class CreateProjectServlet extends HttpServlet {
                         else{
                             canvasID = canvasID_check;
                         }
-                        //create anno list for original canvas
+                        //Create anno list for canvas.
                         JSONObject annoList = CreateAnnoListUtil.createEmptyAnnoList(newProject.getProjectID(), canvasID, new JSONArray());
                         URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/saveNewAnnotation.action");
                         HttpURLConnection uc = (HttpURLConnection) postUrl.openConnection();

@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.slu.tpen.entity.Image.Canvas;
 import imageLines.ImageCache;
 import org.apache.commons.lang.StringUtils;
 import org.owasp.esapi.ESAPI;
@@ -38,6 +39,8 @@ import textdisplay.Project;
 import user.User;
 import static edu.slu.util.LangUtils.buildQuickMap;
 import static edu.slu.util.ServletUtils.getDBConnection;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Class which manages serialisation to JSON-LD. Builds a Map containing the
@@ -101,9 +104,18 @@ public class JsonLDExporter {
        
       Integer msID = f.getMSID();
       String msID_str = msID.toString();
-      String canvasID = Folio.getRbTok("SERVERURL")+"/MS"+msID_str+"/canvas/"+f.getFolioNumber();
+      String canvasID = Folio.getRbTok("SERVERURL")+"MS"+msID_str+"/canvas/"+f.getFolioNumber();
+      JSONObject annotationList = new JSONObject();
+      JSONArray resources_array = new JSONArray();
+      annotationList.element("@type", "sc:AnnotationList");
+      annotationList.element("label", canvasID+" List");
+      annotationList.element("resources", resources_array);
+      annotationList.element("proj", projID);
+      annotationList.element("on", canvasID);
+      annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
       //String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
       Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
+      String[] otherContent;
       if (pageDim == null) {
          LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
          pageDim = f.getImageDimension();
@@ -123,6 +135,7 @@ public class JsonLDExporter {
          result.put("width", canvasWidth);
       }
       List<Object> resources = new ArrayList<>();
+      List<Object> images = new ArrayList<>();
       Map<String, Object> imageAnnot = new LinkedHashMap<>();
       imageAnnot.put("@type", "oa:Annotation");
       imageAnnot.put("motivation", "sc:painting");
@@ -134,12 +147,16 @@ public class JsonLDExporter {
          imageResource.put("width", pageDim.width);
       }
       imageAnnot.put("resource", imageResource);
-
       imageAnnot.put("on", canvasID);
-      resources.add(imageAnnot);
-
-      // lineID, textUnencoded, x, y, width, height, comment
-      try (Connection conn = getDBConnection()) {
+      images.add(imageAnnot);
+      //If this list was somehow stored in the SQL DB, we could skip calling to the store every time. 
+      otherContent = Canvas.getAnnotationListsForProject(projID, canvasID, u.getUID());
+      System.out.println("JSON exporter other content...");
+      System.out.println(otherContent.toString());
+      result.put("otherContent", otherContent);
+      if(otherContent.length == 0){ //No list on store
+          System.out.println("Need to gather lines off the sql, save them, add them to a list, and save the list to the store for the folios");
+         try (Connection conn = getDBConnection()) {
          try (PreparedStatement stmt = conn.prepareStatement("SELECT * FROM transcription WHERE projectID = ? AND folio = ? ORDER BY x, y")) {
             stmt.setInt(1, projID);
             stmt.setInt(2, f.getFolioNumber());
@@ -165,6 +182,7 @@ public class JsonLDExporter {
                lineAnnot.put("motivation", "sc:painting");
                lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(rs.getString("text"))));
                lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, rs.getInt("x"), rs.getInt("y"), rs.getInt("width"), rs.getInt("height")));
+               //TODO: Save the annotation, add the real @id field, add into resources
                resources.add(lineAnnot);
 
                String note = rs.getString("comment");
@@ -176,11 +194,22 @@ public class JsonLDExporter {
                   noteAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", note));
                   noteAnnot.put("on", lineURI);
                   resources.add(noteAnnot);
+                  //TODO: Save the annotation, add the real @id field, add into resources
                }
             }
+            resources_array = JSONArray.fromObject(resources);
+            annotationList.element("resources", resources_array);
+            //TODO: Save this annotation list into the annotation store.  otherContent = ["new_@id_created_by_save"]; result.put("otherContent", otherContent);!
          }
+        } 
       }
+      else{ //could maybe break this else away, but make sure to set the otherContent field of result in the "if" if you do.
+          System.out.println("Found a list on the store, no need to update from sql");
+      }
+      // lineID, textUnencoded, x, y, width, height, comment
+      // TODO: we don't want to put the resources array here anymore if there is an annotation list in otherContent. 
       result.put("resources", resources);
+      result.put("images", images);
       return result;
    }
 

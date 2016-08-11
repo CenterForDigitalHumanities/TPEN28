@@ -107,7 +107,7 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
                         //This needs to be the same one the JSON Exporter creates and needs to be unique and unchangeable.
                         String canvasID_check = folio.getCanvas();
                         String canvasID = "";
-                        String str_folioNum = Folio.getRbTok("SERVERURL")+"/MS"+msID_str+"/canvas/"+folio.getFolioNumber();
+                        String str_folioNum = Folio.getRbTok("SERVERURL")+"MS"+msID_str+"/canvas/"+folio.getFolioNumber();
                         if("".equals(canvasID_check)){
                             canvasID = str_folioNum;
                         }
@@ -153,14 +153,14 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
                 newProject.importData(UID);
                 Metadata metadata = new Metadata(projectID_return);
                 label = tmpProjName;
+                //Set default metadata values for this project.
                 metadata.setTitle(label);
                 metadata.setMsRepository(repository);
                 metadata.setMsCollection(collection);
                 metadata.setMsIdNumber(msID_str);
                 conn.commit();
                 //String propVal = Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN");
-                //return trimed project url
-                return "project/" + projectID_return;
+                return "project/" + projectID_return; //TODO: Make this the resolvable project url?
             }
         } catch (SQLException ex) {
             Logger.getLogger(createManuscript.class.getName()).log(Level.SEVERE, null, ex);

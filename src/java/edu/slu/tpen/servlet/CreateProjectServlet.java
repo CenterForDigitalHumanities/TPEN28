@@ -167,14 +167,14 @@ public class CreateProjectServlet extends HttpServlet {
                         //This needs to be the same one the JSON Exporter creates and needs to be unique and unchangeable.
                         String canvasID_check = folio.getCanvas();
                         String canvasID = "";
-                        String str_folioNum = Folio.getRbTok("SERVERURL")+"/MS"+msID_str+"/canvas/"+folio.getFolioNumber();
+                        String str_folioNum = Folio.getRbTok("SERVERURL")+"MS"+msID_str+"/canvas/"+folio.getFolioNumber();
                         if("".equals(canvasID_check)){
                             canvasID = str_folioNum;
                         }
                         else{
                             canvasID = canvasID_check;
                         }
-                        //create anno list for original canvas
+                        //Create anno list for canvas.
                         JSONObject annoList = CreateAnnoListUtil.createEmptyAnnoList(newProject.getProjectID(), canvasID, new JSONArray());
                         URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/saveNewAnnotation.action");
                         HttpURLConnection uc = (HttpURLConnection) postUrl.openConnection();

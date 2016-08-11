@@ -559,14 +559,13 @@ function loadTranscription(){
     else {
         throw new Error("The input was invalid.");
     }
-
 }
 
 /*
  * Load a canvas from the manifest to the transcription interface.
  */
 function loadTranscriptionCanvas(canvasObj, parsing){
-var noLines = true;
+    var noLines = true;
     var canvasAnnoList = "";
     $("#imgTop, #imgBottom").css("height", "400px");
     $("#imgTop img, #imgBottom img").css("height", "400px");
@@ -583,20 +582,21 @@ var noLines = true;
     $("#parsingBtn").css("box-shadow", "none");
     $("#parsingButton").removeAttr('disabled');
     $(".lineColIndicator").css({
-"box-shadow": "rgba(255, 255, 255, 0.4)",
-    "border": "1px solid rgb(255, 255, 255)"
-});
+        "box-shadow": "rgba(255, 255, 255, 0.4)",
+        "border": "1px solid rgb(255, 255, 255)"
+    });
     $(".lineColOnLine").css({
-"border-left": "1px solid rgba(255, 255, 255, 0.2);",
-    "color": "rgb(255, 255, 255)"
-});
+        "border-left": "1px solid rgba(255, 255, 255, 0.2);",
+        "color": "rgb(255, 255, 255)"
+    });
     //Move up all image annos
     var cnt = - 1;
-    if (canvasObj.images[0].resource['@id'] !== undefined && canvasObj.images[0].resource['@id'] !== ""){ //Only one image
-var image = new Image();
+    if (canvasObj.images[0].resource['@id'] !== undefined
+        && canvasObj.images[0].resource['@id'] !== ""){ //Only one image
+        var image = new Image();
     $(image)
     .on("load", function() {
-    $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
+        $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
         $("#imgTop img, #imgBottom img").css("width", "100%");
         $("#imgBottom").css("height", "inherit");
         $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
@@ -610,10 +610,10 @@ var image = new Image();
         $("#parsingBtn").removeAttr("disabled");
     })
     .on("error", function(){
-    var image2 = new Image();
+        var image2 = new Image();
         $(image2)
         .on("load", function(){
-        $("#noLineWarning").hide();
+            $("#noLineWarning").hide();
             $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
             $("#imgTop img, #imgBottom img").css("width", "100%");
             $('.transcriptionImage').attr('src', "images/missingImage.png");
@@ -631,127 +631,125 @@ var image = new Image();
         .attr("src", "images/missingImage.png");
     })
     .attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
-}
-else{
-$('.transcriptionImage').attr('src', "images/missingImage.png");
-    alert("The canvas is malformed.  No 'images' field in canvas object or images:[0]['@id'] does not exist.  Cannot draw lines.");
-    //ERROR!  Malformed canvas object.
-}
-$(".previewText").removeClass("currentPage");
-    $.each($("#previewDiv").children(".previewPage:eq(" + (parseInt(currentFolio) - 1) + ")").find(".previewLine"), function(){
-    $(this).find('.previewText').addClass("currentPage");
+    }
+    else {
+        $('.transcriptionImage').attr('src', "images/missingImage.png");
+        throw Error("The canvas is malformed.  No 'images' field in canvas object or images:[0]['@id'] does not exist.  Cannot draw lines.");
+    }
+    $(".previewText").removeClass("currentPage");
+    $.each($("#previewDiv").children(".previewPage:eq(" + (parseInt(tpen.screen.currentFolio) - 1) + ")").find(".previewLine"), function(){
+        $(this).find('.previewText').addClass("currentPage");
     });
     createPreviewPages(); //each time you load a canvas to the screen with all of its updates, remake the preview pages.
 }
 
 /*
- * @paran canvasObj  A canvas object to extrac transcription lines from and draw to the interface.
+ * @paran canvasObj  A canvas object to extract transcription lines from and draw to the interface.
+ * @param parsing boolean if parsing is live tool
  */
 function drawLinesToCanvas(canvasObj, parsing){
-var lines = [];
-    currentFolio = parseInt(currentFolio);
-    //console.log("Draw lines");
-//        //console.log(canvasObj);
-    if (canvasObj.resources !== undefined && canvasObj.resources.length > 0){
-//            //console.log("Lines are resource annos");
-for (var i = 0; i < canvasObj.resources.length; i++){
-if (isJSON(canvasObj.resources[i])){   // it is directly an annotation
-lines.push(canvasObj.resources[i]);
-}
-}
-linesToScreen(lines);
-}
-else{ //we have the anno list for this canvas (potentially), so query for it.  If not found, then consider this an empty canvas.
-var annosURL = "getAnno";
-    var onValue = canvasObj["@id"];
-    //console.log("get annos for draw for canvas "+onValue);
-    var properties = {"@type": "sc:AnnotationList", "on" : onValue};
-    var paramOBJ = {"content": JSON.stringify(properties)};
-    $.post(annosURL, paramOBJ, function(annoList){
-    //console.log("found annoLists");
-    annoList = JSON.parse(annoList);
-        //console.log(annoList);
-        var found = false;
-        var currentList = {};
-        if (annoList.length > 0){
-    //Always default to the master list, which was the first list created for the canvas.  That way, the annotation lists associated with the master are still supported.
-    var masterList = {};
-        //lines = masterList.resources;
-        //currentList = masterList;
-        //annoLists[currentFolio -1] = masterList["@id"];
-        $.each(annoList, function(){
-        //if we find the master list, make that the default
-        if (this.proj === "master"){
-        //console.log("master set to default");
-        masterList = this;
-            lines = this.resources;
-            currentList = this;
-            //TODO we do not want someone who is not an admin to be able to edit this list.  Do a check here and make annoLists[currentFolio -1] = "master" so it cannot be written to.
-            annoLists[currentFolio - 1] = this["@id"];
+    var lines = [];
+    var currentFolio = parseInt(tpen.screen.currentFolio);
+    if (canvasObj.resources !== undefined
+        && canvasObj.resources.length > 0){
+        for (var i = 0; i < canvasObj.resources.length; i++){
+            if (isJSON(canvasObj.resources[i])){   // it is directly an annotation
+                lines.push(canvasObj.resources[i]);
+            }
         }
-        if (this.proj !== undefined && this.proj !== "" && this.proj == theProjectID){
-        //These are the lines we want to draw because the projectID matches.  Overwrite master if necessary.
-        //console.log("Lines we wanna draw");
-        lines = this.resources;
-            currentList = this;
-            annoLists[currentFolio - 1] = this["@id"];
-            return false;
-        }
-        else{
-        //It is an annotation list for this canvas in a different project.  We have defaulted to master already.
-        //console.log("Anno list for this canvas but different project.  ");
-        }
-        });
-        if (lines.length > 0){
-    //console.log("Got lines to draw");
-    $("#transTemplateLoading").hide();
-        $("#transcriptionTemplate").show();
         linesToScreen(lines);
     }
-    else{ //list has no lines
-    //console.log("no lines in what we got");
-    if (parsing !== "parsing"){
-    $("#noLineWarning").show();
+    else {
+        // we have the anno list for this canvas (potentially), so query for it.
+        // If not found, then consider this an empty canvas.
+        var annosURL = "getAnno";
+        var onValue = canvasObj["@id"];
+        var properties = {"@type": "sc:AnnotationList", "on" : onValue};
+        var paramOBJ = {"content": JSON.stringify(properties)};
+        $.post(annosURL, paramOBJ, function(annoList){
+            annoList = JSON.parse(annoList);
+            var found = false;
+            var currentList = {};
+            if (annoList.length > 0){
+                // Always default to the master list, which was the first list created
+                // for the canvas.  That way, the annotation lists associated with
+                // the master are still supported.
+                var masterList = {};
+                $.each(annoList, function(){
+                    //if we find the master list, make that the default
+                    if (this.proj === "master"){
+                        masterList = this;
+                        lines = this.resources;
+                        currentList = this;
+                        // TODO we do not want someone who is not an admin to be able
+                        // to edit this list.  Do a check here and make
+                        // annoLists[currentFolio -1] = "master" so it cannot be written to.
+                        annoLists[currentFolio - 1] = this["@id"];
+                    }
+                    if (this.proj !== undefined
+                        && this.proj !== ""
+                        && this.proj == theProjectID){
+                        // These are the lines we want to draw because the projectID matches.  Overwrite master if necessary.
+                        lines = this.resources;
+                        currentList = this;
+                        annoLists[currentFolio - 1] = this["@id"];
+                        return false;
+                    }
+                    else{
+                        // It is an annotation list for this canvas in a different project.
+                        // We have defaulted to master already.
+                    }
+                });
+                if (lines.length > 0){
+                    $("#transTemplateLoading").hide();
+                    $("#transcriptionTemplate").show();
+                    linesToScreen(lines);
+                }
+                else { //list has no lines
+                    if (!parsing){
+                        $("#noLineWarning").show();
+                    }
+                    $("#transTemplateLoading").hide();
+                    $("#transcriptionTemplate").show();
+                    $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
+                    $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
+                    $("#imgTop").css("height", $("#imgTop img").height() + "px");
+                    $("#imgTop img").css("top", "0px");
+                    $("#imgBottom").css("height", "inherit");
+                    $("#parsingBtn").css("box-shadow", "0px 0px 6px 5px yellow");
+                }
+            }
+            else {
+                // couldnt get list.  one should always exist, even if empty.
+                // We will say no list and changes will be stored locally to the canvas.
+                annoLists[currentFolio - 1 ] = "empty";
+                if (parsing !== "parsing") {
+                    $("#noLineWarning").show();
+                }
+                $("#transTemplateLoading").hide();
+                $("#transcriptionTemplate").show();
+                $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
+                $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
+                $("#imgTop").css("height", "0%");
+                $("#imgBottom img").css("top", "0px");
+                $("#imgBottom").css("height", "inherit");
+                $("#parsingBtn").css("box-shadow", "0px 0px 6px 5px yellow");
+            }
+        });
     }
-    $("#transTemplateLoading").hide();
-        $("#transcriptionTemplate").show();
-        $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
-        $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
-        $("#imgTop").css("height", $("#imgTop img").height() + "px");
-        $("#imgTop img").css("top", "0px");
-        $("#imgBottom").css("height", "inherit");
-        $("#parsingBtn").css("box-shadow", "0px 0px 6px 5px yellow");
-    }
-    }
-    else{ // couldnt get list.  one should always exist, even if empty.  We will say no list and changes will be stored locally to the canvas.
-    annoLists[currentFolio - 1 ] = "empty";
-        if (parsing !== "parsing"){
-    $("#noLineWarning").show();
-    }
-    $("#transTemplateLoading").hide();
-        $("#transcriptionTemplate").show();
-        $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
-        $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
-        $("#imgTop").css("height", "0%");
-        $("#imgBottom img").css("top", "0px");
-        $("#imgBottom").css("height", "inherit");
-        $("#parsingBtn").css("box-shadow", "0px 0px 6px 5px yellow");
-    }
-    });
-}
 }
 
 /* Take line data, turn it into HTML elements and put them to the DOM */
 function linesToScreen(lines){
-$("#noLineWarning").hide();
+    $("#noLineWarning").hide();
     var letterIndex = 0;
     var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     letters = letters.split("");
     var update = true;
     if ($("#parsingDiv").is(":visible")){
-update = false;
-}
-var thisContent = "";
+        update = false; // TODO: Is this just a tpen.screen.liveTool check?
+    }
+    var thisContent = "";
     var thisPlaceholder = "Enter a line transcription";
     var counter = 0;
     var colCounter = 0;
@@ -761,197 +759,203 @@ var thisContent = "";
     $('#transcriptionCanvas').css('height', originalCanvasHeight2 + "px");
     $('.lineColIndicatorArea').css('height', originalCanvasHeight2 + "px");
     var ratio = 0;
-    //should be the same as originalCanvasWidth2/originalCanvasBeight2
+    //should be the same as originalCanvasWidth2/originalCanvasHeight2
     ratio = theWidth / theHeight;
     adjustRatio = ratio;
-//        console.log("ratio for lines to screen");
-//        console.log(theWidth + "/" +theHeight);
-//        console.log(ratio);
     for (var i = 0; i < lines.length; i++){
-//("line "+i);
-var line = lines[i];
-    var lastLine = {};
-    var col = letters[letterIndex];
-    if (i > 0)lastLine = lines[i - 1];
-    var lastLineX = 10000;
-    var lastLineWidth = - 1;
-    var lastLineTop = - 2;
-    var lastLineHeight = - 2;
-    var x, y, w, h = 0;
-    var XYWHarray = [x, y, w, h];
-    var lineURL = "";
-    var lineID = - 1;
-    if (line.on !== undefined){
-lineURL = line.on;
-}
-else{
-//ERROR.  malformed line.
-update = false;
-}
-if (line["@id"] !== undefined && line["@id"] !== ""){ //&& line['@id'].indexOf('annotationstore/annotation') >=0
-lineID = line['@id']; //.slice(line['@id'].lastIndexOf('line/') + 5)
-}
-else{
-//ERROR.  Malformed line.
-update = false;
-}
-thisContent = "";
-    if (lineURL.indexOf('#') > - 1){ //string must contain this to be valid
-var XYWHsubstring = lineURL.substring(lineURL.lastIndexOf('#' + 1)); //xywh = 'x,y,w,h'
-    if (lastLine.on){ //won't be true for first line
-lastLineX = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[0];
-    lastLineWidth = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[2];
-    lastLineTop = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[1];
-    lastLineHeight = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[3];
-}
-else if (i === 0 && lines.length > 1){ /* Check for the variance with the first line */
-lastLine = lines[0];
-    if (lastLine.on){
-lastLineX = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[0];
-    lastLineWidth = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[2];
-    lastLineTop = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[1];
-    lastLineHeight = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[3];
-}
-}
-if (XYWHsubstring.indexOf('=') > - 1){ //string must contain this to be valid
-var numberArray = XYWHsubstring.substring(lineURL.lastIndexOf('xywh=') + 5).split(',');
-    if (parseInt(lastLineTop) + parseInt(lastLineHeight) !== numberArray[1]){
-//check for slight variance in top position.  Happens because of rounding percentage math that gets pixels to be an integer.
-var num1 = parseInt(lastLineTop) + parseInt(lastLineHeight);
-    if (Math.abs(num1 - numberArray[1]) <= 4 && Math.abs(num1 - numberArray[1]) !== 0){
-numberArray[1] = num1;
-    var newString = numberArray[0] + "," + num1 + "," + numberArray[2] + "," + numberArray[3];
-    if (i > 0){
-//to make the change cascade to the rest of the lines, we actually have to update the #xywh of the current line with the new value for y.
-var lineOn = lineURL;
-    var index = lineOn.indexOf("#xywh=") + 6;
-    var newLineOn = lineOn.substr(0, index) + newString + lineOn.substr(index + newString.length);
-    lines[i].on = newLineOn;
-}
+        var line = lines[i];
+        var lastLine = {};
+        var col = letters[letterIndex];
+        if (i > 0)lastLine = lines[i - 1];
+        var lastLineX = 10000;
+        var lastLineWidth = - 1;
+        var lastLineTop = - 2;
+        var lastLineHeight = - 2;
+        var x, y, w, h = 0;
+        var XYWHarray = [x, y, w, h];
+        var lineURL = "";
+        var lineID = - 1;
+        if (line.on !== undefined){
+            lineURL = line.on;
+        }
+        else {
+            //ERROR.  malformed line.
+            update = false;
+        }
+        if (line["@id"] !== undefined && line["@id"] !== ""){
+            lineID = line['@id'];
+        }
+        else {
+            //ERROR.  Malformed line.
+            update = false;
+        }
+        thisContent = "";
+        if (lineURL.indexOf('#') > - 1){ //string must contain this to be valid
+            var XYWHsubstring = lineURL.substring(lineURL.lastIndexOf('#' + 1)); //xywh = 'x,y,w,h'
+            if (lastLine.on){ //won't be true for first line
+                var xywh = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")
+                lastLineX = xywh[0];
+                lastLineWidth = xywh[2];
+                lastLineTop = xywh[1];
+                lastLineHeight = xywh[3];
+            }
+            else if (i === 0 && lines.length > 1){ // Check for the variance with the first line
+                lastLine = lines[0];
+                if (lastLine.on){
+                    lastLineX = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[0];
+                    lastLineWidth = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[2];
+                    lastLineTop = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[1];
+                    lastLineHeight = lastLine.on.slice(lastLine.on.indexOf("#xywh=") + 6).split(",")[3];
+                }
+            }
+            if (XYWHsubstring.indexOf('xywh=') > - 1){ //string must contain this to be valid
+                var numberArray = XYWHsubstring.substring(lineURL.lastIndexOf('xywh=') + 5).split(',');
+                if (parseInt(lastLineTop) + parseInt(lastLineHeight) !== numberArray[1]){
+                //check for slight variance in top position.  Happens because of rounding percentage math that gets pixels to be an integer.
+                    var num1 = parseInt(lastLineTop) + parseInt(lastLineHeight);
+                    if (Math.abs(num1 - numberArray[1]) <= 4 && Math.abs(num1 - numberArray[1]) !== 0){
+                        numberArray[1] = num1;
+                        var newString = numberArray[0] + "," + num1 + "," + numberArray[2] + "," + numberArray[3];
+                        if (i > 0){
+                        //to make the change cascade to the rest of the lines,
+                        // we actually have to update the #xywh of the current
+                        // line with the new value for y.
+                            var lineOn = lineURL;
+                            var index = lineOn.indexOf("#xywh=") + 6;
+                            var newLineOn = lineOn.substr(0, index) + newString + lineOn.substr(index + newString.length);
+                            lines[i].on = newLineOn;
+                        }
+                    }
+                }
+                if (numberArray.length === 4){ // string must have all 4 to be valid
+                    x = numberArray[0];
+                    w = numberArray[2];
+                    if (lastLineX !== x){
+                        //check if the last line's x value is equal to this
+                        // line's x value (means same column)
+                        if (Math.abs(x - lastLineX) <= 3){
+                            //allow a 3 pixel  variance and fix this variance when necessary...
+                        //align them, call them the same Column.
+                /*
+                 * This is a consequence of #xywh for a resource needing to be an integer.  When I calculate its integer position off of
+                 * percentages, it is often a float and I have to round to write back.  This can cause a 1 or 2 pixel discrenpency, which I account
+                 * for here.  There may be better ways of handling this, but this is a good solution for now.
+                 */
+                            if (lastLineWidth !== w){ //within "same" column (based on 3px variance).  Check the width
+                                if (Math.abs(w - lastLineWidth) <= 5){
+                                    // If the width of the line is within five pixels,
+                                    // automatically make the width equal to the last line's width.
 
-}
-else{
-//console.log("no difference");
-}
-}
-if (numberArray.length === 4){ // string must have all 4 to be valid
-x = numberArray[0];
-    w = numberArray[2];
-    if (lastLineX !== x){ //check if the last line's x value is equal to this line's x value (means same column)
-if (Math.abs(x - lastLineX) <= 3){ //allow a 3 pixel  variance and fix this variance when necessary...
-//align them, call them the same Column.
-/*
- * This is a consequence of #xywh for a resource needing to be an integer.  When I calculate its intger position off of
- * percentages, it is often a float and I have to round to write back.  This can cause a 1 or 2 pixel discrenpency, which I account
- * for here.  There may be better ways of handling this, but this is a good solution for now.
- */
-if (lastLineWidth !== w){ //within "same" column (based on 3px variance).  Check the width
-if (Math.abs(w - lastLineWidth) <= 5){ //If the width of the line is within five pixels, automatically make the width equal to the last line's width.
-
-//align them, call them the same Column.
-/*
- * This is a consequence of #xywh for a resource needing to be an integer.  When I calculate its intger position off of
- * percentages, it is often a float and I have to round to write back.  This can cause a 1 or 2 pixel discrenpency, which I account
- * for here.  There may be better ways of handling this, but this is a good solution for now.
- */
-w = lastLineWidth;
-    numberArray[2] = w;
-}
-}
-x = lastLineX;
-    numberArray[0] = x;
-}
-else{ //we are in a new column, column indicator needs to increase.
-if (lines.length > 1){
-letterIndex++;
-    col = letters[letterIndex];
-    colCounter = 0; //Reset line counter so that when the column changes the line# restarts?
-}
-}
-}
-else{ //If the X value matches, we are in the same column and don't have to account for any variance or update the array.  Still check for slight width variance..
-if (lastLineWidth !== w){
-if (Math.abs(w - lastLineWidth) <= 5){ //within 5 pixels...
-
-//align them, call them the same Column.
-/*
- * This is a consequence of #xywh for a resource needing to be an integer.  When I calculate its intger position off of
- * percentages, it is often a float and I have to round to write back.  This can cause a 1 or 2 pixel discrenpency, which I account
- * for here.  There may be better ways of handling this, but this is a good solution for now.
- */
-w = lastLineWidth;
-    numberArray[2] = w;
-}
-}
-}
-y = numberArray[1];
-    h = numberArray[3];
-    XYWHarray = [x, y, w, h];
-}
-else{
-//ERROR! Malformed line
-update = false;
-}
-}
-else{
-//ERROR! Malformed line
-update = false;
-}
-}
-else{
-//ERROR!  Malformed line.
-update = false;
-}
-
-if (line.resource['cnt:chars'] !== undefined && line.resource['cnt:chars'] !== "" && line.resource['cnt:chars'] != "Enter a line transcription"){
-thisContent = line.resource['cnt:chars'];
-}
-
-counter = parseInt(counter);
-    counter += 1;
-    var newAnno = $('<div id="transcriptlet_' + counter + '" col="' + col + '" colLineNum="' + colCounter + '" lineID="' + counter + '" lineserverid="' + lineID + '" class="transcriptlet" data-answer="' + thisContent + '"><textarea placeholder="' + thisPlaceholder + '">' + thisContent + '</textarea></div>');
-    var left = parseFloat(XYWHarray[0]) / (10 * ratio);
-    var top = parseFloat(XYWHarray[1]) / 10;
-    var width = parseFloat(XYWHarray[2]) / (10 * ratio);
-    var height = parseFloat(XYWHarray[3]) / 10;
-    newAnno.attr({
-    lineLeft: left,
-        lineTop: top,
-        lineWidth: width,
-        lineHeight: height,
-        counter: counter
+                                    //align them, call them the same Column.
+                            /*
+                             * This is a consequence of #xywh for a resource needing to be an integer.  When I calculate its intger position off of
+                             * percentages, it is often a float and I have to round to write back.  This can cause a 1 or 2 pixel discrenpency, which I account
+                             * for here.  There may be better ways of handling this, but this is a good solution for now.
+                             */
+                                    w = lastLineWidth;
+                                        numberArray[2] = w;
+                                }
+                            }
+                            x = lastLineX;
+                            numberArray[0] = x;
+                        }
+                        else { //we are in a new column, column indicator needs to increase.
+                            letterIndex++;
+                            col = letters[letterIndex];
+                            colCounter = 0; //Reset line counter so that when the column changes the line# restarts
+                        }
+                    }
+                    else {
+                        // X value matches, we are in the same column and don't
+                        // have to account for any variance or update the array.
+                        // Still check for slight width variance..
+                        if (lastLineWidth !== w){
+                            if (Math.abs(w - lastLineWidth) <= 5){ //within 5 pixels...
+                                //align them, call them the same Column.
+                                /* This is a consequence of #xywh for a resource needing to be an integer.  When I calculate its intger position off of
+* percentages, it is often a float and I have to round to write back.  This can cause a 1 or 2 pixel discrenpency, which I account
+* for here.  There may be better ways of handling this, but this is a good solution for now. */
+                                w = lastLineWidth;
+                                numberArray[2] = w;
+                            }
+                        }
+                    }
+                    y = numberArray[1];
+                    h = numberArray[3];
+                    XYWHarray = [x, y, w, h];
+                }
+                else {
+                    //ERROR! Malformed line
+                    update = false;
+                }
+            }
+            else {
+                //ERROR! Malformed line
+                update = false;
+            }
+        }
+        else {
+            //ERROR!  Malformed line.
+            update = false;
+        }
+        if (line.resource['cnt:chars'] !== undefined
+            && line.resource['cnt:chars'] !== "") {
+            thisContent = line.resource['cnt:chars'];
+        }
+        counter++;
+        var newAnno = $('<div id="transcriptlet_' + counter + '" col="' + col
+            + '" colLineNum="' + colCounter + '" lineID="' + counter
+            + '" lineserverid="' + lineID + '" class="transcriptlet" data-answer="'
+            + thisContent + '"><textarea placeholder="' + thisPlaceholder + '">'
+            + thisContent + '</textarea></div>');
+        // 1000 is promised, 10 goes to %
+        var left = parseFloat(XYWHarray[0]) / (10 * ratio);
+        var top = parseFloat(XYWHarray[1]) / 10;
+        var width = parseFloat(XYWHarray[2]) / (10 * ratio);
+        var height = parseFloat(XYWHarray[3]) / 10;
+        newAnno.attr({
+            lineLeft: left,
+                lineTop: top,
+                lineWidth: width,
+                lineHeight: height,
+                counter: counter
+        });
+        colCounter++;
+        $("#transcriptletArea").append(newAnno);
+        var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter
+            + "' lineserverid='" + lineID + "' lineID='" + counter + "' class='lineColIndicator' style='left:"
+            + left + "%; top:" + top + "%; width:" + width + "%; height:" + height + "%;'><div class='lineColOnLine' >"
+            + col + "" + colCounter + "</div></div>");
+        var fullPageLineColumnIndicator = $("<div pair='" + col + "" + colCounter + "' lineserverid='" + lineID
+            + "' lineID='" + counter + "' class='lineColIndicator fullP' onclick=\"updatePresentation($('#transcriptlet_" + counter + "'));\""
+            + " style='left:" + left + "%; top:" + top + "%; width:" + width + "%; height:"
+            + height + "%;'><div class='lineColOnLine' >" + col + "" + colCounter + "</div></div>");
+        // TODO: add click event to update presentation
+        // Make sure the col/line pair sits vertically in the middle of the outlined line.
+        var lineHeight = theHeight * (height / 100) + "px";
+        lineColumnIndicator.find('.lineColOnLine').attr("style", "line-height:" + lineHeight + ";");
+        //Put to the DOM
+        $(".lineColIndicatorArea").append(lineColumnIndicator);
+        $("#fullPageSplitCanvas").append(fullPageLineColumnIndicator);
+    }
+    if (update && $(".transcriptlet").eq(0) !== undefined){
+        updatePresentation($(".transcriptlet").eq(0));
+    }
+    // we want automatic updating for the lines these texareas correspond to.
+    var typingTimer; //timer identifier
+    $("textarea")
+        .keydown(function(e){
+        //user has begun typing, clear the wait for an update
+        clearTimeout(typingTimer);
+    })
+        .keyup(function(e){
+            var lineToUpdate = $(this).parent();
+            clearTimeout(typingTimer);
+            //when a user stops typing for 2 seconds, fire an update to get the new text.
+            typingTimer = setTimeout(function(){
+                updateLine(lineToUpdate, "no");
+            }, 2000);
     });
-    colCounter += 1;
-    $("#transcriptletArea").append(newAnno);
-    var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter + "' lineserverid='" + lineID + "' lineID='" + counter + "' class='lineColIndicator' style='left:" + left + "%; top:" + top + "%; width:" + width + "%; height:" + height + "%;'><div class\n\
-                ='lineColOnLine' >" + col + "" + colCounter + "</div></div>");
-    var fullPageLineColumnIndicator = $("<div pair='" + col + "" + colCounter + "' lineserverid='" + lineID + "' lineID='" + counter + "' class='lineColIndicator fullP'\n\
-                onclick=\"updatePresentation($('#transcriptlet_" + counter + "'));\" style='left:" + left + "%; top:" + top + "%; width:" + width + "%; height:" + height + "%;'><div class\n\
-                ='lineColOnLine' >" + col + "" + colCounter + "</div></div>"); //TODO add click event to update presentation
-    //Make sure the col/line pair sits vertically in the middle of the outlined line.
-    var lineHeight = theHeight * (height / 100) + "px";
-    lineColumnIndicator.find('.lineColOnLine').attr("style", "line-height:" + lineHeight + ";");
-    //Put to the DOM
-    $(".lineColIndicatorArea").append(lineColumnIndicator);
-    $("#fullPageSplitCanvas").append(fullPageLineColumnIndicator);
-}
-if (update && $(".transcriptlet").eq(0) !== undefined){
-updatePresentation($(".transcriptlet").eq(0));
-}
-//we want automatic updating for the lines these texareas correspond to.
-var typingTimer; //timer identifier
-    $("textarea").keydown(function(e){
-//user has begun typing, clear the wait for an update
-clearTimeout(typingTimer);
-});
-    $("textarea").keyup(function(e){
-var lineToUpdate = $(this).parent();
-    clearTimeout(typingTimer);
-    //when a user stops typing for 2 seconds, fire an update to get the new text.
-    typingTimer = setTimeout(function(){
-    updateLine(lineToUpdate, "no");
-    }, 2000);
-});
 }
 
 /* Make the transcription interface focus to the transcriptlet passed in as the parameter. */

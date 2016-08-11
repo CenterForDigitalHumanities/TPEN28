@@ -115,7 +115,7 @@ public class JsonLDExporter {
       annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
       //annotationList.element("testing", "msid_creation");
       //String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
-      Dimension pageDim = f.getImageDimension();
+      Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
       String[] otherContent;
       if (pageDim == null) {
          //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());

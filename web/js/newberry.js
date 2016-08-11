@@ -960,41 +960,30 @@ function linesToScreen(lines){
 
 /* Make the transcription interface focus to the transcriptlet passed in as the parameter. */
 function updatePresentation(transcriptlet) {
-if (transcriptlet === undefined || transcriptlet === null){
-$("#imgTop").css("height", "0%");
-    $("#imgBottom").css("height", "inherit");
-    return false;
-}
-var nextCol = transcriptlet.attr("col");
+    if (transcriptlet === undefined || transcriptlet === null){
+        $("#imgTop").css("height", "0%");
+        $("#imgBottom").css("height", "inherit");
+        return false;
+    }
+    var nextCol = transcriptlet.attr("col");
     var nextLineNum = parseInt(transcriptlet.attr("collinenum")) + 1;
     var transcriptletBefore = $(transcriptlet.prev());
     var nextColLine = nextCol + "" + nextLineNum;
     $("#currentColLine").html(nextColLine);
     if (parseInt(nextLineNum) >= 1){
-if (transcriptletBefore.length > 0){
-var currentTranscriptletNum = parseInt(transcriptletBefore.attr("collinenum")) + 1;
-    //var prevLine = $("#transcriptlet_"+previousTranscriptletNum);
-    var preLine = "";
-    if (transcriptletBefore.length > 0){
-
-}
-else{
-
-}
-var prevLineCol = transcriptletBefore.attr("col");
-    var prevLineText = transcriptletBefore.attr("data-answer");
-    $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum);
-    if (prevLineText === ""){
-$("#captionsText").html("This line is not transcribed.");
-}
-else{
-$("#captionsText").html(prevLineText);
-}
-}
-else{ //this is a probelm
-$("#prevColLine").html("**");
-    $("#captionsText").html("You are on the first line.");
-}
+        if (transcriptletBefore.length > 0){
+        var currentTranscriptletNum = parseInt(transcriptletBefore.attr("collinenum")) + 1;
+            if (transcriptletBefore.length > 0){ }
+            else{ }
+            var prevLineCol = transcriptletBefore.attr("col");
+            var prevLineText = transcriptletBefore.attr("data-answer");
+            $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum);
+            $("#captionsText").html((prevLineText.length && prevLineText) || "This line is not transcribed.");
+        }
+        else { //this is a problem
+            $("#prevColLine").html("**");
+            $("#captionsText").html("You are on the first line.");
+        }
 
 }
 else{ //there is no previous line

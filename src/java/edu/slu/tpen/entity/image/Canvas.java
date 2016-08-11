@@ -156,12 +156,12 @@ public class Canvas {
      * @return : The annotation list.
      */
     public static String[] getAnnotationListsForProject(Integer projectID, String canvasID, Integer UID) throws MalformedURLException, IOException {
-         URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/getAnnotationByProperties.action");
-         JSONObject parameter = new JSONObject();
-         parameter.element("@type", "sc:AnnotationList");
-         parameter.element("proj", projectID);
-         parameter.element("on", canvasID);
-         System.out.println("Get anno list for proj "+projectID+" on canvas "+canvasID);
+        URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/getAnnotationByProperties.action");
+        JSONObject parameter = new JSONObject();
+        parameter.element("@type", "sc:AnnotationList");
+        parameter.element("proj", projectID);
+        parameter.element("on", canvasID);
+        //System.out.println("Get anno list for proj "+projectID+" on canvas "+canvasID);
         HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
         connection.setDoOutput(true);
         connection.setDoInput(true);

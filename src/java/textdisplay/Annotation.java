@@ -330,7 +330,7 @@ DatabaseWrapper.closePreparedStatement(ps);
      @return: The @id of the newly saved anntoationList
    */
    public static String saveNewAnnotationList(JSONObject annotationListObject) throws MalformedURLException, IOException{
-       String newListID = "";
+        String newListID = "";
         URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/saveNewAnnotation.action");
         HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
         connection.setDoOutput(true);

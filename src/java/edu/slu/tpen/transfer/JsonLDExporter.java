@@ -149,9 +149,7 @@ public class JsonLDExporter {
       images.add(imageAnnot);
       //If this list was somehow stored in the SQL DB, we could skip calling to the store every time. 
       otherContent = Canvas.getAnnotationListsForProject(projID, canvasID, u.getUID());
-      System.out.println("gathered image resource and other content...moving to checks");
       if(otherContent.length == 0){ //No list on store
-         System.out.println("Other content length 0.  Get annos, bulk save, save anno list...");
          try (Connection conn = getDBConnection()) {
          try (PreparedStatement stmt = conn.prepareStatement("SELECT * FROM transcription WHERE projectID = ? AND folio = ? ORDER BY x, y")) {
             stmt.setInt(1, projID);
@@ -195,7 +193,6 @@ public class JsonLDExporter {
         } 
       }
       else{ //could maybe break this else away, but make sure to set the otherContent field of result in the "if" if you do.
-          System.out.println("Found a list on the store, no need to update from sql. ");
           result.put("otherContent", otherContent);
       }
       result.put("images", images);

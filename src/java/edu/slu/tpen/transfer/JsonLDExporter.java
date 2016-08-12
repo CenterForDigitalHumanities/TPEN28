@@ -163,8 +163,8 @@ public class JsonLDExporter {
                lineAnnot.put("tpen_line_id", lineURI);
                lineAnnot.put("@type", "oa:Annotation");
                lineAnnot.put("motivation", "oad:transcribing"); 
-               lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", rs.getString("text")));
-               // ^ESAPI.encoder().decodeForHTML(rs.getString("text"))
+               lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(rs.getString("text"))));
+               
                lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, rs.getInt("x"), rs.getInt("y"), rs.getInt("width"), rs.getInt("height"))); 
                lineAnnot.put("testing", "msid_creation");
                resources.add(lineAnnot);
@@ -179,7 +179,6 @@ public class JsonLDExporter {
                   noteAnnot.put("on", lineURI); //TODO: should this be on an @id of an annotation? If so, that complicates how i want to do the bulk.
                   noteAnnot.put("testing", "msid_creation");
                   resources.add(noteAnnot);
-                  //TODO: Save the annotation, add the real @id field, add into resources
                }
             }
             resources_array = JSONArray.fromObject(resources);
@@ -190,7 +189,6 @@ public class JsonLDExporter {
             otherContent = new String[1];
             otherContent[0] = newListID;
             result.put("otherContent", otherContent);
-            //TODO: Save this annotation list into the annotation store.  otherContent = ["new_@id_created_by_save"]; result.put("otherContent", otherContent);!
          }
         } 
       }

@@ -1841,1229 +1841,1210 @@ function splitPage(event, tool) {
     $("#nextCanvas").attr("onclick", "");
 }
 
-                            function forceOrderPreview(){
-                            var ordered = [];
-                                var length = $(".previewPage").length;
-                                for (var i = 0; i < length; i++){
-                            //console.log("find order = "+i)
-                            var thisOne = $(".previewPage[order='" + i + "']");
-                                ordered.push(thisOne);
-                                if (i === length - 1){
-                            //console.log("append");
-                            $("#previewDiv").empty();
-                                $("#previewDiv").append(ordered);
-                            }
-                            }
-                            $("#previewSplit").css({
-                            "display": "inline-table"
-//              "height" : splitHeight+"px",
-//              "width" : splitWidth
-                            });
-                            }
+function forceOrderPreview(){
+    var ordered = [];
+    var length = $(".previewPage").length;
+    for (var i = 0; i < length; i++){
+        var thisOne = $(".previewPage[order='" + i + "']");
+        ordered.push(thisOne);
+        if (i === length - 1){
+            $("#previewDiv").empty();
+            $("#previewDiv").append(ordered);
+        }
+    }
+    $("#previewSplit").css({
+        "display": "inline-table"
+    });
+}
 
-                            function populateCompareSplit(folioIndex){
-                            var canvasIndex = folioIndex - 1;
-                                var compareSrc = transcriptionFolios[canvasIndex].images[0].resource["@id"];
-                                var currentCompareSrc = $(".compareImage").attr("src");
-                                if (currentCompareSrc !== compareSrc) $(".compareImage").attr("src", compareSrc);
-                            }
-                            /*
-                             * Go through all of the parsing lines and put them into columns;
-                             * @see linesToColumns()
-                             * Global Arrray: gatheredColumns
-                             *
-                             */
-                            function gatherColumns(startIndex){
-                            var colX, colY, colW, colH;
-                                var lastColumnLine = - 1;
-                                var linesInColumn = - 1;
-                                var hasTranscription = false;
-                                if ($(".parsing")[startIndex + 1]){
-                            var line = $(".parsing")[startIndex + 1];
-//            //console.log("START");
-//            //console.log(line);
-                                colX = parseFloat($(line).attr("lineleft"));
-                                colY = parseFloat($(line).attr("linetop"));
-                                colW = parseFloat($(line).attr("linewidth"));
-                                var $lastLine = $(".parsing[lineleft='" + colX + "']:last");
-//            //console.log("END");
-//            //console.log($lastLine);
-                                colH = parseFloat($lastLine.attr("linetop")) - colY + parseFloat($lastLine.attr("lineheight"));
-                                var lastLineIndex = $(".parsing").index($lastLine);
-//            //console.log("PUSH TO GATHERED COLUMNS");
-                                gatheredColumns.push([colX, colY, colW, colH, $(line).attr("lineserverid"), $lastLine.attr("lineserverid"), true]);
-//            //console.log("RECURSIVE!");
-                                gatherColumns(lastLineIndex);
-                            }
+function populateCompareSplit(folioIndex){
+    var canvasIndex = folioIndex - 1;
+    var compareSrc = tpen.manifest.sequences[0].canvases[canvasIndex].images[0].resource["@id"];
+    var currentCompareSrc = $(".compareImage").attr("src");
+    if (currentCompareSrc !== compareSrc) $(".compareImage").attr("src", compareSrc);
+}
 
+/*
+ * Go through all of the parsing lines and put them into columns;
+ * @see linesToColumns()
+ * Global Arrray: gatheredColumns
+ *
+ */
+function gatherColumns(startIndex){
+    var colX, colY, colW, colH;
+    var lastColumnLine = - 1;
+    var linesInColumn = - 1;
+    var hasTranscription = false;
+    if ($(".parsing")[startIndex + 1]){
+        var line = $(".parsing")[startIndex + 1];
+        colX = parseFloat($(line).attr("lineleft"));
+        colY = parseFloat($(line).attr("linetop"));
+        colW = parseFloat($(line).attr("linewidth"));
+        var $lastLine = $(".parsing[lineleft='" + colX + "']:last");
+        colH = parseFloat($lastLine.attr("linetop")) - colY + parseFloat($lastLine.attr("lineheight"));
+        var lastLineIndex = $(".parsing").index($lastLine);
+        tpen.screen.gatheredColumns.push([colX, colY, colW, colH, $(line).attr("lineserverid"), $lastLine.attr("lineserverid"), true]);
+        gatherColumns(lastLineIndex);
+    }
+}
 
-                            }
-                            function removeColumn(column, destroy){
-                            ////console.log("Called removed column for this column");
-                            ////console.log(column);
-                            if (!destroy){
-                            if (column.attr("hastranscription") === "true"){
-                            var cfrm = confirm("This column contains transcription data that will be lost.\n\nContinue?");
-                                if (!cfrm) return false;
-                            }
-                            }
-                            var colX = column.attr("lineleft");
-                                // collect lines from column
-                                var lines = $(".parsing[lineleft='" + colX + "']");
-                                var lineLen = lines.length;
-                                var lineCnt = 0;
-                                lines.addClass("deletable");
-                                removeColumnTranscriptlets(lines);
-                                column.remove();
-                            }
+function removeColumn(column, destroy){
+    if (!destroy){
+        if (column.attr("hastranscription") === "true"){
+            var cfrm = confirm("This column contains transcription data that will be lost.\n\nContinue?");
+            if (!cfrm) return false;
+        }
+    }
+    var colX = column.attr("lineleft");
+    // collect lines from column
+    var lines = $(".parsing[lineleft='" + colX + "']");
+    var lineLen = lines.length;
+    var lineCnt = 0;
+    lines.addClass("deletable");
+    removeColumnTranscriptlets(lines);
+    column.remove();
+}
 
+function destroyPage(){
+    nextColumnToRemove = $(".parsingColumn:first");
+    var colX = nextColumnToRemove.attr("lineleft");
+    var lines = $(".parsing[lineleft='" + colX + "']");
+    if (nextColumnToRemove.length > 0) {
+        removeColumnTranscriptlets(lines, true);
+    }
+    else {
+        cleanupTranscriptlets(true);
+    }
+}
 
-                            function destroyPage(){
-                            nextColumnToRemove = $(".parsingColumn:first");
-                                var colX = nextColumnToRemove.attr("lineleft");
-                                var lines = $(".parsing[lineleft='" + colX + "']");
-                                if (nextColumnToRemove.length > 0){
-                            removeColumnTranscriptlets(lines, true);
-                            }
-                            else{
-                            cleanupTranscriptlets(true);
-                            }
-                            }
+/* Make parsing interface turn the lines in the view into columns */
+function linesToColumns(){
+//update lines in case of changes
+    tpen.screen.gatheredColumns = []; //The array built by gatherColumns()
+    $(".parsingColumn").remove();
+    if ($(".parsing").size() === 0) return false;
+    //loop through lines to find column dimensions
+    var columnParameters = new Array(); // x,y,w,h,startID,endID
+    var i = 0;
+    var colX, colY, colW, colH;
+    var lastColumnLine = - 1;
+    var linesInColumn = - 1;
+    gatherColumns( - 1); //Gets all columns into an array.
+    //build columns
+    var columns = [];
+    for (j = 0; j < tpen.screen.gatheredColumns.length; j++){
+        var parseImg = document.getElementById("imgTop").getElementsByTagName("img");
+        var scaledX = tpen.screen.gatheredColumns[j][0];
+        var scaledY = tpen.screen.gatheredColumns[j][1];
+        var scaledW = tpen.screen.gatheredColumns[j][2];
+        var scaledH = tpen.screen.gatheredColumns[j][3];
+    //            // recognize, alert, and adjust to out of bounds columns
+        if (scaledX + scaledW > 100){
+        // exceeded the right boundary of the image
+            if (scaledX > 98){
+                scaledX = 98;
+                scaledW = 2;
+            } else {
+                scaledW = 100 - scaledX - 1;
+            }
+        }
+        if (scaledX < 0){
+            // exceeded the left boundary of the image
+            scaledW += scaledX;
+            scaledX = 0;
+        }
+        if (scaledY + scaledH > 100){
+            // exceeded the bottom boundary of the image
+            if (scaledY > 98){
+                scaledY = 98;
+                scaledH = 2;
+            } else {
+                scaledH = 100 - scaledY - 1;
+            }
+        }
+        if (scaledY < 0){
+            // exceeded the top boundary of the image
+            scaledH += scaledY;
+            scaledY = 0;
+        }
+        var startID = $(".parsing[lineleft='" + gatheredColumns[j][0] + "']:first").attr("lineserverid");
+        var endID = $(".parsing[lineleft='" + gatheredColumns[j][0] + "']:last").attr("lineserverid");
+        columns.push("<div class='parsingColumn' lineleft='", gatheredColumns[j][0], "'",
+            " linetop='", gatheredColumns[j][1], "'",
+            " linewidth='", gatheredColumns[j][2], "'",
+            " lineheight='", gatheredColumns[j][3], "'",
+            " hastranscription='", gatheredColumns[j][6] == true, "'",
+            " startid='", startID, "'",
+            " endid='", endID, "'",
+            " style='top:", scaledY, "%;left:", scaledX, "%;width:", scaledW, "%;height:", scaledH, "%;'>",
+            "</div>");
+    }
+    //attach columns
+    $(parseImg).before(columns.join(""));
+    // avoid events on .lines
+    $('#imgTop').find('.parsing').css({
+        'z-index': '-10'
+    });
+    $(".parsingColumn")
+    .mouseenter(function(){
+        var lineInfo;
+        lineInfo = $("#transcription" + ($(this).index(".parsing") + 1)).val();
+        $("#lineInfo").empty()
+        .text(lineInfo)
+        .append("<div>" + $("#t" + ($(this).index(".line") + 1)).find(".counter").text() + "</div>")
+        .show();
+        if (!tpen.screen.isMagnifying){
+            $(this).addClass("jumpLine");
+        }
+    })
+    .mouseleave(function(){
+        $(".parsing").removeClass("jumpLine");
+        $("#lineInfo").hide();
+    })
+    .click(function(event){
+    });
+}
 
-                            /* Make parsing interface turn the lines in the view into columns */
-                            function linesToColumns(){
-                            //update lines in case of changes
-                            gatheredColumns = []; //The array built by gatherColumns()
-                                $(".parsingColumn").remove();
-                                if ($(".parsing").size() == 0) return false;
-                                //writeLines($("#imgTop img"));
-                                //loop through lines to find column dimensions
-                                var columnParameters = new Array(); // x,y,w,h,startID,endID
-                                var i = 0;
-                                var colX, colY, colW, colH;
-                                var lastColumnLine = - 1;
-                                var linesInColumn = - 1;
-                                gatherColumns( - 1); //Gets all columns into an array.
-                                //build columns
-                                var columns = [];
-                                for (j = 0; j < gatheredColumns.length; j++){
-                            var parseImg = document.getElementById("imgTop").getElementsByTagName("img");
-                                var scaledX = gatheredColumns[j][0];
-                                var scaledY = gatheredColumns[j][1];
-                                var scaledW = gatheredColumns[j][2];
-                                var scaledH = gatheredColumns[j][3];
-//            // recognize, alert, and adjust to out of bounds columns
-                                if (scaledX + scaledW > 100){
-                            // exceeded the right boundary of the image
-                            if (scaledX > 98){
-                            scaledX = 98;
-                                scaledW = 2;
-                            } else {
-                            scaledW = 100 - scaledX - 1;
-                            };
-                            }
-                            if (scaledX < 0){
-                            // exceeded the left boundary of the image
-                            scaledW += scaledX;
-                                scaledX = 0;
-                            }
-                            if (scaledY + scaledH > 100){
-                            // exceeded the bottom boundary of the image
-                            if (scaledY > 98){
-                            scaledY = 98;
-                                scaledH = 2;
-                            } else {
-                            scaledH = 100 - scaledY - 1;
-                            };
-                            }
-                            if (scaledY < 0){
-                            // exceeded the top boundary of the image
-                            scaledH += scaledY;
-                                scaledY = 0;
-                            }
-                            var startID = $(".parsing[lineleft='" + gatheredColumns[j][0] + "']:first").attr("lineserverid");
-                                var endID = $(".parsing[lineleft='" + gatheredColumns[j][0] + "']:last").attr("lineserverid");
-                                columns.push("<div class='parsingColumn' lineleft='", gatheredColumns[j][0], "'",
-                                    " linetop='", gatheredColumns[j][1], "'",
-                                    " linewidth='", gatheredColumns[j][2], "'",
-                                    " lineheight='", gatheredColumns[j][3], "'",
-                                    " hastranscription='", gatheredColumns[j][6] == true, "'",
-                                    " startid='", startID, "'",
-                                    " endid='", endID, "'",
-                                    " style='top:", scaledY, "%;left:", scaledX, "%;width:", scaledW, "%;height:", scaledH, "%;'>",
-                                    "</div>");
-                            }
-                            //attach columns
-                            $(parseImg).before(columns.join(""));
-                                // avoid events on .lines
-                                $('#imgTop').find('.parsing').css({
-                            'z-index': '-10'
-                            });
-                                $(".parsingColumn")
-                                .mouseenter(function(){
-//                //console.log("mouse enter column");
-                                var lineInfo;
-                                    lineInfo = $("#transcription" + ($(this).index(".parsing") + 1)).val();
-                                    $("#lineInfo").empty().text(lineInfo).append("<div>" + $("#t" + ($(this).index(".line") + 1)).find(".counter").text() + "</div>").show();
-                                    if (!isMagnifying){
-                                $(this).addClass("jumpLine");
-                                }
-                                })
-                                .mouseleave(function(){
-//                //console.log("mouse leave coumn")
-                                $(".parsing").removeClass("jumpLine");
-                                    $("#lineInfo").hide();
-                                })
-                                .click(function(event){
-                                });
-                            }
+/**
+ * Allows for column adjustment in the parsing interface.
+ */
+function adjustColumn(event){
+    var thisColumnID = new Array(2);
+    var thisColumn;
+    var originalX = 1;
+    var originalY = 1;
+    var originalW = 1;
+    var originalH = 1;
+    var adjustment = "";
+    var column = undefined;
+    var originalPercentW;
+    var originalPercentX;
+    $.each($(".parsingColumn"), function(){
+        if ($(this).hasClass("ui-resizable")){
+            $(this).resizable("destroy");
+        }
+    });
+    $(".parsingColumn").resizable({
+        handles     : "n,s,w,e",
+        containment : 'parent',
+        start       : function(event, ui){
+            $("#progress").html("Adjusting Columns - unsaved").fadeIn();
+            $("#columnResizing").show();
+            $("#sidebar").fadeIn();
+            thisColumn = $(".ui-resizable-resizing");
+            thisColumnID = [thisColumn.attr("startid"), thisColumn.attr("endid")];
+            adjustment = "new";
+            originalPercentW = parseFloat($(this).attr("linewidth"));
+            originalPercentX = parseFloat($(this).attr("lineleft"));
+        },
+        resize      : function(event, ui){
+            if (adjustment === "new"){
+                var originalX = ui.originalPosition.left;
+                var originalY = ui.originalPosition.top;
+                var originalW = ui.originalSize.width;
+                var originalH = ui.originalSize.height;
+                var newX = ui.position.left;
+                var newY = ui.position.top;
+                var newW = ui.size.width;
+                var newH = ui.size.height;
+                var offsetForBtm = $(event.target).position().top;
+                if (Math.abs(originalW - newW) > 5) adjustment = "right";
+                if (Math.abs(originalH - newH) > 5) adjustment = "bottom";
+                if (Math.abs(originalX - newX) > 5) adjustment = "left"; // a left change would affect w and x, order matters
+                if (Math.abs(originalY - newY) > 5) adjustment = "top"; // a top change would affect h and y, order matters
+                offsetForBtm = (offsetForBtm / $("#imgTop img").height()) * 100;
+                newH = (newH / $("#imgTop img").height()) * 100;
+                var actualBottom = newH + offsetForBtm;
+                $("#progress").html("Adjusting " + adjustment + " - unsaved");
+            }
+        },
+        stop        : function(event, ui){
+            $("#progress").html("Column Resized - Saving...");
+            var parseRatio = $("#imgTop img").width() / $("#imgTop img").height();
+            var originalX = ui.originalPosition.left;
+            var originalY = ui.originalPosition.top;
+            var originalW = ui.originalSize.width;
+            var originalH = ui.originalSize.height;
+            var newX = ui.position.left;
+            var newY = ui.position.top;
+            var newW = ui.size.width;
+            var newH = ui.size.height;
+            var oldHeight, oldTop, oldLeft, newWidth, newLeft;
+            //THESE ORIGINAL AND NEW VALUES ARE EVALUATED AS PIXELS, NOT PERCENTAGES
+            if (adjustment === "top") {
+                newY = (newY / $("#imgTop img").height()) * 100;
+                originalY = (originalY / $("#imgTop img").height()) * 100;
+                //save a new height for the top line;
+                var startLine = $(".parsing[lineserverid='" + thisColumnID[0] + "']");
+                oldHeight = parseFloat(startLine.attr("lineheight"));
+                oldTop = parseFloat(startLine.attr("linetop"));
+                //This should be resized right now.  If it is a good resize, the lineheight will be > 0
+                startLine.attr({
+                    "linetop"    : newY,
+                    "lineheight" : oldHeight + oldTop - newY
+                });
+                startLine.css({
+                    "top"    : newY + "%",
+                    "height" : oldHeight + oldTop - newY + "%"
+                });
+                if (parseFloat(startLine.attr("lineheight")) < 0){
+                    // top of the column is below the bottom of its top line
+                    var newTopLine = startLine;
+                    do {
+                        newTopLine = startLine.next('.parsing');
+                        removeLine(startLine, true);
+                        removeTranscriptlet(startLine.attr("lineserverid"), startLine.attr("lineserverid"), true);
+                        startLine = newTopLine;
+                        oldHeight = parseFloat(startLine.attr("lineheight"));
+                        oldTop = parseFloat(startLine.attr("linetop"));
+                    } while (parseFloat(startLine.attr("linetop")) + parseFloat(startLine.attr("lineheight")) < newY);
+                    //Got through all the ones that needed removing, now I am on the one that needs resizing.
+                    startLine.attr({
+                        "linetop"    : newY,
+                        "lineheight" : oldHeight + oldTop - newY
+                    });
+                    startLine.css({
+                        "top"    : newY + "%",
+                        "height" : oldHeight + oldTop - newY + "%"
+                    });
+                    thisColumn.attr("startid", startLine.attr("lineserverid"));
+                }
+                $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
+            }
+        else if (adjustment === "bottom"){
+            //technically, we want to track the bottom.  The bottom if the height + top offset
+            var offsetForBtm = $(event.target).position().top;
+            offsetForBtm = (offsetForBtm / $("#imgTop img").height()) * 100;
+            newH = (newH / $("#imgTop img").height()) * 100;
+            var actualBottom = newH + offsetForBtm;
+            //save a new height for the bottom line
+            var endLine = $(".parsing[lineserverid='" + thisColumnID[1] + "']");
+            oldHeight = parseFloat(endLine.attr("lineheight"));
+            oldTop = parseFloat(endLine.attr("linetop"));
+            endLine.attr({
+                "lineheight" : oldHeight + (newH - originalH)
+            });
+            endLine.css({
+                "height" : oldHeight + (newH - originalH) + "%"
+            });
+            if (parseFloat(endLine.attr("linetop")) > actualBottom){
+                //the bottom line isnt large enough to account for the change,
+                // delete lines until we get to a  line that,
+                // when combined with the deleted lines
+                //can account for the requested change.
+                do {
+                oldHeight = parseFloat(endLine.attr("lineheight"));
+                    oldTop = parseFloat(endLine.attr("linetop"));
+                    var nextline = endLine.prev(".parsing");
+                    endLine.remove();
+                    removeLine(endLine, true);
+                    removeTranscriptlet(endLine.attr("lineserverid"), endLine.attr("lineserverid"), true);
+                    endLine = nextline;
+                } while (parseFloat(endLine.attr("linetop")) > actualBottom);
+                var currentLineTop = parseFloat(endLine.attr("linetop"));
+                endLine.attr({
+                    "lineheight" : actualBottom - currentLineTop
+                });
+                endLine.css({
+                    "height" : actualBottom - currentLineTop + "%"
+                });
+                thisColumn.attr("endid", endLine.attr("lineserverid"));
+            }
+            $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
+        }
+        else if (adjustment === "left"){
+            //save a new left,width for all these lines
+            var leftGuide = $(".parsing[lineserverid='" + thisColumnID[0] + "']");
+            oldLeft = parseFloat(leftGuide.attr("lineleft"));
+            var ratio1 = originalPercentW / originalW;
+            var ratio2 = originalPercentX / originalX;
+            newWidth = newW * ratio1;
+            newLeft = newX * ratio2;
+            $(".parsing[lineleft='" + oldLeft + "']").each(function(){
+                $(this).attr({
+                    "lineleft" : newLeft,
+                    "linewidth": newWidth
+                });
+                    $(this).css({
+                    "left" : newLeft + "%",
+                    "width": newWidth + "%"
+                });
+            });
+            updateLinesInColumn(thisColumnID);
+            $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
+            cleanupTranscriptlets(true);
+        }
+        else if (adjustment === "right"){
+            //save a new width for all these lines
+            var rightGuide = $(".parsing[lineserverid='" + thisColumnID[0] + "']");
+            oldLeft = parseFloat(rightGuide.attr("lineleft"));
+            var ratio = originalPercentW / originalW;
+            newWidth = newW * ratio; //new percent width
+            $(".parsing[lineleft='" + oldLeft + "']").each(function(){
+                $(this).attr({
+                    "linewidth": newWidth
+                });
+                $(this).css({
+                    "width": newWidth + "%"
+                });
+            });
+            updateLinesInColumn(thisColumnID);
+            $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
+            cleanupTranscriptlets(true);
+        } else {
+            $("#progress").html("No changes made.").delay(3000).fadeOut(1000);
+        }
+        $("#lineResizing").delay(3000).fadeOut(1000);
+        adjustment = "";
+        }
+    });
+}
 
-                            /**
-                             * Allows for column adjustment in the parsing interface.
-                             */
-                            function adjustColumn(event){
-                            // if(!isMember && !permitParsing)return false;
-                            //prep for column adjustment
-//        //console.log("adjustColumn");
-                            var thisColumnID = new Array(2);
-                                var thisColumn;
-                                var originalX = 1;
-                                var originalY = 1;
-                                var originalW = 1;
-                                var originalH = 1;
-                                var adjustment = "";
-                                var column = undefined;
-                                var originalPercentW;
-                                var originalPercentX;
-                                $.each($(".parsingColumn"), function(){
-                                if ($(this).hasClass("ui-resizable")){
-                                $(this).resizable("destroy");
-                                }
-                                });
-                                $(".parsingColumn").resizable({
-                            handles     : "n,s,w,e",
-                                containment : 'parent',
-                                start       : function(event, ui){
-                                $("#progress").html("Adjusting Columns - unsaved").fadeIn();
-                                    $("#columnResizing").show();
-                                    $("#sidebar").fadeIn();
-                                    thisColumn = $(".ui-resizable-resizing");
-                                    thisColumnID = [thisColumn.attr("startid"), thisColumn.attr("endid")];
-                                    adjustment = "new";
-                                    originalPercentW = parseFloat($(this).attr("linewidth"));
-                                    originalPercentX = parseFloat($(this).attr("lineleft"));
-                                },
-                                resize      : function(event, ui){
-                                if (adjustment == "new"){
-                                var originalX = ui.originalPosition.left;
-                                    var originalY = ui.originalPosition.top;
-                                    var originalW = ui.originalSize.width;
-                                    var originalH = ui.originalSize.height;
-                                    var newX = ui.position.left;
-                                    var newY = ui.position.top;
-                                    var newW = ui.size.width;
-                                    var newH = ui.size.height;
-                                    var offsetForBtm = $(event.target).position().top;
-                                    if (Math.abs(originalW - newW) > 5) adjustment = "right";
-                                    if (Math.abs(originalH - newH) > 5) adjustment = "bottom";
-                                    if (Math.abs(originalX - newX) > 5) adjustment = "left"; // a left change would affect w and x, order matters
-                                    if (Math.abs(originalY - newY) > 5) adjustment = "top"; // a top change would affect h and y, order matters
-                                    offsetForBtm = (offsetForBtm / $("#imgTop img").height()) * 100;
-                                    newH = (newH / $("#imgTop img").height()) * 100;
-                                    var actualBottom = newH + offsetForBtm;
-                                    $("#progress").html("Adjusting " + adjustment + " - unsaved");
-                                }
-                                },
-                                stop        : function(event, ui){
-                                $("#progress").html("Column Resized - Saving...");
-                                    var parseRatio = $("#imgTop img").width() / $("#imgTop img").height();
-//                console.log("ratio for adjust");
-//                console.log($("#imgTop img").width()+"/"+$("#imgTop img").height());
-//                console.log(parseRatio);
-                                    var originalX = ui.originalPosition.left;
-                                    var originalY = ui.originalPosition.top;
-                                    var originalW = ui.originalSize.width;
-                                    var originalH = ui.originalSize.height;
-                                    var newX = ui.position.left;
-                                    var newY = ui.position.top;
-                                    var newW = ui.size.width;
-                                    var newH = ui.size.height;
-                                    var oldHeight, oldTop, oldLeft, newWidth, newLeft;
-                                    //THESE ORIGINAL AND NEW VALUES ARE EVALUATED AS PIXELS, NOT PERCENTAGES
-                                    if (adjustment === "top") {
-                                newY = (newY / $("#imgTop img").height()) * 100;
-                                    originalY = (originalY / $("#imgTop img").height()) * 100;
-                                    //console.log("top");
-                                    //save a new height for the top line;
-                                    var startLine = $(".parsing[lineserverid='" + thisColumnID[0] + "']");
-                                    oldHeight = parseFloat(startLine.attr("lineheight"));
-                                    oldTop = parseFloat(startLine.attr("linetop"));
-                                    //This should be resized right now.  If it is a good resize, the lineheight will be > 0
-                                    startLine.attr({
-                                    "linetop"    : newY,
-                                        "lineheight" : oldHeight + oldTop - newY
-                                    });
-                                    startLine.css({
-                                    "top"    : newY + "%",
-                                        "height" : oldHeight + oldTop - newY + "%"
-                                    });
-                                    if (parseFloat(startLine.attr("lineheight")) < 0){
-                                // top of the column is below the bottom of its top line
-                                var newTopLine = startLine;
-                                    do {
-                                    newTopLine = startLine.next('.parsing');
-                                        removeLine(startLine, true);
-                                        removeTranscriptlet(startLine.attr("lineserverid"), startLine.attr("lineserverid"), true);
-                                        startLine = newTopLine;
-                                        oldHeight = parseFloat(startLine.attr("lineheight"));
-                                        oldTop = parseFloat(startLine.attr("linetop"));
-                                    } while (parseFloat(startLine.attr("linetop")) + parseFloat(startLine.attr("lineheight")) < newY);
-                                    //Got through all the ones that needed removing, now I am on the one that needs resizing.
-                                    startLine.attr({
-                                    "linetop"    : newY,
-                                        "lineheight" : oldHeight + oldTop - newY
-                                    });
-                                    startLine.css({
-                                    "top"    : newY + "%",
-                                        "height" : oldHeight + oldTop - newY + "%"
-                                    });
-                                    thisColumn.attr("startid", startLine.attr("lineserverid"));
-                                };
-                                    $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
-                                }
-                                else if (adjustment == "bottom"){
-                                //console.log("bottom");
-                                //technically, we want to track the bottom.  The bottom if the height + top offset
-                                var offsetForBtm = $(event.target).position().top;
-                                    offsetForBtm = (offsetForBtm / $("#imgTop img").height()) * 100;
-                                    newH = (newH / $("#imgTop img").height()) * 100;
-                                    var actualBottom = newH + offsetForBtm;
-                                    //save a new height for the bottom line
-                                    var endLine = $(".parsing[lineserverid='" + thisColumnID[1] + "']");
-                                    oldHeight = parseFloat(endLine.attr("lineheight"));
-                                    oldTop = parseFloat(endLine.attr("linetop"));
-                                    endLine.attr({
-                                    "lineheight" : oldHeight + (newH - originalH)
-                                    });
-                                    endLine.css({
-                                    "height" : oldHeight + (newH - originalH) + "%"
-                                    });
-                                    if (parseFloat(endLine.attr("linetop")) > actualBottom){
-                                //the bottom line isnt large enough to account for the change, delete lines until we get to a  line that, wehn combined with the deleted lines
-                                //can account for the requested change.
-                                do {
-                                oldHeight = parseFloat(endLine.attr("lineheight"));
-                                    oldTop = parseFloat(endLine.attr("linetop"));
-                                    var nextline = endLine.prev(".parsing");
-                                    endLine.remove();
-                                    removeLine(endLine, true);
-                                    removeTranscriptlet(endLine.attr("lineserverid"), endLine.attr("lineserverid"), true);
-                                    endLine = nextline;
-                                } while (parseFloat(endLine.attr("linetop")) > actualBottom);
-                                    var currentLineTop = parseFloat(endLine.attr("linetop"));
-                                    endLine.attr({
-                                    "lineheight" : actualBottom - currentLineTop
-                                    });
-                                    endLine.css({
-                                    "height" : actualBottom - currentLineTop + "%"
-                                    });
-                                    thisColumn.attr("endid", endLine.attr("lineserverid"));
-                                };
-                                    $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
-                                }
-                                else if (adjustment == "left"){
-                                //save a new left,width for all these lines
-                                var leftGuide = $(".parsing[lineserverid='" + thisColumnID[0] + "']");
-                                    oldLeft = parseFloat(leftGuide.attr("lineleft"));
-                                    var ratio1 = originalPercentW / originalW;
-                                    var ratio2 = originalPercentX / originalX;
-                                    newWidth = newW * ratio1;
-                                    newLeft = newX * ratio2;
-                                    $(".parsing[lineleft='" + oldLeft + "']").each(function(){
-                                $(this).attr({
-                                "lineleft" : newLeft,
-                                    "linewidth": newWidth
-                                });
-                                    $(this).css({
-                                "left" : newLeft + "%",
-                                    "width": newWidth + "%"
-                                });
-                                });
-                                    updateLinesInColumn(thisColumnID);
-                                    $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
-                                    cleanupTranscriptlets(true);
-                                }
-                                else if (adjustment == "right"){
-                                //save a new width for all these lines
-                                var rightGuide = $(".parsing[lineserverid='" + thisColumnID[0] + "']");
-                                    oldLeft = parseFloat(rightGuide.attr("lineleft"));
-                                    var ratio = originalPercentW / originalW;
-                                    newWidth = newW * ratio; //new percent width
-                                    $(".parsing[lineleft='" + oldLeft + "']").each(function(){
-                                $(this).attr({
-                                "linewidth": newWidth
-                                });
-                                    $(this).css({
-                                "width": newWidth + "%"
-                                });
-                                });
-                                    updateLinesInColumn(thisColumnID);
-                                    $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
-                                    cleanupTranscriptlets(true);
-                                } else {
-                                $("#progress").html("No changes made.").delay(3000).fadeOut(1000);
-                                }
-                                $("#lineResizing").delay(3000).fadeOut(1000);
-                                    adjustment = "";
-                                }
-                            });
-                            }
+/**
+ * Determines action based on transcription line clicked and tool in use.
+ * Alerts 'unknown click' if all fails. Calls lineChange(e,event) for
+ * parsing tool. Jumps to transcriptlet for full page tool.
+ */
+function clickedLine(e, event) {
+//Stop ability to make a new line until the update from this process is complete.
+if ($(e).hasClass("parsing")){
+if ($("#addLines").hasClass('active') || $("#removeLines").hasClass('active')){
+//console.log("show parsing cover");
+$("#parsingCover").show();
+    lineChange(e, event);
+}
+}
+else{
 
-                            /**
-                             * Determines action based on transcription line clicked and tool in use.
-                             * Alerts 'unknown click' if all fails. Calls lineChange(e,event) for
-                             * parsing tool. Jumps to transcriptlet for full page tool.
-                             */
-                            function clickedLine(e, event) {
-                            //Stop ability to make a new line until the update from this process is complete.
-                            if ($(e).hasClass("parsing")){
-                            if ($("#addLines").hasClass('active') || $("#removeLines").hasClass('active')){
-                            //console.log("show parsing cover");
-                            $("#parsingCover").show();
-                                lineChange(e, event);
-                            }
-                            }
-                            else{
+}
+}
 
-                            }
-                            }
-
-                            function reparseColumns(){
-                            $.each($('.parsingColumn'), function(){
-                            var colX = $(this).attr("lineleft");
-                                // collect lines from column
-                                var lines = $(".parsing[lineleft='" + colX + "']");
-                                lines.addClass("deletable");
-                                var linesSize = lines.size();
-                                // delete from the end, alerting for any deleted data
-                                for (var i = linesSize; i > 0; i--){
-                            removeLine(lines[i], true);
-                            }
-                            });
-                            }
+function reparseColumns(){
+$.each($('.parsingColumn'), function(){
+var colX = $(this).attr("lineleft");
+    // collect lines from column
+    var lines = $(".parsing[lineleft='" + colX + "']");
+    lines.addClass("deletable");
+    var linesSize = lines.size();
+    // delete from the end, alerting for any deleted data
+    for (var i = linesSize; i > 0; i--){
+removeLine(lines[i], true);
+}
+});
+}
 
 
-                            function insertTag(tagName, fullTag){
-                            if (tagName.lastIndexOf("/") == (tagName.length - 1)) {
-                            //transform self-closing tags
-                            var slashIndex = tagName.length;
-                                fullTag = fullTag.slice(0, slashIndex) + fullTag.slice(slashIndex + 1, - 1) + " />";
-                            }
-                            // Check for wrapped tag
-                            if (!addchar(escape(fullTag), escape(tagName))) {
-                            closeTag(escape(tagName), escape(fullTag));
-                            }
+function insertTag(tagName, fullTag){
+if (tagName.lastIndexOf("/") == (tagName.length - 1)) {
+//transform self-closing tags
+var slashIndex = tagName.length;
+    fullTag = fullTag.slice(0, slashIndex) + fullTag.slice(slashIndex + 1, - 1) + " />";
+}
+// Check for wrapped tag
+if (!addchar(escape(fullTag), escape(tagName))) {
+closeTag(escape(tagName), escape(fullTag));
+}
 
-                            }
+}
 
-                            function closeTag(tagName, fullTag){
-                            // Do not create for self-closing tags
-                            if (tagName.lastIndexOf("/") == (tagName.length - 1)) return false;
-                                var tagLineID = tpen.focusItem[1].attr("lineserverid");
-                                var closeTag = document.createElement("div");
-                                var tagID;
-                                $.get("tagTracker", {
-                                addTag      : true,
-                                    tag         : tagName,
-                                    projectID   : projectID,
-                                    //folio       : folio,
-                                    line        : tagLineID
-                                }, function(data){
-                                tagID = data;
-                                    $(closeTag).attr({
-                                "class"     :   "tags ui-corner-all right ui-state-error",
-                                    "title"     :   unescape(fullTag),
-                                    "data-line" :   tagLineID,
-                                    //"data-folio":   folio,
-                                    "data-tagID":   tagID
-                                }).text("/" + tagName);
-                                    tpen.focusItem[1].children(".xmlClosingTags").append(closeTag);
-                                });
-                            }
+function closeTag(tagName, fullTag){
+// Do not create for self-closing tags
+if (tagName.lastIndexOf("/") == (tagName.length - 1)) return false;
+    var tagLineID = tpen.focusItem[1].attr("lineserverid");
+    var closeTag = document.createElement("div");
+    var tagID;
+    $.get("tagTracker", {
+    addTag      : true,
+        tag         : tagName,
+        projectID   : projectID,
+        //folio       : folio,
+        line        : tagLineID
+    }, function(data){
+    tagID = data;
+        $(closeTag).attr({
+    "class"     :   "tags ui-corner-all right ui-state-error",
+        "title"     :   unescape(fullTag),
+        "data-line" :   tagLineID,
+        //"data-folio":   folio,
+        "data-tagID":   tagID
+    }).text("/" + tagName);
+        tpen.focusItem[1].children(".xmlClosingTags").append(closeTag);
+    });
+}
 
-                            function addchar(theChar, closingTag)
-                            {
-                            //console.log("Add Char Called");
-                            var closeTag = (closingTag == undefined) ? "" : closingTag;
-                                var e = tpen.focusItem[1].find('textarea')[0];
-                                if (e != null) {
-                            //Data.makeUnsaved();
-                            return setCursorPosition(e, insertAtCursor(e, theChar, closeTag));
-                            }
-                            return false;
-                            }
+function addchar(theChar, closingTag)
+{
+//console.log("Add Char Called");
+var closeTag = (closingTag == undefined) ? "" : closingTag;
+    var e = tpen.focusItem[1].find('textarea')[0];
+    if (e != null) {
+//Data.makeUnsaved();
+return setCursorPosition(e, insertAtCursor(e, theChar, closeTag));
+}
+return false;
+}
 
-                            function setCursorPosition(e, position)
-                            {
-                            //console.log("set cursor pos.");
-                            var pos = position;
-                                var wrapped = false;
-                                if (pos.toString().indexOf("wrapped") == 0) {
-                            pos = parseInt(pos.substr(7));
-                                wrapped = true;
-                            }
-                            e.focus();
-                                if (e.setSelectionRange) {
-                            e.setSelectionRange(pos, pos);
-                            }
-                            else if (e.createTextRange) {
-                            e = e.createTextRange();
-                                e.collapse(true);
-                                e.moveEnd('character', pos);
-                                e.moveStart('character', pos);
-                                e.select();
-                            }
-                            return wrapped;
-                            }
+function setCursorPosition(e, position)
+{
+//console.log("set cursor pos.");
+var pos = position;
+    var wrapped = false;
+    if (pos.toString().indexOf("wrapped") == 0) {
+pos = parseInt(pos.substr(7));
+    wrapped = true;
+}
+e.focus();
+    if (e.setSelectionRange) {
+e.setSelectionRange(pos, pos);
+}
+else if (e.createTextRange) {
+e = e.createTextRange();
+    e.collapse(true);
+    e.moveEnd('character', pos);
+    e.moveStart('character', pos);
+    e.select();
+}
+return wrapped;
+}
 
-                            function insertAtCursor (myField, myValue, closingTag) {
-                            //console.log("insert at cursor");
-                            var closeTag = (closingTag == undefined) ? "" : unescape(closingTag);
-                                //IE support
-                                if (document.selection) {
-                            myField.focus();
-                                sel = document.selection.createRange();
-                                sel.text = unescape(myValue);
-                                //Preview.updateLine(myField);
-                                return sel + unescape(myValue).length;
-                            }
-                            //MOZILLA/NETSCAPE support
-                            else if (myField.selectionStart || myField.selectionStart == '0') {
-                            var startPos = myField.selectionStart;
-                                var endPos = myField.selectionEnd;
-                                if (startPos != endPos) {
-                            // something is selected, wrap it instead
-                            var toWrap = myField.value.substring(startPos, endPos);
-                                myField.value = myField.value.substring(0, startPos)
-                                + unescape(myValue)
-                                + toWrap
-                                + "</" + closeTag + ">"
-                                + myField.value.substring(endPos, myField.value.length);
-                                myField.focus();
-                                // Preview.updateLine(myField);
-                                var insertLength = startPos + unescape(myValue).length +
-                                toWrap.length + 3 + closeTag.length;
-                                return "wrapped" + insertLength;
-                            } else {
-                            myField.value = myField.value.substring(0, startPos)
-                                + unescape(myValue)
-                                + myField.value.substring(startPos, myField.value.length);
-                                myField.focus();
-                                return startPos + unescape(myValue).length;
-                            }
-                            } else {
-                            myField.value += unescape(myValue);
-                                myField.focus();
-                                return myField.length;
-                            }
-                            }
+function insertAtCursor (myField, myValue, closingTag) {
+//console.log("insert at cursor");
+var closeTag = (closingTag == undefined) ? "" : unescape(closingTag);
+    //IE support
+    if (document.selection) {
+myField.focus();
+    sel = document.selection.createRange();
+    sel.text = unescape(myValue);
+    //Preview.updateLine(myField);
+    return sel + unescape(myValue).length;
+}
+//MOZILLA/NETSCAPE support
+else if (myField.selectionStart || myField.selectionStart == '0') {
+var startPos = myField.selectionStart;
+    var endPos = myField.selectionEnd;
+    if (startPos != endPos) {
+// something is selected, wrap it instead
+var toWrap = myField.value.substring(startPos, endPos);
+    myField.value = myField.value.substring(0, startPos)
+    + unescape(myValue)
+    + toWrap
+    + "</" + closeTag + ">"
+    + myField.value.substring(endPos, myField.value.length);
+    myField.focus();
+    // Preview.updateLine(myField);
+    var insertLength = startPos + unescape(myValue).length +
+    toWrap.length + 3 + closeTag.length;
+    return "wrapped" + insertLength;
+} else {
+myField.value = myField.value.substring(0, startPos)
+    + unescape(myValue)
+    + myField.value.substring(startPos, myField.value.length);
+    myField.focus();
+    return startPos + unescape(myValue).length;
+}
+} else {
+myField.value += unescape(myValue);
+    myField.focus();
+    return myField.length;
+}
+}
 
-                            function toggleCharacters(){
-                            if ($("#charactersPopin .character:first").is(":visible")){
-                            $("#charactersPopin .character").fadeOut(400);
-                            }
-                            else{
-                            $("#charactersPopin .character").fadeIn(400).css("display", "block");
-                            }
-                            }
-                            function toggleTags(){
-                            if ($("#xmlTagPopin .lookLikeButtons:first").is(":visible")){
-                            $("#xmlTagPopin .lookLikeButtons").fadeOut(400);
-                            }
-                            else{
-                            $("#xmlTagPopin .lookLikeButtons").fadeIn(400).css("display", "block");
-                            }
+function toggleCharacters(){
+if ($("#charactersPopin .character:first").is(":visible")){
+$("#charactersPopin .character").fadeOut(400);
+}
+else{
+$("#charactersPopin .character").fadeIn(400).css("display", "block");
+}
+}
+function toggleTags(){
+if ($("#xmlTagPopin .lookLikeButtons:first").is(":visible")){
+$("#xmlTagPopin .lookLikeButtons").fadeOut(400);
+}
+else{
+$("#xmlTagPopin .lookLikeButtons").fadeIn(400).css("display", "block");
+}
 
-                            }
-                            function togglePageJump(){
-                            if ($("#pageJump .folioJump:first").is(":visible")){
-                            $("#pageJump .folioJump").fadeOut(400);
-                            }
-                            else{
-                            $("#pageJump .folioJump").fadeIn(400).css("display", "block");
-                            }
-                            }
+}
+function togglePageJump(){
+if ($("#pageJump .folioJump:first").is(":visible")){
+$("#pageJump .folioJump").fadeOut(400);
+}
+else{
+$("#pageJump .folioJump").fadeIn(400).css("display", "block");
+}
+}
 
-                            /* Change the page to the specified page from the drop down selection. */
-                            function pageJump(page, parsing){
-                            var folioNum = parseInt(page); //1,2,3...
-                                var canvasToJumpTo = folioNum - 1; //0,1,2...
-                                if (currentFolio !== folioNum && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio
-                            currentFolio = folioNum;
-                                if (parsing == "parsing"){
-                            $(".pageTurnCover").show();
-                                fullPage();
-                                tpen.focusItem = [null, null];
-                                loadTranscriptionCanvas(transcriptionFolios[canvasToJumpTo], parsing);
-                                setTimeout(function(){
-                                hideWorkspaceForParsing();
-                                    $(".pageTurnCover").fadeOut(1500);
-                                }, 800);
-                            }
-                            else{
-                            currentFolio = folioNum;
-                                tpen.focusItem = [null, null];
-                                loadTranscriptionCanvas(transcriptionFolios[canvasToJumpTo], "");
-                            }
-                            }
-                            else{
-                            //console.log("Loaded current or invalid page");
-                            }
-                            }
+/* Change the page to the specified page from the drop down selection. */
+function pageJump(page, parsing){
+var folioNum = parseInt(page); //1,2,3...
+    var canvasToJumpTo = folioNum - 1; //0,1,2...
+    if (currentFolio !== folioNum && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio
+currentFolio = folioNum;
+    if (parsing == "parsing"){
+$(".pageTurnCover").show();
+    fullPage();
+    tpen.focusItem = [null, null];
+    loadTranscriptionCanvas(transcriptionFolios[canvasToJumpTo], parsing);
+    setTimeout(function(){
+    hideWorkspaceForParsing();
+        $(".pageTurnCover").fadeOut(1500);
+    }, 800);
+}
+else{
+currentFolio = folioNum;
+    tpen.focusItem = [null, null];
+    loadTranscriptionCanvas(transcriptionFolios[canvasToJumpTo], "");
+}
+}
+else{
+//console.log("Loaded current or invalid page");
+}
+}
 
-                            function compareJump(folio){
-                            populateCompareSplit(folio);
-                            }
+function compareJump(folio){
+populateCompareSplit(folio);
+}
 
-                            /* Change color of lines on screen */
-                            function markerColors(){
-                            /*
-                             * This function allows the user to go through annotation colors and decide what color the outlined lines are.
-                             * colorThisTime
-                             */
-                            var tempColorList = ["rgba(153,255,0,.4)", "rgba(0,255,204,.4)", "rgba(51,0,204,.4)", "rgba(204,255,0,.4)", "rgba(0,0,0,.4)", "rgba(255,255,255,.4)", "rgba(255,0,0,.4)"];
-                                if (colorList.length == 0){
-                            colorList = tempColorList;
-                            }
-                            colorThisTime = colorList[Math.floor(Math.random() * colorList.length)];
-                                colorList.splice(colorList.indexOf(colorThisTime), 1);
-                                var oneToChange = colorThisTime.lastIndexOf(")") - 2;
-                                var borderColor = colorThisTime.substr(0, oneToChange) + '.2' + colorThisTime.substr(oneToChange + 1);
-                                var lineColor = colorThisTime.replace(".4", "1"); //make this color opacity 100
-                                $('.lineColIndicator').css('border', '1px solid ' + lineColor);
-                                $('.lineColOnLine').css({'border-left':'1px solid ' + borderColor, 'color':lineColor});
-                                $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + colorThisTime); //keep this color opacity .4 until imgTop is hovered.
-                            }
+/* Change color of lines on screen */
+function markerColors(){
+/*
+ * This function allows the user to go through annotation colors and decide what color the outlined lines are.
+ * colorThisTime
+ */
+var tempColorList = ["rgba(153,255,0,.4)", "rgba(0,255,204,.4)", "rgba(51,0,204,.4)", "rgba(204,255,0,.4)", "rgba(0,0,0,.4)", "rgba(255,255,255,.4)", "rgba(255,0,0,.4)"];
+    if (colorList.length == 0){
+colorList = tempColorList;
+}
+colorThisTime = colorList[Math.floor(Math.random() * colorList.length)];
+    colorList.splice(colorList.indexOf(colorThisTime), 1);
+    var oneToChange = colorThisTime.lastIndexOf(")") - 2;
+    var borderColor = colorThisTime.substr(0, oneToChange) + '.2' + colorThisTime.substr(oneToChange + 1);
+    var lineColor = colorThisTime.replace(".4", "1"); //make this color opacity 100
+    $('.lineColIndicator').css('border', '1px solid ' + lineColor);
+    $('.lineColOnLine').css({'border-left':'1px solid ' + borderColor, 'color':lineColor});
+    $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + colorThisTime); //keep this color opacity .4 until imgTop is hovered.
+}
 
-                            /* Toggle the line/column indicators in the transcription interface. (A1, A2...) */
-                            function toggleLineMarkers(){
-                            if ($('.lineColIndicator:first').is(":visible") && $('.lineColIndicator:eq(1)').is(":visible")){ //see if a pair of lines are visible just in case you checked the active line first.
-                            $('.lineColIndicator').hide();
-                                $(".activeLine").show().addClass("linesHidden");
-                            }
-                            else{
-                            $('.lineColIndicator').show();
-                                $(".lineColIndicator").removeClass("linesHidden");
-                                $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
-                            }
-                            }
+/* Toggle the line/column indicators in the transcription interface. (A1, A2...) */
+function toggleLineMarkers(){
+if ($('.lineColIndicator:first').is(":visible") && $('.lineColIndicator:eq(1)').is(":visible")){ //see if a pair of lines are visible just in case you checked the active line first.
+$('.lineColIndicator').hide();
+    $(".activeLine").show().addClass("linesHidden");
+}
+else{
+$('.lineColIndicator').show();
+    $(".lineColIndicator").removeClass("linesHidden");
+    $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
+}
+}
 
-                            /* Toggle the drawn lines in the transcription interface. */
-                            function toggleLineCol(){
-                            if ($('.lineColOnLine:first').is(":visible")){
-                            $('.lineColOnLine').hide();
-                            }
-                            else{
-                            $('.lineColOnLine').show();
-                                $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
-                            }
-                            }
+/* Toggle the drawn lines in the transcription interface. */
+function toggleLineCol(){
+if ($('.lineColOnLine:first').is(":visible")){
+$('.lineColOnLine').hide();
+}
+else{
+$('.lineColOnLine').show();
+    $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
+}
+}
 
-                            //updates lines
-                            function updateLinesInColumn(column){
-                            var startLineID = column[0];
-                                var endLineID = column[1];
-                                var startLine = $(".parsing[lineserverid='" + startLineID + "']"); //Get the start line
-                                var nextLine = startLine.next(".parsing"); //Get the next line (potentially)
-                                var linesToUpdate = [];
-                                linesToUpdate.push(startLine); //push first line
+//updates lines
+function updateLinesInColumn(column){
+var startLineID = column[0];
+    var endLineID = column[1];
+    var startLine = $(".parsing[lineserverid='" + startLineID + "']"); //Get the start line
+    var nextLine = startLine.next(".parsing"); //Get the next line (potentially)
+    var linesToUpdate = [];
+    linesToUpdate.push(startLine); //push first line
 
-                                while (nextLine.length > 0 && nextLine.attr("lineserverid") !== endLineID){ //if there is a next line and its not the last line in the column...
-                            linesToUpdate.push(nextLine);
-                                nextLine = nextLine.next(".parsing");
-                            }
+    while (nextLine.length > 0 && nextLine.attr("lineserverid") !== endLineID){ //if there is a next line and its not the last line in the column...
+linesToUpdate.push(nextLine);
+    nextLine = nextLine.next(".parsing");
+}
 
-                            if (startLineID !== endLineID){ //push the last line, so long as it was also not the first line
-                            linesToUpdate.push($(".parsing[lineserverid='" + endLineID + "']")); //push last line
-                            }
-                            columnUpdate(linesToUpdate);
-                            }
+if (startLineID !== endLineID){ //push the last line, so long as it was also not the first line
+linesToUpdate.push($(".parsing[lineserverid='" + endLineID + "']")); //push last line
+}
+columnUpdate(linesToUpdate);
+}
 
-                            /* Bulk update for lines in a column. */
-                            function columnUpdate(linesInColumn){
-                            //console.log("Doing batch update from column resize")
-                            var onCanvas = $("#transcriptionCanvas").attr("canvasid");
-                                currentFolio = parseInt(currentFolio);
-                                var currentAnnoListID = annoLists[currentFolio - 1];
-                                var currentAnnoListResources = [];
-                                var lineTop, lineLeft, lineWidth, lineHeight = 0;
-                                var ratio = originalCanvasWidth2 / originalCanvasHeight2;
-                                var annosURL = "getAnno";
-                                var properties = {"@id": currentAnnoListID};
-                                var paramOBJ = {"content": JSON.stringify(properties)};
-                                $.post(annosURL, paramOBJ, function(annoLists){
-                                //console.log("got anno list.  Here are the current resources");
-                                annoLists = JSON.parse(annoLists);
-                                    var currentAnnoList;
-                                    $.each(annoLists, function(){
-                                    if (this.proj === "master"){
-                                    currentAnnoListResources = this.resources;
-                                    }
-                                    if (this.proj !== undefined && this.proj !== "" && this.proj == theProjectID){
-                                    //These are the lines we want to draw because the projectID matches.  Overwrite master if necessary.
-                                    //console.log("Lines we wanna draw");
-                                    currentAnnoListResources = this.resources;
-                                        return false;
-                                    }
-                                    });
-                                    //console.log(currentAnnoListResources);
-                                    //Go over each line from the column resize.
-                                    $.each(linesInColumn, function(){
-                                    //console.log("line from column...");
-                                    var line = $(this);
-                                        lineTop = parseFloat(line.attr("linetop")) * 10;
-                                        lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
-                                        lineWidth = parseFloat(line.attr("linewidth")) * (10 * ratio);
-                                        lineHeight = parseFloat(line.attr("lineheight")) * 10;
-                                        //round up.
-                                        lineTop = Math.round(lineTop, 0);
-                                        lineLeft = Math.round(lineLeft, 0);
-                                        lineWidth = Math.round(lineWidth, 0);
-                                        lineHeight = Math.round(lineHeight, 0);
-                                        line.css("width", line.attr("linewidth") + "%");
-                                        var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
-                                        var currentLineServerID = line.attr('lineserverid');
-                                        var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
-                                        var dbLine =
-                                    {
-                                    "@id" : currentLineServerID,
-                                        "@type" : "oa:Annotation",
-                                        "motivation" : "sc:painting",
-                                        "resource" : {
-                                        "@type" : "cnt:ContentAsText",
-                                            "cnt:chars" : currentLineText
-                                        },
-                                        "on" : onCanvas + "#xywh=" + lineString,
-                                        "otherContent" : [],
-                                        "forProject": "TPEN_NL"
-                                    };
-                                        var index = - 1;
-                                        //find the line in the anno list resources and replace its position with the new line resource.
-                                        //console.log("Need to find line in anno list resources and update the array...");
-                                        $.each(currentAnnoListResources, function(){
-                                        index++;
-                                            if (this["@id"] == currentLineServerID){
-                                        //console.log("found, updating index "+index);
-                                        currentAnnoListResources[index] = dbLine;
-                                            return false;
-                                        }
-                                        });
-                                    });
-                                    //Now that all the resources are edited, update the list.
-                                    var url = "updateAnnoList";
-                                    var paramObj = {"@id":currentAnnoListID, "resources": currentAnnoListResources};
-                                    var params = {"content":JSON.stringify(paramObj)};
-                                    //console.log("All resources updated in array.  Write array to DB.");
-                                    //console.log(currentAnnoListResources);
-                                    $.post(url, params, function(data){
-                                    //console.log("list updated with new resources array");
-                                    currentFolio = parseInt(currentFolio);
-                                        annoLists[currentFolio - 1] = currentAnnoListID;
-                                    });
-                                });
-                            }
+/* Bulk update for lines in a column. */
+function columnUpdate(linesInColumn){
+//console.log("Doing batch update from column resize")
+var onCanvas = $("#transcriptionCanvas").attr("canvasid");
+    currentFolio = parseInt(currentFolio);
+    var currentAnnoListID = annoLists[currentFolio - 1];
+    var currentAnnoListResources = [];
+    var lineTop, lineLeft, lineWidth, lineHeight = 0;
+    var ratio = originalCanvasWidth2 / originalCanvasHeight2;
+    var annosURL = "getAnno";
+    var properties = {"@id": currentAnnoListID};
+    var paramOBJ = {"content": JSON.stringify(properties)};
+    $.post(annosURL, paramOBJ, function(annoLists){
+    //console.log("got anno list.  Here are the current resources");
+    annoLists = JSON.parse(annoLists);
+        var currentAnnoList;
+        $.each(annoLists, function(){
+        if (this.proj === "master"){
+        currentAnnoListResources = this.resources;
+        }
+        if (this.proj !== undefined && this.proj !== "" && this.proj == theProjectID){
+        //These are the lines we want to draw because the projectID matches.  Overwrite master if necessary.
+        //console.log("Lines we wanna draw");
+        currentAnnoListResources = this.resources;
+            return false;
+        }
+        });
+        //console.log(currentAnnoListResources);
+        //Go over each line from the column resize.
+        $.each(linesInColumn, function(){
+        //console.log("line from column...");
+        var line = $(this);
+            lineTop = parseFloat(line.attr("linetop")) * 10;
+            lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
+            lineWidth = parseFloat(line.attr("linewidth")) * (10 * ratio);
+            lineHeight = parseFloat(line.attr("lineheight")) * 10;
+            //round up.
+            lineTop = Math.round(lineTop, 0);
+            lineLeft = Math.round(lineLeft, 0);
+            lineWidth = Math.round(lineWidth, 0);
+            lineHeight = Math.round(lineHeight, 0);
+            line.css("width", line.attr("linewidth") + "%");
+            var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
+            var currentLineServerID = line.attr('lineserverid');
+            var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
+            var dbLine =
+        {
+        "@id" : currentLineServerID,
+            "@type" : "oa:Annotation",
+            "motivation" : "sc:painting",
+            "resource" : {
+            "@type" : "cnt:ContentAsText",
+                "cnt:chars" : currentLineText
+            },
+            "on" : onCanvas + "#xywh=" + lineString,
+            "otherContent" : [],
+            "forProject": "TPEN_NL"
+        };
+            var index = - 1;
+            //find the line in the anno list resources and replace its position with the new line resource.
+            //console.log("Need to find line in anno list resources and update the array...");
+            $.each(currentAnnoListResources, function(){
+            index++;
+                if (this["@id"] == currentLineServerID){
+            //console.log("found, updating index "+index);
+            currentAnnoListResources[index] = dbLine;
+                return false;
+            }
+            });
+        });
+        //Now that all the resources are edited, update the list.
+        var url = "updateAnnoList";
+        var paramObj = {"@id":currentAnnoListID, "resources": currentAnnoListResources};
+        var params = {"content":JSON.stringify(paramObj)};
+        //console.log("All resources updated in array.  Write array to DB.");
+        //console.log(currentAnnoListResources);
+        $.post(url, params, function(data){
+        //console.log("list updated with new resources array");
+        currentFolio = parseInt(currentFolio);
+            annoLists[currentFolio - 1] = currentAnnoListID;
+        });
+    });
+}
 
-                            /* Update line information for a particular line. */
-                            function updateLine(line, cleanup){
-                            var onCanvas = $("#transcriptionCanvas").attr("canvasid");
-                                currentFolio = parseInt(currentFolio);
-                                var currentAnnoListID = annoLists[currentFolio - 1];
-                                var currentAnnoList = "";
-                                var lineTop, lineLeft, lineWidth, lineHeight = 0;
-                                var ratio = originalCanvasWidth2 / originalCanvasHeight2;
-                                lineTop = parseFloat(line.attr("linetop")) * 10;
-                                lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
-                                lineWidth = parseFloat(line.attr("linewidth")) * (10 * ratio);
-                                lineHeight = parseFloat(line.attr("lineheight")) * 10;
-                                //round up.
-                                lineTop = Math.round(lineTop, 0);
-                                lineLeft = Math.round(lineLeft, 0);
-                                lineWidth = Math.round(lineWidth, 0);
-                                lineHeight = Math.round(lineHeight, 0);
-                                //line.css("width", line.attr("linewidth") + "%");
-                                var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
-                                var currentLineServerID = line.attr('lineserverid');
-                                var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
-                                var dbLine =
-                            {
-                            "@id" : currentLineServerID,
-                                "@type" : "oa:Annotation",
-                                "motivation" : "sc:painting",
-                                "resource" : {
-                                "@type" : "cnt:ContentAsText",
-                                    "cnt:chars" : currentLineText
-                                },
-                                "on" : onCanvas + "#xywh=" + lineString,
-                                "otherContent" : [],
-                                "forProject": "TPEN_NL"
-                            };
-                                var index = - 1;
-                                if (currentAnnoListID !== "noList" && currentAnnoListID !== "empty"){ // if its IIIF, we need to update the list
-                            var annosURL = "getAnno";
-                                var properties = {"@id": currentAnnoListID};
-                                var paramOBJ = {"content": JSON.stringify(properties)};
-                                //console.log("Query for list...")
-                                $.post(annosURL, paramOBJ, function(annoList){
-                                //console.log("got list");
-                                annoList = JSON.parse(annoList);
-                                    var annoListID = currentAnnoListID;
-                                    currentAnnoList = annoList[0];
-                                    //console.log(currentAnnoList);
-                                    //console.log("Check list resources...");
-                                    $.each(currentAnnoList.resources, function(){
-                                    index++;
-                                        if (this["@id"] == currentLineServerID){
-                                    //console.log("update current anno list "+annoListID+" index " + index);
-                                    currentAnnoList.resources[index] = dbLine;
-                                        var url = "updateAnnoList";
-                                        var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
-                                        var params = {"content":JSON.stringify(paramObj)};
-                                        $.post(url, params, function(data){
-                                        //console.log("list updated");
-                                        //console.log(currentAnnoList.resources)
-                                        currentFolio = parseInt(currentFolio);
-                                            annoLists[currentFolio - 1] = annoListID;
-                                            console.log("hide cover");
-                                            $("#parsingCover").hide();
-                                        });
-                                    }
-                                    });
-                                });
-                            }
-                            else if (currentAnnoList == "empty"){
-                            //cannot update an empty list
-                            }
-                            else if (currentAnnoList == "noList"){ //If it is classic T-PEN, we need to update canvas resources
-                            currentFolio = parseInt(currentFolio);
-                                $.each(transcriptionFolios[currentFolio - 1].resources, function(){
-                                index++;
-                                    if (this["@id"] == currentLineServerID){
-                                transcriptionFolios[currentFolio - 1].resources[index] = dbLine;
-                                }
-                                });
-                                //Should we do an update here to support old data?
-                            }
-                            if (cleanup !== "no") cleanupTranscriptlets(true);
-                                //$(".previewLineNumber[lineserverid='"+currentLineServerID+"']").siblings(previewText).html(scrub(line.val()));
-                            }
+/* Update line information for a particular line. */
+function updateLine(line, cleanup){
+var onCanvas = $("#transcriptionCanvas").attr("canvasid");
+    currentFolio = parseInt(currentFolio);
+    var currentAnnoListID = annoLists[currentFolio - 1];
+    var currentAnnoList = "";
+    var lineTop, lineLeft, lineWidth, lineHeight = 0;
+    var ratio = originalCanvasWidth2 / originalCanvasHeight2;
+    lineTop = parseFloat(line.attr("linetop")) * 10;
+    lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
+    lineWidth = parseFloat(line.attr("linewidth")) * (10 * ratio);
+    lineHeight = parseFloat(line.attr("lineheight")) * 10;
+    //round up.
+    lineTop = Math.round(lineTop, 0);
+    lineLeft = Math.round(lineLeft, 0);
+    lineWidth = Math.round(lineWidth, 0);
+    lineHeight = Math.round(lineHeight, 0);
+    //line.css("width", line.attr("linewidth") + "%");
+    var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
+    var currentLineServerID = line.attr('lineserverid');
+    var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
+    var dbLine =
+{
+"@id" : currentLineServerID,
+    "@type" : "oa:Annotation",
+    "motivation" : "sc:painting",
+    "resource" : {
+    "@type" : "cnt:ContentAsText",
+        "cnt:chars" : currentLineText
+    },
+    "on" : onCanvas + "#xywh=" + lineString,
+    "otherContent" : [],
+    "forProject": "TPEN_NL"
+};
+    var index = - 1;
+    if (currentAnnoListID !== "noList" && currentAnnoListID !== "empty"){ // if its IIIF, we need to update the list
+var annosURL = "getAnno";
+    var properties = {"@id": currentAnnoListID};
+    var paramOBJ = {"content": JSON.stringify(properties)};
+    //console.log("Query for list...")
+    $.post(annosURL, paramOBJ, function(annoList){
+    //console.log("got list");
+    annoList = JSON.parse(annoList);
+        var annoListID = currentAnnoListID;
+        currentAnnoList = annoList[0];
+        //console.log(currentAnnoList);
+        //console.log("Check list resources...");
+        $.each(currentAnnoList.resources, function(){
+        index++;
+            if (this["@id"] == currentLineServerID){
+        //console.log("update current anno list "+annoListID+" index " + index);
+        currentAnnoList.resources[index] = dbLine;
+            var url = "updateAnnoList";
+            var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
+            var params = {"content":JSON.stringify(paramObj)};
+            $.post(url, params, function(data){
+            //console.log("list updated");
+            //console.log(currentAnnoList.resources)
+            currentFolio = parseInt(currentFolio);
+                annoLists[currentFolio - 1] = annoListID;
+                console.log("hide cover");
+                $("#parsingCover").hide();
+            });
+        }
+        });
+    });
+}
+else if (currentAnnoList == "empty"){
+//cannot update an empty list
+}
+else if (currentAnnoList == "noList"){ //If it is classic T-PEN, we need to update canvas resources
+currentFolio = parseInt(currentFolio);
+    $.each(transcriptionFolios[currentFolio - 1].resources, function(){
+    index++;
+        if (this["@id"] == currentLineServerID){
+    transcriptionFolios[currentFolio - 1].resources[index] = dbLine;
+    }
+    });
+    //Should we do an update here to support old data?
+}
+if (cleanup !== "no") cleanupTranscriptlets(true);
+    //$(".previewLineNumber[lineserverid='"+currentLineServerID+"']").siblings(previewText).html(scrub(line.val()));
+}
 
 
-                            function saveNewLine(lineBefore, newLine){
-                            var theURL = window.location.href;
-                                var projID = - 1;
-                                if (theURL.indexOf("projectID") === - 1){
-                            projID = theProjectID;
-                            }
-                            else{
-                            projID = theURL.substring(theURL.indexOf("projectID=") + 10);
-                            }
+function saveNewLine(lineBefore, newLine){
+var theURL = window.location.href;
+    var projID = - 1;
+    if (theURL.indexOf("projectID") === - 1){
+projID = theProjectID;
+}
+else{
+projID = theURL.substring(theURL.indexOf("projectID=") + 10);
+}
 
-                            var beforeIndex = - 1;
-                                if (lineBefore !== undefined && lineBefore !== null){
-                            beforeIndex = parseInt(lineBefore.attr("linenum"));
-                            }
-                            var onCanvas = $("#transcriptionCanvas").attr("canvasid");
-                                var newLineTop, newLineLeft, newLineWidth, newLineHeight = 0;
-                                var ratio = originalCanvasWidth2 / originalCanvasHeight2;
-                                newLineTop = parseFloat(newLine.attr("linetop"));
-                                newLineLeft = parseFloat(newLine.attr("lineleft"));
-                                newLineWidth = parseFloat(newLine.attr("linewidth"));
-                                newLineHeight = parseFloat(newLine.attr("lineheight"));
-                                newLineTop = newLineTop * 10;
-                                newLineLeft = newLineLeft * (10 * ratio);
-                                newLineWidth = newLineWidth * (10 * ratio);
-                                newLineHeight = newLineHeight * 10;
-                                //round up.
-                                newLineTop = Math.round(newLineTop, 0);
-                                newLineLeft = Math.round(newLineLeft, 0);
-                                newLineWidth = Math.round(newLineWidth, 0);
-                                newLineHeight = Math.round(newLineHeight, 0);
-                                var lineString = onCanvas + "#xywh=" + newLineLeft + "," + newLineTop + "," + newLineWidth + "," + newLineHeight;
-                                var currentLineText = "";
-                                var dbLine =
-                            {
-                            "@id" : "",
-                                "@type" : "oa:Annotation",
-                                "motivation" : "sc:painting",
-                                "resource" : {
-                                "@type" : "cnt:ContentAsText",
-                                    "cnt:chars" : currentLineText
-                                },
-                                "on" : lineString,
-                                "otherContent":[],
-                                "forProject": "TPEN_NL"
-                            }
-                            ;
-                                var url = "saveNewTransLineServlet";
-                                var paramOBJ = dbLine;
-                                var params = {"content" : JSON.stringify(paramOBJ)};
+var beforeIndex = - 1;
+    if (lineBefore !== undefined && lineBefore !== null){
+beforeIndex = parseInt(lineBefore.attr("linenum"));
+}
+var onCanvas = $("#transcriptionCanvas").attr("canvasid");
+    var newLineTop, newLineLeft, newLineWidth, newLineHeight = 0;
+    var ratio = originalCanvasWidth2 / originalCanvasHeight2;
+    newLineTop = parseFloat(newLine.attr("linetop"));
+    newLineLeft = parseFloat(newLine.attr("lineleft"));
+    newLineWidth = parseFloat(newLine.attr("linewidth"));
+    newLineHeight = parseFloat(newLine.attr("lineheight"));
+    newLineTop = newLineTop * 10;
+    newLineLeft = newLineLeft * (10 * ratio);
+    newLineWidth = newLineWidth * (10 * ratio);
+    newLineHeight = newLineHeight * 10;
+    //round up.
+    newLineTop = Math.round(newLineTop, 0);
+    newLineLeft = Math.round(newLineLeft, 0);
+    newLineWidth = Math.round(newLineWidth, 0);
+    newLineHeight = Math.round(newLineHeight, 0);
+    var lineString = onCanvas + "#xywh=" + newLineLeft + "," + newLineTop + "," + newLineWidth + "," + newLineHeight;
+    var currentLineText = "";
+    var dbLine =
+{
+"@id" : "",
+    "@type" : "oa:Annotation",
+    "motivation" : "sc:painting",
+    "resource" : {
+    "@type" : "cnt:ContentAsText",
+        "cnt:chars" : currentLineText
+    },
+    "on" : lineString,
+    "otherContent":[],
+    "forProject": "TPEN_NL"
+}
+;
+    var url = "saveNewTransLineServlet";
+    var paramOBJ = dbLine;
+    var params = {"content" : JSON.stringify(paramOBJ)};
 //        //console.log("saving new line...");
-                                if (onCanvas !== undefined && onCanvas !== ""){
-                            $.post(url, params, function(data){
-                            //console.log("saved new line");
-                            //console.log(data);
-                            data = JSON.parse(data);
-                                dbLine["@id"] = data["@id"];
-                                newLine.attr("lineserverid", data["@id"]);
-                                $("div[newcol='" + true + "']").attr({
-                            "startid" : dbLine["@id"],
-                                "endid" : dbLine["@id"],
-                                "newcol":false
-                            });
-                                currentFolio = parseInt(currentFolio);
-                                var currentAnnoList = annoLists[currentFolio - 1];
-                                if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){ // if it IIIF, we need to update the list
-                            var annosURL = "getAnno";
-                                var properties = {"@id": currentAnnoList};
-                                var paramOBJ = {"content": JSON.stringify(properties)};
-                                $.post(annosURL, paramOBJ, function(annoList){
-                                //                        //console.log("got list");
-                                var annoListID = currentAnnoList;
-                                    annoList = JSON.parse(annoList);
-                                    currentAnnoList = annoList[0];
-                                    if (beforeIndex == - 1){
-                                $(".newColumn").attr({
-                                "lineserverid" : dbLine["@id"],
-                                    "linenum" : $(".parsing").length
-                                }).removeClass("newColumn");
-                                    currentAnnoList.resources.push(dbLine);
-                                }
-                                else{
-                                currentAnnoList.resources.splice(beforeIndex + 1, 0, dbLine);
-                                }
-                                currentFolio = parseInt(currentFolio);
-                                    transcriptionFolios[currentFolio - 1].otherContent[0] = annoListID;
-                                    annoLists[currentFolio - 1] = annoListID;
-                                    //Write back to db to update list
-                                    var url1 = "updateAnnoList";
-                                    var paramObj1 = {"@id":annoListID, "resources": currentAnnoList.resources};
-                                    var params1 = {"content":JSON.stringify(paramObj1)};
-                                    $.post(url1, params1, function(data){
-                                    //                            //console.log("Updated list on anno store");
-                                    if (lineBefore !== undefined && lineBefore !== null){
-                                    //This is the good case.  We called split line and saved the new line, now we need to update the other one.
-                                    updateLine(lineBefore);
-                                        $("#parsingCover").hide(); //doesnt always fire, so this is to be sure
-                                    }
-                                    else{
-                                    $("#parsingCover").hide();
-                                    }
-                                    });
-                                });
-                            }
-                            else if (currentAnnoList == "empty"){
-                            //This means we know no AnnotationList was on the store for this canvas, and otherContent stored with the canvas object did not have the list.  Make a new one in this case.
-                            var newAnnoList =
-                            {
-                            "@type" : "sc:AnnotationList",
-                                "on" : onCanvas,
-                                "originalAnnoID" : "",
-                                "version" : 1,
-                                "permission" : 0,
-                                "forkFromID" : "",
-                                "resources" : [],
-                                "proj" : projID
-                            };
-                                var url2 = "saveNewTransLineServlet";
-                                var params2 = {"content": JSON.stringify(newAnnoList)};
-                                $.post(url2, params2, function(data){ //save new list
-                                //                    //console.log("new list made");
-                                data = JSON.parse(data);
-                                    var newAnnoListCopy = newAnnoList;
-                                    newAnnoListCopy["@id"] = data["@id"];
-                                    currentFolio = parseInt(currentFolio);
-                                    annoLists[currentFolio - 1] = newAnnoListCopy["@id"];
-                                    transcriptionFolios[currentFolio - 1].otherContent[0] = newAnnoListCopy["@id"];
-                                    var url3 = "updateAnnoList";
-                                    var paramObj3 = {"@id":newAnnoListCopy["@id"], "resources": [dbLine]};
+    if (onCanvas !== undefined && onCanvas !== ""){
+$.post(url, params, function(data){
+//console.log("saved new line");
+//console.log(data);
+data = JSON.parse(data);
+    dbLine["@id"] = data["@id"];
+    newLine.attr("lineserverid", data["@id"]);
+    $("div[newcol='" + true + "']").attr({
+"startid" : dbLine["@id"],
+    "endid" : dbLine["@id"],
+    "newcol":false
+});
+    currentFolio = parseInt(currentFolio);
+    var currentAnnoList = annoLists[currentFolio - 1];
+    if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){ // if it IIIF, we need to update the list
+var annosURL = "getAnno";
+    var properties = {"@id": currentAnnoList};
+    var paramOBJ = {"content": JSON.stringify(properties)};
+    $.post(annosURL, paramOBJ, function(annoList){
+    //                        //console.log("got list");
+    var annoListID = currentAnnoList;
+        annoList = JSON.parse(annoList);
+        currentAnnoList = annoList[0];
+        if (beforeIndex == - 1){
+    $(".newColumn").attr({
+    "lineserverid" : dbLine["@id"],
+        "linenum" : $(".parsing").length
+    }).removeClass("newColumn");
+        currentAnnoList.resources.push(dbLine);
+    }
+    else{
+    currentAnnoList.resources.splice(beforeIndex + 1, 0, dbLine);
+    }
+    currentFolio = parseInt(currentFolio);
+        transcriptionFolios[currentFolio - 1].otherContent[0] = annoListID;
+        annoLists[currentFolio - 1] = annoListID;
+        //Write back to db to update list
+        var url1 = "updateAnnoList";
+        var paramObj1 = {"@id":annoListID, "resources": currentAnnoList.resources};
+        var params1 = {"content":JSON.stringify(paramObj1)};
+        $.post(url1, params1, function(data){
+        //                            //console.log("Updated list on anno store");
+        if (lineBefore !== undefined && lineBefore !== null){
+        //This is the good case.  We called split line and saved the new line, now we need to update the other one.
+        updateLine(lineBefore);
+            $("#parsingCover").hide(); //doesnt always fire, so this is to be sure
+        }
+        else{
+        $("#parsingCover").hide();
+        }
+        });
+    });
+}
+else if (currentAnnoList == "empty"){
+//This means we know no AnnotationList was on the store for this canvas, and otherContent stored with the canvas object did not have the list.  Make a new one in this case.
+var newAnnoList =
+{
+"@type" : "sc:AnnotationList",
+    "on" : onCanvas,
+    "originalAnnoID" : "",
+    "version" : 1,
+    "permission" : 0,
+    "forkFromID" : "",
+    "resources" : [],
+    "proj" : projID
+};
+    var url2 = "saveNewTransLineServlet";
+    var params2 = {"content": JSON.stringify(newAnnoList)};
+    $.post(url2, params2, function(data){ //save new list
+    //                    //console.log("new list made");
+    data = JSON.parse(data);
+        var newAnnoListCopy = newAnnoList;
+        newAnnoListCopy["@id"] = data["@id"];
+        currentFolio = parseInt(currentFolio);
+        annoLists[currentFolio - 1] = newAnnoListCopy["@id"];
+        transcriptionFolios[currentFolio - 1].otherContent[0] = newAnnoListCopy["@id"];
+        var url3 = "updateAnnoList";
+        var paramObj3 = {"@id":newAnnoListCopy["@id"], "resources": [dbLine]};
 //                            //console.log(paramObj3);
-                                    var params3 = {"content":JSON.stringify(paramObj3)};
-                                    $.post(url3, params3, function(data){
+        var params3 = {"content":JSON.stringify(paramObj3)};
+        $.post(url3, params3, function(data){
 //                                //console.log("New list updated with new anno");
-                                    $(".newColumn").attr({
-                                    "lineserverid" : dbLine["@id"],
-                                        "startid" : dbLine["@id"],
-                                        "endid" : dbLine["@id"],
-                                        "linenum" : $(".parsing").length
-                                    }).removeClass("newColumn");
-                                        newLine.attr("lineserverid", dbLine["@id"]);
-                                        $("#parsingCover").hide();
-                                    });
-                                });
-                            }
-                            else if (currentAnnoList == "noList"){ //noList is a special scenario for handling classic T-PEN objects.
-                            if (beforeIndex == - 1){ //New line vs new column
-                            $(".newColumn").attr({
-                            "lineserverid" : dbLine["@id"],
-                                "startid" : dbLine["@id"],
-                                "endid" : dbLine["@id"],
-                                "linenum" : $(".parsing").length
-                            }).removeClass("newColumn");
-                                currentFolio = parseInt(currentFolio);
-                                transcriptionFolios[currentFolio - 1].resources.push(dbLine);
-                            }
-                            else{
-                            currentFolio = parseInt(currentFolio);
-                                transcriptionFolios[currentFolio - 1].resources.splice(beforeIndex + 1, 0, dbLine);
-                            }
-                            $("#parsingCover").hide();
-                                //should we write to the DB here?  This would be in support of old data.
-                            }
-                            console.log("call cleanup from save line");
-                                cleanupTranscriptlets(true);
-                            });
-                            }
-                            else{
-                            alert("Cannot save line.  Canvas id is not present.");
-                            }
+        $(".newColumn").attr({
+        "lineserverid" : dbLine["@id"],
+            "startid" : dbLine["@id"],
+            "endid" : dbLine["@id"],
+            "linenum" : $(".parsing").length
+        }).removeClass("newColumn");
+            newLine.attr("lineserverid", dbLine["@id"]);
+            $("#parsingCover").hide();
+        });
+    });
+}
+else if (currentAnnoList == "noList"){ //noList is a special scenario for handling classic T-PEN objects.
+if (beforeIndex == - 1){ //New line vs new column
+$(".newColumn").attr({
+"lineserverid" : dbLine["@id"],
+    "startid" : dbLine["@id"],
+    "endid" : dbLine["@id"],
+    "linenum" : $(".parsing").length
+}).removeClass("newColumn");
+    currentFolio = parseInt(currentFolio);
+    transcriptionFolios[currentFolio - 1].resources.push(dbLine);
+}
+else{
+currentFolio = parseInt(currentFolio);
+    transcriptionFolios[currentFolio - 1].resources.splice(beforeIndex + 1, 0, dbLine);
+}
+$("#parsingCover").hide();
+    //should we write to the DB here?  This would be in support of old data.
+}
+console.log("call cleanup from save line");
+    cleanupTranscriptlets(true);
+});
+}
+else{
+alert("Cannot save line.  Canvas id is not present.");
+}
 
-                            }
+}
 
-                            /**
-                             * Inserts new transcriptlet when line is added.
-                             * Cleans up inter-transcriptlet relationships afterwards.
-                             *
-                             * @param e line element to build transcriptlet from
-                             * @param afterThisID lineid of line before new transcriptlet
-                             * @param newLineID lineid of new line
-                             */
-                            function buildTranscriptlet(e, afterThisID, newServerID){
-                            var newLineID = $(".transcriptlet").length + 1;
-                                var isNotColumn = true;
-                                var newW = e.attr("linewidth");
-                                var newX = e.attr("lineleft");
-                                var newY = e.attr("linetop");
-                                var newH = e.attr("lineheight");
-                                if (afterThisID === - 1) {
-                            // new column, find its placement
-                            afterThisID = $(".transcriptlet").eq( - 1).attr("lineserverid") || - 1;
-                                $(".transcriptlet").each(function(index) {
-                            if ($(this).find('lineLeft') > newX) {
-                            afterThisID = (index > 0) ? $(this).prev('.transcriptlet').attr("lineserverid") : - 1;
-                                return false;
-                            }
-                            });
-                                isNotColumn = false;
-                            }
-                            var $afterThis = $(".transcriptlet[lineserverid='" + afterThisID + "']");
-                                var newTranscriptlet = [
-                                    "<div class='transcriptlet transcriptletBefore' id='transciptlet_", newLineID,
-                                    "' lineserverid='", newServerID, // took out style DEBUG
-                                    "lineheight= ", newH,
-                                    "linewidth= ", newW,
-                                    "linetop= ", newY,
-                                    "lineleft= ", newX,
-                                    "lineid= ", ,
-                                    "col= ", ,
-                                    "collinenum= ", ,
-                                    "'>\n",
-                                    "<span class='counter wLeft ui-corner-all ui-state-active ui-button'>Inserted Line</span>\n",
-                                    "<textarea></textarea>\n",
-                                    "</div>"];
-                                if (isNotColumn){
-                            //update transcriptlet that was split
-                            $afterThis.after(newTranscriptlet.join("")).find(".lineHeight").val($(".parsing[lineserverid='" + afterThisID + "']").attr("lineheight"));
-                            }
-                            else {
-                            if (afterThisID === - 1) {
-                            $   ("#entry").prepend(newTranscriptlet.join(""));
-                            }
-                            else {
-                            $afterThis.after(newTranscriptlet.join(""));
-                            }
-                            }
-                            $(e).attr("lineserverid", newServerID);
-                            }
-                            /**
-                             * Adds a line by splitting the current line where it was clicked.
-                             *
-                             * @param e clicked line element
-                             * @see organizePage(e)
-                             */
-                            function splitLine(e, event){
-                            //e is the line that was clicked in
-                            //This is where the click happened relative to img top.  In other words, where the click happened among the lines.
-                            var originalLineHeight = $(e).height(); //-1 take one px off for the border
-                                $(".parsing").attr("newline", "false");
-                                var originalLineTop = $(e).offset().top - $("#imgTop").offset().top; // +1 Move down one px for the border.
-                                //var originalLineTop = parseFloat($(e).css("top"));
-                                var clickInLines = event.pageY - $("#imgTop").offset().top;
-                                var lineOffset = $(e).offset().top - $("#imgTop").offset().top;
-                                var oldLineHeight = (clickInLines - lineOffset) / $("#imgTop").height() * 100;
-                                //var oldLineHeight = parseFloat($(e).css("height"));
-                                var newLineHeight = (originalLineHeight - (clickInLines - originalLineTop)) / $("#imgTop").height() * 100;
-                                var newLineTop = (clickInLines / $("#imgTop").height()) * 100;
-                                var newLine = $(e).clone(true);
-                                $(e).css({
-                            "height"    :   oldLineHeight + "%"
-                            }).attr({
-                            "newline"   :   true,
-                                "lineheight" :  oldLineHeight
-                            });
-                                $(newLine).css({
-                            "height"    :   newLineHeight + "%",
-                                "top"       :   newLineTop + "%"
-                            }).attr({
-                            "newline"   :   true,
-                                "linetop"   :   newLineTop,
-                                "lineheight" : newLineHeight
-                            });
-                                $(e).after(newLine);
-                                var newNum = - 1;
-                                $.each($(".parsing"), function(){
-                                newNum++;
-                                    $(this).attr("linenum", newNum);
-                                });
-                                saveNewLine($(e), newLine);
-                                $("#progress").html("Line Added").fadeIn(1000).delay(3000).fadeOut(1000);
-                            }
+/**
+ * Inserts new transcriptlet when line is added.
+ * Cleans up inter-transcriptlet relationships afterwards.
+ *
+ * @param e line element to build transcriptlet from
+ * @param afterThisID lineid of line before new transcriptlet
+ * @param newLineID lineid of new line
+ */
+function buildTranscriptlet(e, afterThisID, newServerID){
+var newLineID = $(".transcriptlet").length + 1;
+    var isNotColumn = true;
+    var newW = e.attr("linewidth");
+    var newX = e.attr("lineleft");
+    var newY = e.attr("linetop");
+    var newH = e.attr("lineheight");
+    if (afterThisID === - 1) {
+// new column, find its placement
+afterThisID = $(".transcriptlet").eq( - 1).attr("lineserverid") || - 1;
+    $(".transcriptlet").each(function(index) {
+if ($(this).find('lineLeft') > newX) {
+afterThisID = (index > 0) ? $(this).prev('.transcriptlet').attr("lineserverid") : - 1;
+    return false;
+}
+});
+    isNotColumn = false;
+}
+var $afterThis = $(".transcriptlet[lineserverid='" + afterThisID + "']");
+    var newTranscriptlet = [
+        "<div class='transcriptlet transcriptletBefore' id='transciptlet_", newLineID,
+        "' lineserverid='", newServerID, // took out style DEBUG
+        "lineheight= ", newH,
+        "linewidth= ", newW,
+        "linetop= ", newY,
+        "lineleft= ", newX,
+        "lineid= ", ,
+        "col= ", ,
+        "collinenum= ", ,
+        "'>\n",
+        "<span class='counter wLeft ui-corner-all ui-state-active ui-button'>Inserted Line</span>\n",
+        "<textarea></textarea>\n",
+        "</div>"];
+    if (isNotColumn){
+//update transcriptlet that was split
+$afterThis.after(newTranscriptlet.join("")).find(".lineHeight").val($(".parsing[lineserverid='" + afterThisID + "']").attr("lineheight"));
+}
+else {
+if (afterThisID === - 1) {
+$   ("#entry").prepend(newTranscriptlet.join(""));
+}
+else {
+$afterThis.after(newTranscriptlet.join(""));
+}
+}
+$(e).attr("lineserverid", newServerID);
+}
+/**
+ * Adds a line by splitting the current line where it was clicked.
+ *
+ * @param e clicked line element
+ * @see organizePage(e)
+ */
+function splitLine(e, event){
+//e is the line that was clicked in
+//This is where the click happened relative to img top.  In other words, where the click happened among the lines.
+var originalLineHeight = $(e).height(); //-1 take one px off for the border
+    $(".parsing").attr("newline", "false");
+    var originalLineTop = $(e).offset().top - $("#imgTop").offset().top; // +1 Move down one px for the border.
+    //var originalLineTop = parseFloat($(e).css("top"));
+    var clickInLines = event.pageY - $("#imgTop").offset().top;
+    var lineOffset = $(e).offset().top - $("#imgTop").offset().top;
+    var oldLineHeight = (clickInLines - lineOffset) / $("#imgTop").height() * 100;
+    //var oldLineHeight = parseFloat($(e).css("height"));
+    var newLineHeight = (originalLineHeight - (clickInLines - originalLineTop)) / $("#imgTop").height() * 100;
+    var newLineTop = (clickInLines / $("#imgTop").height()) * 100;
+    var newLine = $(e).clone(true);
+    $(e).css({
+"height"    :   oldLineHeight + "%"
+}).attr({
+"newline"   :   true,
+    "lineheight" :  oldLineHeight
+});
+    $(newLine).css({
+"height"    :   newLineHeight + "%",
+    "top"       :   newLineTop + "%"
+}).attr({
+"newline"   :   true,
+    "linetop"   :   newLineTop,
+    "lineheight" : newLineHeight
+});
+    $(e).after(newLine);
+    var newNum = - 1;
+    $.each($(".parsing"), function(){
+    newNum++;
+        $(this).attr("linenum", newNum);
+    });
+    saveNewLine($(e), newLine);
+    $("#progress").html("Line Added").fadeIn(1000).delay(3000).fadeOut(1000);
+}
 
-                            function removeLine(e, columnDelete){
-                            /**
-                             * Removes clicked line, merges if possible with the following line.
-                             * updateLine(e,additionalParameters) handles the original, resized line.
-                             *
-                             * @param e clicked line element from lineChange(e) via saveNewLine(e)
-                             * @see lineChange(e)
-                             * @see saveNewLine(e)
-                             */
-                            console.log("remove line");
-                                $("#imageTip").hide();
-                                var removedLine = $(e);
-                                if (columnDelete){
-                            var lineID = "";
-                                removedLine.remove();
-                                return false;
-                            }
-                            else{
-                            if ($(e).attr("lineleft") == $(e).next(".parsing").attr("lineleft")) {
-                            console.log("this will be a merge....");
-                                removedLine = $(e).next();
-                                var removedLineHeight = removedLine.height();
-                                var currentLineHeight = $(e).height();
-                                var newLineHeight = removedLineHeight + currentLineHeight;
-                                var convertedNewLineHeight = newLineHeight / $("#imgTop").height() * 100;
-                                $(e).css({
-                            "height" :  convertedNewLineHeight + "%",
-                                "top" :     $(e).css("top")
-                            }).addClass("newDiv").attr({
-                            "lineheight":   convertedNewLineHeight
-                            });
-                            } else if ($(e).hasClass("deletable")){ //&& $(".transcriptlet[lineserverid='"+$(e).attr("lineserverid")+"']").find("textarea").val().length > 0
-                            console.log("this will be a delete...");
-                                var cfrm = confirm("Removing this line will remove any data contained as well.\n\nContinue?");
-                                if (!cfrm){
-                            $("#parsingCover").hide();
-                                return false;
-                            }
-                            isDestroyingLine = true;
-                            }
-                            var params = new Array({name:"remove", value:removedLine.attr("lineserverid")});
-                                removedLine.remove();
-                                removeTranscriptlet(removedLine.attr("lineserverid"), $(e).attr("lineserverid"), true, "cover");
-                                return params;
-                            }
+function removeLine(e, columnDelete){
+/**
+ * Removes clicked line, merges if possible with the following line.
+ * updateLine(e,additionalParameters) handles the original, resized line.
+ *
+ * @param e clicked line element from lineChange(e) via saveNewLine(e)
+ * @see lineChange(e)
+ * @see saveNewLine(e)
+ */
+console.log("remove line");
+    $("#imageTip").hide();
+    var removedLine = $(e);
+    if (columnDelete){
+var lineID = "";
+    removedLine.remove();
+    return false;
+}
+else{
+if ($(e).attr("lineleft") == $(e).next(".parsing").attr("lineleft")) {
+console.log("this will be a merge....");
+    removedLine = $(e).next();
+    var removedLineHeight = removedLine.height();
+    var currentLineHeight = $(e).height();
+    var newLineHeight = removedLineHeight + currentLineHeight;
+    var convertedNewLineHeight = newLineHeight / $("#imgTop").height() * 100;
+    $(e).css({
+"height" :  convertedNewLineHeight + "%",
+    "top" :     $(e).css("top")
+}).addClass("newDiv").attr({
+"lineheight":   convertedNewLineHeight
+});
+} else if ($(e).hasClass("deletable")){ //&& $(".transcriptlet[lineserverid='"+$(e).attr("lineserverid")+"']").find("textarea").val().length > 0
+console.log("this will be a delete...");
+    var cfrm = confirm("Removing this line will remove any data contained as well.\n\nContinue?");
+    if (!cfrm){
+$("#parsingCover").hide();
+    return false;
+}
+isDestroyingLine = true;
+}
+var params = new Array({name:"remove", value:removedLine.attr("lineserverid")});
+    removedLine.remove();
+    removeTranscriptlet(removedLine.attr("lineserverid"), $(e).attr("lineserverid"), true, "cover");
+    return params;
+}
 
-                            }
-                            /**
-                             * Removes transcriptlet when line is removed. Updates transcriplet
-                             * if line has been merged with previous.
-                             *
-                             * @param lineid lineid to remove
-                             * @param updatedLineID lineid to be updated
-                             */
-                            function removeTranscriptlet(lineid, updatedLineID, draw, cover){
-                            // if(!isMember && !permitParsing)return false;
-                            //update remaining line, if needed
-                            $("#parsingCover").show();
-                                var updateText = "";
-                                console.log("is the id of the line clicked " + updatedLineID + " == the next line " + lineid);
-                                var removeNextLine = false;
-                                if (lineid !== updatedLineID){
-                            console.log("No it isn't. merge");
-                                removeNextLine = true;
-                                var updatedLine = $(".parsing[lineserverid='" + updatedLineID + "']");
-                                var removedLine1 = $(".parsing[lineserverid='" + lineid + "']");
-                                var removedLine2 = $(".transcriptlet[lineserverid='" + lineid + "']");
-                                var toUpdate = $(".transcriptlet[lineserverid='" + updatedLineID + "']");
-                                var removedText = $(".transcriptlet[lineserverid='" + lineid + "']").find("textarea").val();
-                                toUpdate.find("textarea").val(function(){
-                            var thisValue = $(this).val();
-                                if (removedText !== undefined){
-                            if (removedText !== "") thisValue += (" " + removedText);
-                                updateText = thisValue;
-                            }
-                            return thisValue;
-                            });
-                                console.log("line height for update is line clicked height " + toUpdate.attr("lineheight") + " + line being removed height " + parseFloat(removedLine2.attr("lineheight")));
-                                var lineHeightForUpdate = parseFloat(toUpdate.attr("lineheight")) + parseFloat(removedLine2.attr("lineheight"));
-                                console.log(lineHeightForUpdate);
-                                toUpdate.attr("lineheight", lineHeightForUpdate);
-                            }
-                            else{
-                            console.log("yes it is. delete!");
-                            }
+}
+/**
+ * Removes transcriptlet when line is removed. Updates transcriplet
+ * if line has been merged with previous.
+ *
+ * @param lineid lineid to remove
+ * @param updatedLineID lineid to be updated
+ */
+function removeTranscriptlet(lineid, updatedLineID, draw, cover){
+// if(!isMember && !permitParsing)return false;
+//update remaining line, if needed
+$("#parsingCover").show();
+    var updateText = "";
+    console.log("is the id of the line clicked " + updatedLineID + " == the next line " + lineid);
+    var removeNextLine = false;
+    if (lineid !== updatedLineID){
+console.log("No it isn't. merge");
+    removeNextLine = true;
+    var updatedLine = $(".parsing[lineserverid='" + updatedLineID + "']");
+    var removedLine1 = $(".parsing[lineserverid='" + lineid + "']");
+    var removedLine2 = $(".transcriptlet[lineserverid='" + lineid + "']");
+    var toUpdate = $(".transcriptlet[lineserverid='" + updatedLineID + "']");
+    var removedText = $(".transcriptlet[lineserverid='" + lineid + "']").find("textarea").val();
+    toUpdate.find("textarea").val(function(){
+var thisValue = $(this).val();
+    if (removedText !== undefined){
+if (removedText !== "") thisValue += (" " + removedText);
+    updateText = thisValue;
+}
+return thisValue;
+});
+    console.log("line height for update is line clicked height " + toUpdate.attr("lineheight") + " + line being removed height " + parseFloat(removedLine2.attr("lineheight")));
+    var lineHeightForUpdate = parseFloat(toUpdate.attr("lineheight")) + parseFloat(removedLine2.attr("lineheight"));
+    console.log(lineHeightForUpdate);
+    toUpdate.attr("lineheight", lineHeightForUpdate);
+}
+else{
+console.log("yes it is. delete!");
+}
 
-                            var index = - 1;
-                                currentFolio = parseInt(currentFolio);
-                                var currentAnnoList = annoLists[currentFolio - 1];
-                                if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){ // if it IIIF, we need to update the list
-                            console.log("Get anno list");
-                                var annosURL = "getAnno";
-                                var properties = {"@id": currentAnnoList};
-                                var paramOBJ = {"content": JSON.stringify(properties)};
-                                $.post(annosURL, paramOBJ, function(annoList){
-                                annoList = JSON.parse(annoList);
-                                    var annoListID = currentAnnoList;
-                                    currentAnnoList = annoList[0];
-                                    console.log("got it");
-                                    //console.log(currentAnnoList.resources);
-                                    $.each(currentAnnoList.resources, function(){
-                                    index++;
-                                        var lineIDToCheck = "";
-                                        if (removeNextLine){
-                                    lineIDToCheck = lineid;
-                                        removedLine2.remove(); //remove the transcriptlet from UI
-                                    }
-                                    else{
-                                    lineIDToCheck = updatedLineID;
-                                    }
-                                    console.log(this["@id"] + " == " + lineIDToCheck + "?  Index = " + index);
-                                        if (this["@id"] === lineIDToCheck){
-                                    currentAnnoList.resources.splice(index, 1);
-                                        console.log("Delete from list " + lineIDToCheck + " at index " + index + ".  Then update with line removed.");
-                                        console.log(currentAnnoList.resources);
-                                        var url = "updateAnnoList";
-                                        var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
-                                        var params = {"content":JSON.stringify(paramObj)};
-                                        $.post(url, params, function(data){
-                                        //console.log("update from delete finished");
-                                        currentFolio = parseInt(currentFolio);
-                                            annoLists[currentFolio - 1] = annoListID;
-                                            if (!removeNextLine){
-                                        $("#parsingCover").hide();
-                                            console.log("hide cover.");
-                                        }
-                                        else{
-                                        console.log("now we have to update the line that was clicked with the new line height from the one we removed.")
-                                            updateLine(toUpdate);
-                                        }
+var index = - 1;
+    currentFolio = parseInt(currentFolio);
+    var currentAnnoList = annoLists[currentFolio - 1];
+    if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){ // if it IIIF, we need to update the list
+console.log("Get anno list");
+    var annosURL = "getAnno";
+    var properties = {"@id": currentAnnoList};
+    var paramOBJ = {"content": JSON.stringify(properties)};
+    $.post(annosURL, paramOBJ, function(annoList){
+    annoList = JSON.parse(annoList);
+        var annoListID = currentAnnoList;
+        currentAnnoList = annoList[0];
+        console.log("got it");
+        //console.log(currentAnnoList.resources);
+        $.each(currentAnnoList.resources, function(){
+        index++;
+            var lineIDToCheck = "";
+            if (removeNextLine){
+        lineIDToCheck = lineid;
+            removedLine2.remove(); //remove the transcriptlet from UI
+        }
+        else{
+        lineIDToCheck = updatedLineID;
+        }
+        console.log(this["@id"] + " == " + lineIDToCheck + "?  Index = " + index);
+            if (this["@id"] === lineIDToCheck){
+        currentAnnoList.resources.splice(index, 1);
+            console.log("Delete from list " + lineIDToCheck + " at index " + index + ".  Then update with line removed.");
+            console.log(currentAnnoList.resources);
+            var url = "updateAnnoList";
+            var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
+            var params = {"content":JSON.stringify(paramObj)};
+            $.post(url, params, function(data){
+            //console.log("update from delete finished");
+            currentFolio = parseInt(currentFolio);
+                annoLists[currentFolio - 1] = annoListID;
+                if (!removeNextLine){
+            $("#parsingCover").hide();
+                console.log("hide cover.");
+            }
+            else{
+            console.log("now we have to update the line that was clicked with the new line height from the one we removed.")
+                updateLine(toUpdate);
+            }
 
-                                        });
-                                    }
-                                    });
-                                });
-                            }
+            });
+        }
+        });
+    });
+}
                             else if (currentAnnoList == "empty"){
                             //There is no anno list assosiated with this anno.  This is an error.
                             }

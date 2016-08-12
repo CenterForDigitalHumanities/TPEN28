@@ -11,6 +11,15 @@ and limitations under the License.
  */
 package textdisplay;
 
+import edu.slu.tpen.servlet.Constant;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,6 +27,8 @@ import java.sql.SQLException;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 import org.owasp.esapi.ESAPI;
 
 /**
@@ -310,4 +321,44 @@ DatabaseWrapper.closePreparedStatement(ps);
     }
     return toret;
 }
+   
+   /*
+   * Used in the JSONLDExporter, specifically in a situation to help support old annotations and transfer them over
+     to the annotation store.  This essentially functions like a servlet.  
+     
+     @param annotationListObject: A well formed JSONObject that is an annotationList to be saved to the store.
+     @return: The @id of the newly saved anntoationList
+   */
+   public static String saveNewAnnotationList(JSONObject annotationListObject) throws MalformedURLException, IOException{
+        String newListID = "";
+        URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/saveNewAnnotation.action");
+        HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.setRequestMethod("POST");
+        connection.setUseCaches(false);
+        connection.setInstanceFollowRedirects(true);
+        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        connection.connect();
+        DataOutputStream out = new DataOutputStream(connection.getOutputStream()); 
+        out.writeBytes("content=" + URLEncoder.encode(annotationListObject.toString(), "utf-8"));
+        out.flush();
+        out.close(); // flush and close
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
+        String line="";
+        StringBuilder sb = new StringBuilder();
+        while ((line = reader.readLine()) != null){  
+            sb.append(line);
+        } 
+        reader.close();
+        connection.disconnect();
+        JSONObject server_response = JSONObject.fromObject(sb.toString());
+        try{
+           newListID = server_response.getString("@id");
+        }
+        catch(JSONException e){
+           newListID = "/id/gather/error";
+        }
+        return newListID;
+   }
 }

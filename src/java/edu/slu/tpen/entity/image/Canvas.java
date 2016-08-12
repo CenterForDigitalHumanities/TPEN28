@@ -6,8 +6,18 @@
 
 package edu.slu.tpen.entity.Image;
 
+import edu.slu.tpen.servlet.Constant;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 /**
@@ -138,4 +148,102 @@ public class Canvas {
         this.ls_otherContent = ls_otherContent;
     }
     
+    /**
+     * Check the annotation store for the annotation list on this canvas for this project.
+     * @param projectID : the projectID the canvas belongs to
+     * @param canavsID: The canvas ID the annotation list is on
+     * @param UID: The current UID of the user in session.
+     * @return : The annotation list.
+     */
+    public static String[] getAnnotationListsForProject(Integer projectID, String canvasID, Integer UID) throws MalformedURLException, IOException {
+        URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/getAnnotationByProperties.action");
+        JSONObject parameter = new JSONObject();
+        parameter.element("@type", "sc:AnnotationList");
+        parameter.element("proj", projectID);
+        parameter.element("on", canvasID);
+        //System.out.println("Get anno list for proj "+projectID+" on canvas "+canvasID);
+        HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        connection.setRequestMethod("POST");
+        connection.setUseCaches(false);
+        connection.setInstanceFollowRedirects(true);
+        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        connection.connect();
+        DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+        //value to save
+        out.writeBytes("content=" + URLEncoder.encode(parameter.toString(), "utf-8"));
+        out.flush();
+        out.close(); // flush and close
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
+        String line="";
+        StringBuilder sb = new StringBuilder();
+        while ((line = reader.readLine()) != null){
+            //line = new String(line.getBytes(), "utf-8");
+            sb.append(line);
+        }
+        reader.close();
+        connection.disconnect();
+        JSONArray theLists = JSONArray.fromObject(sb.toString());
+        //System.out.println("Found "+theLists.size()+" lists matching those params.");
+        String[] annotationLists = new String[theLists.size()];
+        for(int i=0; i<theLists.size(); i++){
+            JSONObject currentList = theLists.getJSONObject(i);
+            String id = currentList.getString("@id");
+            //System.out.println("List ID: "+id);
+            annotationLists[i] = id;
+        }
+        return annotationLists;
+    }
+    
+    /* 
+    @param resources: A JSON array of annotations that are all new (insert can be used).  
+    @return A JSONArray of annotations with their @id included.
+
+    The resources need to be saved and a JSON array of the objects with their @ids in them needs
+    to be returneds.
+    */
+    public static JSONArray bulkSaveAnnotations(JSONArray resources) throws MalformedURLException, IOException{
+        JSONArray new_resources = new JSONArray();
+        URL postUrlCopyAnno = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/batchSaveFromCopy.action");
+        HttpURLConnection ucCopyAnno = (HttpURLConnection) postUrlCopyAnno.openConnection();
+        ucCopyAnno.setDoInput(true);
+        ucCopyAnno.setDoOutput(true);
+        ucCopyAnno.setRequestMethod("POST");
+        ucCopyAnno.setUseCaches(false);
+        ucCopyAnno.setInstanceFollowRedirects(true);
+        ucCopyAnno.addRequestProperty("content-type", "application/x-www-form-urlencoded");
+        ucCopyAnno.connect();
+        DataOutputStream dataOutCopyAnno = new DataOutputStream(ucCopyAnno.getOutputStream());
+        String str_resources = "";
+        if(resources.size() > 0){
+            str_resources = resources.toString();
+        }
+        else{
+            str_resources = "[]";
+        }
+        dataOutCopyAnno.writeBytes("content=" + URLEncoder.encode(str_resources, "utf-8"));
+        dataOutCopyAnno.flush();
+        dataOutCopyAnno.close();
+        BufferedReader returnedAnnoList = new BufferedReader(new InputStreamReader(ucCopyAnno.getInputStream(),"utf-8"));
+        String lines = "";
+        StringBuilder sbAnnoLines = new StringBuilder();
+        while ((lines = returnedAnnoList.readLine()) != null){
+//                                    System.out.println(lineAnnoLs);
+            sbAnnoLines.append(lines);
+        }
+        returnedAnnoList.close();
+        String parseThis = sbAnnoLines.toString();
+        JSONObject batchSaveResponse = JSONObject.fromObject(parseThis);
+        try{
+            new_resources = (JSONArray) batchSaveResponse.get("new_resources");
+        }
+        catch(JSONException e){
+           // System.out.println("Batch save response does not contain JSONARRAY in new_resouces.");
+        }
+        
+        return new_resources;
+    }
 }
+
+

@@ -2,7 +2,7 @@ var tpen = {
     project: {},
     manifest: {},
     screen:{
-    focusItem:[null, null],
+        focusItem:[null, null],
         liveTool: "none",
         zoomMultiplier: 2,
         isMagnifying: false,
@@ -20,7 +20,7 @@ var tpen = {
         currentFolio: - 1
     },
     user: {
-    current: false,
+        current: false,
         isAdmin: false
     }
 };
@@ -1347,153 +1347,152 @@ function moveImg(event){
     });
 }
 
-                    function restoreWorkspace(){
-                    $("#imgBottom").show();
-                        $("#imgTop").show();
-                        $("#imgTop").removeClass("fixingParsing");
-                        $("#transWorkspace").show();
-                        $("#imgTop").css("width", "100%");
-                        $("#imgTop img").css({"height":"auto", "width":"100%"});
-                        updatePresentation(focusItem[1]);
-                        $(".hideMe").show();
-                        $(".showMe").hide();
-                        var pageJumpIcons = $("#pageJump").parent().find("i");
-                        pageJumpIcons[0].setAttribute('onclick', 'firstFolio();');
-                        pageJumpIcons[1].setAttribute('onclick', 'previousFolio();');
-                        pageJumpIcons[2].setAttribute('onclick', 'nextFolio();');
-                        pageJumpIcons[3].setAttribute('onclick', 'lastFolio();');
-                        $("#prevCanvas").attr("onclick", "previousFolio();");
-                        $("#nextCanvas").attr("onclick", "nextFolio();");
-                        $("#pageJump").removeAttr("disabled");
-                    }
+function restoreWorkspace(){
+    $("#imgBottom").show();
+    $("#imgTop").show();
+    $("#imgTop").removeClass("fixingParsing");
+    $("#transWorkspace").show();
+    $("#imgTop").css("width", "100%");
+    $("#imgTop img").css({"height":"auto", "width":"100%"});
+    updatePresentation(tpen.screen.focusItem[1]);
+    $(".hideMe").show();
+    $(".showMe").hide();
+    var pageJumpIcons = $("#pageJump").parent().find("i");
+    pageJumpIcons[0].setAttribute('onclick', 'firstFolio();');
+    pageJumpIcons[1].setAttribute('onclick', 'previousFolio();');
+    pageJumpIcons[2].setAttribute('onclick', 'nextFolio();');
+    pageJumpIcons[3].setAttribute('onclick', 'lastFolio();');
+    $("#prevCanvas").attr("onclick", "previousFolio();");
+    $("#nextCanvas").attr("onclick", "nextFolio();");
+    $("#pageJump").removeAttr("disabled");
+}
 
+function hideWorkspaceToSeeImage(){
+    $("#transWorkspace").hide();
+    $("#imgTop").hide();
+    $("#imgBottom img").css({
+        "top" :"0%",
+        "left":"0%"
+    });
+    $("#imgBottom .lineColIndicatorArea").css({
+        "top": "0%"
+    });
+    $(".hideMe").hide();
+    $(".showMe").show();
+}
 
+function magnify(img, event){
+    //For separating out different imgs on which to zoom.
+    //Right now it is just the transcription canvas.
+    if (img === "trans"){
+        img = $("#transcriptionTemplate");
+        $("#magnifyTools").fadeIn(800);
+        $("button[magnifyimg='trans']").addClass("selected");
+    }
+    else if (img === "compare"){
+        img = $("#compareSplit");
+        $("#magnifyTools").fadeIn(800).css({
+            "left":$("#compareSplit").css("left"),
+            "top" : "100px"
+        });
+        $("button[magnifyimg='compare']").addClass("selected");
+    }
+    else if (img === "full"){
+        img = $("#fullPageSplitCanvas");
+        $("#magnifyTools").fadeIn(800).css({
+            "left":$("#fullPageSplit").css("left"),
+            "top" : "100px"
+        });
+        $("button[magnifyimg='full']").addClass("selected");
+    }
+    $("#zoomDiv").show();
+    $(".magnifyHelp").show();
+    hideWorkspaceToSeeImage();
+    $(".lineColIndicatorArea").hide();
+    tpen.screen.liveTool = "image";
+    mouseZoom(img, event);
+}
 
-                function hideWorkspaceToSeeImage(){
-                $("#transWorkspace").hide();
-                    $("#imgTop").hide();
-                    $("#imgBottom img").css({
-                "top" :"0%",
-                    "left":"0%"
-                });
-                    $("#imgBottom .lineColIndicatorArea").css({
-                "top": "0%"
-                });
-                    $(".hideMe").hide();
-                    $(".showMe").show();
-                }
-
-                function magnify(img, event){
-//For separating out different imgs on which to zoom.  Right now it is just the transcription canvas.
-                if (img === "trans"){
-                img = $("#transcriptionTemplate");
-                    $("#magnifyTools").fadeIn(800);
-                    $("button[magnifyimg='trans']").addClass("selected");
-                }
-                else if (img === "compare"){
-                img = $("#compareSplit");
-                    $("#magnifyTools").fadeIn(800).css({
-                "left":$("#compareSplit").css("left"),
-                    "top" : "100px"
-                });
-                    $("button[magnifyimg='compare']").addClass("selected");
-                }
-                else if (img === "full"){
-                img = $("#fullPageSplitCanvas");
-                    $("#magnifyTools").fadeIn(800).css({
-                "left":$("#fullPageSplit").css("left"),
-                    "top" : "100px"
-                });
-                    $("button[magnifyimg='full']").addClass("selected");
-                }
-                $("#zoomDiv").show();
-                    $(".magnifyHelp").show();
-                    hideWorkspaceToSeeImage();
-                    $(".lineColIndicatorArea").hide();
-                    liveTool = "image";
-                    mouseZoom(img, event);
-//        });
-                };
-                    /**
-                     * Creates a zoom on the image beneath the mouse.
-                     *
-                     * @param img jQuery img element to zoom on
-                     */
-                        function mouseZoom($img, event){
-                        isMagnifying = true;
-                            var imgURL = $img.find("img:first").attr("src");
-                            var page = $("#transcriptionTemplate");
-                            //var page = $(document);
-                            //collect information about the img
-                            var imgDims = new Array($img.offset().left, $img.offset().top, $img.width(), $img.height());
-                            //build the zoomed div
-                            var zoomSize = (page.height() / 3 < 120) ? 120 : page.height() / 3;
-                            var zoomPos = new Array(event.pageX, event.pageY);
-                            $("#zoomDiv").css({
-                        "box-shadow"    : "2px 2px 5px black,15px 15px " + zoomSize / 3 + "px rgba(230,255,255,.8) inset,-15px -15px " + zoomSize / 3 + "px rgba(0,0,15,.4) inset",
-                            "width"         : zoomSize,
-                            "height"        : zoomSize,
-                            "left"          : zoomPos[0] + 3,
-                            "top"           : zoomPos[1] + 3 - $(document).scrollTop() - $(".magnifyBtn").offset().top,
-                            "background-position" : "0px 0px",
-                            "background-size"     : imgDims[2] * zoomMultiplier + "px",
-                            "background-image"    : "url('" + imgURL + "')"
-                        });
-                            $(document).on({
-                        mousemove: function(event){
-                        if (liveTool !== "image" && liveTool !== "compare") {
-                        $(document).off("mousemove");
-                            $("#zoomDiv").hide();
-                        }
-                        var mouseAt = new Array(event.pageX, event.pageY);
-                            var zoomPos = new Array(mouseAt[0] - zoomSize / 2, mouseAt[1] - zoomSize / 2);
-                            var imgPos = new Array((imgDims[0] - mouseAt[0]) * zoomMultiplier + zoomSize / 2 - 3, (imgDims[1] - mouseAt[1]) * zoomMultiplier + zoomSize / 2 - 3); //3px border adjustment
-                            $("#zoomDiv").css({
-                        "left"  : zoomPos[0],
-                            "top"   : zoomPos[1] - $(document).scrollTop(),
-                            "background-size"     : imgDims[2] * zoomMultiplier + "px",
-                            "background-position" : imgPos[0] + "px " + imgPos[1] + "px"
-                        });
-                        }
-                        }, $img
-                            );
-                        };
-                        function removeTransition(){
-                        $("#imgTop img").css("-webkit-transition", "");
-                            $("#imgTop img").css("-moz-transition", "");
-                            $("#imgTop img").css("-o-transition", "");
-                            $("#imgTop img").css("transition", "");
-                            $("#imgBottom img").css("-webkit-transition", "");
-                            $("#imgBottom img").css("-moz-transition", "");
-                            $("#imgBottom img").css("-o-transition", "");
-                            $("#imgBottom img").css("transition", "");
-                            $("#imgTop").css("-webkit-transition", "");
-                            $("#imgTop").css("-moz-transition", "");
-                            $("#imgTop").css("-o-transition", "");
-                            $("#imgTop").css("transition", "");
-                            $("#imgBottom").css("-webkit-transition", "");
-                            $("#imgBottom").css("-moz-transition", "");
-                            $("#imgBottom").css("-o-transition", "");
-                            $("#imgBottom").css("transition", "");
-                        };
-                        function restoreTransition(){
-                        $("#imgTop img").css("-webkit-transition", "left .5s, top .5s, width .5s");
-                            $("#imgTop img").css("-moz-transition", "left .5s, top .5s, width .5s");
-                            $("#imgTop img").css("-o-transition", "left .5s, top .5s, width .5s");
-                            $("#imgTop img").css("transition", "left .5s, top .5s, width .5s");
-                            $("#imgBottom img").css("-webkit-transition", "left .5s, top .5s, width .5s");
-                            $("#imgBottom img").css("-moz-transition", "left .5s, top .5s, width .5s");
-                            $("#imgBottom img").css("-o-transition", "left .5s, top .5s, width .5s");
-                            $("#imgBottom img").css("transition", "left .5s, top .5s, width .5s");
-                            $("#imgTop").css("-webkit-transition", "left .5s, top .5s, width .5s");
-                            $("#imgTop").css("-moz-transition", "left .5s, top .5s, width .5s");
-                            $("#imgTop").css("-o-transition", "left .5s, top .5s, width .5s");
-                            $("#imgTop").css("transition", "left .5s, top .5s, width .5s");
-                            $("#imgBottom").css("-webkit-transition", "left .5s, top .5s, width .5s");
-                            $("#imgBottom").css("-moz-transition", "left .5s, top .5s, width .5s");
-                            $("#imgBottom").css("-o-transition", "left .5s, top .5s, width .5s");
-                            $("#imgBottom").css("transition", "left .5s, top .5s, width .5s");
-                        };
+/**
+* Creates a zoom on the image beneath the mouse.
+*
+* @param $img jQuery img element to zoom on
+* @param event Event
+*/
+function mouseZoom($img, event){
+    tpen.screen.isMagnifying = true;
+    var imgURL = $img.find("img:first").attr("src");
+    var page = $("#transcriptionTemplate");
+    //collect information about the img
+    var imgDims = new Array($img.offset().left, $img.offset().top, $img.width(), $img.height());
+    //build the zoomed div
+    var zoomSize = (page.height() / 3 < 120) ? 120 : page.height() / 3;
+    var zoomPos = new Array(event.pageX, event.pageY);
+    $("#zoomDiv").css({
+        "box-shadow"    : "2px 2px 5px black,15px 15px " + zoomSize / 3 + "px rgba(230,255,255,.8) inset,-15px -15px " + zoomSize / 3 + "px rgba(0,0,15,.4) inset",
+        "width"         : zoomSize,
+        "height"        : zoomSize,
+        "left"          : zoomPos[0] + 3,
+        "top"           : zoomPos[1] + 3 - $(document).scrollTop() - $(".magnifyBtn").offset().top,
+        "background-position" : "0px 0px",
+        "background-size"     : imgDims[2] * tpen.screen.zoomMultiplier + "px",
+        "background-image"    : "url('" + imgURL + "')"
+    });
+    $(document).on({
+        mousemove: function(event){
+            if (tpen.screen.liveTool !== "image" && tpen.screen.liveTool !== "compare") {
+                $(document).off("mousemove");
+                $("#zoomDiv").hide();
+            }
+            var mouseAt = new Array(event.pageX, event.pageY);
+        var zoomPos = new Array(mouseAt[0] - zoomSize / 2, mouseAt[1] - zoomSize / 2);
+        var imgPos = new Array((imgDims[0] - mouseAt[0]) * zoomMultiplier + zoomSize / 2 - 3, (imgDims[1] - mouseAt[1]) * zoomMultiplier + zoomSize / 2 - 3); //3px border adjustment
+        $("#zoomDiv").css({
+    "left"  : zoomPos[0],
+        "top"   : zoomPos[1] - $(document).scrollTop(),
+        "background-size"     : imgDims[2] * zoomMultiplier + "px",
+        "background-position" : imgPos[0] + "px " + imgPos[1] + "px"
+    });
+    }
+    }, $img
+        );
+    };
+    function removeTransition(){
+    $("#imgTop img").css("-webkit-transition", "");
+        $("#imgTop img").css("-moz-transition", "");
+        $("#imgTop img").css("-o-transition", "");
+        $("#imgTop img").css("transition", "");
+        $("#imgBottom img").css("-webkit-transition", "");
+        $("#imgBottom img").css("-moz-transition", "");
+        $("#imgBottom img").css("-o-transition", "");
+        $("#imgBottom img").css("transition", "");
+        $("#imgTop").css("-webkit-transition", "");
+        $("#imgTop").css("-moz-transition", "");
+        $("#imgTop").css("-o-transition", "");
+        $("#imgTop").css("transition", "");
+        $("#imgBottom").css("-webkit-transition", "");
+        $("#imgBottom").css("-moz-transition", "");
+        $("#imgBottom").css("-o-transition", "");
+        $("#imgBottom").css("transition", "");
+    };
+    function restoreTransition(){
+    $("#imgTop img").css("-webkit-transition", "left .5s, top .5s, width .5s");
+        $("#imgTop img").css("-moz-transition", "left .5s, top .5s, width .5s");
+        $("#imgTop img").css("-o-transition", "left .5s, top .5s, width .5s");
+        $("#imgTop img").css("transition", "left .5s, top .5s, width .5s");
+        $("#imgBottom img").css("-webkit-transition", "left .5s, top .5s, width .5s");
+        $("#imgBottom img").css("-moz-transition", "left .5s, top .5s, width .5s");
+        $("#imgBottom img").css("-o-transition", "left .5s, top .5s, width .5s");
+        $("#imgBottom img").css("transition", "left .5s, top .5s, width .5s");
+        $("#imgTop").css("-webkit-transition", "left .5s, top .5s, width .5s");
+        $("#imgTop").css("-moz-transition", "left .5s, top .5s, width .5s");
+        $("#imgTop").css("-o-transition", "left .5s, top .5s, width .5s");
+        $("#imgTop").css("transition", "left .5s, top .5s, width .5s");
+        $("#imgBottom").css("-webkit-transition", "left .5s, top .5s, width .5s");
+        $("#imgBottom").css("-moz-transition", "left .5s, top .5s, width .5s");
+        $("#imgBottom").css("-o-transition", "left .5s, top .5s, width .5s");
+        $("#imgBottom").css("transition", "left .5s, top .5s, width .5s");
+    };
                         /**
                          * Sets screen for parsing tool use.
                          * Slides the workspace down and scales the top img
@@ -1505,7 +1504,6 @@ function moveImg(event){
                                 originalCanvasHeight = $("#transcriptionCanvas").height();
                                 originalCanvasWidth = $("#transcriptionCanvas").width();
                                 imgTopOriginalTop = $("#imgTop img").css("top");
-                                //$("#pageJump").attr("disabled", "disabled");
                                 var pageJumpIcons = $("#pageJump").parent().children("i");
                                 pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
                                 pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
@@ -1513,10 +1511,6 @@ function moveImg(event){
                                 pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
                                 $("#prevCanvas").attr("onclick", "");
                                 $("#nextCanvas").attr("onclick", "");
-                                //$("#pageJump").siblings().removeAttr("onclick").css("color", "red");
-//        bookmarkInfo = {"top": $("#bookmark").position().top, "left":$("#bookmark").position().left,
-//            "height": $("#bookmark").height()+"px", "width":$("#bookmark").width+"px"};
-
                                 $("#imgTop").addClass("fixingParsing");
                                 var topImg = $("#imgTop img");
                                 imgRatio = topImg.width() / topImg.height();

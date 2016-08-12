@@ -2781,24 +2781,24 @@ function saveNewLine(lineBefore, newLine){
  * @param newLineID lineid of new line
  */
 function buildTranscriptlet(e, afterThisID, newServerID){
-var newLineID = $(".transcriptlet").length + 1;
+    var newLineID = $(".transcriptlet").length + 1;
     var isNotColumn = true;
     var newW = e.attr("linewidth");
     var newX = e.attr("lineleft");
     var newY = e.attr("linetop");
     var newH = e.attr("lineheight");
     if (afterThisID === - 1) {
-// new column, find its placement
-afterThisID = $(".transcriptlet").eq( - 1).attr("lineserverid") || - 1;
-    $(".transcriptlet").each(function(index) {
-if ($(this).find('lineLeft') > newX) {
-afterThisID = (index > 0) ? $(this).prev('.transcriptlet').attr("lineserverid") : - 1;
-    return false;
-}
-});
-    isNotColumn = false;
-}
-var $afterThis = $(".transcriptlet[lineserverid='" + afterThisID + "']");
+        // new column, find its placement
+        afterThisID = $(".transcriptlet").eq( - 1).attr("lineserverid") || - 1;
+        $(".transcriptlet").each(function(index) {
+            if ($(this).find('lineLeft') > newX) {
+                afterThisID = (index > 0) ? $(this).prev('.transcriptlet').attr("lineserverid") : - 1;
+                return false;
+            }
+        });
+        isNotColumn = false;
+    }
+    var $afterThis = $(".transcriptlet[lineserverid='" + afterThisID + "']");
     var newTranscriptlet = [
         "<div class='transcriptlet transcriptletBefore' id='transciptlet_", newLineID,
         "' lineserverid='", newServerID, // took out style DEBUG
@@ -2812,21 +2812,24 @@ var $afterThis = $(".transcriptlet[lineserverid='" + afterThisID + "']");
         "'>\n",
         "<span class='counter wLeft ui-corner-all ui-state-active ui-button'>Inserted Line</span>\n",
         "<textarea></textarea>\n",
-        "</div>"];
+        "</div>"].join("");
     if (isNotColumn){
-//update transcriptlet that was split
-$afterThis.after(newTranscriptlet.join("")).find(".lineHeight").val($(".parsing[lineserverid='" + afterThisID + "']").attr("lineheight"));
+        //update transcriptlet that was split
+        $afterThis.after(newTranscriptlet).find(".lineHeight")
+            .val($(".parsing[lineserverid='" + afterThisID + "']")
+            .attr("lineheight"));
+    }
+    else {
+        if (afterThisID === - 1) {
+            $("#entry").prepend(newTranscriptlet.join(""));
+        }
+        else {
+            $afterThis.after(newTranscriptlet.join(""));
+        }
+    }
+    $(e).attr("lineserverid", newServerID);
 }
-else {
-if (afterThisID === - 1) {
-$   ("#entry").prepend(newTranscriptlet.join(""));
-}
-else {
-$afterThis.after(newTranscriptlet.join(""));
-}
-}
-$(e).attr("lineserverid", newServerID);
-}
+
 /**
  * Adds a line by splitting the current line where it was clicked.
  *
@@ -2834,44 +2837,41 @@ $(e).attr("lineserverid", newServerID);
  * @see organizePage(e)
  */
 function splitLine(e, event){
-//e is the line that was clicked in
-//This is where the click happened relative to img top.  In other words, where the click happened among the lines.
-var originalLineHeight = $(e).height(); //-1 take one px off for the border
+    //e is the line that was clicked in
+    //This is where the click happened relative to img top.  In other words, where the click happened among the lines.
+    var originalLineHeight = $(e).height(); //-1 take one px off for the border
     $(".parsing").attr("newline", "false");
     var originalLineTop = $(e).offset().top - $("#imgTop").offset().top; // +1 Move down one px for the border.
-    //var originalLineTop = parseFloat($(e).css("top"));
     var clickInLines = event.pageY - $("#imgTop").offset().top;
     var lineOffset = $(e).offset().top - $("#imgTop").offset().top;
     var oldLineHeight = (clickInLines - lineOffset) / $("#imgTop").height() * 100;
-    //var oldLineHeight = parseFloat($(e).css("height"));
     var newLineHeight = (originalLineHeight - (clickInLines - originalLineTop)) / $("#imgTop").height() * 100;
     var newLineTop = (clickInLines / $("#imgTop").height()) * 100;
     var newLine = $(e).clone(true);
     $(e).css({
-"height"    :   oldLineHeight + "%"
-}).attr({
-"newline"   :   true,
-    "lineheight" :  oldLineHeight
-});
+        "height"    :   oldLineHeight + "%"
+    }).attr({
+        "newline"   :   true,
+        "lineheight" :  oldLineHeight
+    });
     $(newLine).css({
-"height"    :   newLineHeight + "%",
-    "top"       :   newLineTop + "%"
-}).attr({
-"newline"   :   true,
-    "linetop"   :   newLineTop,
-    "lineheight" : newLineHeight
-});
+        "height"    :   newLineHeight + "%",
+        "top"       :   newLineTop + "%"
+    }).attr({
+        "newline"   :   true,
+        "linetop"   :   newLineTop,
+        "lineheight" : newLineHeight
+    });
     $(e).after(newLine);
     var newNum = - 1;
     $.each($(".parsing"), function(){
-    newNum++;
+        newNum++;
         $(this).attr("linenum", newNum);
     });
     saveNewLine($(e), newLine);
     $("#progress").html("Line Added").fadeIn(1000).delay(3000).fadeOut(1000);
 }
 
-function removeLine(e, columnDelete){
 /**
  * Removes clicked line, merges if possible with the following line.
  * updateLine(e,additionalParameters) handles the original, resized line.
@@ -2880,44 +2880,42 @@ function removeLine(e, columnDelete){
  * @see lineChange(e)
  * @see saveNewLine(e)
  */
-console.log("remove line");
+function removeLine(e, columnDelete){
     $("#imageTip").hide();
     var removedLine = $(e);
     if (columnDelete){
-var lineID = "";
-    removedLine.remove();
-    return false;
-}
-else{
-if ($(e).attr("lineleft") == $(e).next(".parsing").attr("lineleft")) {
-console.log("this will be a merge....");
-    removedLine = $(e).next();
-    var removedLineHeight = removedLine.height();
-    var currentLineHeight = $(e).height();
-    var newLineHeight = removedLineHeight + currentLineHeight;
-    var convertedNewLineHeight = newLineHeight / $("#imgTop").height() * 100;
-    $(e).css({
-"height" :  convertedNewLineHeight + "%",
-    "top" :     $(e).css("top")
-}).addClass("newDiv").attr({
-"lineheight":   convertedNewLineHeight
-});
-} else if ($(e).hasClass("deletable")){ //&& $(".transcriptlet[lineserverid='"+$(e).attr("lineserverid")+"']").find("textarea").val().length > 0
-console.log("this will be a delete...");
-    var cfrm = confirm("Removing this line will remove any data contained as well.\n\nContinue?");
-    if (!cfrm){
-$("#parsingCover").hide();
-    return false;
-}
-isDestroyingLine = true;
-}
-var params = new Array({name:"remove", value:removedLine.attr("lineserverid")});
-    removedLine.remove();
-    removeTranscriptlet(removedLine.attr("lineserverid"), $(e).attr("lineserverid"), true, "cover");
-    return params;
+        var lineID = "";
+        removedLine.remove();
+        return false;
+    }
+    else {
+        if ($(e).attr("lineleft") == $(e).next(".parsing").attr("lineleft")) {
+            removedLine = $(e).next();
+            var removedLineHeight = removedLine.height();
+            var currentLineHeight = $(e).height();
+            var newLineHeight = removedLineHeight + currentLineHeight;
+            var convertedNewLineHeight = newLineHeight / $("#imgTop").height() * 100;
+            $(e).css({
+                "height" :  convertedNewLineHeight + "%",
+                "top" :     $(e).css("top")
+            }).addClass("newDiv").attr({
+                "lineheight":   convertedNewLineHeight
+            });
+        } else if ($(e).hasClass("deletable")){
+            var cfrm = confirm("Removing this line will remove any data contained as well.\n\nContinue?");
+            if (!cfrm){
+                $("#parsingCover").hide();
+                return false;
+            }
+            tpen.screen.isDestroyingLine = true;
+        }
+        var params = new Array({name:"remove", value:removedLine.attr("lineserverid")});
+        removedLine.remove();
+        removeTranscriptlet(removedLine.attr("lineserverid"), $(e).attr("lineserverid"), true, "cover");
+        return params;
+    }
 }
 
-}
 /**
  * Removes transcriptlet when line is removed. Updates transcriplet
  * if line has been merged with previous.
@@ -2926,271 +2924,231 @@ var params = new Array({name:"remove", value:removedLine.attr("lineserverid")});
  * @param updatedLineID lineid to be updated
  */
 function removeTranscriptlet(lineid, updatedLineID, draw, cover){
-// if(!isMember && !permitParsing)return false;
-//update remaining line, if needed
-$("#parsingCover").show();
+    //update remaining line, if needed
+    $("#parsingCover").show();
     var updateText = "";
-    console.log("is the id of the line clicked " + updatedLineID + " == the next line " + lineid);
     var removeNextLine = false;
     if (lineid !== updatedLineID){
-console.log("No it isn't. merge");
-    removeNextLine = true;
-    var updatedLine = $(".parsing[lineserverid='" + updatedLineID + "']");
-    var removedLine1 = $(".parsing[lineserverid='" + lineid + "']");
-    var removedLine2 = $(".transcriptlet[lineserverid='" + lineid + "']");
-    var toUpdate = $(".transcriptlet[lineserverid='" + updatedLineID + "']");
-    var removedText = $(".transcriptlet[lineserverid='" + lineid + "']").find("textarea").val();
-    toUpdate.find("textarea").val(function(){
-var thisValue = $(this).val();
-    if (removedText !== undefined){
-if (removedText !== "") thisValue += (" " + removedText);
-    updateText = thisValue;
-}
-return thisValue;
-});
-    console.log("line height for update is line clicked height " + toUpdate.attr("lineheight") + " + line being removed height " + parseFloat(removedLine2.attr("lineheight")));
-    var lineHeightForUpdate = parseFloat(toUpdate.attr("lineheight")) + parseFloat(removedLine2.attr("lineheight"));
-    console.log(lineHeightForUpdate);
-    toUpdate.attr("lineheight", lineHeightForUpdate);
-}
-else{
-console.log("yes it is. delete!");
-}
-
-var index = - 1;
+        removeNextLine = true;
+        var updatedLine = $(".parsing[lineserverid='" + updatedLineID + "']");
+        var removedLine1 = $(".parsing[lineserverid='" + lineid + "']");
+        var removedLine2 = $(".transcriptlet[lineserverid='" + lineid + "']");
+        var toUpdate = $(".transcriptlet[lineserverid='" + updatedLineID + "']");
+        var removedText = $(".transcriptlet[lineserverid='" + lineid + "']").find("textarea").val();
+        toUpdate.find("textarea").val(function(){
+            var thisValue = $(this).val();
+            if (removedText !== undefined){
+                if (removedText !== "") thisValue += (" " + removedText);
+                updateText = thisValue;
+            }
+            return thisValue;
+        });
+        var lineHeightForUpdate = parseFloat(toUpdate.attr("lineheight")) + parseFloat(removedLine2.attr("lineheight"));
+        toUpdate.attr("lineheight", lineHeightForUpdate);
+    }
+    else {
+    }
+    var index = - 1;
     currentFolio = parseInt(currentFolio);
     var currentAnnoList = annoLists[currentFolio - 1];
     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){ // if it IIIF, we need to update the list
-console.log("Get anno list");
-    var annosURL = "getAnno";
-    var properties = {"@id": currentAnnoList};
-    var paramOBJ = {"content": JSON.stringify(properties)};
-    $.post(annosURL, paramOBJ, function(annoList){
-    annoList = JSON.parse(annoList);
-        var annoListID = currentAnnoList;
-        currentAnnoList = annoList[0];
-        console.log("got it");
-        //console.log(currentAnnoList.resources);
-        $.each(currentAnnoList.resources, function(){
-        index++;
-            var lineIDToCheck = "";
-            if (removeNextLine){
-        lineIDToCheck = lineid;
-            removedLine2.remove(); //remove the transcriptlet from UI
-        }
-        else{
-        lineIDToCheck = updatedLineID;
-        }
-        console.log(this["@id"] + " == " + lineIDToCheck + "?  Index = " + index);
-            if (this["@id"] === lineIDToCheck){
-        currentAnnoList.resources.splice(index, 1);
-            console.log("Delete from list " + lineIDToCheck + " at index " + index + ".  Then update with line removed.");
-            console.log(currentAnnoList.resources);
-            var url = "updateAnnoList";
-            var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
-            var params = {"content":JSON.stringify(paramObj)};
-            $.post(url, params, function(data){
-            //console.log("update from delete finished");
-            currentFolio = parseInt(currentFolio);
-                annoLists[currentFolio - 1] = annoListID;
-                if (!removeNextLine){
-            $("#parsingCover").hide();
-                console.log("hide cover.");
+        var annosURL = "getAnno";
+        var properties = {"@id": currentAnnoList};
+        var paramOBJ = {"content": JSON.stringify(properties)};
+        $.post(annosURL, paramOBJ, function(annoList){
+            annoList = JSON.parse(annoList);
+            var annoListID = currentAnnoList;
+            currentAnnoList = annoList[0];
+            $.each(currentAnnoList.resources, function(){
+                index++;
+                var lineIDToCheck = "";
+                if (removeNextLine){
+                    lineIDToCheck = lineid;
+                    removedLine2.remove(); //remove the transcriptlet from UI
+                }
+                else{
+                    lineIDToCheck = updatedLineID;
+                }
+                if (this["@id"] === lineIDToCheck){
+                    currentAnnoList.resources.splice(index, 1);
+                    var url = "updateAnnoList";
+                    var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
+                    var params = {"content":JSON.stringify(paramObj)};
+                    $.post(url, params, function(data){
+                        currentFolio = parseInt(currentFolio);
+                        annoLists[currentFolio - 1] = annoListID;
+                        if (!removeNextLine){
+                            $("#parsingCover").hide();
+                        }
+                        else {
+                            updateLine(toUpdate);
+                        }
+                    });
+                }
+            });
+        });
+    }
+    else if (currentAnnoList == "empty"){
+        throw new Error("There is no anno list assosiated with this anno.  This is an error.");
+    }
+    else { // If it is classic T-PEN, we need to update canvas resources
+        currentFolio = parseInt(currentFolio);
+        $.each(tpen.manifest.sequences[0].canvases[currentFolio - 1].resources, function(){
+            index++;
+            if (this["@id"] == lineid){
+                tpen.manifest.sequences[0].canvases[currentFolio - 1].resources.splice(index, 1);
+                //update for real
             }
-            else{
-            console.log("now we have to update the line that was clicked with the new line height from the one we removed.")
-                updateLine(toUpdate);
-            }
+        });
+    }
+    //When it is just one line being removed, we need to redraw.  When its the whole column, we just delete.
+    cleanupTranscriptlets(draw);
+}
 
+/* Remove all transcriptlets in a column */
+function removeColumnTranscriptlets(lines, recurse){
+    var index = - 1;
+    currentFolio = parseInt(currentFolio);
+    var currentAnnoList = annoLists[currentFolio - 1];
+    if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
+        // if it IIIF, we need to update the list
+        var annosURL = "getAnno";
+        var properties = {"@id": currentAnnoList};
+        var paramOBJ = {"content": JSON.stringify(properties)};
+        $.post(annosURL, paramOBJ, function(annoList){
+            annoList = JSON.parse(annoList);
+            var annoListID = currentAnnoList;
+            currentAnnoList = annoList[0];
+            for (var l = lines.length - 1; l >= 0; l--){
+                var theLine = $(lines[l]);
+                var index2 = - 1;
+                $.each(currentAnnoList.resources, function(){
+                    var currentResource = this;
+                    index2++;
+                    if (currentResource["@id"] == theLine.attr("lineserverid")){
+                        currentAnnoList.resources.splice(index2, 1);
+                        theLine.remove();
+                    }
+                });
+                if (l === 0){
+                    var url = "updateAnnoList";
+                    var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
+                    var params = {"content":JSON.stringify(paramObj)};
+                    $.post(url, params, function(data){
+                        annoLists[currentFolio - 1] = annoListID;
+                        if (recurse){
+                            nextColumnToRemove.remove();
+                            destroyPage();
+                        }
+                        else{
+                            cleanupTranscriptlets(true);
+                        }
+                    });
+                }
+            }
+        });
+    }
+    else {
+        //It was not a part of the list, but we can still cleanup the transcriptlets from the interface.  This could happen when a object is fed to the
+        //transcription textarea who instead of using an annotation list used the resources[] field to store anno objects directly with the canvas.
+        //These changes will not save, they are purely UI manipulation.  An improper, view only object has been fed to the interface at this point, so this is intentional.
+        for (var l = lines.length - 1; l >= 0; l--){
+            var theLine = $(lines[l]);
+            theLine.remove();
+            var lineID = theLine.attr("lineserverid");
+            $(".transcriptlet[lineserverid='" + lineID + "']").remove(); //remove the transcriptlet
+            $(".lineColIndicator[lineserverid='" + lineID + "']").remove(); //Remove the line representing the transcriptlet
+            $(".previewLineNumber[lineserverid='" + lineID + "']").parent().remove(); //Remove the line in text preview of transcription.
+        }
+    }
+}
+
+/* Re draw transcriptlets from the Annotation List information. */
+function cleanupTranscriptlets(draw) {
+    var transcriptlets = $(".transcriptlet");
+    if (draw){
+        transcriptlets.remove();
+        $(".lineColIndicatorArea").children(".lineColIndicator").remove();
+        $("#parsingSplit").find('.fullScreenTrans').unbind();
+        $("#parsingSplit").find('.fullScreenTrans').bind("click", function(){
+            fullPage();
+            currentFolio = parseInt(currentFolio);
+            drawLinesToCanvas(tpen.manifest.sequences[0].canvases[currentFolio - 1], "");
+        });
+    }
+}
+
+/* Make some invalid information inside of folios valid empties */
+function scrubFolios(){
+    //you could even force create anno lists off of the existing resource here if you would like.
+    var cnt1 = - 1;
+    $.each(tpen.manifest.sequences[0].canvases, function(){
+        cnt1++;
+        var canvasObj = this;
+        if (canvasObj.resources && canvasObj.resources.length > 0){
+            if (canvasObj.images === undefined || canvasObj.images === null){
+                canvasObj.images = [];
+            }
+            var cnt2 = - 1;
+            $.each(canvasObj.resources, function(){
+                cnt2 += 1;
+                if (this.resource && this.resource["@type"] && this.resource["@type"] === "dctypes:Image"){
+                    canvasObj.images.push(this);
+                    canvasObj.resources.splice(cnt2, 1);
+                    tpen.manifest.sequences[0].canvases[cnt1] = canvasObj;
+                }
             });
         }
-        });
+        if (canvasObj.otherContent === undefined){
+            tpen.manifest.sequences[0].canvases[cnt1].otherContent = [];
+        }
     });
 }
-                            else if (currentAnnoList == "empty"){
-                            //There is no anno list assosiated with this anno.  This is an error.
-                            }
-                            else{ //If it is classic T-PEN, we need to update canvas resources
-                            currentFolio = parseInt(currentFolio);
-                                $.each(transcriptionFolios[currentFolio - 1].resources, function(){
-                                index++;
-                                    if (this["@id"] == lineid){
-                                transcriptionFolios[currentFolio - 1].resources.splice(index, 1);
-                                    //update forreal
-                                }
-                                });
-                            }
-                            //When it is just one line being removed, we need to redraw.  When its the whole column, we just delete.
-                            console.log("call cleanup from remove.  Draw: " + draw);
-                                cleanupTranscriptlets(draw);
-                            }
 
-                            /* Remove all transcriptlets in a column */
-                            function removeColumnTranscriptlets(lines, recurse){
-                            var index = - 1;
-                                currentFolio = parseInt(currentFolio);
-                                var currentAnnoList = annoLists[currentFolio - 1];
-                                //console.log("removing transcriptlets from this list");
-                                //console.log(currentAnnoList);
-                                if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){ // if it IIIF, we need to update the list
-                            //console.log("Get annos for column removal");
-                            var annosURL = "getAnno";
-                                var properties = {"@id": currentAnnoList};
-                                var paramOBJ = {"content": JSON.stringify(properties)};
-                                $.post(annosURL, paramOBJ, function(annoList){
-                                annoList = JSON.parse(annoList);
-                                    var annoListID = currentAnnoList;
-                                    currentAnnoList = annoList[0];
-                                    //console.log("got them");
-                                    //console.log(currentAnnoList.resources);
-                                    for (var l = lines.length - 1; l >= 0; l--){
-                                var theLine = $(lines[l]);
-                                    var index2 = - 1;
-                                    $.each(currentAnnoList.resources, function(){
-                                    var currentResource = this;
-                                        index2++;
-                                        //console.log(currentResource["@id"] +" == "+ theLine.attr("lineserverid")+"?")
-                                        if (currentResource["@id"] == theLine.attr("lineserverid")){
-                                    currentAnnoList.resources.splice(index2, 1);
-                                        //console.log(theLine);
-                                        //console.log("Delete from list " + theLine.attr("lineserverid")+" at index "+index2+".");
-                                        theLine.remove();
-                                    }
-                                    });
-                                    if (l === 0){
-                                //console.log("last line in column, update list");
-                                //console.log(currentAnnoList.resources);
-                                var url = "updateAnnoList";
-                                    var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
-                                    var params = {"content":JSON.stringify(paramObj)};
-                                    $.post(url, params, function(data){
-                                    //console.log("update from delete finished");
-                                    annoLists[currentFolio - 1] = annoListID;
-                                        if (recurse){
-                                    nextColumnToRemove.remove();
-                                        destroyPage();
-                                    }
-                                    else{
-                                    console.log("call cleanup from update");
-                                        cleanupTranscriptlets(true);
-                                    }
+/* Control the hiding and showing of the image tools in the transcription interface. */
+function toggleImgTools(){
+    if ($("#imageTools").attr("class") !== undefined && $("#imageTools").attr("class").indexOf("activeTools") > - 1){
+        $('.toolWrap').hide();
+        $("#imageTools").removeClass("activeTools");
+        $("#activeImageTool").children("i").css("transform", "rotate(180deg)");
+    }
+    else{
+        $("#imageTools").addClass("activeTools");
+        $('.toolWrap').show();
+        $("#activeImageTool").children("i").css("transform", "rotate(0deg)");
+    }
+}
 
-                                    });
-                                }
-                                }
-                                });
-                            }
-                            else{
-                            //It was not a part of the list, but we can still cleanup the transcriptlets from the interface.  This could happen when a object is fed to the
-                            //transcription textarea who instead of using an annotation list used the resources[] field to store anno objects directly with the canvas.
-                            //These changes will not save, they are purely UI manipulation.  An improper, view only object has been fed to the interface at this point, so this is intentional.
-                            for (var l = lines.length - 1; l >= 0; l--){
-                            var theLine = $(lines[l]);
-                                theLine.remove();
-                                var lineID = theLine.attr("lineserverid");
-                                //console.log("remove this line: "+lineID);
-                                //console.log("remove tramscriptlets");
-                                $(".transcriptlet[lineserverid='" + lineID + "']").remove(); //remove the transcriptlet
-                                //console.log("remove trans drawn lines");
-                                $(".lineColIndicator[lineserverid='" + lineID + "']").remove(); //Remove the line representing the transcriptlet
-                                //console.log("remov preview line");
-                                $(".previewLineNumber[lineserverid='" + lineID + "']").parent().remove(); //Remove the line in text preview of transcription.
-                            }
-                            }
+function stopMagnify(){
+    tpen.screen.isMagnifying = false;
+    tpen.screen.zoomMultiplier = 2;
+    $(document).off("mousemove");
+    $("#zoomDiv").removeClass("ui-state-active");
+    $("#zoomDiv").hide();
+    $(".magnifyBtn").removeClass("ui-state-active");
+    $("#magnifyTools").fadeOut(800);
+    $(".lineColIndicatorArea").show();
+    $(".magnifyHelp").hide();
+    $("button[magnifyimg='full']").removeClass("selected");
+    $("button[magnifyimg='compare']").removeClass("selected");
+    $("button[magnifyimg='trans']").removeClass("selected");
+    restoreWorkspace();
+}
 
-                            }
+/*
+ * Load all included Iframes on the page.  This function should be strategically placed so that the Iframes load after user and project information
+ * are gathered.  This should help avoid timeouts caused by embedded Iframes wait times mixed with many calls to the annotation store and calls for images.
+ * See the Network console in the Browser deveoper tools for problems with wait times on embedded content.
+ *
+ * @see newberryTrans.html to find the iframe elements.
+ */
+function loadIframes(){
+    $.each($("iframe"), function(){
+        var src = $(this).attr("data_src");
+        $(this).attr("src", src);
+    });
+}
 
-                            /* Re draw transcriptlets from the Annotation List information. */
-                            function cleanupTranscriptlets(draw) {
-                            console.log("cleanup.  draw:" + draw);
-                                var transcriptlets = $(".transcriptlet");
-                                if (draw){
-                            transcriptlets.remove();
-                                $(".lineColIndicatorArea").children(".lineColIndicator").remove();
-                                $("#parsingSplit").find('.fullScreenTrans').unbind();
-                                $("#parsingSplit").find('.fullScreenTrans').bind("click", function(){
-                            fullPage();
-                                currentFolio = parseInt(currentFolio);
-                                drawLinesToCanvas(transcriptionFolios[currentFolio - 1], "");
-                            });
-                            }
-
-                            }
-
-                            /* Make some invalid information inside of folios valid empties */
-                            function scrubFolios(){
-                            //you could even force create anno lists off of the existing resource here if you would like.
-                            var cnt1 = - 1;
-                                $.each(transcriptionFolios, function(){
-                                cnt1++;
-                                    var canvasObj = this;
-                                    if (canvasObj.resources && canvasObj.resources.length > 0){
-                                //alert("Canvas "+canvasObj["@id"]+" does not contain any transcription lines.");
-                                if (canvasObj.images === undefined || canvasObj.images === null){
-                                canvasObj.images = [];
-                                }
-                                var cnt2 = - 1;
-                                    $.each(canvasObj.resources, function(){
-                                    cnt2 += 1;
-                                        if (this.resource && this.resource["@type"] && this.resource["@type"] === "dctypes:Image"){
-                                    canvasObj.images.push(this);
-                                        canvasObj.resources.splice(cnt2, 1);
-                                        transcriptionFolios[cnt1] = canvasObj;
-                                    }
-                                    });
-                                }
-                                if (canvasObj.otherContent === undefined){
-                                transcriptionFolios[cnt1].otherContent = [];
-                                }
-                                });
-                            }
-
-                            /* Control the hiding and showing of the image tools in the transcription interface. */
-                            function toggleImgTools(){
-                            if ($("#imageTools").attr("class") !== undefined && $("#imageTools").attr("class").indexOf("activeTools") > - 1){
-                            $('.toolWrap').hide();
-                                $("#imageTools").removeClass("activeTools");
-                                $("#activeImageTool").children("i").css("transform", "rotate(180deg)");
-                            }
-                            else{
-                            $("#imageTools").addClass("activeTools");
-                                $('.toolWrap').show();
-                                $("#activeImageTool").children("i").css("transform", "rotate(0deg)");
-                            }
-                            }
-
-                            function stopMagnify(){
-                            isMagnifying = false;
-                                zoomMultiplier = 2;
-                                $(document).off("mousemove");
-                                $("#zoomDiv").removeClass("ui-state-active");
-                                $("#zoomDiv").hide();
-                                $(".magnifyBtn").removeClass("ui-state-active");
-                                $("#magnifyTools").fadeOut(800);
-//                    $("#imgBottom img").css("top", imgBottomOriginal);
-//                    $("#imgBottom .lineColIndicatorArea").css("top", imgBottomOriginal);
-                                $(".lineColIndicatorArea").show();
-                                $(".magnifyHelp").hide();
-                                $("button[magnifyimg='full']").removeClass("selected");
-                                $("button[magnifyimg='compare']").removeClass("selected");
-                                $("button[magnifyimg='trans']").removeClass("selected");
-                                restoreWorkspace();
-                            }
-
-                            /*
-                             * Load all included Iframes on the page.  This function should be strategically placed so that the Iframes load after user and project information
-                             * are gathered.  This should help avoid timeouts caused by embedded Iframes wait times mixed with many calls to the annotation store and calls for images.
-                             * See the Network console in the Browser deveoper tools for problems with wait times on embedded content.
-                             *
-                             * @see newberryTrans.html to find the iframe elements.
-                             */
-                            function loadIframes(){
-                            $.each($("iframe"), function(){
-                            var src = $(this).attr("data_src");
-                                $(this).attr("src", src);
-                            });
-                            }
-
-// Shim console.log to avoid blowing up browsers without it
-                            if (!window.console) window.console = {};
-                                if (!window.console.log) window.console.log = function () { };
+// Shim console.log to avoid blowing up browsers without it - daQuoi?
+if (!window.console) window.console = {};
+    if (!window.console.log) window.console.log = function () { };

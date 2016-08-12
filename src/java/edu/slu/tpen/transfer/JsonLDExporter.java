@@ -41,6 +41,7 @@ import static edu.slu.util.LangUtils.buildQuickMap;
 import static edu.slu.util.ServletUtils.getDBConnection;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import textdisplay.Annotation;
 
 /**
  * Class which manages serialisation to JSON-LD. Builds a Map containing the
@@ -109,106 +110,93 @@ public class JsonLDExporter {
       JSONArray resources_array = new JSONArray();
       annotationList.element("@type", "sc:AnnotationList");
       annotationList.element("label", canvasID+" List");
-      annotationList.element("resources", resources_array);
       annotationList.element("proj", projID);
       annotationList.element("on", canvasID);
       annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
+      annotationList.element("testing", "msid_creation");
       //String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
-      Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
+      //Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
       String[] otherContent;
-      if (pageDim == null) {
-         LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
-         pageDim = f.getImageDimension();
-      }
-      LOG.log(Level.INFO, "pageDim={0}", pageDim);
+//      if (pageDim == null) {
+//         //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
+//         pageDim = f.getImageDimension();
+//      }
+//      LOG.log(Level.INFO, "pageDim={0}", pageDim);
 
       Map<String, Object> result = new LinkedHashMap<>();
       result.put("@id", canvasID);
       result.put("@type", "sc:Canvas");
       result.put("label", f.getPageName());
-
       int canvasHeight = 1000;
       result.put("height", canvasHeight);
-      
-      if (pageDim != null) {
-         int canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
-         result.put("width", canvasWidth);
-      }
+//      if (pageDim != null) {
+//         int canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
+//         result.put("width", canvasWidth);
+//      }
       List<Object> resources = new ArrayList<>();
       List<Object> images = new ArrayList<>();
       Map<String, Object> imageAnnot = new LinkedHashMap<>();
       imageAnnot.put("@type", "oa:Annotation");
       imageAnnot.put("motivation", "sc:painting");
-      
       Map<String, Object> imageResource = buildQuickMap("@id", String.format("%s%s&user=%s", Folio.getRbTok("SERVERURL"), f.getImageURLResize(), u.getUname()), "@type", "dctypes:Image", "format", "image/jpeg");
 //      imageResource.put("iiif", ?);
-      if (pageDim != null) {
-         imageResource.put("height", pageDim.height);
-         imageResource.put("width", pageDim.width);
-      }
+     // if (pageDim != null) {
+         imageResource.put("height", 2000 ); //pageDim.height
+         imageResource.put("width", 1600 ); //pageDim.width
+     // }
       imageAnnot.put("resource", imageResource);
       imageAnnot.put("on", canvasID);
       images.add(imageAnnot);
       //If this list was somehow stored in the SQL DB, we could skip calling to the store every time. 
       otherContent = Canvas.getAnnotationListsForProject(projID, canvasID, u.getUID());
-      System.out.println("JSON exporter other content...");
-      System.out.println(otherContent.toString());
-      result.put("otherContent", otherContent);
       if(otherContent.length == 0){ //No list on store
-          System.out.println("Need to gather lines off the sql, save them, add them to a list, and save the list to the store for the folios");
          try (Connection conn = getDBConnection()) {
          try (PreparedStatement stmt = conn.prepareStatement("SELECT * FROM transcription WHERE projectID = ? AND folio = ? ORDER BY x, y")) {
             stmt.setInt(1, projID);
             stmt.setInt(2, f.getFolioNumber());
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-               // Body of the annotation.  Contains the actual text.
-/*            text = rs.getString("text");
-            comment = rs.getString("comment");
-            UID = rs.getInt("creator");
-            lineID = rs.getInt("id");
-            x = rs.getInt("x");
-            y = rs.getInt("y");
-            width = rs.getInt("width");
-            height = rs.getInt("height");
-            this.projectID = rs.getInt("projectID");
-            this.folio = rs.getInt("folio");
-            date = rs.getDate("date"); */
                int lineID = rs.getInt("id");
                Map<String, Object> lineAnnot = new LinkedHashMap<>();
                String lineURI = projName + "/line/" + lineID;
-               lineAnnot.put("@id", lineURI);
+               //lineAnnot.put("@id", lineURI);
+               lineAnnot.put("tpen_line_id", lineURI);
                lineAnnot.put("@type", "oa:Annotation");
-               lineAnnot.put("motivation", "sc:painting");
-               lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(rs.getString("text"))));
-               lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, rs.getInt("x"), rs.getInt("y"), rs.getInt("width"), rs.getInt("height")));
-               //TODO: Save the annotation, add the real @id field, add into resources
+               lineAnnot.put("motivation", "oad:transcribing"); 
+               lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", rs.getString("text")));
+               // ^ESAPI.encoder().decodeForHTML(rs.getString("text"))
+               lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, rs.getInt("x"), rs.getInt("y"), rs.getInt("width"), rs.getInt("height"))); 
+               lineAnnot.put("testing", "msid_creation");
                resources.add(lineAnnot);
 
                String note = rs.getString("comment");
                if (StringUtils.isNotBlank(note)) {
                   Map<String, Object> noteAnnot = new LinkedHashMap<>();
-                  noteAnnot.put("@id", projName + "/note/" + lineID);
+                  //noteAnnot.put("@id", projName + "/note/" + lineID);
                   noteAnnot.put("@type", "oa:Annotation");
                   noteAnnot.put("motivation", "oa:commenting");
                   noteAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", note));
-                  noteAnnot.put("on", lineURI);
+                  noteAnnot.put("on", lineURI); //TODO: should this be on an @id of an annotation? If so, that complicates how i want to do the bulk.
+                  noteAnnot.put("testing", "msid_creation");
                   resources.add(noteAnnot);
                   //TODO: Save the annotation, add the real @id field, add into resources
                }
             }
             resources_array = JSONArray.fromObject(resources);
+            resources_array = Canvas.bulkSaveAnnotations(resources_array);
             annotationList.element("resources", resources_array);
+            String newListID = Annotation.saveNewAnnotationList(annotationList);
+            annotationList.element("@id", newListID);
+            otherContent = new String[1];
+            otherContent[0] = newListID;
+            result.put("otherContent", otherContent);
             //TODO: Save this annotation list into the annotation store.  otherContent = ["new_@id_created_by_save"]; result.put("otherContent", otherContent);!
          }
         } 
       }
       else{ //could maybe break this else away, but make sure to set the otherContent field of result in the "if" if you do.
-          System.out.println("Found a list on the store, no need to update from sql");
+          result.put("otherContent", otherContent);
       }
-      // lineID, textUnencoded, x, y, width, height, comment
-      // TODO: we don't want to put the resources array here anymore if there is an annotation list in otherContent. 
-      result.put("resources", resources);
       result.put("images", images);
       return result;
    }

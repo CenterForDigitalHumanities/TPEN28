@@ -1,5 +1,5 @@
 var tpen = {
-project: {},
+    project: {},
     manifest: {},
     screen:{
     focusItem:[null, null],
@@ -984,365 +984,369 @@ function updatePresentation(transcriptlet) {
             $("#prevColLine").html("**");
             $("#captionsText").html("You are on the first line.");
         }
-
-}
-else{ //there is no previous line
-$("#prevColLine").html("**");
-    $("#captionsText").html("ERROR.  NUMBERS ARE OFF");
-}
-focusItem[0] = focusItem[1];
-    focusItem[1] = transcriptlet;
-    if ((focusItem[0] === null) || (focusItem[0].attr("id") !== focusItem[1].attr("id"))) {
-this.adjustImgs(this.setPositions());
-    this.swapTranscriptlet();
-    //show previous line transcription
-    $('#captions').animate({
-opacity: 1
-}, 100);
-}
-else {
-this.adjustImgs(this.setPositions());
-    focusItem[1].prevAll(".transcriptlet").addClass("transcriptletBefore").removeClass("transcriptletAfter");
-    focusItem[1].nextAll(".transcriptlet").addClass("transcriptletAfter").removeClass("transcriptletBefore");
-    //this.maintainWorkspace();
-}
-//prevent textareas from going invisible and not moving out of the workspace
-focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
+    }
+    else { //there is no previous line
+        $("#prevColLine").html("**");
+        $("#captionsText").html("ERROR.  NUMBERS ARE OFF");
+    }
+    tpen.focusItem[0] = tpen.focusItem[1];
+    tpen.focusItem[1] = transcriptlet;
+    if ((tpen.focusItem[0] === null)
+        || (tpen.focusItem[0].attr("id") !== tpen.focusItem[1].attr("id"))) {
+        this.adjustImgs(this.setPositions());
+        this.swapTranscriptlet();
+        // show previous line transcription
+        $('#captions').animate({
+            opacity: 1
+        }, 100);
+    }
+    else {
+        this.adjustImgs(this.setPositions());
+        tpen.focusItem[1].prevAll(".transcriptlet").addClass("transcriptletBefore").removeClass("transcriptletAfter");
+        tpen.focusItem[1].nextAll(".transcriptlet").addClass("transcriptletAfter").removeClass("transcriptletBefore");
+    }
+    // prevent textareas from going invisible and not moving out of the workspace
+    tpen.focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
 };
-    /* Helper for position focus onto a specific transcriptlet */
-        function setPositions() {
-        //Determine size of section above workspace
-        var bottomImageHeight = $("#imgBottom img").height();
-            if (focusItem[1].attr("lineHeight") !== null) {
-        var pairForBookmarkCol = focusItem[1].attr('col');
-            var pairForBookmarkLine = parseInt(focusItem[1].attr('collinenum'));
-            pairForBookmarkLine += 1;
-            var pairForBookmark = pairForBookmarkCol + pairForBookmarkLine;
-            var currentLineHeight = parseFloat(focusItem[1].attr("lineHeight"));
-            var currentLineTop = parseFloat(focusItem[1].attr("lineTop"));
-            // top of column
-            var previousLine = (focusItem[1].prev().is('.transcriptlet') && (currentLineTop > parseFloat(focusItem[1].prev().attr("lineTop")))) ? parseFloat(focusItem[1].prev().attr("lineHeight")) : parseFloat(focusItem[1].attr("lineTop"));
-            // oversized for screen
-            var imgTopHeight = (previousLine + currentLineHeight) + 1.5; // obscure behind workspace.
-            var topImgPositionPercent = ((previousLine - currentLineTop) * 100) / imgTopHeight;
-            var topImgPositionPx = (previousLine - currentLineTop) * bottomImageHeight / 100;
-//          var bookmarkTop = (currentLineTop + ((imgTopHeight/100)*topImgPositionPercent));
-            var bottomImgPositionPercent = - (currentLineTop + currentLineHeight);
-            var bottomImgPositionPx = - (currentLineTop + currentLineHeight) * bottomImageHeight / 100;
-        }
-        var positions = {
+
+/* Helper for position focus onto a specific transcriptlet */
+function setPositions() {
+    // Determine size of section above workspace
+    var bottomImageHeight = $("#imgBottom img").height();
+    if (tpen.focusItem[1].attr("lineHeight") !== null) {
+        var pairForBookmarkCol = tpen.focusItem[1].attr('col');
+        var pairForBookmarkLine = parseInt(tpen.focusItem[1].attr('collinenum'));
+        pairForBookmarkLine++;
+        var pairForBookmark = pairForBookmarkCol + pairForBookmarkLine;
+        var currentLineHeight = parseFloat(tpen.focusItem[1].attr("lineHeight"));
+        var currentLineTop = parseFloat(tpen.focusItem[1].attr("lineTop"));
+        // top of column
+        var previousLine = (tpen.focusItem[1].prev().is('.transcriptlet')
+            && (currentLineTop > parseFloat(tpen.focusItem[1].prev().attr("lineTop"))))
+            ? parseFloat(tpen.focusItem[1].prev().attr("lineHeight"))
+            : parseFloat(tpen.focusItem[1].attr("lineTop"));
+        // oversized for screen
+        var imgTopHeight = (previousLine + currentLineHeight) + 1.5; // obscure behind workspace.
+        var topImgPositionPercent = ((previousLine - currentLineTop) * 100) / imgTopHeight;
+        var topImgPositionPx = (previousLine - currentLineTop) * bottomImageHeight / 100;
+        var bottomImgPositionPercent = - (currentLineTop + currentLineHeight);
+        var bottomImgPositionPx = - (currentLineTop + currentLineHeight) * bottomImageHeight / 100;
+    }
+    var positions = {
         imgTopHeight: imgTopHeight,
-            topImgPositionPercent: topImgPositionPercent,
-            topImgPositionPx : topImgPositionPx,
-            bottomImgPositionPercent: bottomImgPositionPercent,
-            bottomImgPositionPx: bottomImgPositionPx,
-            activeLine: pairForBookmark
-//          bookmarkTop: (parseFloat(locationForBookmark.css("top")) / $(".lineColIndicatorArea:first").height()) * 100 + "%",
-//          bookmarkHeight: currentLineHeight
-        };
-            return positions;
-        };
-        /**
-         * Removes previous textarea and slides in the new focus.
-         *
-         * @see updatePresentation()
-         */
-            function swapTranscriptlet() {
-            //focusItem[0].addClass("transcriptletBefore").removeClass('noTransition');
-            // slide in the new transcriptlet
-            focusItem[1].css({"width": "auto", "z-index": "5"});
-                focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
-                focusItem[1].prevAll(".transcriptlet").addClass("transcriptletBefore").removeClass("transcriptletAfter");
-                focusItem[1].nextAll(".transcriptlet").addClass("transcriptletAfter").removeClass("transcriptletBefore");
-                if ($('.transcriptletAfter').length == 0){
-            $('#nextTranscriptlet').hide();
-            }
-            else{
-            $('#nextTranscriptlet').show();
-            }
-            if ($('.transcriptletBefore').length == 0){
-            $('#previousTranscriptlet').hide();
-            }
-            else{
-            $('#previousTranscriptlet').show();
-            }
-            };
-            /**
-             * Aligns images and workspace using defined dimensions.
-             *
-             * @see maintainWorkspace()
-             */
-                function adjustImgs(positions) {
-                //move background images above and below the workspace
-                var lineToMakeActive = $(".lineColIndicator[pair='" + positions.activeLine + "']:first");
-                    var topImageHeight = $("#imgTop img").height();
-                    $("#imgTop").animate({
-                "height": positions.imgTopHeight + "%"
-                }, 250)
-                    .find("img").animate({
-                top: positions.topImgPositionPx + "px",
-                    left: "0px"
-                }, 250);
-                    $("#imgTop .lineColIndicatorArea").animate({
-                top: positions.topImgPositionPx + "px",
-                    left: "0px"
-                }, 250);
-                    $("#imgBottom").find("img").animate({
-                top: positions.bottomImgPositionPx + "px",
-                    left: "0px"
-                }, 250)
-                    $("#imgBottom .lineColIndicatorArea").animate({
-                top: positions.bottomImgPositionPx + "px",
-                    left: "0px"
-                }, 250);
-                    if ($('.activeLine').hasClass('linesHidden')){
-                $('.activeLine').hide();
-                }
-                $(".lineColIndicator").removeClass('activeLine').css({
-                "box-shadow": "none",
-                    "background-color":"transparent"
-                });
-                    lineToMakeActive.addClass("activeLine");
-                    //use the active line color to give the active line a little background color to make it stand out if the box shadow is not enough.
-                    var activeLineColor = colorThisTime.replace(".4", ".2");
-                    $('.activeLine').css({
-                'box-shadow': '0px 0px 15px 8px ' + colorThisTime
-                    //'background-color':activeLineColor
-                });
-                }
+        topImgPositionPercent: topImgPositionPercent,
+        topImgPositionPx : topImgPositionPx,
+        bottomImgPositionPercent: bottomImgPositionPercent,
+        bottomImgPositionPx: bottomImgPositionPx,
+        activeLine: pairForBookmark
+    };
+    return positions;
+}
 
-            /* Update the line information of the line currently focused on, then load the focus to a line that was clicked on */
-            function loadTranscriptlet(lineid){
-            var currentLineServerID = focusItem[1].attr("lineserverid");
-                if ($('#transcriptlet_' + lineid).length > 0){
-            if (loggedInUser){
+/**
+* Removes previous textarea and slides in the new focus.
+*
+* @see updatePresentation()
+*/
+function swapTranscriptlet() {
+    // slide in the new transcriptlet
+    tpen.focusItem[1].css({"width": "auto", "z-index": "5"});
+    tpen.focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
+    tpen.focusItem[1].prevAll(".transcriptlet").addClass("transcriptletBefore").removeClass("transcriptletAfter");
+    tpen.focusItem[1].nextAll(".transcriptlet").addClass("transcriptletAfter").removeClass("transcriptletBefore");
+    if ($('.transcriptletAfter').length === 0){
+        $('#nextTranscriptlet').hide();
+    }
+    else {
+        $('#nextTranscriptlet').show();
+    }
+    if ($('.transcriptletBefore').length === 0){
+        $('#previousTranscriptlet').hide();
+    }
+    else {
+        $('#previousTranscriptlet').show();
+    }
+}
+
+/**
+ * Aligns images and workspace using defined dimensions.
+ *
+ * @see maintainWorkspace()
+*/
+function adjustImgs(positions) {
+    //move background images above and below the workspace
+    var lineToMakeActive = $(".lineColIndicator[pair='" + positions.activeLine + "']:first");
+    var topImageHeight = $("#imgTop img").height();
+    $("#imgTop")
+        .animate({
+            "height": positions.imgTopHeight + "%"
+            }, 250)
+        .find("img").animate({
+            top: positions.topImgPositionPx + "px",
+            left: "0px"
+        }, 250);
+    $("#imgTop .lineColIndicatorArea")
+        .animate({
+            top: positions.topImgPositionPx + "px",
+            left: "0px"
+        }, 250);
+    $("#imgBottom").find("img")
+        .animate({
+            top: positions.bottomImgPositionPx + "px",
+            left: "0px"
+        }, 250);
+    $("#imgBottom .lineColIndicatorArea")
+        .animate({
+            top: positions.bottomImgPositionPx + "px",
+            left: "0px"
+        }, 250);
+    if ($('.activeLine').hasClass('linesHidden')){
+        $('.activeLine').hide();
+    }
+    $(".lineColIndicator")
+        .removeClass('activeLine')
+        .css({
+            "box-shadow": "none",
+            "background-color":"transparent"
+        });
+    lineToMakeActive.addClass("activeLine");
+    // use the active line color to give the active line a little background color
+    // to make it stand out if the box shadow is not enough.
+    var activeLineColor = colorThisTime.replace(".4", ".2");
+    $('.activeLine').css({
+        'box-shadow': '0px 0px 15px 8px ' + colorThisTime
+    });
+}
+
+/* Update the line information of the line currently focused on, then load the focus to a line that was clicked on */
+function loadTranscriptlet(lineid){
+    var currentLineServerID = tpen.focusItem[1].attr("lineserverid");
+    if ($('#transcriptlet_' + lineid).length > 0){
+        if (tpen.user.current){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
-                updateLine(lineToUpdate, "no");
-                updatePresentation($('#transcriptlet_' + lineid));
-            }
-            else{
-            var captionText1 = $("#captionsText").html();
-                $("#captionsText").html("You are not logged in.");
-                $('#captionsText').css("background-color", 'red');
-                setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
-                setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
-                setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText1); }, 1500);
-            }
+            updateLine(lineToUpdate, "no");
+            updatePresentation($('#transcriptlet_' + lineid));
+        }
+        else {
+        var captionText1 = $("#captionsText").html();
+            $("#captionsText").html("You are not logged in.");
+            $('#captionsText').css("background-color", 'red');
+            setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
+            setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
+            setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText1); }, 1500);
+        }
+    }
+    else { //blink a caption warning
+        var captionText = $("#captionsText").html();
+        $("#captionsText").html("Cannot load this line.");
+        $('#captionsText').css("background-color", 'red');
+        setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
+        setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
+        setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText); }, 1500);
+    }
+}
 
-            }
-            else{ //blink a caption warning
-            var captionText = $("#captionsText").html();
-                $("#captionsText").html("Cannot load this line.");
-                $('#captionsText').css("background-color", 'red');
-                setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
-                setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
-                setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText); }, 1500);
-            }
-            }
-
-            /*
+/*
              * The UI control for going the the next transcriptlet in the transcription.
              */
-            function nextTranscriptlet() {
-            var nextID = parseInt(focusItem[1].attr('lineID')) + 1;
-                var currentLineServerID = focusItem[1].attr("lineserverid");
-                if ($('#transcriptlet_' + nextID).length > 0){
-            if (loggedInUser){
-            var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']")
-                updateLine(lineToUpdate, "no");
-                updatePresentation($('#transcriptlet_' + nextID));
-            }
-            else{
+function nextTranscriptlet() {
+    var nextID = parseInt(tpen.focusItem[1].attr('lineID')) + 1;
+    var currentLineServerID = tpen.focusItem[1].attr("lineserverid");
+    if ($('#transcriptlet_' + nextID).length > 0){
+        if (tpen.user.current){
+            var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
+            updateLine(lineToUpdate, "no");
+            updatePresentation($('#transcriptlet_' + nextID));
+        }
+        else {
             var captionText1 = $("#captionsText").html();
-                $("#captionsText").html("You are not logged in.");
-                $('#captionsText').css("background-color", 'red');
-                setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
-                setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
-                setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText1); }, 1500);
-            }
+            $("#captionsText").html("You are not logged in.");
+            $('#captionsText').css("background-color", 'red');
+            setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
+            setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
+            setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText1); }, 1500);
+        }
+    }
+    else { //blink a caption warning
+        var captionText = $("#captionsText").html();
+        $("#captionsText").html("You are on the last line! ");
+        $('#captionsText').css("background-color", 'red');
+        setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
+        setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
+        setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText); }, 1500);
+    }
+}
 
-            }
-            else{ //blink a caption warning
-            var captionText = $("#captionsText").html();
-                $("#captionsText").html("You are on the last line! ");
-                $('#captionsText').css("background-color", 'red');
-                setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
-                setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
-                setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText); }, 1500);
-            }
-            }
-
-            /*
+/*
              * The UI control for going the the previous transcriptlet in the transcription.
              */
-            function previousTranscriptlet() {
-            var prevID = parseFloat(focusItem[1].attr('lineID')) - 1;
-                var currentLineServerID = focusItem[1].attr("lineServerID");
-                //var currentLineText = focusItem[1].find('textarea').val();
-                if (prevID >= 0){
-            if (loggedInUser){
+function previousTranscriptlet() {
+    var prevID = parseFloat(tpen.focusItem[1].attr('lineID')) - 1;
+    var currentLineServerID = tpen.focusItem[1].attr("lineServerID");
+    if (prevID >= 0){
+        if (tpen.user.current){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
-                updateLine(lineToUpdate, "no");
-                updatePresentation($('#transcriptlet_' + prevID));
-            }
-            else{
+            updateLine(lineToUpdate, "no");
+            updatePresentation($('#transcriptlet_' + prevID));
+        }
+        else {
             var captionText1 = $("#captionsText").html();
-                $("#captionsText").html("You are not logged in.");
-                $('#captionsText').css("background-color", 'red');
-                setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
-                setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
-                setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText1); }, 1500);
-            }
+            $("#captionsText").html("You are not logged in.");
+            $('#captionsText').css("background-color", 'red');
+            setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
+            setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
+            setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText1); }, 1500);
+        }
+    }
+    else {
+        //captions already say "You are on the first line"
+    }
+}
 
-            }
-            else{
-            //captions already say "You are on the first line"
-            }
-            }
-
-
-            function scrub(thisText){
-            var workingText = $("<div/>").text(thisText).html();
-                var encodedText = [workingText];
-                if (workingText.indexOf("&gt;") > - 1){
-            var open = workingText.indexOf("&lt;");
-                var beginTags = new Array();
-                var endTags = new Array();
-                var i = 0;
-                while (open > - 1){
+function scrub(thisText){
+    var workingText = $("<div/>").text(thisText).html();
+    var encodedText = [workingText];
+    if (workingText.indexOf("&gt;") > - 1){
+        var open = workingText.indexOf("&lt;");
+        var beginTags = new Array();
+        var endTags = new Array();
+        var i = 0;
+        while (open > - 1){
             beginTags[i] = open;
-                var close = workingText.indexOf("&gt;", beginTags[i]);
-                if (close > - 1){
-            endTags[i] = (close + 4);
+            var close = workingText.indexOf("&gt;", beginTags[i]);
+            if (close > - 1){
+                endTags[i] = (close + 4);
             } else {
-            beginTags[0] = null;
-                break; }
+                beginTags[0] = null;
+                break;
+            }
             open = workingText.indexOf("&lt;", endTags[i]);
-                i++;
-            }
-            //use endTags because it might be 1 shorter than beginTags
-            var oeLen = endTags.length;
-                encodedText = [workingText.substring(0, beginTags[0])];
-                for (i = 0; i < oeLen; i++){
+            i++;
+        }
+        //use endTags because it might be 1 shorter than beginTags
+        var oeLen = endTags.length;
+        encodedText = [workingText.substring(0, beginTags[0])];
+        for (i = 0; i < oeLen; i++){
             encodedText.push("<span class='previewTag'>",
-                workingText.substring(beginTags[i], endTags[i]),
-                "</span>");
-                if (i != oeLen - 1){
-            encodedText.push(workingText.substring(endTags[i], beginTags[i + 1]));
+            workingText.substring(beginTags[i], endTags[i]),"</span>");
+            if (i !== oeLen - 1){
+                encodedText.push(workingText.substring(endTags[i], beginTags[i + 1]));
             }
-            }
-            if (oeLen > 0)encodedText.push(workingText.substring(endTags[oeLen - 1]));
-            }
-            return encodedText.join("");
-            }
+        }
+        if (oeLen > 0){
+            encodedText.push(workingText.substring(endTags[oeLen - 1]));
+        }
+    }
+    return encodedText.join("");
+}
 
+/**
+ *
+ * Allows workspace to be moved up and down on the screen.
+ * Requires shift key to be held down.
+ */
+function moveWorkspace(evt){
+    $("#imgTop,#imgBottom,#imgBottom img").addClass('noTransition');
+    var startImgTop = $("#imgTop").height();
+    var startImgBottom = $("#imgBottom img").position().top;
+    var startImgBottomH = $("#imgBottom").height();
+    var mousedownPosition = evt.pageY;
+    evt.preventDefault();
+    $(dragHelper).appendTo("body");
+    $(document)
+    .disableSelection()
+    .mousemove(function(event){
+        var imgBtmSpot = startImgBottom - (event.pageY - mousedownPosition);
+        $("#imgTop").height(startImgTop + event.pageY - mousedownPosition);
+        $("#imgBottom").css({
+            "height": startImgBottomH - (event.pageY - mousedownPosition)
+        })
+        .find("img").css({
+            "top"   : startImgBottom - (event.pageY - mousedownPosition)
+        });
+        $("#imgBottom .lineColIndicatorArea").css("top", startImgBottom - (event.pageY - mousedownPosition) + "px");
+        $("#dragHelper").css({
+            top :   event.pageY - 90,
+            left:   event.pageX - 90
+        });
+    })
+    .mouseup(function(){
+        $("#dragHelper").remove();
+        $("#imgTop,#imgBottom,#imgBottom img").removeClass('noTransition');
+        $(document)
+            .enableSelection()
+            .unbind("mousemove");
+        isUnadjusted = false;
+    });
+}
 
-            /**
-             *
-             * Allows workspace to be moved up and down on the screen.
-             * Requires shift key to be held down.
-             */
-            function moveWorkspace(evt){
-            $("#imgTop,#imgBottom,#imgBottom img").addClass('noTransition');
-                var startImgTop = $("#imgTop").height();
-                var startImgBottom = $("#imgBottom img").position().top;
-                var startImgBottomH = $("#imgBottom").height();
-                var mousedownPosition = evt.pageY;
-                evt.preventDefault();
-                $(dragHelper).appendTo("body");
-                $(document)
-                .disableSelection()
-                .mousemove(function(event){
+/* Start event listening to move the image in the transcirption interface */
+function startMoveImg(){
+    if ($(".transcriptlet:first").hasClass("moveImage")){
+        $("#moveImage").removeClass("selected");
+        $(".transcriptlet").removeClass("moveImage");
+        $(".transcriptlet").children("textarea").removeAttr("disabled");
+        $("#imgTop, #imgBottom").css("cursor", "default");
+        $("#imgTop,#imgBottom").unbind("mousedown");
+    }
+    else {
+        $("#moveImage").addClass("selected");
+        $(".transcriptlet").addClass("moveImage");
+        $(".transcriptlet").children("textarea").attr("disabled", "");
+        $("#imgTop, #imgBottom").css("cursor", "url(" + "images/open_grab.png),auto");
+        $("#imgTop,#imgBottom").mousedown(function(event){moveImg(event); });
+    }
+}
 
-                var imgBtmSpot = startImgBottom - (event.pageY - mousedownPosition);
-                    $("#imgTop").height(startImgTop + event.pageY - mousedownPosition);
-                    $("#imgBottom").css({
-                "height": startImgBottomH - (event.pageY - mousedownPosition)
-                }).find("img").css({
-                "top"   : startImgBottom - (event.pageY - mousedownPosition)
-                });
-                    $("#imgBottom .lineColIndicatorArea").css("top", startImgBottom - (event.pageY - mousedownPosition) + "px");
-                    $("#dragHelper").css({
-                top :   event.pageY - 90,
-                    left:   event.pageX - 90
-                });
-//            if(!event.altKey) unShiftInterface();
-                })
-                .mouseup(function(){
-                $("#dragHelper").remove();
-                    $("#imgTop,#imgBottom,#imgBottom img").removeClass('noTransition');
-                    $(document)
-                    .enableSelection()
-                    .unbind("mousemove");
-                    isUnadjusted = false;
-                });
-            };
-                /* Start event listening to move the image in the transcirption interface */
-                    function startMoveImg(){
-                    if ($(".transcriptlet:first").hasClass("moveImage")){
-                    $("#moveImage").removeClass("selected");
-                        $(".transcriptlet").removeClass("moveImage");
-                        $(".transcriptlet").children("textarea").removeAttr("disabled");
-                        $("#imgTop, #imgBottom").css("cursor", "default");
-                        $("#imgTop,#imgBottom").unbind("mousedown");
-                    }
-                    else{
-                    $("#moveImage").addClass("selected");
-                        $(".transcriptlet").addClass("moveImage");
-                        $(".transcriptlet").children("textarea").attr("disabled", "");
-                        $("#imgTop, #imgBottom").css("cursor", "url(" + "images/open_grab.png),auto");
-                        $("#imgTop,#imgBottom").mousedown(function(event){moveImg(event); });
-                    }
+/**
+* Allows manuscript image to be moved around.
+* Requires shift key to be held down.
+* Synchronizes movement of top and bottom images.
+* Bookmark bounding box moves with top image.
+* @param event Event
+*/
+function moveImg(event){
+    var startImgPositionX = parseFloat($("#imgTop img").css("left"));
+    var startImgPositionY = parseInt($("#imgTop img").css("top"));
+    var startBottomImgPositionX = parseInt($("#imgBottom img").css("left"));
+    var startBottomImgPositionY = parseInt($("#imgBottom img").css("top"));
+    var mousedownPositionX = event.pageX;
+    var mousedownPositionY = event.pageY;
+    event.preventDefault();
+    $("#imgTop img,#imgBottom img,#imgTop .lineColIndicatorArea, #imgBottom .lineColIndicatorArea, #bookmark").addClass('noTransition');
+    $("#imgTop, #imgBottom").css("cursor", "url(images/close_grab.png),auto");
+    $(document)
+    .disableSelection()
+    .mousemove(function(event){
+        $("#imgTop img").css({
+            top :   startImgPositionY + event.pageY - mousedownPositionY,
+            left:   startImgPositionX + event.pageX - mousedownPositionX
+        });
+        $("#imgTop .lineColIndicatorArea").css({
+            top :   startImgPositionY + event.pageY - mousedownPositionY,
+            left:   startImgPositionX + event.pageX - mousedownPositionX
+        });
+        $("#imgBottom img").css({
+            top :   startBottomImgPositionY + event.pageY - mousedownPositionY,
+            left:   startBottomImgPositionX + event.pageX - mousedownPositionX
+        });
+        $("#imgBottom .lineColIndicatorArea").css({
+            top :   startBottomImgPositionY + event.pageY - mousedownPositionY,
+            left:   startBottomImgPositionX + event.pageX - mousedownPositionX
+        });
+        if (!event.altKey) unShiftInterface();
+    })
+    .mouseup(function(){
+        $("#dragHelper").remove();
+        $("#imgTop img,#imgBottom img,#imgTop .lineColIndicatorArea, #imgBottom .lineColIndicatorArea, #bookmark").removeClass('noTransition');
+        if (!tpen.screen.isMagnifying)$("#imgTop, #imgBottom").css("cursor", "url(images/open_grab.png),auto");
+        $(document)
+        .enableSelection()
+        .unbind("mousemove");
+        isUnadjusted = false;
+    });
+}
 
-                    }
-
-                /**
-                 * Allows manuscript image to be moved around.
-                 * Requires shift key to be held down.
-                 * Synchronizes movement of top and bottom images.
-                 * Bookmark bounding box moves with top image.
-                 */
-                function moveImg(event){
-                var startImgPositionX = parseFloat($("#imgTop img").css("left"));
-                    var startImgPositionY = parseInt($("#imgTop img").css("top"));
-                    var startBottomImgPositionX = parseInt($("#imgBottom img").css("left"));
-                    var startBottomImgPositionY = parseInt($("#imgBottom img").css("top"));
-                    var mousedownPositionX = event.pageX;
-                    var mousedownPositionY = event.pageY;
-                    event.preventDefault();
-                    $("#imgTop img,#imgBottom img,#imgTop .lineColIndicatorArea, #imgBottom .lineColIndicatorArea, #bookmark").addClass('noTransition');
-                    $("#imgTop, #imgBottom").css("cursor", "url(images/close_grab.png),auto");
-                    $(document)
-                    .disableSelection()
-                    .mousemove(function(event){
-                    $("#imgTop img").css({
-                    top :   startImgPositionY + event.pageY - mousedownPositionY,
-                        left:   startImgPositionX + event.pageX - mousedownPositionX
-                    });
-                        $("#imgTop .lineColIndicatorArea").css({
-                    top :   startImgPositionY + event.pageY - mousedownPositionY,
-                        left:   startImgPositionX + event.pageX - mousedownPositionX
-                    });
-                        $("#imgBottom img").css({
-                    top :   startBottomImgPositionY + event.pageY - mousedownPositionY,
-                        left:   startBottomImgPositionX + event.pageX - mousedownPositionX
-                    });
-                        $("#imgBottom .lineColIndicatorArea").css({
-                    top :   startBottomImgPositionY + event.pageY - mousedownPositionY,
-                        left:   startBottomImgPositionX + event.pageX - mousedownPositionX
-                    });
-                        if (!event.altKey) unShiftInterface();
-                    })
-                    .mouseup(function(){
-                    $("#dragHelper").remove();
-                        $("#imgTop img,#imgBottom img,#imgTop .lineColIndicatorArea, #imgBottom .lineColIndicatorArea, #bookmark").removeClass('noTransition');
-                        if (!isMagnifying)$("#imgTop, #imgBottom").css("cursor", "url(images/open_grab.png),auto");
-                        $(document)
-                        .enableSelection()
-                        .unbind("mousemove");
-                        isUnadjusted = false;
-                    });
-                };
                     function restoreWorkspace(){
                     $("#imgBottom").show();
                         $("#imgTop").show();
@@ -1623,7 +1627,6 @@ focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
                             }
                             $(".line, .parsing, .adjustable,.parsingColumn").remove();
                                 isUnadjusted = isFullscreen = true;
-                                //currentFocus = "transcription" + focusItem[1].attr('id').substring(1);
                                 if ($("#trascriptionTemplate").hasClass("ui-resizable")){
                             $("#transcriptionTemplate").resizable('destroy');
                             }
@@ -1657,7 +1660,7 @@ focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
                                 $.each($(".lineColOnLine"), function(){
                                 $(this).css("line-height", $(this).height() + "px");
                                 });
-                                if (focusItem[0] == null && focusItem[1] == null){
+                                if (tpen.focusItem[0] == null && tpen.focusItem[1] == null){
                             updatePresentation($("#transcriptlet_1"));
                             }
 
@@ -2276,7 +2279,7 @@ focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
                             function closeTag(tagName, fullTag){
                             // Do not create for self-closing tags
                             if (tagName.lastIndexOf("/") == (tagName.length - 1)) return false;
-                                var tagLineID = focusItem[1].attr("lineserverid");
+                                var tagLineID = tpen.focusItem[1].attr("lineserverid");
                                 var closeTag = document.createElement("div");
                                 var tagID;
                                 $.get("tagTracker", {
@@ -2294,7 +2297,7 @@ focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
                                     //"data-folio":   folio,
                                     "data-tagID":   tagID
                                 }).text("/" + tagName);
-                                    focusItem[1].children(".xmlClosingTags").append(closeTag);
+                                    tpen.focusItem[1].children(".xmlClosingTags").append(closeTag);
                                 });
                             }
 
@@ -2302,7 +2305,7 @@ focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
                             {
                             //console.log("Add Char Called");
                             var closeTag = (closingTag == undefined) ? "" : closingTag;
-                                var e = focusItem[1].find('textarea')[0];
+                                var e = tpen.focusItem[1].find('textarea')[0];
                                 if (e != null) {
                             //Data.makeUnsaved();
                             return setCursorPosition(e, insertAtCursor(e, theChar, closeTag));
@@ -2410,7 +2413,7 @@ focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
                                 if (parsing == "parsing"){
                             $(".pageTurnCover").show();
                                 fullPage();
-                                focusItem = [null, null];
+                                tpen.focusItem = [null, null];
                                 loadTranscriptionCanvas(transcriptionFolios[canvasToJumpTo], parsing);
                                 setTimeout(function(){
                                 hideWorkspaceForParsing();
@@ -2419,7 +2422,7 @@ focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
                             }
                             else{
                             currentFolio = folioNum;
-                                focusItem = [null, null];
+                                tpen.focusItem = [null, null];
                                 loadTranscriptionCanvas(transcriptionFolios[canvasToJumpTo], "");
                             }
                             }

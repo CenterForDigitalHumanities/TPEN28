@@ -113,15 +113,15 @@ public class JsonLDExporter {
       annotationList.element("proj", projID);
       annotationList.element("on", canvasID);
       annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
-      //annotationList.element("testing", "msid_creation");
+      annotationList.element("testing", "msid_creation");
       //String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
-      Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
+      //Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
       String[] otherContent;
-      if (pageDim == null) {
-         //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
-         pageDim = f.getImageDimension();
-      }
-      LOG.log(Level.INFO, "pageDim={0}", pageDim);
+//      if (pageDim == null) {
+//         //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
+//         pageDim = f.getImageDimension();
+//      }
+//      LOG.log(Level.INFO, "pageDim={0}", pageDim);
 
       Map<String, Object> result = new LinkedHashMap<>();
       result.put("@id", canvasID);
@@ -129,10 +129,10 @@ public class JsonLDExporter {
       result.put("label", f.getPageName());
       int canvasHeight = 1000;
       result.put("height", canvasHeight);
-      if (pageDim != null) {
-         int canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
-         result.put("width", canvasWidth);
-      }
+//      if (pageDim != null) {
+//         int canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
+//         result.put("width", canvasWidth);
+//      }
       List<Object> resources = new ArrayList<>();
       List<Object> images = new ArrayList<>();
       Map<String, Object> imageAnnot = new LinkedHashMap<>();
@@ -140,10 +140,10 @@ public class JsonLDExporter {
       imageAnnot.put("motivation", "sc:painting");
       Map<String, Object> imageResource = buildQuickMap("@id", String.format("%s%s&user=%s", Folio.getRbTok("SERVERURL"), f.getImageURLResize(), u.getUname()), "@type", "dctypes:Image", "format", "image/jpeg");
 //      imageResource.put("iiif", ?);
-      if (pageDim != null) {
-         imageResource.put("height", pageDim.height);
-         imageResource.put("width", pageDim.width);
-      }
+     // if (pageDim != null) {
+         imageResource.put("height", 2000 ); //pageDim.height
+         imageResource.put("width", 1600 ); //pageDim.width
+     // }
       imageAnnot.put("resource", imageResource);
       imageAnnot.put("on", canvasID);
       images.add(imageAnnot);
@@ -163,8 +163,10 @@ public class JsonLDExporter {
                lineAnnot.put("tpen_line_id", lineURI);
                lineAnnot.put("@type", "oa:Annotation");
                lineAnnot.put("motivation", "oad:transcribing"); 
-               lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(rs.getString("text"))));
-               lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, rs.getInt("x"), rs.getInt("y"), rs.getInt("width"), rs.getInt("height")));               
+               lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", rs.getString("text")));
+               // ^ESAPI.encoder().decodeForHTML(rs.getString("text"))
+               lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, rs.getInt("x"), rs.getInt("y"), rs.getInt("width"), rs.getInt("height"))); 
+               lineAnnot.put("testing", "msid_creation");
                resources.add(lineAnnot);
 
                String note = rs.getString("comment");
@@ -175,7 +177,7 @@ public class JsonLDExporter {
                   noteAnnot.put("motivation", "oa:commenting");
                   noteAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", note));
                   noteAnnot.put("on", lineURI); //TODO: should this be on an @id of an annotation? If so, that complicates how i want to do the bulk.
-                  //noteAnnot.put("testing", "msid_creation");
+                  noteAnnot.put("testing", "msid_creation");
                   resources.add(noteAnnot);
                   //TODO: Save the annotation, add the real @id field, add into resources
                }

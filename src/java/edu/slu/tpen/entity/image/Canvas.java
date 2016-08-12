@@ -185,12 +185,12 @@ public class Canvas {
         reader.close();
         connection.disconnect();
         JSONArray theLists = JSONArray.fromObject(sb.toString());
-        System.out.println("Found "+theLists.size()+" lists matching those params.");
+        //System.out.println("Found "+theLists.size()+" lists matching those params.");
         String[] annotationLists = new String[theLists.size()];
         for(int i=0; i<theLists.size(); i++){
             JSONObject currentList = theLists.getJSONObject(i);
             String id = currentList.getString("@id");
-            System.out.println("List ID: "+id);
+            //System.out.println("List ID: "+id);
             annotationLists[i] = id;
         }
         return annotationLists;

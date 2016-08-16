@@ -153,7 +153,7 @@ public class Canvas {
      * @param projectID : the projectID the canvas belongs to
      * @param canavsID: The canvas ID the annotation list is on
      * @param UID: The current UID of the user in session.
-     * @return : The annotation list.
+     * @return : The annotation lists @id property, not the object.  Meant to look like an otherContent field.
      */
     public static String[] getAnnotationListsForProject(Integer projectID, String canvasID, Integer UID) throws MalformedURLException, IOException {
         URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/getAnnotationByProperties.action");

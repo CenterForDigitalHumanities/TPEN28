@@ -110,7 +110,7 @@ function resetTranscription(){
 }
 
 /* Populate the split page for Text Preview.  These are the transcription lines' text. */
-function createPreviewPagesfunction(){
+function createPreviewPages(){
     $(".previewPage").remove();
         var pageLabel = "";
         var transcriptionFolios = tpen.manifest.sequences[0].canvases;
@@ -327,9 +327,9 @@ function loadTranscription(){
         });
         populateSpecialCharacters(activeProject.projectButtons);
         populateXML(activeProject.xml);
-    }
+	}
     else if (isJSON(userTranscription)){
-        userTranscription = JSON.parse(userTranscription);
+        tpen.manifest = userTranscription = JSON.parse(userTranscription);
         if (userTranscription.sequences[0] !== undefined
             && userTranscription.sequences[0].canvases !== undefined
             && userTranscription.sequences[0].canvases.length > 0){
@@ -516,17 +516,17 @@ function loadTranscription(){
                         count++;
                         if (this.otherContent){
                             if (this.otherContent.length > 0){
-                                annoLists.push(this.otherContent[0]);
+                                // all's well
                             }
                             else {
                                 //otherContent was empty (IIIF says otherContent
                                 //should have URI's to AnnotationLists).  We will
                                 //check the store for these lists still.
-                                annoLists.push("empty");
+                                console.warn("`otherContent` exists, but has no content.");
                             }
                         }
                         else {
-                            annoLists.push("noList");
+                            console.warn("`otherContent` does not exist in this Manifest.");
                         }
                     });
                     loadTranscriptionCanvas(transcriptionFolios[0], "");

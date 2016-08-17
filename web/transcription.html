@@ -544,12 +544,12 @@
             if ($(this).hasClass("ui-state-active")){
                 $('#zoomDiv').hide();
                 restoreWorkspace()
-                isMagnifying = false;
+                tpen.screen.isMagnifying = false;
                 $(document).off("mousemove");
                 $(this).removeClass("ui-state-active");
             } else {
                 $(this).addClass("ui-state-active");
-                isMagnifying=true;
+                tpen.screen.isMagnifying=true;
                 magnify($(this).attr("magnifyImg"),event);
             }
         });
@@ -562,15 +562,15 @@
         });
         
         document.addEventListener("mousewheel", function(e){
-            if(isMagnifying){
+            if(tpen.screen.isMagnifying){
                 event.preventDefault();
                 var wDelta = e.wheelDelta < 0 ? 'down' : 'up';
                 if(wDelta === "up"){
-                    zoomMultiplier += .4;
+                    tpen.screen.zoomMultiplier += .4;
                     $(document).mousemove();
                 }
                 else{
-                    zoomMultiplier -= .4;
+                    tpen.screen.zoomMultiplier -= .4;
                     $(document).mousemove();
                 }
             }
@@ -580,12 +580,12 @@
             if(isMagnifying){
                 //back out
                 if ((event.which === 109) || (event.which === 189) || (event.which === 173) ){ //173  = - in firefox
-                    zoomMultiplier -= .4;
+                    tpen.screen.zoomMultiplier -= .4;
                     $(document).mousemove();
                 }
                 //ease in
                 else if ((event.which === 107) || (event.which === 187) || (event.which === 61)){ // 61 = + in firefox
-                    zoomMultiplier += .4;
+                    tpen.screen.zoomMultiplier += .4;
                     $(document).mousemove();
                 }
                 //esc
@@ -615,7 +615,6 @@
             }
             else if (event.which === 27){
                 //Esc during any active tool means stop the tool.  In this case, our only worry is moving the image around.  We may add others later. 
-                ////console.log("ESC DOWN");
                 $("#imgTop, #imgBottom").unbind("mousemove");
                 $("#imgTop, #imgBottom").unbind("mousedown");
                 $("#imgTop, #imgBottom").unbind("mouseup");
@@ -633,7 +632,6 @@
                 }
             }
             else{
-                ////console.log(event.which+" DOWN");
             }
             })
             .keyup(function(event){
@@ -641,11 +639,8 @@
                     $("#imgTop,#imgBottom").unbind("mousemove").css("cursor", "default");
                     $("#imgTop, #imgBottom").unbind("mousedown");
                     $("#imgTop, #imgBottom").unbind("mouseup");
-                    //restoreTransition();
-                    //unShiftInterface();
                 }
                 else{
-                   // //console.log(event.which+' UP');
                 }
             });
             
@@ -767,7 +762,7 @@
                                         $newCol.remove();
                                         return true;
                                     }
-                                    isAddingLines = true;
+                                    tpen.screen.isAddingLines = true;
                                     var newY = parseFloat($newCol.css("top")) / $("#imgTop").height() * 100;
                                     var newX = parseFloat($newCol.css("left")) / $("#imgTop").width() * 100;
                                     var newH = $newCol.height() / $("#imgTop").height()* 100;
@@ -821,8 +816,6 @@
                         click: function() {
                           removeColumn($(this));
                           $(this).hide("blind", 250, function() {
-                            //$("#destroyColumnInst").slideUp();
-                            //$("#destroyColumn").removeClass("ui-state-active");
                           });
                         }
                       });
@@ -882,7 +875,6 @@
                               var thisLineID = thisLine.attr("lineserverid");
                               var thisLineW = parseFloat(thisLine.attr("linewidth")) * (newW / originalW);
                               thisLine.attr("linewidth", thisLineW);
-                              //console.log("update line with ID: "+thisLineID);
                               updateLine(thisLine);       
                               $("#progress").html("Line Saved").delay(3000).fadeOut(1000);
                               $("#lineResizing").delay(3000).fadeOut(1000);
@@ -891,10 +883,9 @@
                         }
                     }
                     if (thisID == "addLines"){
-                        //writeLines($("#imgTop img"));
                         $("#addLines").addClass("active");
                         $("#removeLines").removeClass("active");
-                        isAddingLines = true;
+                        tpen.screen.isAddingLines = true;
                         $("#imgTop").children(".line").addClass("parsing").removeClass("line");
                         $(".parsing").bind({
                             mouseenter: function(){
@@ -913,8 +904,7 @@
                         $("#removeLines").addClass("active");
                         $("#addLines").removeClass("active");
                         //prep for column adjustment
-                        //writeLines($("#imgTop img"));
-                        isAddingLines = false;
+                        tpen.screen.isAddingLines = false;
                         $(".parsing").bind({
                             mouseenter: function(){
                                 applyRuler($(this));
@@ -935,7 +925,6 @@
         $(".accordion").children("span")
         .append("<span class='ui-icon ui-icon-triangle-1-e left'></span>")
         .click(function(event){
-        //if(!isMember && !permitParsing)return false;
         $("#imgTop").unbind("mousemove");
         $("#imgTop").unbind("mousedown");
         $("#imgTop").unbind("mouseup");
@@ -1215,7 +1204,7 @@
     function applyRuler(line){
             //var sRCbkp = selectRulerColor; //select Ruler Color backup
             $("#imageTip").html("Add a Line");
-            if(!isAddingLines){
+            if(!tpen.screen.isAddingLines){
                 if (line.attr("lineleft") == line.next("div").attr("lineleft")) {
                     line.next("div").addClass('deletable');
                 }
@@ -1256,7 +1245,7 @@
      * Hides ruler within parsing tool. Called on mouseleave .parsing.
      */
     function removeRuler(line){
-        if(!isAddingLines){$(".deletable").removeClass('deletable mergeable');}
+        if(!tpen.screen.isAddingLines){$(".deletable").removeClass('deletable mergeable');}
         //line.unbind('mousemove');
         $('#imageTip').hide();
         $('#ruler1').hide();
@@ -1267,7 +1256,7 @@
     function lineChange(e,event){
         //console.log("show parsing cover");
         $("#parsingCover").show();
-        if(isAddingLines){
+        if(tpen.screen.isAddingLines){
             //console.log("SPLIT LINE");
             splitLine(e,event);
         }

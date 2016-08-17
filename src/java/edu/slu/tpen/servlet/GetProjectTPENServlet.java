@@ -83,7 +83,7 @@ public class GetProjectTPENServlet extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-// Force PrintWriter to use UTF-8 encoded strings.
+        // Force PrintWriter to use UTF-8 encoded strings.
         response.setContentType("application/json; charset=UTF-8");
         //PrintWriter out = response.getWriter();
         PrintWriter out = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), "UTF8"), true);
@@ -105,43 +105,44 @@ public class GetProjectTPENServlet extends HttpServlet {
 //                    System.out.println("group Id ===== " + proj.getGroupID() + " is member " + group.isMember(uid));
                     if (group.isMember(uid) || isTPENAdmin) {
                         if (checkModified(request, proj)) {
-                            
                             jsonMap.put("project", gson.toJson(proj));
 //                            System.out.println("project json ====== " + gson.toJson(proj));
                             int projectID = proj.getProjectID();
-                            //get folio
                             Folio[] folios = proj.getFolios();
                             jsonMap.put("ls_fs", gson.toJson(folios));
 //                            System.out.println("folios json ========== " + gson.toJson(folios));
-                            //get manuscripts
                             List<JSONObject> ls_ms = new ArrayList();
                             Manuscript man = new Manuscript(folios[0].folioNumber);
                             String manifest_uri = man.getArchive(); //All the manifest URIs are stored in manuscript.archive field. See createProject servlets to see how/why.  
-                            if(manifest_uri.equals("")){
+                            if(manifest_uri.equals("")){ //Then it could be an old project or its a project where this was never set, we can set it now.   Instead of failing, try TPEN project url
+                                //For old projects manifest_data is just some string b/c we did not store the URL here previsouly.  We can detect this failure and instead
+                                //return the project/projectID url instead of the error!  FIXME: The database should reflect the real manifest URL.
+                                manifest_uri = Folio.getRbTok("SERVERURL")+"project/"+projID;
+                                //man.setArchive(Folio.getRbTok("SERVERURL")+"project/"+projID);
+                                //ls_ms.add(jo_error);
+                            }
+                            else if(manifest_uri.indexOf("http") < 0){ //then it is just some string, probably an old project.  Set a proper manifest link via a TPEN project url and try that.
+                                manifest_uri = Folio.getRbTok("SERVERURL")+"project/"+projID;
+                                //man.setArchive(Folio.getRbTok("SERVERURL")+"project/"+projID);
+                            }
+                            try{
+                                URL manifest_data = new URL(manifest_uri); //The generated or found URL could still fail...
+                                BufferedReader in = new BufferedReader(
+                                    new InputStreamReader(manifest_data.openStream())
+                                );
+                                String inputLine;
+
+                                while ((inputLine = in.readLine()) != null){
+                                    manifest_obj_str+= inputLine;
+                                }
+                                in.close();
+                                man_obj = JSONObject.fromObject(manifest_obj_str);
+                                ls_ms.add(man_obj);
+                            }
+                            catch (Exception e){
+                                jo_error.element("error" , "Could not resolve manifest.");
                                 ls_ms.add(jo_error);
                             }
-                            else{
-                                try{
-                                    URL manifest_data = new URL(manifest_uri);
-                                    BufferedReader in = new BufferedReader(
-                                        new InputStreamReader(manifest_data.openStream())
-                                    );
-                                    String inputLine;
-                                    
-                                    while ((inputLine = in.readLine()) != null){
-                                        manifest_obj_str+= inputLine;
-                                    }
-                                    in.close();
-                                    man_obj = JSONObject.fromObject(manifest_obj_str);
-                                    ls_ms.add(man_obj);
-                                }
-                                catch (Exception e){
-                                    jo_error.element("error" , "Could not resolve manifest.");
-                                    ls_ms.add(jo_error);
-                                }
-                            }
-                            
-                            
                             jsonMap.put("manifest", gson.toJson(ls_ms));
 //                            System.out.println("manuscript json ======= " + gson.toJson(ls_ms));
                             //get project header

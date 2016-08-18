@@ -111,7 +111,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                             Folio[] folios = proj.getFolios();
                             jsonMap.put("ls_fs", gson.toJson(folios));
 //                            System.out.println("folios json ========== " + gson.toJson(folios));
-                            List<JSONObject> ls_ms = new ArrayList();
+                            JSONObject manifest = new JSONObject();
                             Manuscript man = new Manuscript(folios[0].folioNumber);
                             String manifest_uri = man.getArchive(); //All the manifest URIs are stored in manuscript.archive field. See createProject servlets to see how/why.  
                             if(manifest_uri.equals("")){ //Then it could be an old project or its a project where this was never set, we can set it now.   Instead of failing, try TPEN project url
@@ -137,13 +137,13 @@ public class GetProjectTPENServlet extends HttpServlet {
                                 }
                                 in.close();
                                 man_obj = JSONObject.fromObject(manifest_obj_str);
-                                ls_ms.add(man_obj);
+                                manifest = man_obj;
                             }
                             catch (Exception e){
                                 jo_error.element("error" , "Could not resolve manifest.");
-                                ls_ms.add(jo_error);
+                                manifest = jo_error;
                             }
-                            jsonMap.put("manifest", gson.toJson(ls_ms));
+                            jsonMap.put("manifest", manifest.toString());
 //                            System.out.println("manuscript json ======= " + gson.toJson(ls_ms));
                             //get project header
                             String header = proj.getHeader();

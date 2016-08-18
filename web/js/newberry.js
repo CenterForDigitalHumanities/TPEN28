@@ -234,16 +234,16 @@ function loadTranscription(){
             url: url,
             type:"GET",
             success: function(activeProject){
-                var projectTools = activeProject.projectTool;
-                projectTools = JSON.parse(projectTools);
+                tpen.project.tools = activeProject.projectTool;
+                tpen.project.tools = JSON.parse(tpen.project.tools);
                 var count = 0;
                 var url = "";
-                var currentUser = activeProject.cuser;
-                var leaders = activeProject.ls_leader;
-                leaders = JSON.parse(leaders);
-                $.each(leaders, function(){
-                    if (this.UID === parseInt(currentUser)){
-                        tpen.user.IsAdmin = true;
+                tpen.user.current = activeProject.cuser;
+                tpen.project.leaders = activeProject.ls_leader;
+                tpen.project.leaders = JSON.parse(tpen.project.leaders);
+                $.each(tpen.project.leaders, function(){
+                    if (this.UID === parseInt(tpen.user.current)){
+                        tpen.user.isAdmin = true;
                         $("#parsingBtn").show();
                         var message = $('<span>This canvas has no lines. If you would like to create lines</span>'
                             + '<span style="color: blue;" onclick="hideWorkspaceForParsing()">click here</span>.'
@@ -272,15 +272,17 @@ function loadTranscription(){
                         count++;
                         if (this.otherContent){
                             if (this.otherContent.length > 0){
-                                annoLists.push(this.otherContent[0]);
+                                // all's well
                             }
                             else {
-                            //otherContent was empty (IIIF says otherContent should have URI's to AnnotationLists).  We will check the store for these lists still.
-                                annoLists.push("empty");
+                            //otherContent was empty (IIIF says otherContent should
+                            //have URI's to AnnotationLists).  We will check the
+                            //store for these lists still.
                             }
                         }
                         else {
-                            annoLists.push("noList");
+                            // no list at all, let's create a spot
+                            this.otherContent = [];
                         }
                     });
                     loadTranscriptionCanvas(transcriptionFolios[0], "");
@@ -293,10 +295,9 @@ function loadTranscription(){
                     $(".hideme").hide();
                     //load Iframes after user check and project information data call
                     loadIframes();
-                    //getProjectTools(projectID);
                 }
                 else {
-                //ERROR! It is a malformed transcription object.  There is no canvas sequence defined.
+                    throw new Error("This transcription object is malformed. No canvas sequence is defined.");
                 }
             },
             error: function(jqXHR, error, errorThrown) {
@@ -310,7 +311,7 @@ function loadTranscription(){
                 loadIframes();
             }
         });
-        $.each(projectTools, function(){
+        $.each(tpen.project.tools, function(){
             var splitHeight = window.innerHeight + "px";
             var toolLabel = this.name;
             var toolSource = this.url;
@@ -325,8 +326,8 @@ function loadTranscription(){
             $("#splitScreenTools").append(splitToolSelector);
             $(".iTool:last").after(splitTool);
         });
-        populateSpecialCharacters(activeProject.projectButtons);
-        populateXML(activeProject.xml);
+        populateSpecialCharacters(tpen.project.buttons);
+        populateXML(tpen.project.xml);
 	}
     else if (isJSON(userTranscription)){
         tpen.manifest = userTranscription = JSON.parse(userTranscription);
@@ -346,15 +347,17 @@ function loadTranscription(){
                 count++;
                 if (this.otherContent){
                     if (this.otherContent.length > 0){
-                        annoLists.push(this.otherContent[0]);
+                        // all's well
                     }
                     else {
-                        //otherContent was empty (IIIF says otherContent should have URI's to AnnotationLists).  We will check the store for these lists still.
-                        annoLists.push("empty");
+                        //otherContent was empty (IIIF says otherContent should
+                        //have URI's to AnnotationLists).  We will check the
+                        //store for these lists still.
                     }
                 }
                 else {
-                    annoLists.push("noList");
+                    // no property at all, create one for storing new annotations
+                    this.otherContent=[];
                 }
             });
             loadTranscriptionCanvas(transcriptionFolios[0], "");
@@ -367,7 +370,7 @@ function loadTranscription(){
             $(".hideme").hide();
         }
         else {
-        //ERROR!  It is a valid JSON object, but it is malformed and cannot be read as a transcription object.
+            throw new Error("This is a valid JSON object, but it cannot be read as a transcription object.");
         }
         //load Iframes after user check and project information data call
         loadIframes();
@@ -395,79 +398,62 @@ function loadTranscription(){
                 url: url,
                 type:"GET",
                 success: function(activeProject){
-                    var projectTools = activeProject.projectTool;
-                    projectTools = JSON.parse(projectTools);
+                    tpen.project.tools = activeProject.projectTool;
+                    tpen.project.tools = JSON.parse(projectTools);
                     var count = 0;
                     var url = "";
-                    if (activeProject.ls_ms[0] !== undefined){
-                        var getURLfromThis = activeProject.ls_ms;
-                        getURLfromThis = JSON.parse(getURLfromThis);
-                        url = getURLfromThis[0].archive;
-                        $.ajax({
-                            url: url,
-                            success: function(projectData){
-                                if (projectData.sequences[0] !== undefined
-                                    && projectData.sequences[0].canvases !== undefined
-                                    && projectData.sequences[0].canvases.length > 0){
-                                    transcriptionFolios = projectData.sequences[0].canvases;
-                                    scrubFolios();
-                                    var count = 1;
-                                    $.each(transcriptionFolios, function(){
-                                        $("#pageJump").append("<option folioNum='" + count
-                                            + "' class='folioJump' val='" + this.label + "'>"
-                                            + this.label + "</option>");
-                                        $("#compareJump").append("<option class='compareJump' folioNum='"
-                                            + count + "' val='" + this.label + "'>"
-                                            + this.label + "</option>");
-                                        count++;
-                                        if (this.otherContent){
-                                            if (this.otherContent.length > 0){
-                                                annoLists.push(this.otherContent[0]);
-                                            }
-                                            else {
-                                                // otherContent was empty (IIIF says otherContent
-                                                // should have URI's to AnnotationLists).  We will
-                                                // check the store for these lists still.
-                                                annoLists.push("empty");
-                                            }
-                                        }
-                                        else {
-                                            annoLists.push("noList");
-                                        }
-                                    });
-                                    loadTranscriptionCanvas(transcriptionFolios[0], "");
-                                    var projectTitle = projectData.label;
-                                    $("#trimTitle").html(projectTitle);
-                                    $("#trimTitle").attr("title", projectTitle);
-                                    $('#transcriptionTemplate').css("display", "inline-block");
-                                    $('#setTranscriptionObjectArea').hide();
-                                    $(".instructions").hide();
-                                    $(".hideme").hide();
+                    if (activeProject.manifest !== undefined){
+                        var manifest = activeProject.manifest;
+                        tpen.manifest = JSON.parse(manifest);
+                        if (tpen.manifest.sequences[0] !== undefined
+                            && tpen.manifest.sequences[0].canvases !== undefined
+                            && tpen.manifest.sequences[0].canvases.length > 0){
+                            scrubFolios();
+                            var count = 1;
+                            $.each(tpen.manifest.sequences[0].canvases, function(){
+                                $("#pageJump").append("<option folioNum='" + count
+                                    + "' class='folioJump' val='" + this.label + "'>"
+                                    + this.label + "</option>");
+                                $("#compareJump").append("<option class='compareJump' folioNum='"
+                                    + count + "' val='" + this.label + "'>"
+                                    + this.label + "</option>");
+                                count++;
+                                if (this.otherContent){
+                                    if (this.otherContent.length > 0){
+                                        // all's well
+                                    }
+                                    else {
+                                        // otherContent was empty (IIIF says otherContent
+                                        // should have URI's to AnnotationLists).  We will
+                                        // check the store for these lists still.
+                                    }
                                 }
                                 else {
-                                //ERROR! It is a malformed transcription object.  There is no canvas sequence defined.
+                                    // no otherContent, so create one to hold new annotations
+                                    this.otherContent=[];
                                 }
-                                //load Iframes after user check and project information data call
-                                loadIframes();
-                            },
-                            error: function(jqXHR, error, errorThrown) {
-                                if (jqXHR.status && jqXHR.status > 400){
-                                    alert(jqXHR.responseText);
-                                }
-                                else {
-                                    alert("Something went wrong 2");
-                                }
-                                //load Iframes after user check and project information data call
-                                loadIframes();
-                            }
-                        });
+                            });
+                            loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[0], "");
+                            var projectTitle = tpen.manifest.label || tpen.manifest['@id'] || "unlabelled";
+                            $("#trimTitle").html(projectTitle);
+                            $("#trimTitle").attr("title", projectTitle);
+                            $('#transcriptionTemplate').css("display", "inline-block");
+                            $('#setTranscriptionObjectArea').hide();
+                            $(".instructions").hide();
+                            $(".hideme").hide();
+                        }
+                        else {
+                        //ERROR! It is a malformed transcription object.  There is no canvas sequence defined.
+                        }
+                        //load Iframes after user check and project information data call
+                        loadIframes();
                     }
                     else {
                         alert("No Manifest Found");
                         //load Iframes after user check and project information data call
                         loadIframes();
                     }
-                    $.each(projectTools, function(){
+                    $.each(tpen.project.tools, function(){
                         var splitHeight = window.innerHeight + "px";
                         var toolLabel = this.name;
                         var toolSource = this.url;
@@ -594,43 +580,43 @@ function loadTranscriptionCanvas(canvasObj, parsing){
     if (canvasObj.images[0].resource['@id'] !== undefined
         && canvasObj.images[0].resource['@id'] !== ""){ //Only one image
         var image = new Image();
-    $(image)
-    .on("load", function() {
-        $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
-        $("#imgTop img, #imgBottom img").css("width", "100%");
-        $("#imgBottom").css("height", "inherit");
-        $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
-        $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
-        originalCanvasHeight2 = $("#imgTop img").height();
-        originalCanvasWidth2 = $("#imgTop img").width();
-        drawLinesToCanvas(canvasObj, parsing);
-        $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
-        $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
-        $("#parseOptions").find(".tpenButton").removeAttr("disabled");
-        $("#parsingBtn").removeAttr("disabled");
-    })
-    .on("error", function(){
-        var image2 = new Image();
-        $(image2)
-        .on("load", function(){
-            $("#noLineWarning").hide();
+        $(image)
+        .on("load", function() {
             $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
             $("#imgTop img, #imgBottom img").css("width", "100%");
-            $('.transcriptionImage').attr('src', "images/missingImage.png");
-            $("#fullPageImg").attr("src", "images/missingImage.png");
-            $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
-            $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
-            $("#imgTop").css("height", "0%");
-            $("#imgBottom img").css("top", "0px");
             $("#imgBottom").css("height", "inherit");
-            $("#parsingButton").attr("disabled", "disabled");
-            alert("No image for this canvas or it could not be resolved.  Not drawing lines.");
-            $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
-            $("#parsingBtn").attr("disabled", "disabled");
+            $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
+            $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
+            originalCanvasHeight2 = $("#imgTop img").height();
+            originalCanvasWidth2 = $("#imgTop img").width();
+            drawLinesToCanvas(canvasObj, parsing);
+            $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
+            $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
+            $("#parseOptions").find(".tpenButton").removeAttr("disabled");
+            $("#parsingBtn").removeAttr("disabled");
         })
-        .attr("src", "images/missingImage.png");
-    })
-    .attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
+        .on("error", function(){
+            var image2 = new Image();
+            $(image2)
+            .on("load", function(){
+                $("#noLineWarning").hide();
+                $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
+                $("#imgTop img, #imgBottom img").css("width", "100%");
+                $('.transcriptionImage').attr('src', "images/missingImage.png");
+                $("#fullPageImg").attr("src", "images/missingImage.png");
+                $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
+                $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
+                $("#imgTop").css("height", "0%");
+                $("#imgBottom img").css("top", "0px");
+                $("#imgBottom").css("height", "inherit");
+                $("#parsingButton").attr("disabled", "disabled");
+                alert("No image for this canvas or it could not be resolved.  Not drawing lines.");
+                $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
+                $("#parsingBtn").attr("disabled", "disabled");
+            })
+            .attr("src", "images/missingImage.png");
+        })
+        .attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
     }
     else {
         $('.transcriptionImage').attr('src', "images/missingImage.png");
@@ -667,7 +653,8 @@ function drawLinesToCanvas(canvasObj, parsing){
         var properties = {"@type": "sc:AnnotationList", "on" : onValue};
         var paramOBJ = {"content": JSON.stringify(properties)};
         $.post(annosURL, paramOBJ, function(annoList){
-            annoList = JSON.parse(annoList);
+            tpen.manifest.sequences[0].canvases[currentFolio].otherContent.unshift(JSON.parse(annoList));
+            var annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent;
             var found = false;
             var currentList = {};
             if (annoList.length > 0){
@@ -683,8 +670,6 @@ function drawLinesToCanvas(canvasObj, parsing){
                         currentList = this;
                         // TODO we do not want someone who is not an admin to be able
                         // to edit this list.  Do a check here and make
-                        // annoLists[currentFolio -1] = "master" so it cannot be written to.
-                        annoLists[currentFolio - 1] = this["@id"];
                     }
                     if (this.proj !== undefined
                         && this.proj !== ""
@@ -692,7 +677,6 @@ function drawLinesToCanvas(canvasObj, parsing){
                         // These are the lines we want to draw because the projectID matches.  Overwrite master if necessary.
                         lines = this.resources;
                         currentList = this;
-                        annoLists[currentFolio - 1] = this["@id"];
                         return false;
                     }
                     else{
@@ -722,7 +706,6 @@ function drawLinesToCanvas(canvasObj, parsing){
             else {
                 // couldnt get list.  one should always exist, even if empty.
                 // We will say no list and changes will be stored locally to the canvas.
-                annoLists[currentFolio - 1 ] = "empty";
                 if (parsing !== "parsing") {
                     $("#noLineWarning").show();
                 }
@@ -1112,9 +1095,9 @@ function adjustImgs(positions) {
     lineToMakeActive.addClass("activeLine");
     // use the active line color to give the active line a little background color
     // to make it stand out if the box shadow is not enough.
-    var activeLineColor = colorThisTime.replace(".4", ".2");
+    var activeLineColor = tpen.screen.colorThisTime.replace(".4", ".2");
     $('.activeLine').css({
-        'box-shadow': '0px 0px 15px 8px ' + colorThisTime
+        'box-shadow': '0px 0px 15px 8px ' + tpen.screen.colorThisTime
     });
 }
 
@@ -1651,10 +1634,10 @@ function fullPage(){;
     $("#transcriptionCanvas").css("height", adjustedHeightForFullscreen + "px");
     $(".lineColIndicatorArea").css("height", adjustedHeightForFullscreen + "px");
     $("#imgTop").hover(function(){
-        var color = colorThisTime.replace(".4", "1");
+        var color = tpen.screen.colorThisTime.replace(".4", "1");
         $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + color);
     }, function(){
-        $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + colorThisTime);
+        $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + tpen.screen.colorThisTime);
     });
     $.each($(".lineColOnLine"), function(){
         $(this).css("line-height", $(this).height() + "px");
@@ -2403,17 +2386,17 @@ function markerColors(){
  * colorThisTime
  */
     var tempColorList = ["rgba(153,255,0,.4)", "rgba(0,255,204,.4)", "rgba(51,0,204,.4)", "rgba(204,255,0,.4)", "rgba(0,0,0,.4)", "rgba(255,255,255,.4)", "rgba(255,0,0,.4)"];
-    if (colorList.length == 0){
-        colorList = tempColorList;
+    if (tpen.screen.colorList.length == 0){
+        tpen.screen.colorList = tempColorList;
     }
-    colorThisTime = colorList[Math.floor(Math.random() * colorList.length)];
-    colorList.splice(colorList.indexOf(colorThisTime), 1);
-    var oneToChange = colorThisTime.lastIndexOf(")") - 2;
-    var borderColor = colorThisTime.substr(0, oneToChange) + '.2' + colorThisTime.substr(oneToChange + 1);
-    var lineColor = colorThisTime.replace(".4", "1"); //make this color opacity 100
+    tpen.screen.colorThisTime = tpen.screen.colorList[Math.floor(Math.random() * tpen.screen.colorList.length)];
+    tpen.screen.colorList.splice(tpen.screen.colorList.indexOf(tpen.screen.colorThisTime), 1);
+    var oneToChange = tpen.screen.colorThisTime.lastIndexOf(")") - 2;
+    var borderColor = tpen.screen.colorThisTime.substr(0, oneToChange) + '.2' + tpen.screen.colorThisTime.substr(oneToChange + 1);
+    var lineColor = tpen.screen.colorThisTime.replace(".4", "1"); //make this color opacity 100
     $('.lineColIndicator').css('border', '1px solid ' + lineColor);
     $('.lineColOnLine').css({'border-left':'1px solid ' + borderColor, 'color':lineColor});
-    $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + colorThisTime); //keep this color opacity .4 until imgTop is hovered.
+    $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + tpen.screen.colorThisTime); //keep this color opacity .4 until imgTop is hovered.
 }
 
 /* Toggle the line/column indicators in the transcription interface. (A1, A2...) */

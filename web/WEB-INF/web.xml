@@ -363,6 +363,10 @@
         <servlet-name>ProjectServlet</servlet-name>
         <url-pattern>/project/*</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProjectServlet</servlet-name>
+        <url-pattern>/manifest/*</url-pattern>
+    </servlet-mapping>
     <!-- tpen webservices for newberry starts -->
     <servlet>
         <servlet-name>imageParsing</servlet-name>

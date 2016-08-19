@@ -59,7 +59,7 @@ public class ProjectServlet extends HttpServlet {
                     String redirectURL = req.getContextPath() + "/newberryTrans.html?projectID=" + projID;
                     resp.sendRedirect(redirectURL);
                 } else {
-                    projID = Integer.parseInt(req.getPathInfo().substring(1).replace("/", ""));
+                    projID = Integer.parseInt(req.getPathInfo().substring(1).replace("/", "").replace("manifest.json",""));
                     Project proj = new Project(projID);
                     if (proj.getProjectID() > 0) {
                         if (new Group(proj.getGroupID()).isMember(uid)) {

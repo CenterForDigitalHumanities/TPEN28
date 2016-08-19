@@ -50,9 +50,13 @@ import utils.UserTool;
 import com.google.gson.Gson;
 
 import edu.slu.tpen.transfer.JsonImporter;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import net.sf.json.JSON;
 
 /**
  * Get tpen project. 
@@ -83,9 +87,12 @@ public class GetProjectTPENServlet extends HttpServlet {
         response.setContentType("application/json; charset=UTF-8");
         //PrintWriter out = response.getWriter();
         PrintWriter out = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), "UTF8"), true);
-        
+        String manifest_obj_str = "";
         Gson gson = new Gson();
         Map<String, String> jsonMap = new HashMap();
+        JSONObject jo_error = new JSONObject();
+        JSONObject man_obj = new JSONObject();
+        jo_error.element("error", "No Manifest URL");
 //        JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
         if (uid >= 0) {
 //            System.out.println("UID ================= "+uid);
@@ -107,8 +114,33 @@ public class GetProjectTPENServlet extends HttpServlet {
                             jsonMap.put("ls_fs", gson.toJson(folios));
 //                            System.out.println("folios json ========== " + gson.toJson(folios));
                             //get manuscripts
-                            List<Manuscript> ls_ms = new ArrayList();
-                            ls_ms.add(new Manuscript(folios[0].folioNumber));
+                            List<JSONObject> ls_ms = new ArrayList();
+                            Manuscript man = new Manuscript(folios[0].folioNumber);
+                            String manifest_uri = man.getArchive(); //All the manifest URIs are stored in manuscript.archive field. See createProject servlets to see how/why.  
+                            if(manifest_uri.equals("")){
+                                ls_ms.add(jo_error);
+                            }
+                            else{
+                                try{
+                                    URL manifest_data = new URL(manifest_uri);
+                                    BufferedReader in = new BufferedReader(
+                                        new InputStreamReader(manifest_data.openStream())
+                                    );
+                                    String inputLine;
+                                    
+                                    while ((inputLine = in.readLine()) != null){
+                                        manifest_obj_str+= inputLine;
+                                    }
+                                    in.close();
+                                    man_obj = JSONObject.fromObject(manifest_obj_str);
+                                    ls_ms.add(man_obj);
+                                }
+                                catch (Exception e){
+                                    jo_error.element("error" , "Could not resolve manifest.");
+                                    ls_ms.add(jo_error);
+                                }
+                            }
+                            
                             
                             jsonMap.put("manifest", gson.toJson(ls_ms));
 //                            System.out.println("manuscript json ======= " + gson.toJson(ls_ms));

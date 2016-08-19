@@ -247,8 +247,8 @@ public class Archive {
          for (int k = 0; k < mss.length; k++) {
             toret += (mss[k].getShelfMark() + " (hosted by " + mss[k].getArchive() + ")\n");
       // TODO: Build a project from the MS and then send to transcription.html?projectID=##
-            toret += ("<a href=transcription.jsp?ms=" + mss[k].getID() + ">Start transcribing</a>" + "\n");
-            toret += ("<a href=addMStoProject.jsp?ms=" + mss[k].getID() + ">Add to project</a>" + "\n<br>");
+            toret += ("<a href='javascript:createProject(" + mss[k].getID() + ");'>Start transcribing</a>" + "\n");
+            toret += ("<a href='javascript:createProject(" + mss[k].getID() + ");'>Add to project</a>" + "\n<br>");
          }
       }
       return toret;

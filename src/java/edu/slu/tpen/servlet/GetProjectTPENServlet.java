@@ -50,6 +50,7 @@ import utils.UserTool;
 import com.google.gson.Gson;
 
 import edu.slu.tpen.transfer.JsonImporter;
+import edu.slu.tpen.transfer.JsonLDExporter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -57,6 +58,7 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import net.sf.json.JSON;
+import net.sf.json.JSONException;
 
 /**
  * Get tpen project. 
@@ -83,9 +85,7 @@ public class GetProjectTPENServlet extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-        // Force PrintWriter to use UTF-8 encoded strings.
         response.setContentType("application/json; charset=UTF-8");
-        //PrintWriter out = response.getWriter();
         PrintWriter out = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), "UTF8"), true);
         String manifest_obj_str = "";
         Gson gson = new Gson();
@@ -93,7 +93,6 @@ public class GetProjectTPENServlet extends HttpServlet {
         JSONObject jo_error = new JSONObject();
         JSONObject man_obj = new JSONObject();
         jo_error.element("error", "No Manifest URL");
-//        JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
         if (uid >= 0) {
 //            System.out.println("UID ================= "+uid);
             try {
@@ -114,37 +113,50 @@ public class GetProjectTPENServlet extends HttpServlet {
                             JSONObject manifest = new JSONObject();
                             Manuscript man = new Manuscript(folios[0].folioNumber);
                             String manifest_uri = man.getArchive(); //All the manifest URIs are stored in manuscript.archive field. See createProject servlets to see how/why.  
-                            if(manifest_uri.equals("")){ //Then it could be an old project or its a project where this was never set, we can set it now.   Instead of failing, try TPEN project url
-                                //For old projects manifest_data is just some string b/c we did not store the URL here previsouly.  We can detect this failure and instead
-                                //return the project/projectID url instead of the error!  FIXME: The database should reflect the real manifest URL.
-                                manifest_uri = Folio.getRbTok("SERVERURL")+"project/"+projID;
-                                //man.setArchive(Folio.getRbTok("SERVERURL")+"project/"+projID);
-                                //ls_ms.add(jo_error);
-                            }
-                            else if(manifest_uri.indexOf("http") < 0){ //then it is just some string, probably an old project.  Set a proper manifest link via a TPEN project url and try that.
-                                manifest_uri = Folio.getRbTok("SERVERURL")+"project/"+projID;
-                                //man.setArchive(Folio.getRbTok("SERVERURL")+"project/"+projID);
-                            }
-                            try{
-                                URL manifest_data = new URL(manifest_uri); //The generated or found URL could still fail...
-                                BufferedReader in = new BufferedReader(
-                                    new InputStreamReader(manifest_data.openStream())
-                                );
-                                String inputLine;
-
-                                while ((inputLine = in.readLine()) != null){
-                                    manifest_obj_str+= inputLine;
+                            System.out.println("Here is the archive value: "+manifest_uri);
+                            //Of the value is blank or not a URL, then its probably an old project we can gather locally
+                            if(manifest_uri.equals("") || manifest_uri.indexOf("http") < 0 ){
+                                System.out.println("Retrive local project manifest...");
+                                //If the current user is a member of the group, send the project off to the JSONLDExporter
+                                System.out.println("Is user "+uid+" a member of group "+proj.getGroupID()+"?");
+                                System.out.println(new Group(proj.getGroupID()).isMember(uid));
+                                if (new Group(proj.getGroupID()).isMember(uid)){
+                                    manifest_obj_str = new JsonLDExporter(proj, new User(uid)).export();
                                 }
-                                in.close();
+                                else {
+                                    //This user is noth authorized to receive this manifest.
+                                    jo_error.element("error" , "Manifest Access Unauthorized");
+                                    manifest_obj_str = jo_error.toString();
+                                 }
+                            }
+                            else{ //It is a valid URL, try to get the manifest
+                                try{
+                                    System.out.println("Trying to get this manifest: "+manifest_uri);
+                                    URL manifest_data = new URL(manifest_uri); //The generated or found URL could still fail...
+                                    BufferedReader in = new BufferedReader(
+                                        new InputStreamReader(manifest_data.openStream())
+                                    );
+                                    String inputLine;
+
+                                    while ((inputLine = in.readLine()) != null){
+                                        manifest_obj_str+= inputLine;
+                                    }
+                                    in.close();
+                                }
+                                catch (Exception e){
+                                    jo_error.element("error" , "Could not resolve manifest.");
+                                    manifest = jo_error;
+                                }
+                            }
+                            try{ //Try to parse the manifest string
                                 man_obj = JSONObject.fromObject(manifest_obj_str);
                                 manifest = man_obj;
                             }
-                            catch (Exception e){
-                                jo_error.element("error" , "Could not resolve manifest.");
+                            catch (JSONException e2){
+                                jo_error.element("error", "Not a valid JSON manifest");
                                 manifest = jo_error;
                             }
                             jsonMap.put("manifest", manifest.toString());
-//                            System.out.println("manuscript json ======= " + gson.toJson(ls_ms));
                             //get project header
                             String header = proj.getHeader();
                             jsonMap.put("ph", header);
@@ -155,7 +167,6 @@ public class GetProjectTPENServlet extends HttpServlet {
 //                            System.out.println("users json ========= " + gson.toJson(users));
                             //get group leader
                             User[] leaders = group.getLeader();
-                            
                             // if current user is admin AND not in leaders, add them to leaders array
                             boolean isLeader = false;
                             for (User u: leaders) {
@@ -166,12 +177,12 @@ public class GetProjectTPENServlet extends HttpServlet {
                             }
                             Object role = session.getAttribute("role");
                             if (!isLeader) {
-	                            if (role != null && role.toString().equals("1")) {
-	                                User currentUser = new User(uid);
-	                                ArrayList<User> leaderList = new ArrayList<User>(Arrays.asList(leaders));
-	                                leaderList.add(currentUser);
-	                                leaders = leaderList.toArray(new User[leaderList.size()]);
-	                            }
+                                if (role != null && role.toString().equals("1")) {
+                                    User currentUser = new User(uid);
+                                    ArrayList<User> leaderList = new ArrayList<User>(Arrays.asList(leaders));
+                                    leaderList.add(currentUser);
+                                    leaders = leaderList.toArray(new User[leaderList.size()]);
+                                }
                             }
 //                            System.out.println("project leaders json ========= " + gson.toJson(leaders));
                             jsonMap.put("ls_leader", gson.toJson(leaders));

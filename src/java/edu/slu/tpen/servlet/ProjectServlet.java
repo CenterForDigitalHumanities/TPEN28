@@ -62,6 +62,8 @@ public class ProjectServlet extends HttpServlet {
                     projID = Integer.parseInt(req.getPathInfo().substring(1).replace("/", ""));
                     Project proj = new Project(projID);
                     if (proj.getProjectID() > 0) {
+                        System.out.println("Must be true in project...");
+                        System.out.println(new Group(proj.getGroupID()).isMember(uid));
                         if (new Group(proj.getGroupID()).isMember(uid)) {
                             if (checkModified(req, proj)) {
                                 resp.setContentType("application/ld+json; charset=UTF-8");
@@ -71,7 +73,7 @@ public class ProjectServlet extends HttpServlet {
                                 resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
                             }
                         } else {
-                            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
                         }
                     } else {
                         resp.sendError(HttpServletResponse.SC_NOT_FOUND);

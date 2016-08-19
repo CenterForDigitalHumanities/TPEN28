@@ -48,8 +48,20 @@ public class ProjectServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int uid = getUID(req, resp);
+        int uid = -1;
         int projID = 0;
+        boolean skip = false;
+        String url_piece = req.getRequestURI() + req.getPathInfo().substring(1).replace("/", "").replace("manifest.json","");
+        String skip_uid_check = "manifest";
+        System.out.println(url_piece);
+        if(url_piece.contains(skip_uid_check)){
+            System.out.println("We wanna skip");
+            uid = 0;
+            skip = true;
+        }
+        else{
+            uid = getUID(req, resp);
+        }
         if (uid >= 0) {
             try {
                 String check = "transcribe";
@@ -62,7 +74,8 @@ public class ProjectServlet extends HttpServlet {
                     projID = Integer.parseInt(req.getPathInfo().substring(1).replace("/", "").replace("manifest.json",""));
                     Project proj = new Project(projID);
                     if (proj.getProjectID() > 0) {
-                        if (new Group(proj.getGroupID()).isMember(uid)) {
+                        if (new Group(proj.getGroupID()).isMember(uid) || skip) {
+                            System.out.println("export");
                             if (checkModified(req, proj)) {
                                 resp.setContentType("application/ld+json; charset=UTF-8");
                                 resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());

@@ -17,7 +17,7 @@ var tpen = {
             "rgba(255,255,255,.4)",
             "rgba(255,0,0,.4)"],
         colorThisTime: "rgba(255,255,255,.4)",
-        currentFolio: - 1
+        currentFolio: 0
     },
     user: {
         current: false,
@@ -182,6 +182,9 @@ function populatePreview(lines, pageLabel, currentPage, order){
 }
 
 function populateSpecialCharacters(specialCharacters){
+    if(!specialCharacters){
+        return false;
+    }
     specialCharacters = JSON.parse(specialCharacters);
     var speCharactersInOrder = new Array(specialCharacters.length);
     for (var char = 0; char < specialCharacters.length; char++){
@@ -203,6 +206,9 @@ function populateSpecialCharacters(specialCharacters){
 }
 
 function populateXML(xmlTags){
+    if(!xmlTags){
+        return false;
+    }
     xmlTags = xmlTags.split(",");
     var tagsInOrder = [];
     for (var tag = 0; tag < xmlTags.length; tag++){
@@ -311,7 +317,7 @@ function loadTranscription(){
                 loadIframes();
             }
         });
-        $.each(tpen.project.tools, function(){
+        $.each((tpen.project.tools || []), function(){
             var splitHeight = window.innerHeight + "px";
             var toolLabel = this.name;
             var toolSource = this.url;
@@ -653,9 +659,13 @@ function drawLinesToCanvas(canvasObj, parsing){
         var properties = {"@type": "sc:AnnotationList", "on" : onValue};
         var paramOBJ = {"content": JSON.stringify(properties)};
         $.post(annosURL, paramOBJ, function(annoList){
-            tpen.manifest.sequences[0].canvases[currentFolio].otherContent.unshift(JSON.parse(annoList));
-            var annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent;
-            var found = false;
+            if (!tpen.manifest.sequences[0].canvases[currentFolio]){
+                throw new Error("Missing canvas:" +currentFolio);
+            }
+            if(!tpen.manifest.sequences[0].canvases[currentFolio].otherContent){
+                tpen.manifest.sequences[0].canvases[currentFolio].otherContent = [];
+            }
+            var annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent = tpen.manifest.sequences[0].canvases[currentFolio].otherContent.concat(JSON.parse(annoList));
             var currentList = {};
             if (annoList.length > 0){
                 // Always default to the master list, which was the first list created

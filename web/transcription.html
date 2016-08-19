@@ -944,7 +944,7 @@
         var pair = $(".transcriptlet[lineserverid='"+focusLineID+"']").find(transcriptionText);
         var transcriptlet = $(".transcriptlet[lineserverid='"+focusLineID+"']");
         if ($(line).hasClass("currentPage")){
-          if (pair.parent().attr('id') !== focusItem[1].attr('id')){
+          if (pair.parent().attr('id') !== tpen.focusItem[1].attr('id')){
               updatePresentation(transcriptlet);
           }
             line.focus();

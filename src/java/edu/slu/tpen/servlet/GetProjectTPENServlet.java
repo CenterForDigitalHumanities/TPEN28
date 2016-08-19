@@ -111,43 +111,16 @@ public class GetProjectTPENServlet extends HttpServlet {
                             jsonMap.put("ls_fs", gson.toJson(folios));
 //                            System.out.println("folios json ========== " + gson.toJson(folios));
                             JSONObject manifest = new JSONObject();
-                            Manuscript man = new Manuscript(folios[0].folioNumber);
-                            String manifest_uri = man.getArchive(); //All the manifest URIs are stored in manuscript.archive field. See createProject servlets to see how/why.  
-                            System.out.println("Here is the archive value: "+manifest_uri);
-                            //Of the value is blank or not a URL, then its probably an old project we can gather locally
-                            if(manifest_uri.equals("") || manifest_uri.indexOf("http") < 0 ){
-                                System.out.println("Retrive local project manifest...");
-                                //If the current user is a member of the group, send the project off to the JSONLDExporter
-                                System.out.println("Is user "+uid+" a member of group "+proj.getGroupID()+"?");
-                                System.out.println(new Group(proj.getGroupID()).isMember(uid));
-                                if (new Group(proj.getGroupID()).isMember(uid)){
-                                    manifest_obj_str = new JsonLDExporter(proj, new User(uid)).export();
-                                }
-                                else {
-                                    //This user is noth authorized to receive this manifest.
-                                    jo_error.element("error" , "Manifest Access Unauthorized");
-                                    manifest_obj_str = jo_error.toString();
-                                 }
+                            if (new Group(proj.getGroupID()).isMember(uid)){
+                                manifest_obj_str = new JsonLDExporter(proj, new User(uid)).export();
                             }
-                            else{ //It is a valid URL, try to get the manifest
-                                try{
-                                    System.out.println("Trying to get this manifest: "+manifest_uri);
-                                    URL manifest_data = new URL(manifest_uri); //The generated or found URL could still fail...
-                                    BufferedReader in = new BufferedReader(
-                                        new InputStreamReader(manifest_data.openStream())
-                                    );
-                                    String inputLine;
-
-                                    while ((inputLine = in.readLine()) != null){
-                                        manifest_obj_str+= inputLine;
-                                    }
-                                    in.close();
-                                }
-                                catch (Exception e){
-                                    jo_error.element("error" , "Could not resolve manifest.");
-                                    manifest = jo_error;
-                                }
-                            }
+                            else {
+                                //This user is noth authorized to receive this manifest.
+                                jo_error.element("error" , "Manifest Access Unauthorized");
+                                manifest_obj_str = jo_error.toString();
+                             }
+                           // }
+//
                             try{ //Try to parse the manifest string
                                 man_obj = JSONObject.fromObject(manifest_obj_str);
                                 manifest = man_obj;

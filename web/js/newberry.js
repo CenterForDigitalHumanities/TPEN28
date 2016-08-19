@@ -982,10 +982,10 @@ function updatePresentation(transcriptlet) {
         $("#prevColLine").html("**");
         $("#captionsText").html("ERROR.  NUMBERS ARE OFF");
     }
-    tpen.focusItem[0] = tpen.focusItem[1];
-    tpen.focusItem[1] = transcriptlet;
-    if ((tpen.focusItem[0] === null)
-        || (tpen.focusItem[0].attr("id") !== tpen.focusItem[1].attr("id"))) {
+    tpen.screen.focusItem[0] = tpen.screen.focusItem[1];
+    tpen.screen.focusItem[1] = transcriptlet;
+    if ((tpen.screen.focusItem[0] === null)
+        || (tpen.screen.focusItem[0].attr("id") !== tpen.screen.focusItem[1].attr("id"))) {
         this.adjustImgs(this.setPositions());
         this.swapTranscriptlet();
         // show previous line transcription
@@ -995,29 +995,29 @@ function updatePresentation(transcriptlet) {
     }
     else {
         this.adjustImgs(this.setPositions());
-        tpen.focusItem[1].prevAll(".transcriptlet").addClass("transcriptletBefore").removeClass("transcriptletAfter");
-        tpen.focusItem[1].nextAll(".transcriptlet").addClass("transcriptletAfter").removeClass("transcriptletBefore");
+        tpen.screen.focusItem[1].prevAll(".transcriptlet").addClass("transcriptletBefore").removeClass("transcriptletAfter");
+        tpen.screen.focusItem[1].nextAll(".transcriptlet").addClass("transcriptletAfter").removeClass("transcriptletBefore");
     }
     // prevent textareas from going invisible and not moving out of the workspace
-    tpen.focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
+    tpen.screen.focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
 };
 
 /* Helper for position focus onto a specific transcriptlet */
 function setPositions() {
     // Determine size of section above workspace
     var bottomImageHeight = $("#imgBottom img").height();
-    if (tpen.focusItem[1].attr("lineHeight") !== null) {
-        var pairForBookmarkCol = tpen.focusItem[1].attr('col');
-        var pairForBookmarkLine = parseInt(tpen.focusItem[1].attr('collinenum'));
+    if (tpen.screen.focusItem[1].attr("lineHeight") !== null) {
+        var pairForBookmarkCol = tpen.screen.focusItem[1].attr('col');
+        var pairForBookmarkLine = parseInt(tpen.screen.focusItem[1].attr('collinenum'));
         pairForBookmarkLine++;
         var pairForBookmark = pairForBookmarkCol + pairForBookmarkLine;
-        var currentLineHeight = parseFloat(tpen.focusItem[1].attr("lineHeight"));
-        var currentLineTop = parseFloat(tpen.focusItem[1].attr("lineTop"));
+        var currentLineHeight = parseFloat(tpen.screen.focusItem[1].attr("lineHeight"));
+        var currentLineTop = parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
         // top of column
-        var previousLine = (tpen.focusItem[1].prev().is('.transcriptlet')
-            && (currentLineTop > parseFloat(tpen.focusItem[1].prev().attr("lineTop"))))
-            ? parseFloat(tpen.focusItem[1].prev().attr("lineHeight"))
-            : parseFloat(tpen.focusItem[1].attr("lineTop"));
+        var previousLine = (tpen.screen.focusItem[1].prev().is('.transcriptlet')
+            && (currentLineTop > parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"))))
+            ? parseFloat(tpen.screen.focusItem[1].prev().attr("lineHeight"))
+            : parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
         // oversized for screen
         var imgTopHeight = (previousLine + currentLineHeight) + 1.5; // obscure behind workspace.
         var topImgPositionPercent = ((previousLine - currentLineTop) * 100) / imgTopHeight;
@@ -1043,10 +1043,10 @@ function setPositions() {
 */
 function swapTranscriptlet() {
     // slide in the new transcriptlet
-    tpen.focusItem[1].css({"width": "auto", "z-index": "5"});
-    tpen.focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
-    tpen.focusItem[1].prevAll(".transcriptlet").addClass("transcriptletBefore").removeClass("transcriptletAfter");
-    tpen.focusItem[1].nextAll(".transcriptlet").addClass("transcriptletAfter").removeClass("transcriptletBefore");
+    tpen.screen.focusItem[1].css({"width": "auto", "z-index": "5"});
+    tpen.screen.focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
+    tpen.screen.focusItem[1].prevAll(".transcriptlet").addClass("transcriptletBefore").removeClass("transcriptletAfter");
+    tpen.screen.focusItem[1].nextAll(".transcriptlet").addClass("transcriptletAfter").removeClass("transcriptletBefore");
     if ($('.transcriptletAfter').length === 0){
         $('#nextTranscriptlet').hide();
     }
@@ -1113,7 +1113,7 @@ function adjustImgs(positions) {
 
 /* Update the line information of the line currently focused on, then load the focus to a line that was clicked on */
 function loadTranscriptlet(lineid){
-    var currentLineServerID = tpen.focusItem[1].attr("lineserverid");
+    var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if ($('#transcriptlet_' + lineid).length > 0){
         if (tpen.user.current){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
@@ -1143,8 +1143,8 @@ function loadTranscriptlet(lineid){
              * The UI control for going the the next transcriptlet in the transcription.
              */
 function nextTranscriptlet() {
-    var nextID = parseInt(tpen.focusItem[1].attr('lineID')) + 1;
-    var currentLineServerID = tpen.focusItem[1].attr("lineserverid");
+    var nextID = parseInt(tpen.screen.focusItem[1].attr('lineID')) + 1;
+    var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if ($('#transcriptlet_' + nextID).length > 0){
         if (tpen.user.current){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
@@ -1174,8 +1174,8 @@ function nextTranscriptlet() {
              * The UI control for going the the previous transcriptlet in the transcription.
              */
 function previousTranscriptlet() {
-    var prevID = parseFloat(tpen.focusItem[1].attr('lineID')) - 1;
-    var currentLineServerID = tpen.focusItem[1].attr("lineServerID");
+    var prevID = parseFloat(tpen.screen.focusItem[1].attr('lineID')) - 1;
+    var currentLineServerID = tpen.screen.focusItem[1].attr("lineServerID");
     if (prevID >= 0){
         if (tpen.user.current){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
@@ -1652,8 +1652,8 @@ function fullPage(){;
     $.each($(".lineColOnLine"), function(){
         $(this).css("line-height", $(this).height() + "px");
     });
-    if (tpen.focusItem[0] == null
-        && tpen.focusItem[1] == null){
+    if (tpen.screen.focusItem[0] == null
+        && tpen.screen.focusItem[1] == null){
         updatePresentation($("#transcriptlet_1"));
     }
 }
@@ -2239,7 +2239,7 @@ function insertTag(tagName, fullTag){
 function closeTag(tagName, fullTag){
     // Do not create for self-closing tags
     if (tagName.lastIndexOf("/") === (tagName.length - 1)) return false;
-    var tagLineID = tpen.focusItem[1].attr("lineserverid");
+    var tagLineID = tpen.screen.focusItem[1].attr("lineserverid");
     var closeTag = document.createElement("div");
     var tagID;
     $.get("tagTracker", {
@@ -2256,14 +2256,14 @@ function closeTag(tagName, fullTag){
                 //"data-folio":   folio,
                 "data-tagID":   tagID
             }).text("/" + tagName);
-            tpen.focusItem[1].children(".xmlClosingTags").append(closeTag);
+            tpen.screen.focusItem[1].children(".xmlClosingTags").append(closeTag);
         }
     );
 }
 
 function addchar(theChar, closingTag) {
     var closeTag = (closingTag === undefined) ? "" : closingTag;
-    var e = tpen.focusItem[1].find('textarea')[0];
+    var e = tpen.screen.focusItem[1].find('textarea')[0];
     if (e !== null) {
         return setCursorPosition(e, insertAtCursor(e, theChar, closeTag));
     }
@@ -2368,7 +2368,7 @@ function pageJump(page, parsing){
         if (parsing === "parsing"){
             $(".pageTurnCover").show();
             fullPage();
-            tpen.focusItem = [null, null];
+            tpen.screen.focusItem = [null, null];
             loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[canvasToJumpTo], parsing);
             setTimeout(function(){
                 hideWorkspaceForParsing();
@@ -2377,7 +2377,7 @@ function pageJump(page, parsing){
         }
         else {
             tpen.screen.currentFolio = folioNum;
-            tpen.focusItem = [null, null];
+            tpen.screen.focusItem = [null, null];
             loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[canvasToJumpTo], "");
         }
     }
@@ -2527,12 +2527,28 @@ function columnUpdate(linesInColumn){
     });
 }
 
+    function getList(canvas){
+        var lists = canvas.otherContent;
+        var annos = [];
+        $.each(lists,function(l){
+            if (l.resources) {
+                $.each(l.resources,function(r){
+                    if(r.on.startsWith(canvas['@id'])){
+                        annos.push(r);
+                        tpen.screen.currentAnnoListID = l['@id'];
+                    }
+                });
+            }
+        });
+        return annos;
+    };
+
 /* Update line information for a particular line. */
 function updateLine(line, cleanup){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var currentFolio = parseInt(tpen.screen.currentFolio);
-    var currentAnnoListID = annoLists[currentFolio - 1];
-    var currentAnnoList = "";
+    var currentAnnoListID = tpen.screen.currentAnnoListID;
+    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio]);
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2;
     lineTop = parseFloat(line.attr("linetop")) * 10;
@@ -2544,7 +2560,6 @@ function updateLine(line, cleanup){
     lineLeft = Math.round(lineLeft, 0);
     lineWidth = Math.round(lineWidth, 0);
     lineHeight = Math.round(lineHeight, 0);
-    //line.css("width", line.attr("linewidth") + "%");
     var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
     var currentLineServerID = line.attr('lineserverid');
     var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
@@ -2637,7 +2652,7 @@ function saveNewLine(lineBefore, newLine){
     var dbLine = {
         "@id" : "",
         "@type" : "oa:Annotation",
-        "motivation" : "sc:painting",
+        "motivation" : "oad:transcribing",
         "resource" : {
             "@type" : "cnt:ContentAsText",
             "cnt:chars" : currentLineText
@@ -2659,15 +2674,14 @@ function saveNewLine(lineBefore, newLine){
                 "endid" : dbLine["@id"],
                 "newcol":false
             });
-            currentFolio = parseInt(currentFolio);
-            var currentAnnoList = annoLists[currentFolio - 1];
+            var currentFolio = tpen.screen.currentFolio;
+            var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio]);
             if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
                 // if it IIIF, we need to update the list
                 var annosURL = "getAnno";
                 var properties = {"@id": currentAnnoList};
                 var paramOBJ = {"content": JSON.stringify(properties)};
                 $.post(annosURL, paramOBJ, function(annoList){
-                    var annoListID = currentAnnoList;
                     annoList = JSON.parse(annoList);
                     currentAnnoList = annoList[0];
                     if (beforeIndex == - 1){
@@ -2681,22 +2695,20 @@ function saveNewLine(lineBefore, newLine){
                         currentAnnoList.resources.splice(beforeIndex + 1, 0, dbLine);
                     }
                     currentFolio = parseInt(currentFolio);
-                    tpen.manifest.sequences[0].canvases[currentFolio - 1].otherContent[0] = annoListID;
-                    annoLists[currentFolio - 1] = annoListID;
+                    tpen.manifest.sequences[0].canvases[currentFolio - 1].otherContent[0] = annoList;
                     //Write back to db to update list
                     var url1 = "updateAnnoList";
-                    var paramObj1 = {"@id":annoListID, "resources": currentAnnoList.resources};
+                    var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList.resources};
                     var params1 = {"content":JSON.stringify(paramObj1)};
                     $.post(url1, params1, function(data){
                         if (lineBefore !== undefined && lineBefore !== null){
                             //This is the good case.  We called split line and saved
                             //the new line, now we need to update the other one.
                             updateLine(lineBefore);
-                            $("#parsingCover").hide(); //doesnt always fire, so this is to be sure
                         }
                         else{
-                            $("#parsingCover").hide();
                         }
+                            $("#parsingCover").hide();
                     });
                 });
             }
@@ -2721,8 +2733,7 @@ function saveNewLine(lineBefore, newLine){
                     var newAnnoListCopy = newAnnoList;
                     newAnnoListCopy["@id"] = data["@id"];
                     currentFolio = parseInt(currentFolio);
-                    annoLists[currentFolio - 1] = newAnnoListCopy["@id"];
-                    tpen.manifest.sequences[0].canvases[currentFolio - 1].otherContent[0] = newAnnoListCopy["@id"];
+                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent.push(newAnnoListCopy);
                     var url3 = "updateAnnoList";
                     var paramObj3 = {"@id":newAnnoListCopy["@id"], "resources": [dbLine]};
                     var params3 = {"content":JSON.stringify(paramObj3)};

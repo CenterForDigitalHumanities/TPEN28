@@ -83,7 +83,7 @@ public class CopyProjectForPracticerServlet extends HttpServlet {
                             //This needs to be the same one the JSON Exporter creates and needs to be unique and unchangeable.
                             String canvasID_check = folio.getCanvas();
                             String canvasID = "";
-                            String str_folioNum = Folio.getRbTok("SERVERURL")+"/MS"+msID_str+"/canvas/"+folio.getFolioNumber();
+                            String str_folioNum = Folio.getRbTok("SERVERURL")+"MS"+msID_str+"/canvas/"+folio.getFolioNumber();
                             if(canvasID_check == ""){
                                 canvasID = str_folioNum;
                             }

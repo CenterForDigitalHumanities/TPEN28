@@ -531,13 +531,22 @@
                 $("#moveImage").removeClass("selected");
                 $(".transcriptlet").children("textarea").removeClass("imageMove").removeAttr("disabled");
             }
-            else if (event.which === 13){ //entr
+            else if (event.which === 13){ //enter
                 var activeTranscriptlet = $(".transcriptlet:visible");
                 if(activeTranscriptlet.find('textarea').is(":focus")){
                     nextTranscriptlet();
                 }
             }
-            else{
+            else if (event.which === 9){ // tab
+            //TAB hijack to keep behavior as expected
+                var inForm = $(document.activeElement).is('input,textarea') && !$(document.activeElement).parent().is('.transcriptlet');
+                if(event.which === 9 && !inForm){
+                    event.preventDefault();
+                    if(event.shiftKey) $("#prevLine").click();
+                    else $("#nextLine").click();
+                }
+            }
+            else {
             }
             })
             .keyup(function(event){

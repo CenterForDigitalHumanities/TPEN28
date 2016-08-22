@@ -1143,7 +1143,8 @@ function loadTranscriptlet(lineid){
              * The UI control for going the the next transcriptlet in the transcription.
              */
 function nextTranscriptlet() {
-    var nextID = parseInt(tpen.screen.focusItem[1].attr('lineID')) + 1;
+    var thisLine = tpen.screen.focusItem[1].attr('lineID');
+    var nextID = thisLine++;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if ($('#transcriptlet_' + nextID).length > 0){
         if (tpen.user.current){

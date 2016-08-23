@@ -228,18 +228,6 @@ body{
       padding-left:7px;
     }
 
-    #bookmark {
-      -moz-box-shadow:0 0 15px #000;
-      -webkit-box-shadow:0 0 15px #000;
-/*      border:thin solid #A64129;*/
-      box-shadow:0 0 15px white;/*#000*/
-      height:0;
-      left:-600%;
-      opacity:1!important;
-      position:absolute;
-      z-index:2;
-    }
-
     #imgTop,#imgBottom{
       display:block;
       height:35%;
@@ -260,7 +248,6 @@ body{
         left:0;
         position:absolute;
         top:0;
-        /*width:100%;*/
         max-height: none !important;
         z-index:inherit;
         max-width: 100%;
@@ -303,12 +290,17 @@ body{
     * Transcription transition movements.
     */
 
-
-   #imgTop, #imgBottom {
-       -webkit-transition: height .25s, left .5s, top .25s, width .5s;
-       -moz-transition: height .25s, left .5s, top .25s, width .5s;
-       -o-transition: height .25s, left .5s, top .25s, width .5s;
-       transition: height .25s, left .5s, top .25s, width .5s;
+   #imgTop,#imgBottom {
+       -webkit-transition: height .25s, width .5s;
+       -moz-transition: height .25s, width .5s;
+       -o-transition: height .25s, width .5s;
+       transition: height .25s, width .5s;
+   }
+   #imgTop img,#imgBottom img, .lineColIndicatorArea {
+       -webkit-transition: left .25s, top .25s, width .25s;
+       -moz-transition: left .25s, top .25s, width .25s;
+       -o-transition: left .25s, top .25s, width .25s;
+       transition: left .25s, top .25s, width .25s;
    }
    .transcriptlet {
        -webkit-transition: opacity .5s, top .25s;

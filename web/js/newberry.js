@@ -989,9 +989,9 @@ function updatePresentation(transcriptlet) {
         this.adjustImgs(this.setPositions());
         this.swapTranscriptlet();
         // show previous line transcription
-        $('#captions').animate({
+        $('#captions').css({
             opacity: 1
-        }, 100);
+        });
     }
     else {
         this.adjustImgs(this.setPositions());
@@ -1071,28 +1071,28 @@ function adjustImgs(positions) {
     var lineToMakeActive = $(".lineColIndicator[pair='" + positions.activeLine + "']:first");
     var topImageHeight = $("#imgTop img").height();
     $("#imgTop")
-        .animate({
+        .css({
             "height": positions.imgTopHeight + "%"
-            }, 250)
-        .find("img").animate({
+            });
+    $("#imgTop img").css({
             top: positions.topImgPositionPx + "px",
             left: "0px"
-        }, 250);
+        });
     $("#imgTop .lineColIndicatorArea")
-        .animate({
+        .css({
             top: positions.topImgPositionPx + "px",
             left: "0px"
-        }, 250);
-    $("#imgBottom").find("img")
-        .animate({
+        });
+    $("#imgBottom img")
+        .css({
             top: positions.bottomImgPositionPx + "px",
             left: "0px"
-        }, 250);
+        });
     $("#imgBottom .lineColIndicatorArea")
-        .animate({
+        .css({
             top: positions.bottomImgPositionPx + "px",
             left: "0px"
-        }, 250);
+        });
     if ($('.activeLine').hasClass('linesHidden')){
         $('.activeLine').hide();
     }

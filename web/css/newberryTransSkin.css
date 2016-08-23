@@ -293,41 +293,28 @@ body{
         padding-left: 7px;
         padding-top: 7px;
         padding-bottom: 7px;
+        -webkit-transition: opacity .25s;
+        -moz-transition: opacity .25s;
+        -o-transition: opacity .25s;
+        transition: opacity .25s;
     }
 
     /*
     * Transcription transition movements.
     */
 
-   #bookmark {
-       -webkit-transition: width .25s, height .5s, left .25s, top .5s;
-       -moz-transition: width .25s, height .5s, left .25s, top .5s;
-       -o-transition: width .25s, height .5s, left .25s, top .5s;
-       transition: width .25s, height .5s, left .25s, top .5s;
-   }
-   /*#imgTop,#imgBottom {
-       -webkit-transition: height .25s, width .5s;
-       -moz-transition: height .25s, width .5s;
-       -o-transition: height .25s, width .5s;
-       transition: height .25s, width .5s;
-   }*/
-   #imgTopImg,#imgBottom img {
-       -webkit-transition: left .5s, top .5s, width .5s;
-       -moz-transition: left .5s, top .5s, width .5s;
-       -o-transition: left .5s, top .5s, width .5s;
-       transition: left .5s, top .5s, width .5s;
-   }
+
    #imgTop, #imgBottom {
-       -webkit-transition: left .5s, top .5s, width .5s;
-       -moz-transition: left .5s, top .5s, width .5s;
-       -o-transition: left .5s, top .5s, width .5s;
-       transition: left .5s, top .5s, width .5s;
+       -webkit-transition: height .25s, left .5s, top .25s, width .5s;
+       -moz-transition: height .25s, left .5s, top .25s, width .5s;
+       -o-transition: height .25s, left .5s, top .25s, width .5s;
+       transition: height .25s, left .5s, top .25s, width .5s;
    }
-   .transcriptlet,#blogLink {
-       -webkit-transition: opacity .5s, top .5s;
-       -moz-transition: opacity .5s, top .5s;
-       -o-transition: opacity .5s, top .5s;
-       transition: opacity .5s, top .5s;
+   .transcriptlet {
+       -webkit-transition: opacity .5s, top .25s;
+       -moz-transition: opacity .5s, top .25s;
+       -o-transition: opacity .5s, top .25s;
+       transition: opacity .5s, top .25s;
    }
 
    #transcriptionText{

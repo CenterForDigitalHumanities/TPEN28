@@ -1144,7 +1144,8 @@ function loadTranscriptlet(lineid){
              */
 function nextTranscriptlet() {
     var thisLine = tpen.screen.focusItem[1].attr('lineID');
-    var nextID = thisLine++;
+    thisLine++;
+    var nextID = thisLine;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if ($('#transcriptlet_' + nextID).length > 0){
         if (tpen.user.current){
@@ -2531,11 +2532,12 @@ function columnUpdate(linesInColumn){
     function getList(canvas){
         var lists = canvas.otherContent;
         var annos = [];
-        $.each(lists,function(l){
-            if (l.resources) {
-                $.each(l.resources,function(r){
-                    if(r.on.startsWith(canvas['@id'])){
-                        annos.push(r);
+        $.each(lists,function(){
+            var l = this;
+            if (this.resources) {
+                $.each(this.resources,function(){
+                    if(this.on.startsWith(canvas['@id'])){
+                        annos.push(this);
                         tpen.screen.currentAnnoListID = l['@id'];
                     }
                 });
@@ -2567,7 +2569,7 @@ function updateLine(line, cleanup){
     var dbLine = {
         "@id" : currentLineServerID,
         "@type" : "oa:Annotation",
-        "motivation" : "sc:painting",
+        "motivation" : "oad:transcribing",
         "resource" : {
             "@type" : "cnt:ContentAsText",
             "cnt:chars" : currentLineText
@@ -2576,7 +2578,6 @@ function updateLine(line, cleanup){
         "otherContent" : [],
         "forProject": tpen.manifest['@id']
     };
-    var index = - 1;
     if (currentAnnoListID !== "noList" && currentAnnoListID !== "empty"){
         // if its IIIF, we need to update the list
         var annosURL = "getAnno";
@@ -2586,8 +2587,7 @@ function updateLine(line, cleanup){
             annoList = JSON.parse(annoList);
             var annoListID = currentAnnoListID;
             currentAnnoList = annoList[0];
-            $.each(currentAnnoList.resources, function(){
-                index++;
+            $.each(currentAnnoList.resources, function(index){
                 if (this["@id"] == currentLineServerID){
                     currentAnnoList.resources[index] = dbLine;
                     var url = "updateAnnoList";
@@ -2595,8 +2595,6 @@ function updateLine(line, cleanup){
                     var params = {"content":JSON.stringify(paramObj)};
                     $.post(url, params, function(data){
                     currentFolio = parseInt(currentFolio);
-                        annoLists[currentFolio - 1] = annoListID;
-                        console.log("hide cover");
                         $("#parsingCover").hide();
                     });
                 }

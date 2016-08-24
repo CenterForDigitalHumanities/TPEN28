@@ -17,7 +17,8 @@ var tpen = {
             "rgba(255,255,255,.4)",
             "rgba(255,0,0,.4)"],
         colorThisTime: "rgba(255,255,255,.4)",
-        currentFolio: 0
+        currentFolio: 0,
+        currentAnnoList: 0
     },
     user: {
         current: false,
@@ -2300,7 +2301,6 @@ function insertAtCursor (myField, myValue, closingTag) {
         myField.focus();
         sel = document.selection.createRange();
         sel.text = unescape(myValue);
-        //Preview.updateLine(myField);
         return sel + unescape(myValue).length;
     }
     //MOZILLA/NETSCAPE support
@@ -2316,7 +2316,6 @@ function insertAtCursor (myField, myValue, closingTag) {
             + "</" + closeTag + ">"
             + myField.value.substring(endPos, myField.value.length);
             myField.focus();
-            // Preview.updateLine(myField);
             var insertLength = startPos + unescape(myValue).length +
             toWrap.length + 3 + closeTag.length;
             return "wrapped" + insertLength;
@@ -2550,8 +2549,8 @@ function columnUpdate(linesInColumn){
 function updateLine(line, cleanup){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var currentFolio = parseInt(tpen.screen.currentFolio);
-    var currentAnnoListID = tpen.screen.currentAnnoListID;
-    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio]);
+    var currentAnnoListID = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[tpen.screen.currentAnnoList]["@id"];
+    var currentAnnoList = tpen.screen.currentAnnoList;
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2;
     lineTop = parseFloat(line.attr("linetop")) * 10;
@@ -2578,41 +2577,32 @@ function updateLine(line, cleanup){
         "otherContent" : [],
         "forProject": tpen.manifest['@id']
     };
-    if (currentAnnoListID !== "noList" && currentAnnoListID !== "empty"){
-        // if its IIIF, we need to update the list
-        var annosURL = "getAnno";
-        var properties = {"@id": currentAnnoListID};
-        var paramOBJ = {"content": JSON.stringify(properties)};
-        $.post(annosURL, paramOBJ, function(annoList){
-            annoList = JSON.parse(annoList);
-            var annoListID = currentAnnoListID;
-            currentAnnoList = annoList[0];
-            $.each(currentAnnoList.resources, function(index){
-                if (this["@id"] == currentLineServerID){
-                    currentAnnoList.resources[index] = dbLine;
-                    var url = "updateAnnoList";
-                    var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
-                    var params = {"content":JSON.stringify(paramObj)};
-                    $.post(url, params, function(data){
-                    currentFolio = parseInt(currentFolio);
-                        $("#parsingCover").hide();
-                    });
-                }
+    if (!currentAnnoListID){
+        if(!currentAnnoList){
+            throw new Error("No annotation list found.");
+        } else if (typeof currentAnnoList==="string"){
+            // unlikely, but just in case
+            $.getJSON(currentAnnoList,function(list){
+                tpen.screen.currentAnnoList = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[tpen.screen.currentAnnoList] = list;
+                return updateLine(line, cleanup);
+            }).fail(function(err){
+                throw err;
             });
-        });
+        } else if ($.isArray(currentAnnoList.resources)){
+            throw new Error("Everything looks good, but it didn't work.");
+        } else {
+            throw new Error("Annotation List was not recognized.");
+        }
     }
-    else if (currentAnnoList === "empty"){
-        //cannot update an empty list
-    }
-    else if (currentAnnoList === "noList"){ //If it is classic T-PEN, we need to update canvas resources
-        currentFolio = parseInt(currentFolio);
-        $.each(tpen.manifest.sequences[0].canvases[currentFolio - 1].resources, function(){
-        index++;
-            if (this["@id"] == currentLineServerID){
-                tpen.manifest.sequences[0].canvases[currentFolio - 1].resources[index] = dbLine;
-            }
-        });
-        //Should we do an update here to support old data?
+    else if (currentAnnoListID){
+        if(currentLineServerID.startsWith("http")){
+            var url = "165.134.241.141/annotationstore/anno/updateAnnotation";
+            $.post();
+        } else {
+            throw new Error("No good. The ID could not be dereferenced. Maybe this is a new annotation?");
+        }
+//TODO CUBAP HERE
+
     }
     if (cleanup !== "no") cleanupTranscriptlets(true);
 }

@@ -669,32 +669,31 @@ function drawLinesToCanvas(canvasObj, parsing){
             var annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent = tpen.manifest.sequences[0].canvases[currentFolio].otherContent.concat(JSON.parse(annoList));
             var currentList = {};
             if (annoList.length > 0){
-                // Always default to the master list, which was the first list created
-                // for the canvas.  That way, the annotation lists associated with
-                // the master are still supported.
-                var masterList = {};
-                $.each(annoList, function(){
-                    //if we find the master list, make that the default
-                    if (this.proj === "master"){
-                        masterList = this;
+                // Scrub resolved lists that are already present.
+                $.each(annoList, function(index){
+                    if (typeof this === "string"){
+                        // This is just an @id, perhaps
+                        for (var i = annoList.length - 1; i >= 0; i--) {
+                        	if (this === annoList[i]["@id"]){
+                        		// found the dereferenced object, wipe this
+                        		delete annoList[index]; // above this scope
+                        		break;
+                        	}
+                        }
+                    }
+                    else if (this.resources) {
                         lines = this.resources;
                         currentList = this;
-                        // TODO we do not want someone who is not an admin to be able
-                        // to edit this list.  Do a check here and make
-                    }
-                    if (this.proj !== undefined
-                        && this.proj !== ""
-                        && this.proj == theProjectID){
-                        // These are the lines we want to draw because the projectID matches.  Overwrite master if necessary.
-                        lines = this.resources;
-                        currentList = this;
-                        return false;
-                    }
-                    else{
-                        // It is an annotation list for this canvas in a different project.
-                        // We have defaulted to master already.
+                    } else {
+                    	console.warn("Multiple AnnotationLists found, but '" + this + "' was not recognized.");
+                        delete annoList[index]; // above this scope
                     }
                 });
+                annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent 
+                = annoList.filter(function(){ // clear out empty items
+                	return true;
+                });
+
                 if (lines.length > 0){
                     $("#transTemplateLoading").hide();
                     $("#transcriptionTemplate").show();

@@ -2595,15 +2595,27 @@ function updateLine(line, cleanup){
     }
     else if (currentAnnoListID){
         if(currentLineServerID.startsWith("http")){
-            var url = "165.134.241.141/annotationstore/anno/updateAnnotation";
-            $.post();
+            var url = "165.134.241.141/annotationstore/anno/updateAnnotation.action";
+            var payload = { // Just send what we expect to update
+            	content : JSON.stringify({
+            		"@id" : dbLine['@id'],			// URI to find it in the repo
+            		"resource" : dbLine.resource,	// the transcription content
+            		"on" : dbLine.on 				// parsing update of xywh=
+            	})
+            };
+            $.post(url,payload,function(){
+            	line.attr("hasError",null);
+            	// success
+            }).fail(function(err){
+            	line.attr("hasError","Saving Failed "+err.status);
+            	throw err;
+            });
         } else {
             throw new Error("No good. The ID could not be dereferenced. Maybe this is a new annotation?");
         }
-//TODO CUBAP HERE
-
     }
-    if (cleanup !== "no") cleanupTranscriptlets(true);
+
+    if (cleanup) cleanupTranscriptlets(true);
 }
 
 function saveNewLine(lineBefore, newLine){

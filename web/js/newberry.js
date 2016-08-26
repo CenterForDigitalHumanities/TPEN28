@@ -744,7 +744,7 @@ function linesToScreen(lines){
     }
     var thisContent = "";
     var thisPlaceholder = "Enter a line transcription";
-    var counter = 0;
+    var counter = -1;
     var colCounter = 0;
     var image = $('#imgTop img');
     var theHeight = image.height();

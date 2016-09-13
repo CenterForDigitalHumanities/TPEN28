@@ -674,7 +674,7 @@ function drawLinesToCanvas(canvasObj, parsing){
                     if (typeof annoList[index] === "string"){
                         // This is just an @id, perhaps
                         for (var i = annoList.length - 1; i >= 0; i--) {
-                        	if (this === annoList[i]["@id"]){
+                        	if (annoList[index] === annoList[i]["@id"]){
                         		// found the dereferenced object, wipe this
                         		delete annoList[index]; // above this scope
                         		break;

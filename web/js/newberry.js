@@ -671,7 +671,7 @@ function drawLinesToCanvas(canvasObj, parsing){
             if (annoList.length > 0){
                 // Scrub resolved lists that are already present.
                 $.each(annoList, function(index){
-                    if (typeof this === "string"){
+                    if (typeof annoList[index] === "string"){
                         // This is just an @id, perhaps
                         for (var i = annoList.length - 1; i >= 0; i--) {
                         	if (this === annoList[i]["@id"]){
@@ -689,7 +689,7 @@ function drawLinesToCanvas(canvasObj, parsing){
                         delete annoList[index]; // above this scope
                     }
                 });
-                annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent 
+                annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent
                 = annoList.filter(function(){ // clear out empty items
                 	return true;
                 });
@@ -946,7 +946,7 @@ function linesToScreen(lines){
             clearTimeout(typingTimer);
             //when a user stops typing for 2 seconds, fire an update to get the new text.
             typingTimer = setTimeout(function(){
-                updateLine(lineToUpdate, "no");
+                updateLine(lineToUpdate);
             }, 2000);
     });
 }
@@ -1117,7 +1117,7 @@ function loadTranscriptlet(lineid){
     if ($('#transcriptlet_' + lineid).length > 0){
         if (tpen.user.current){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
-            updateLine(lineToUpdate, "no");
+            updateLine(lineToUpdate);
             updatePresentation($('#transcriptlet_' + lineid));
         }
         else {
@@ -1150,7 +1150,7 @@ function nextTranscriptlet() {
     if ($('#transcriptlet_' + nextID).length > 0){
         if (tpen.user.current){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
-            updateLine(lineToUpdate, "no");
+            updateLine(lineToUpdate);
             updatePresentation($('#transcriptlet_' + nextID));
         }
         else {
@@ -1181,7 +1181,7 @@ function previousTranscriptlet() {
     if (prevID >= 0){
         if (tpen.user.current){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
-            updateLine(lineToUpdate, "no");
+            updateLine(lineToUpdate);
             updatePresentation($('#transcriptlet_' + prevID));
         }
         else {

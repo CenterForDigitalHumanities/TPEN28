@@ -1915,7 +1915,7 @@ function destroyPage(){
 /* Make parsing interface turn the lines in the view into columns */
 function linesToColumns(){
 //update lines in case of changes
-    tpen.screen.gatheredColumns = []; //The array built by gatherColumns()
+    var gatheredColumns = tpen.screen.gatheredColumns = []; //The array built by gatherColumns()
     $(".parsingColumn").remove();
     if ($(".parsing").size() === 0) return false;
     //loop through lines to find column dimensions
@@ -1927,12 +1927,12 @@ function linesToColumns(){
     gatherColumns( - 1); //Gets all columns into an array.
     //build columns
     var columns = [];
-    for (j = 0; j < tpen.screen.gatheredColumns.length; j++){
+    for (j = 0; j < gatheredColumns.length; j++){
         var parseImg = document.getElementById("imgTop").getElementsByTagName("img");
-        var scaledX = tpen.screen.gatheredColumns[j][0];
-        var scaledY = tpen.screen.gatheredColumns[j][1];
-        var scaledW = tpen.screen.gatheredColumns[j][2];
-        var scaledH = tpen.screen.gatheredColumns[j][3];
+        var scaledX = gatheredColumns[j][0];
+        var scaledY = gatheredColumns[j][1];
+        var scaledW = gatheredColumns[j][2];
+        var scaledH = gatheredColumns[j][3];
     //            // recognize, alert, and adjust to out of bounds columns
         if (scaledX + scaledW > 100){
         // exceeded the right boundary of the image
@@ -2595,7 +2595,7 @@ function updateLine(line, cleanup){
     }
     else if (currentAnnoListID){
         if(currentLineServerID.startsWith("http")){
-            var url = "165.134.241.141/annotationstore/anno/updateAnnotation.action";
+            var url = "http://165.134.241.141/annotationstore/anno/updateAnnotation.action";
             var payload = { // Just send what we expect to update
             	content : JSON.stringify({
             		"@id" : dbLine['@id'],			// URI to find it in the repo
@@ -2953,12 +2953,11 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     else {
     }
     var index = - 1;
-    currentFolio = parseInt(currentFolio);
-    var currentAnnoList = annoLists[currentFolio - 1];
-    if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){ // if it IIIF, we need to update the list
+    var currentFolio = parseInt(tpen.screen.currentFolio);
+    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio]);
+    if (currentAnnoList.startsWith("http")){ // dereference
         var annosURL = "getAnno";
-        var properties = {"@id": currentAnnoList};
-        var paramOBJ = {"content": JSON.stringify(properties)};
+        var paramOBJ = {"content": JSON.stringify({"@id": currentAnnoList})};
         $.post(annosURL, paramOBJ, function(annoList){
             annoList = JSON.parse(annoList);
             var annoListID = currentAnnoList;
@@ -2979,8 +2978,6 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
                     var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
                     var params = {"content":JSON.stringify(paramObj)};
                     $.post(url, params, function(data){
-                        currentFolio = parseInt(currentFolio);
-                        annoLists[currentFolio - 1] = annoListID;
                         if (!removeNextLine){
                             $("#parsingCover").hide();
                         }

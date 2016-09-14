@@ -3018,22 +3018,22 @@ function removeColumnTranscriptlets(lines, recurse){
         var paramOBJ = {"content": JSON.stringify(properties)};
         $.post(annosURL, paramOBJ, function(annoList){
             annoList = JSON.parse(annoList);
-            var annoListID = currentAnnoList;
-            currentAnnoList = annoList[0];
+            var list = tpen.manifest.sequences[0].canvases[currentFolio].otherContent[currentAnnoList] = annoList[0];
+            var annoListID = list['@id'];
             for (var l = lines.length - 1; l >= 0; l--){
                 var theLine = $(lines[l]);
                 var index2 = - 1;
-                $.each(currentAnnoList.resources, function(){
+                $.each(list.resources, function(){
                     var currentResource = this;
                     index2++;
                     if (currentResource["@id"] == theLine.attr("lineserverid")){
-                        currentAnnoList.resources.splice(index2, 1);
+                        list.resources.splice(index2, 1);
                         theLine.remove();
                     }
                 });
                 if (l === 0){
                     var url = "updateAnnoList";
-                    var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
+                    var paramObj = {"@id":annoListID, "resources": list.resources};
                     var params = {"content":JSON.stringify(paramObj)};
                     $.post(url, params, function(data){
                         if (recurse){

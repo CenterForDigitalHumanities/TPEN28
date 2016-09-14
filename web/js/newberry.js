@@ -3009,8 +3009,8 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
 /* Remove all transcriptlets in a column */
 function removeColumnTranscriptlets(lines, recurse){
     var index = - 1;
-    currentFolio = parseInt(currentFolio);
-    var currentAnnoList = annoLists[currentFolio - 1];
+    var currentFolio = parseInt(tpen.screen.currentFolio);
+    var currentAnnoList = tpen.screen.currentAnnoList;
     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
         // if it IIIF, we need to update the list
         var annosURL = "getAnno";
@@ -3036,9 +3036,9 @@ function removeColumnTranscriptlets(lines, recurse){
                     var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
                     var params = {"content":JSON.stringify(paramObj)};
                     $.post(url, params, function(data){
-                        annoLists[currentFolio - 1] = annoListID;
                         if (recurse){
                             nextColumnToRemove.remove();
+                            // FIXME: I cannot find this object always?
                             destroyPage();
                         }
                         else{
@@ -3050,7 +3050,7 @@ function removeColumnTranscriptlets(lines, recurse){
         });
     }
     else {
-        //It was not a part of the list, but we can still cleanup the transcriptlets from the interface.  This could happen when a object is fed to the
+        //It was not a part of the list, but we can still cleanup the transcriptlets from the interface. This could happen when a object is fed to the
         //transcription textarea who instead of using an annotation list used the resources[] field to store anno objects directly with the canvas.
         //These changes will not save, they are purely UI manipulation.  An improper, view only object has been fed to the interface at this point, so this is intentional.
         for (var l = lines.length - 1; l >= 0; l--){

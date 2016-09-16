@@ -22,15 +22,15 @@ authors: bhaberbe and cubap
             #forgetForm {margin:-4px 5px 2px;background: url(images/linen.png);padding:10px 15px;display:none;overflow: hidden;z-index: 1; border: 1px solid #A68329;
                          box-shadow:-1px -1px 2px black;}
             #forgetFormBtn {position: relative;z-index: 2;cursor: pointer;margin: 0 0 5px 0;}
+            body {visibility: visible !important;}
         </style>
     </head>
     <body>
         <div id="loginfail" >
-            <style type="text/css">
-                body {visibility: visible !important;}
-            </style>
             <div id="urgentError">
-                <p id="errorMessage"><%out.print(message);%></p>
+                <p id="errorMessage">Something unknown happened, but it wasn't good.</p>
+                <button onclick='$("#loginfail")
+                            .fadeOut()' type="button" class="ui-button ui-widget ui-state-default">Try Again</button>
                 <a href='index.jsp'>T&#8209;PEN Home</a>
             </div>
             <div id="trexHead"></div>
@@ -42,6 +42,7 @@ authors: bhaberbe and cubap
                 <h1><script>document.write(document.title);</script></h1>
                 <div id="main" class="ui-widget ui-widget-content ui-corner-all ui-tabs ui-helper-reset ui-helper-clearfix">
                     <div class="login left">
+                        <h3 class="ui-widget-header ui-tabs ui-corner-all ui-state-default">Log In</h3>
                         <p> You may log into your account to start transcribing or to manage your projects.</p>
                         <div id="resetPassword">
                             <h6 id="forgetFormBtn" class="clear-right">Forgot your Password?<span class="left ui-icon ui-icon-arrowstop-1-s"></span></h6>
@@ -92,7 +93,19 @@ authors: bhaberbe and cubap
                         "uname": userName, "password": password
                     };
                     $.post(url, params, function () {
+                        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                            sURLVariables = sPageURL.split('&'),
+                            sParameterName,
+                            i;
 
+                        for (i = 0; i < sURLVariables.length; i++) {
+                            sParameterName = sURLVariables[i].split('=');
+
+                            if (sParameterName[0] === "ref") {
+                                return window.location.href = sParameterName[1];
+                            }
+                        }
+                        return window.location.href = "/index.jsp";
                     })
                         .done(function () {
                             $("#loginfail")
@@ -100,7 +113,8 @@ authors: bhaberbe and cubap
                         })
                         .fail(function (error) {
                             $("#loginfail")
-                                .children("p")
+                                .show()
+                                .find("p")
                                 .html(error.status + ":" + error.statusText);
                         });
                 }
@@ -108,6 +122,15 @@ authors: bhaberbe and cubap
                     alert('You must enter a user name (E-mail) and password!');
                 }
             }
+            $("#forgetFormBtn")         // forgot user password form hide and reveal
+                .click(function () {
+                    $("#forgetForm")
+                        .slideToggle(500);
+                    $(this)
+                        .children("span")
+                        .toggle();
+                });
+
         </script>
     </body>
 </html>

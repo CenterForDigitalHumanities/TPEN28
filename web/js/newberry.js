@@ -220,12 +220,12 @@ function populateXML(xmlTags){
 /*
          * Load the transcription from the text in the text area.
          */
-function loadTranscription(){
+function loadTranscription(pid){
     //Object validation here.
     var projectID = tpen.project.id || 4080;
     var userTranscription = $('#transcriptionText').val();
     var currentFolio = tpen.screen.currentFolio || 0;
-    if ($.isNumeric(userTranscription)){
+    if (pid || $.isNumeric(userTranscription)){
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
         projectID = userTranscription;
         var theProjectID = projectID;

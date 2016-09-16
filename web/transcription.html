@@ -435,7 +435,7 @@
                     if (theURL.indexOf("projectID=") > -1){
                         var projID = theURL.substring(theURL.indexOf("projectID=")+10);
                         tpen.project.id = parseInt(projID);
-                        loadTranscription();
+                        loadTranscription(tpen.project.id);
                     }
                     else {
                         $('#transcriptionTemplate').hide();

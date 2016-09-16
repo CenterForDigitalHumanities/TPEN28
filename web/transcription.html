@@ -445,42 +445,16 @@
                     }
                 }
                 else {
-                    $("#trimCurrentUser").html("No User");
                     tpen.user.current = false;
                     var theURL = window.location.href;
-                    var projID = theURL.substring(theURL.indexOf("projectID=")+10);
-                    if (theURL.indexOf("projectID=") > -1) {
-                        alert("You must be logged in to view project "+projID);
-                    }
-                    $('#transcriptionTemplate').hide();
-                    $('#setTranscriptionObjectArea').show();
-                    $(".instructions").show();
-                    $(".hideme").show();
-                    $("#parsingBtn").unbind("click");
-                    $("#parsingBtn").attr("onclick","");
-                    $("#parsingBtn").click(function(){
-                        alert("You must be logged in to correct line parsing.  Log in and refresh the page to correct parsing.");
-                    });
+                    return window.location.href = "login.html?ref="+encodeURIComponent(theURL);
                 }
                 //only get iframes after confirmed user authentication
             },
             error: function(jqXHR,error, errorThrown) {
-                $("#trimCurrentUser").html("No User");
                 tpen.user.current = false;
                 var theURL = window.location.href;
-                var projID = theURL.substring(theURL.indexOf("projectID=")+10);
-                if (theURL.indexOf("projectID=") > -1){
-                    alert("You must be logged in to view project "+projID);
-                }
-                $('#transcriptionTemplate').hide();
-                $('#setTranscriptionObjectArea').show();
-                $(".instructions").show();
-                $(".hideme").show();
-                $("#parsingBtn").unbind("click");
-                $("#parsingBtn").attr("onclick","");
-                $("#parsingBtn").click(function(){
-                    alert("You must be logged in to correct line parsing.  Log in and refresh the page to correct parsing.");
-                });
+                return window.location.href = "login.html?ref="+encodeURIComponent(theURL);
             }
         });
 

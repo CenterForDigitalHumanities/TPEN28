@@ -1,134 +1,113 @@
 <!DOCTYPE html>
 <!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
+TPEN 2.8
+authors: bhaberbe and cubap
 -->
 <html>
     <head>
-        <title>LOGIN</title>
-        <meta charset="UTF-8">
+        <title>Login or Register a New Account</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="css/tpen.css" type="text/css" media="screen, projection">
         <link type="text/css" href="css/custom-theme/jQuery.css" rel="Stylesheet" />
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
         <script type="text/javascript" src="js/newberry.js"></script>
+        <style>
+            #loginsuccess, #loginfail{
+                display: none;
+                cursor: default !important;
+            }
+            .login, #register { width: 45%;padding:10px;}
+            #content {max-width: 800px;}
+            #forgetForm {margin:-4px 5px 2px;background: url(images/linen.png);padding:10px 15px;display:none;overflow: hidden;z-index: 1; border: 1px solid #A68329;
+                         box-shadow:-1px -1px 2px black;}
+            #forgetFormBtn {position: relative;z-index: 2;cursor: pointer;margin: 0 0 5px 0;}
+        </style>
     </head>
-    <style>
-        #bypassLogin{
-                width: 100%;
-                background-color: #808080;
-                text-align: center;
-                margin-bottom: 30px;
-                padding: 14px 0px;
-        }
-        #bypassLogin button{
-            padding: 8px 7px;
-            background-color: #FFF;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        #bypassLogin button:hover{
-            color: blue;
-        }
-        
-        #loginsuccess, #loginfail{
-            display: none;
-            cursor: default !important;
-        }
-    </style>
     <body>
-        <div id="bypassLogin"><button onclick="bypass();">Bypass Login</button></div> <!--<button onclick="testCreate();">Test Create</button>-->
-            <div id="main" class="ui-widget ui-widget-content ui-corner-all ui-tabs ui-helper-reset ui-helper-clearfix">
-                <div id="login" class="left">
-                    <h3 class="ui-widget-header ui-tabs ui-corner-all ui-state-default">Log In</h3>
-                    <p> 
-                        If you have your local T-PEN database set up and would like to login to test getting projects you can do so here.  The transcription interface will work
-                        independent of a database if you do not have your local T-PEN database prepared.  To bypass login, <a href="newberryTrans.html">go to the transcription page directly</a>.  The URL is newberryTrans.html  
-                        <br>  If you bypass login, all you need is a T-PEN or IIIF manifest.  The images in the manifest must be public
-                        for the transcription interface to get the images/annotations/other metadata.  If the login the images are behind leave a cookie in the browser to indicate a valid login session, then login to that location in another
-                        tab and the transcription interface will be able to get the images.  
-                    </p>
-
-                <div id="userLogin">
-                    <div>Login Here:</div>
-                    <label for="uname">Email</label> <input class="text" type="text" id="uname"/> <br/>
-                    <label for="password">Password</label> <input class="text" type="password" id="password"/> <br/>
-                    <input class="ui-button ui-state-default ui-corner-all right" type="button" title="Log In" value="Log In"
-                           onclick="userLogin();">
-                    <input id="loginsuccess" style="background: none; background-color:white;" class="ui-button ui-state-default ui-corner-all right" type="button" value="Login Success">
-                    <input id="loginfail" style="background: none; background-color:white;" class="ui-button ui-state-default ui-corner-all right" type="button" value="Login Fail">
-                </div>
-<!--TODO                
-            <div id="register" class="right">
-                <h3 class="ui-widget-header ui-tabs ui-corner-all ui-state-default">Register a New Account</h3>
-                <form>
-                    <fieldset>
-                        <legend>or Register as a New User:</legend>
-                        Note: You will receive your password via email after your account is activated by an administrator
-                        <label for="uname">Email</label><input class="text" type="text" name="uname"/><br/>
-                        <label for="fname">First Name</label><input class="text" type="text" name="fname"/><br/>
-                        <label for="lname">Last Name</label><input class="text" type="text" name="lname"/><br/>
-                        <input type="submit" value="Register" class=""/>
-                   </fieldset>
-                </form>
+        <div id="loginfail" >
+            <style type="text/css">
+                body {visibility: visible !important;}
+            </style>
+            <div id="urgentError">
+                <p id="errorMessage"><%out.print(message);%></p>
+                <a href='index.jsp'>T&#8209;PEN Home</a>
             </div>
--->
+            <div id="trexHead"></div>
+        </div>
+        <div id="wrapper">
+            <div id="header"><p align="center" class="tagline">transcription for paleographical and editorial notation</p>
+            </div>
+            <div id="content">
+                <h1><script>document.write(document.title);</script></h1>
+                <div id="main" class="ui-widget ui-widget-content ui-corner-all ui-tabs ui-helper-reset ui-helper-clearfix">
+                    <div class="login left">
+                        <p> You may log into your account to start transcribing or to manage your projects.</p>
+                        <div id="resetPassword">
+                            <h6 id="forgetFormBtn" class="clear-right">Forgot your Password?<span class="left ui-icon ui-icon-arrowstop-1-s"></span></h6>
+                            <form id="forgetForm" action="admin.jsp" method="POST" class="ui-corner-all">
+                                <span>Enter the email address associated with your account to have your password reset.</span>
+                                <input id="email" type="text" class="text" style="width:220px;" placeholder="Forgot your password?" name="email">
+                                <input class="right ui-corner-all ui-state-default" type="submit" name="emailSubmitted" value="Reset Password"/>
+                            </form>
+                        </div>
 
-<!--TODO                        
-                <div id="resetPassword">
-                    <h6 id="forgetFormBtn" class="clear-right">Forgot your Password?</h6>
-                    <form id="forgetForm" action="admin.jsp" method="POST" class="ui-corner-all">
-                    <span>Enter the email address associated with your account to have your password reset.</span>
-                        <input id="email" type="text" style="width:220px;" placeholder="Forgot your password?" name="email">
-                        <input class="right ui-corner-all ui-state-default" type="submit" name="emailSubmitted" value="Reset Password"/>
-                    </form>
+                        <div class="login">
+                            <fieldset>
+                                <legend>Login Here:</legend>
+                                <label for="uname">Email</label> <input class="text" type="text" id="uname"/> <br/>
+                                <label for="password">Password</label> <input class="text" type="password" id="password"/> <br/>
+                                <input class="ui-button ui-state-default ui-corner-all right" type="button" title="Log In" value="Log In"
+                                       onclick="userLogin();">
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div id="register" class="right">
+                        <h3 class="ui-widget-header ui-tabs ui-corner-all ui-state-default">Register a New Account</h3>
+                        <form action="signup.jsp" method="POST">
+                            <fieldset>
+                                <legend>or Register as a New User:</legend>
+                                Note: You will receive your password via email after your account is activated by an administrator
+                                <label for="uname">Email</label><input class="text" type="text" name="uname"/><br/>
+                                <label for="fname">First Name</label><input class="text" type="text" id="fname" name="fname"/><br/>
+                                <label for="lname">Last Name</label><input class="text" type="text" id="lname" name="lname"/><br/>
+                                <input type="submit" value="Register" class="ui-button ui-state-default ui-corner-all right"/>
+                            </fieldset>
+                        </form>
+                    </div>
                 </div>
--->
+                <a class="returnButton" href="index.jsp">Return to T&#8209;PEN Home</a>
+
             </div>
         </div>
-        
+        <script>
+            function userLogin () {
+                var userName = $('#uname')
+                    .val();
+                var password = $('#password')
+                    .val();
+                if (userName !== undefined && userName !== "" && password !== undefined && password !== "") {
+                    var url = "login";
+                    var params = {
+                        "uname": userName, "password": password
+                    };
+                    $.post(url, params, function () {
+
+                    })
+                        .done(function () {
+                            $("#loginfail")
+                                .hide();
+                        })
+                        .fail(function (error) {
+                            $("#loginfail")
+                                .children("p")
+                                .html(error.status + ":" + error.statusText);
+                        });
+                }
+                else {
+                    alert('You must enter a user name (E-mail) and password!');
+                }
+            }
+        </script>
     </body>
 </html>
-<script>
-    function bypass(){
-        window.location.href = "newberryTrans.html";
-    }
-    function testCreate(){
-        var url = 'createProject';
-        var testObj = {"attribution": "Provided by Harvard University", "structures": [], "label": "MS Typ 41. Houghton Library, Harvard University. Chronique du monde depuis la cr\u00e9ation, et des rois de France et d'Angleterre, jusqu'\u00e0 l'an 1461 : manuscript, [ca. 1461]", "sequences": [{"canvases": [{"label": "41", "width": 6251, "images": [{"resource": {"service": {"profile": "http://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1", "@id": "http://ids.lib.harvard.edu/ids/iiif/48530377"}, "format": "image/jpeg", "height": 109517, "width": 6251, "@id": "http://ids.lib.harvard.edu/ids/iiif/48530377/full/full/full/native", "@type": "dcterms:Image"}, "on": "http://oculus-dev.harvardx.harvard.edu/manifests/drs:48309543/canvas/canvas-48530377.json", "motivation": "sc:painting", "@id": "http://oculus-dev.harvardx.harvard.edu/manifests/drs:48309543/annotation/anno-48530377.json", "@type": "oa:Annotation"}], "height": 109517, "@id": "http://oculus-dev.harvardx.harvard.edu/manifests/drs:48309543/canvas/canvas-48530377.json", "@type": "sc:Canvas"}], "viewingDirection": "left-to-right", "@id": "http://oculus-dev.harvardx.harvard.edu/manifests/drs:48309543/sequence/normal.json", "@type": "sc:Sequence", "viewingHint": "paged"}], "@context": "http://www.shared-canvas.org/ns/context.json", "@id": "http://oculus-dev.harvardx.harvard.edu/manifests/drs:48309543", "@type": "sc:Manifest", "seeAlso": "http://hollisclassic.harvard.edu/F?func=find-c&CCL_TERM=sys=9520434"}
-        var params = {"scmanifest": JSON.stringify(testObj)};
-        $.post(url, params, function(data){
-            //console.log(data);
-        });
-    }
-    function userLogin(){
-        var userName = $('#uname').val();
-        var password = $('#password').val();
-        if(userName !== undefined && userName !== "" && password !== undefined && password !== ""){
-            var url = "login";
-            var params = {"uname":userName, "password":password};
-            $.post(url, params, function(){
-                
-            })
-            .done(function(){
-                //console.log("login success");
-                $("#loginfail").hide();  
-                $("#loginsuccess").show();
-            })
-            .fail(function(){
-                $("#loginfail").show();  
-                $("#loginsuccess").hide();
-            });
-        }
-        else{
-            alert('You must enter a user name (E-mail) and password!');
-        }            
-    }
-    
-    function registerNewUser(){
-        //Need an API? 
-    }
-    
-</script>
-    

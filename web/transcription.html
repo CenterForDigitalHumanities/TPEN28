@@ -8,7 +8,7 @@
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
         <script type="text/javascript" src="js/newberry.js"></script>
-    </head>    
+    </head>
     <style>
         p{
             padding: 0px 10px;
@@ -39,18 +39,18 @@
             z-index: 3;
             display: none;
         }
-        
+
         .magifyHelp button{
             width: 35px;
         }
-        
+
         .parsingHdr{
             margin-left: 20px;
         }
-        
-        
-        
-        
+
+
+
+
     </style>
     <body>
         <div class="pageTurnCover">
@@ -77,25 +77,25 @@
             </span>
             <span class="trimSection">USER: <span id="trimCurrentUser"></span></span>
 <!--            <span class="trimSection">Help</span> -->
-<!--             <span class="trimSection"><a href="https://paleography.library.utoronto.ca/contact" target="_blank">Contact</a></span> 
- -->        
+<!--             <span class="trimSection"><a href="https://paleography.library.utoronto.ca/contact" target="_blank">Contact</a></span>
+ -->
         </div>
 
         <div class="instructions">
-            <!-- TODO: Are we logged in to see this? -->            
+            <!-- TODO: Are we logged in to see this? -->
             <p>
                 The area below accepts a local project ID number, a project or IIIF manifest url, or a valid T-PEN or IIIF manifest JSON object as valid input.
             </p>
             <p>
-                Once you have decided what to put into the area, click 'Load Transcription' to have the input created into the transcription interface.  
+                Once you have decided what to put into the area, click 'Load Transcription' to have the input created into the transcription interface.
             </p>
         </div>
-        
+
         <div id="setTranscriptionObjectArea">
             <textarea id="transcriptionText" placeholder="Transcribe this line"></textarea>
         </div>
-        
-        <button id="loadBtn" class="hideme" onclick="loadTranscription();"> Load Transcription </button> 
+
+        <button id="loadBtn" class="hideme" onclick="loadTranscription();"> Load Transcription </button>
         <div id="transTemplateLoading">
             <p>Please wait while we load the transcription interface.</p>
         </div>
@@ -126,13 +126,13 @@
                 </div><br>
                 <div class="bottomButtons">
                     <select id="charactersPopin" class="specialCharacters"  title="Special Characters" >
-                        <option id="activeCharacters" >Characters</option> 
+                        <option id="activeCharacters" >Characters</option>
                     </select>
                     <select id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
-                        <option id="activeTags">XML Tags</option> 
+                        <option id="activeTags">XML Tags</option>
                     </select>
-                    <select id="splitScreenTools" > 
-                         <option id="activeSplitTool" >Split Page Tools</option> 
+                    <select id="splitScreenTools" >
+                         <option id="activeSplitTool" >Split Page Tools</option>
                          <option splitter='start' class="splitTool" >Get Started</option>
                          <option splitter='essay' class="splitTool" >Background Essay</option>
                          <option splitter='partialTrans' class="splitTool" >Partial Transcriptions</option>
@@ -152,7 +152,7 @@
                          <option splitter='preview' class="splitTool" >Text Preview</option>
                          <option splitter='fullPage' class="splitTool"  >View Full Page</option>
                          <option splitter='compare' class="splitTool" >Compare Page</option>
-                     </select>  
+                     </select>
                 </div>
                 <div class="bottomButtons" style="width: 201px; top:-4px;">
                     <div id="imageTools" style="width: 201px;">
@@ -172,7 +172,7 @@
                 <div class="bottomButtons">
                      <button class="magnifyBtn" magnifyImg="trans" title="Magnify Transcription Image" >Magnify</button> <!--Page event on the listener for this class in js.-->
                      <button id="moveImage" title="Move Transcription Image" onclick="startMoveImg();">Move Img</button>
-                     <button id="parsingBtn" title="Correct Page Parsing" >Correct Parsing</button> <!--Page event on the listener for this class in js.--> 
+                     <button id="parsingBtn" title="Correct Page Parsing" >Correct Parsing</button> <!--Page event on the listener for this class in js.-->
                      <!--<button id="linebreakBtn">Linebreak</button>-->
                     <div  id="lineColControls">
                         <div title="Control Drawn Line Settings" id="lineCtrlLabel">Line Control</div>
@@ -194,7 +194,7 @@
                 <div class="toolLinks">
                 <!-- tool buttons for parsing -->
                 </div>
-                
+
                 <div id="parsingDiv" class="">
                     <div style="margin-top: 35px;">Any lines or columns that are created or edited are saved automatically.  This is also true for edits made in the full page transcription interface.</div>
                     <div id="parseOptions">
@@ -232,7 +232,7 @@
                                 <div class="parsingToolButtons">
                                     <span id="addLines" class="tpenButton" title="Split lines to create new ones in a column" show="addLinesInst">Add Lines</span>
                                     <span id="removeLines" class="tpenButton" title="Merge two lines or remove the last line from a column" show="removeLinesInst">Delete/Merge Lines</span>
-                                    <span id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines" show="adjustLinesInst">Adjust Lines</span>                       
+                                    <span id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines" show="adjustLinesInst">Adjust Lines</span>
                                 </div>
                                 <div class="activeParsingTool">
                                     <div class="startHide" id="addLinesInst">
@@ -246,7 +246,7 @@
                                             <label for="black"><input onclick="rulerColor('black');" CHECKED type="radio" value="black" name="rulerColor"/>Black</label>
                                             <label for="white"><input onclick='rulerColor("white");' id="white" type="radio" value="white" name="rulerColor"/>White</label>
                                             <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown." type="text" id="customRuler" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
-                                        </div>                  
+                                        </div>
                                     </div>
                                     <div class="startHide" id="removeLinesInst">
                                         <p class="">Click within the shaded area to merge the highlighted lines or delete the last line of a column.</p>
@@ -258,7 +258,7 @@
                                         <p class="">Click and drag the right side of the line to contain the line accurately.</p>
                                         <p class="small"><span class="inline ui-icon ui-icon-check"></span>This method retains all your <acronym title="Text, markup, and notes saved for each line will remain attached.">transcription information</acronym>.<br />
                                         <span><span class="inline ui-icon ui-icon-info"></span>Only the right boundary can be moved in this tool.</span><br />
-                                        <span><span class="inline ui-icon ui-icon-info"></span>Make precise, individual changes in the transcription view on the currently selected line.  
+                                        <span><span class="inline ui-icon ui-icon-info"></span>Make precise, individual changes in the transcription view on the currently selected line.
                                             Hold the ALT key and drag the right side of a line to resize it.  While holding the ALT key
                                         press the left and right arrows to 'bump' the line.</span></p>
                                     </div>
@@ -271,47 +271,47 @@
                     <div id="lineResizing" class="ui-widget-content ui-corner-all">Your <span id="originalLine">original</span> pixel line is being resized by <span id="newLine">100</span>%.</div>
                 </div>
             </div>
-        
+
             <div id="startSplit" class="split">
                 <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe data_src="https://paleography.library.utoronto.ca/content/get-started"></iframe>
             </div>
-        
+
             <div id="calligraphySplit" class="split">
                 <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe data_src="https://paleography.library.utoronto.ca/islandora/object/paleography%3Acalligraphybooks?response_type=embed"></iframe>
             </div>
-        
+
             <div id="mapsSplit" class="split">
                 <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe data_src="https://paleography.library.utoronto.ca/islandora/object/paleography%3Ahistoricalmaps?response_type=embed"></iframe>
             </div>
-        
+
             <div id="scriptsSplit" class="split">
                 <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe data_src="https://paleography.library.utoronto.ca/content/scripts?response_type=embed"></iframe>
             </div>
-        
+
             <div id="documentsSplit" class="split">
                 <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe data_src="https://paleography.library.utoronto.ca/content/about-french-documents?response_type=embed"></iframe>
             </div>
-        
+
             <div id="conservationSplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>                
+                <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe data_src="https://paleography.library.utoronto.ca/content/conservation?response_type=embed"></iframe>
             </div>
-        
+
             <div id="conventionsSplit" class="split">
                 <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe data_src="https://paleography.library.utoronto.ca/content/transcribing-editing-conventions?response_type=embed"></iframe>
             </div>
-        
+
             <div id="teachersSplit" class="split">
                 <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe data_src="https://paleography.library.utoronto.ca/content/teachers?response_type=embed"></iframe>
             </div>
-        
+
             <div id="groupSplit" class="split">
                 <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe id="forum_embed"
@@ -322,65 +322,65 @@
                  height="700">
                 </iframe>
             </div>
-        
+
             <div id="abbrevSplit" class="split" >
-                <button class="fullScreenTrans">Full Screen Transcription</button>               
+                <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe data_src="https://paleography.library.utoronto.ca/content/abbreviations?response_type=embed"></iframe>
             </div>
-        
+
             <div id="dictionarySplit" class="split iTool">
                 <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe id="frenchDictionary" data_src="https://paleography.library.utoronto.ca/content/dictionaries?response_type=embed">
                 </iframe>
             </div>
-        
+
             <div id="glossarySplit" class="split">
                 <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe data_src="https://paleography.library.utoronto.ca/content/glossary-of-terms?response_type=embed"></iframe>
             </div>
-        
+
             <div id="fInstitutionsSplit" class="split">
                 <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe data_src="https://paleography.library.utoronto.ca/content/french-institutions?response_type=embed"></iframe>
             </div>
-        
+
             <div id="otherSplit" class="split">
                 <button class="fullScreenTrans">Full Screen Transcription</button>
                 <iframe data_src="https://paleography.library.utoronto.ca/content/other-reference-resources?response_type=embed"></iframe>
             </div>
-        
+
            <div id="linebreakSplit" class="ui-widget ui-widget-content split">
                <button class="fullScreenTrans">Full Screen Transcription</button>
                 <h3>Linebreak Existing Transcription (In Development)</h3>
            </div>
             <div id="compareSplit" class="split">
-                <div class="toolLinks">      
+                <div class="toolLinks">
                     <select id="compareJump">
                         <option folioNum="0">Compare To</option>
                     </select>
                     <button class="fullScreenTrans">Full Screen Transcription</button>
-                    <button class="showMe" onclick="restoreWorkspace();">Show Workspace</button>    
-                    <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>   
+                    <button class="showMe" onclick="restoreWorkspace();">Show Workspace</button>
+                    <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
                     <button class="magnifyBtn" magnifyImg="compare" >Magnify</button>
                 </div>
 
                 <img class="compareImage" folioNum="1"></img>
             </div>
             <div id="previewSplit" class="split">
-                <div class="toolLinks">      
+                <div class="toolLinks">
                     <button class="fullScreenTrans">Full Screen Transcription</button>
-                    <button class="showMe" onclick="restoreWorkspace();">Show Workspace</button>    
-                    <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>          
-                </div> 
+                    <button class="showMe" onclick="restoreWorkspace();">Show Workspace</button>
+                    <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
+                </div>
                 <div id="previewDiv">
 
                 </div>
             </div>
-            <div id="fullPageSplit" class="split">  
-                <div class="toolLinks">      
+            <div id="fullPageSplit" class="split">
+                <div class="toolLinks">
                     <button class="fullScreenTrans">Full Screen Transcription</button>
-                    <button class="showMe" onclick="restoreWorkspace();">Show Workspace</button>    
-                    <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>     
+                    <button class="showMe" onclick="restoreWorkspace();">Show Workspace</button>
+                    <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
                     <button class="magnifyBtn" style="position: relative;" magnifyImg="full" >Magnify</button>
                 </div>
                 <div id="fullPageSplitCanvas"><img id="fullPageImg" src="" /></div>
@@ -401,7 +401,7 @@
 </html>
 <script>
     var theProjectID = -1;
-    
+
     //Must explicitly set new height and width for percentages values in the DOM to take effect.
     window.onresize = function(event) {
         var newHeight = $("#imgBottom img").height();
@@ -411,7 +411,7 @@
               $(this).css("line-height", $(this).height()+"px");
           });
     };
-    
+
     //Page load event triggers and attached here.
     $(document).ready(function(){
         $("#imgTop, #imgBottom").css("height", "400px");
@@ -426,33 +426,30 @@
             type: "GET",
             dataType: "json",
             success: function(data){
-//                console.log("user data");
-//                console.log(data);
                 if(data.uname && data.uname !== ""){
                     user = data.uname;
-                    loggedInUser = true;
+                    tpen.user.current = data.uid;
                     $("#trimCurrentUser").html(user);
                     $("#trimCurrentUser").attr("title",user);
                     var theURL = window.location.href;
                     if (theURL.indexOf("projectID=") > -1){
                         var projID = theURL.substring(theURL.indexOf("projectID=")+10);
-                        theProjectID = parseInt(projID);
-                        $("#transcriptionText").val(projID);
-                        $("#loadBtn").click();
+                        tpen.project.id = parseInt(projID);
+                        loadTranscription();
                     }
-                    else{
+                    else {
                         $('#transcriptionTemplate').hide();
                         $('#setTranscriptionObjectArea').show();
                         $(".instructions").show();
                         $(".hideme").show();
                     }
                 }
-                else{
+                else {
                     $("#trimCurrentUser").html("No User");
-                    loggedInUser = false;
+                    tpen.user.current = false;
                     var theURL = window.location.href;
                     var projID = theURL.substring(theURL.indexOf("projectID=")+10);
-                    if (theURL.indexOf("projectID=") > -1){
+                    if (theURL.indexOf("projectID=") > -1) {
                         alert("You must be logged in to view project "+projID);
                     }
                     $('#transcriptionTemplate').hide();
@@ -466,11 +463,10 @@
                     });
                 }
                 //only get iframes after confirmed user authentication
-                
             },
-            error: function(jqXHR,error, errorThrown) { 
+            error: function(jqXHR,error, errorThrown) {
                 $("#trimCurrentUser").html("No User");
-                loggedInUser = false;
+                tpen.user.current = false;
                 var theURL = window.location.href;
                 var projID = theURL.substring(theURL.indexOf("projectID=")+10);
                 if (theURL.indexOf("projectID=") > -1){
@@ -489,9 +485,9 @@
         });
 
 
-        //get all project metadata so that we can get the project and user tools. 
+        //get all project metadata so that we can get the project and user tools.
         $(".split").find('iframe').css("height", window.innerHeight+"px");
-        $('select').find('option:eq(0)').prop("selected",true); //stops certain bugs caused by previously selected dropdown options.  
+        $('select').find('option:eq(0)').prop("selected",true); //stops certain bugs caused by previously selected dropdown options.
         $('select').removeAttr("disabled");
         $("#pageJump").on("change",function(){
             var parsing = "";
@@ -510,7 +506,7 @@
          $("#splitScreenTools").on("change",function(event){
             var a = $(this).find("option:selected");
             var b = a.attr("splitter");
-            splitPage(event,b);     
+            splitPage(event,b);
         });
 
         $('#transcriptionFile').on("change", function(event){;
@@ -524,17 +520,17 @@
             };
             reader.readAsText(selectedFile);
         });
-        
+
 
         $(".fullScreenTrans").click(function(){
             fullPage();
         });
-        
+
         $("#charactersPopin").on("change", function(event){
             var val = $("#charactersPopin").val();
             addchar(val, "");
         });
-        
+
         $("#xmlTagPopin").on("change", function(event){
             var val = $("#xmlTagPopin").val();
             addchar(val, "");
@@ -544,48 +540,48 @@
             if ($(this).hasClass("ui-state-active")){
                 $('#zoomDiv').hide();
                 restoreWorkspace()
-                isMagnifying = false;
+                tpen.screen.isMagnifying = false;
                 $(document).off("mousemove");
                 $(this).removeClass("ui-state-active");
             } else {
                 $(this).addClass("ui-state-active");
-                isMagnifying=true;
+                tpen.screen.isMagnifying=true;
                 magnify($(this).attr("magnifyImg"),event);
             }
         });
-        
+
         $("#imgTop").hover(function(){
-            var color = colorThisTime.replace(".4", "1");
+            var color = tpen.screen.colorThisTime.replace(".4", "1");
             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+color);
         }, function(){
-            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+colorThisTime);
+            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+tpen.screen.colorThisTime);
         });
-        
+
         document.addEventListener("mousewheel", function(e){
-            if(isMagnifying){
+            if(tpen.screen.isMagnifying){
                 event.preventDefault();
                 var wDelta = e.wheelDelta < 0 ? 'down' : 'up';
                 if(wDelta === "up"){
-                    zoomMultiplier += .4;
+                    tpen.screen.zoomMultiplier += .4;
                     $(document).mousemove();
                 }
                 else{
-                    zoomMultiplier -= .4;
+                    tpen.screen.zoomMultiplier -= .4;
                     $(document).mousemove();
                 }
             }
         });
 
         $(document).keydown(function(event){
-            if(isMagnifying){
+            if(tpen.screen.isMagnifying){
                 //back out
                 if ((event.which === 109) || (event.which === 189) || (event.which === 173) ){ //173  = - in firefox
-                    zoomMultiplier -= .4;
+                    tpen.screen.zoomMultiplier -= .4;
                     $(document).mousemove();
                 }
                 //ease in
                 else if ((event.which === 107) || (event.which === 187) || (event.which === 61)){ // 61 = + in firefox
-                    zoomMultiplier += .4;
+                    tpen.screen.zoomMultiplier += .4;
                     $(document).mousemove();
                 }
                 //esc
@@ -605,7 +601,7 @@
                    //left
                    event.preventDefault();
                    bumpLine("left", lineForEditing);
-                   
+
                }
                else if (event.which == 39 && (event.altKey||event.which == 18)){
                    //right
@@ -614,7 +610,7 @@
                }
             }
             else if (event.which === 27){
-                //Esc during any active tool means stop the tool.  In this case, our only worry is moving the image around.  We may add others later. 
+                //Esc during any active tool means stop the tool.  In this case, our only worry is moving the image around.  We may add others later.
                 ////console.log("ESC DOWN");
                 $("#imgTop, #imgBottom").unbind("mousemove");
                 $("#imgTop, #imgBottom").unbind("mousedown");
@@ -633,7 +629,6 @@
                 }
             }
             else{
-                ////console.log(event.which+" DOWN");
             }
             })
             .keyup(function(event){
@@ -648,21 +643,21 @@
                    // //console.log(event.which+' UP');
                 }
             });
-            
+
             $("#parsingBtn").click(function(){
-                liveTool = "parsing";
-                if(isFullscreen)isUnadjusted = true;
-                isFullscreen = false;
+                tpen.screen.liveTool = "parsing";
+                if(tpen.screen.isFullscreen)tpen.screen.isUnadjusted = true;
+                tpen.screen.isFullscreen = false;
                 hideWorkspaceForParsing();
                 $("#confirmParsingInst").show();
                 $("#parsingBtn").css("box-shadow", "");
             });
-            
+
             $(".workspaceHandle").mousedown(function(event){moveWorkspace(event);})
             .css("cursor","n-resize");
-    
+
             $(".parsingToolButtons").children("span").click(function(event){
-               
+
                 var show = $(this).attr("show");
                 $("#imgTop").unbind("mousemove");
                 $("#imgTop").unbind("mousedown");
@@ -673,7 +668,7 @@
                 $(".parsing").unbind('mousemove');
                 $("#ruler1").hide();
                 $("#ruler2").hide();
-                
+
                 var thisID = $(this).attr("id");
                 $(".parsingToolButtons").find(".tpenButton").removeClass("selected");
                 $(this).addClass("selected");
@@ -686,7 +681,7 @@
                     $("#ctrlLinesInst").find(".activeParsingTool").fadeOut(800);
                     $(".parsing").unbind();
                     linesToColumns();
-                    
+
                     if (thisID == "createColumn"){
                         $.each($(".parsingColumn"), function(){
                             $(this).removeClass("parsingColumnSelected");
@@ -767,13 +762,13 @@
                                         $newCol.remove();
                                         return true;
                                     }
-                                    isAddingLines = true;
+                                    tpen.screen.isAddingLines = true;
                                     var newY = parseFloat($newCol.css("top")) / $("#imgTop").height() * 100;
                                     var newX = parseFloat($newCol.css("left")) / $("#imgTop").width() * 100;
                                     var newH = $newCol.height() / $("#imgTop").height()* 100;
                                     var newW = $newCol.width() / $("#imgTop").width() * 100;
 
-                                    //The column is now a line, so put that into the UI and save it to the DB.  
+                                    //The column is now a line, so put that into the UI and save it to the DB.
                                     var columnIsLine =$(
                                     "<div class='parsing newColumn' style='\n\
                                         top:"+newY+"%; \n\
@@ -791,7 +786,7 @@
                                         saveNewLine(null,columnIsLine);
                                         $("#imgTop").append(columnIsLine);
                                     }
-                                    adjustColumn(); //Do this so that the new column is adjustable.       
+                                    adjustColumn(); //Do this so that the new column is adjustable.
                                     $("#createColumn").ajaxStop(function(){
                                         $(this).click()
                                         .unbind("ajaxStop");
@@ -858,7 +853,7 @@
                         $(".parsing").addClass("adjustable").removeClass("line");
                         if($(".adjustable").hasClass("ui-resizable")){
                           $(".adjustable").has(".ui-resizable").resizable("enable");
-                        } 
+                        }
                         else {
                           $(".adjustable").resizable({
                             handles: "e",
@@ -883,7 +878,7 @@
                               var thisLineW = parseFloat(thisLine.attr("linewidth")) * (newW / originalW);
                               thisLine.attr("linewidth", thisLineW);
                               //console.log("update line with ID: "+thisLineID);
-                              updateLine(thisLine);       
+                              updateLine(thisLine);
                               $("#progress").html("Line Saved").delay(3000).fadeOut(1000);
                               $("#lineResizing").delay(3000).fadeOut(1000);
                             }
@@ -894,7 +889,7 @@
                         //writeLines($("#imgTop img"));
                         $("#addLines").addClass("active");
                         $("#removeLines").removeClass("active");
-                        isAddingLines = true;
+                        tpen.screen.isAddingLines = true;
                         $("#imgTop").children(".line").addClass("parsing").removeClass("line");
                         $(".parsing").bind({
                             mouseenter: function(){
@@ -914,7 +909,7 @@
                         $("#addLines").removeClass("active");
                         //prep for column adjustment
                         //writeLines($("#imgTop img"));
-                        isAddingLines = false;
+                        tpen.screen.isAddingLines = false;
                         $(".parsing").bind({
                             mouseenter: function(){
                                 applyRuler($(this));
@@ -930,12 +925,11 @@
                     }
                 };
             });
-           
-        
+
+
         $(".accordion").children("span")
         .append("<span class='ui-icon ui-icon-triangle-1-e left'></span>")
         .click(function(event){
-        //if(!isMember && !permitParsing)return false;
         $("#imgTop").unbind("mousemove");
         $("#imgTop").unbind("mousedown");
         $("#imgTop").unbind("mouseup");
@@ -953,12 +947,12 @@
             $(this).addClass("ui-state-active")
                 .children(".ui-icon-triangle-1-e").switchClass("ui-icon-triangle-1-e","ui-icon-triangle-1-s").end()
                 .siblings("span").removeClass("ui-state-active")
-                .children(".ui-icon-triangle-1-s").switchClass("ui-icon-triangle-1-s","ui-icon-triangle-1-e");          
+                .children(".ui-icon-triangle-1-s").switchClass("ui-icon-triangle-1-s","ui-icon-triangle-1-e");
             $(this).next("div").slideDown();
         }
-        
-        
-        
+
+
+
         if (thisID === "reparseColumns") {
                 //load the adjustment tool and then show the reparsing instructions
                 $(".parsingColumn").removeClass("parsingColumnSelected");
@@ -968,8 +962,8 @@
                     reparseColumns();
                 });
             }
-        }); 
-        
+        });
+
          $("#brightnessSlider").slider({
             orientation: "horizontal",
             range: "min",
@@ -988,7 +982,7 @@
             slide: imageSlider,
             change: imageSlider
         });
-        
+
         $("#previewSplit")
         .on("click",".previewText,.previewNotes",function(){edit(this);})
         .on("click","#previewNotes",function(){
@@ -1006,7 +1000,7 @@
             scrollToCurrentPage();
         });
     });
-    
+
     /* Allows users to slightly adjust a line within a column while within the transcription interface. */
     function bumpLine(direction, activeLine){
         //values are in pixel, not percentage.
@@ -1016,7 +1010,7 @@
             var currentLineLeftPerc = (parseFloat(currentLineLeft) / $("#imgTop").width()) * 100;
             if (currentLineLeftPerc > .3){
                 currentLineLeftPerc -= .3;
-            }   
+            }
             else{ //no negative left value
                 currentLineLeftPerc = 0.0;
             }
@@ -1025,10 +1019,9 @@
         else if (direction === "right"){
             var currentLineLeft = activeLine.css("left");
             var currentLineLeftPerc = (parseFloat(currentLineLeft) / $("#imgTop").width()) * 100;
-            //console.log(currentLineLeftPerc);
             if (currentLineLeftPerc < 99.7){ //no left values greater than 100
                 currentLineLeftPerc += .3;
-            }   
+            }
             else{
                 currentLineLeftPerc = 100.0;
             }
@@ -1038,18 +1031,17 @@
         $(".transcriptlet[lineserverid='"+id+"']").attr("lineleft", currentLineLeftPerc);
         activeLine.css("left", currentLineLeftPX);
         updateLine($(".transcriptlet[lineserverid='"+id+"']"), "no");
-       
+
     }
-    
-    //UI effects for when a user decides to edit a line within the preview split tool. 
+
+    //UI effects for when a user decides to edit a line within the preview split tool.
     function edit(line){
         var focusLineID = $(line).siblings(".previewLineNumber").attr("lineserverid");
-        //var focusFolio = $(line).parent(".previewPage").attr("data-pagenumber");
         var transcriptionText = ($(line).hasClass("previewText")) ? ".theText" : ".notes";
         var pair = $(".transcriptlet[lineserverid='"+focusLineID+"']").find(transcriptionText);
         var transcriptlet = $(".transcriptlet[lineserverid='"+focusLineID+"']");
         if ($(line).hasClass("currentPage")){
-          if (pair.parent().attr('id') !== focusItem[1].attr('id')){ 
+          if (pair.parent().attr('id') !== tpen.screen.focusItem[1].attr('id')){
               updatePresentation(transcriptlet);
           }
             line.focus();
@@ -1057,12 +1049,12 @@
                 //Data.makeUnsaved();
                 pair.val($(this).text());
             });
-        } 
+        }
         else {
             //console.log("NOt the current page.")
         }
     }
-    
+
     function scrollToCurrentPage(){
         var pageOffset = $(".previewPage").filter(":first").height() + 20;
         $("#previewDiv").animate({
@@ -1076,28 +1068,28 @@
                 }
             });
     }
-    
+
     /*
      * Get the inline 'style' attribute of the transcription image containers and attach brightness or contrast filters to it.
-     * The entire function is string manipulation and runs quickly.  
+     * The entire function is string manipulation and runs quickly.
      */
     function imageSlider(){
         var newFilter = "";
         if(navigator.userAgent.indexOf("Chrome") !== -1 ) { //also works with filter
           newFilter = "-webkit-filter:";
-        } 
+        }
         else if(navigator.userAgent.indexOf("Opera") !== -1 ) {
           newFilter = "-o-filter:";
         }
         else if(navigator.userAgent.indexOf("MSIE") !== -1 ) { //also works with filter
           newFilter= "-ms-filter:";
-        } 
-        else if(navigator.userAgent.indexOf("Firefox") !== -1 ) { //-moz-filter does not work in more recent versions.  The newest version works with regular filter. 
+        }
+        else if(navigator.userAgent.indexOf("Firefox") !== -1 ) { //-moz-filter does not work in more recent versions.  The newest version works with regular filter.
           newFilter = "filter:";
-        } 
+        }
         else {
             //Uncomment this code to alert the user that their browser does not support these CSS3 Filter tools.
-            
+
 //          alert("This tool is not supported by your browser.  The supported browsers are:\n\n\
 //                Google Chrome\n Microsoft Internet Explorer\nOpera\nLatest version of Firefox");
 //          return false;
@@ -1151,13 +1143,13 @@
         }
         else{ //First time the filter is being added.  The prefix is already a part of newFilter, so we just need to add the rest of the string.
           newFilter += " brightness("+$("#brightnessSlider").slider("value")+"%) contrast("+$("#contrastSlider").slider("value")+"%);";
-          alteredStyleTop = currentStyleTop + " "+newFilter; 
+          alteredStyleTop = currentStyleTop + " "+newFilter;
           alteredStyleBottom = currentStyleBtm +" "+newFilter;
         }
-        imgTop.setAttribute("style",alteredStyleTop); //set the style attribute with the appropriate filter string attached to it. 
-        imgBtm.setAttribute("style",alteredStyleBottom); //set the style attribute with the appropriate filter string attached to it. 
+        imgTop.setAttribute("style",alteredStyleTop); //set the style attribute with the appropriate filter string attached to it.
+        imgBtm.setAttribute("style",alteredStyleBottom); //set the style attribute with the appropriate filter string attached to it.
     }
-    
+
     /* Toggle grayscale and invert image CSS filters.v   */
     function toggleFilter(which){
         /*
@@ -1177,8 +1169,8 @@
           $("button[which='"+which+"']").addClass("selected");
         }
     }
-    
-    //Make sure the value entered into the area that allows a user to define a custom ruler color is a valida color string.  
+
+    //Make sure the value entered into the area that allows a user to define a custom ruler color is a valida color string.
     function validTextColour(stringToTest) {
         //Alter the following conditions according to your need.
         if (stringToTest === "") { return false; }
@@ -1193,29 +1185,29 @@
         image.style.color = stringToTest;
         return image.style.color !== "rgb(255, 255, 255)";
     }
-    
+
     //Change the ruler color.
     function rulerColor(color){
         if(color==="custom"){
             color=$("#customRuler").val();
             if(validTextColor(color)){
-                
+
             }
             else{
                 color = "red";
             }
-            
+
         }
         $("#ruler1").css("color", color).css("background", color);
         $("#ruler2").css("color", color).css("background", color);
         $("#sampleRuler").css("color", color).css("background", color);
     }
-    
+
     //Turn the ruler on
     function applyRuler(line){
             //var sRCbkp = selectRulerColor; //select Ruler Color backup
             $("#imageTip").html("Add a Line");
-            if(!isAddingLines){
+            if(!tpen.screen.isAddingLines){
                 if (line.attr("lineleft") == line.next("div").attr("lineleft")) {
                     line.next("div").addClass('deletable');
                 }
@@ -1250,33 +1242,33 @@
                    // background:"red"
                 });
             });
-        
+
     }
     /**
      * Hides ruler within parsing tool. Called on mouseleave .parsing.
      */
     function removeRuler(line){
-        if(!isAddingLines){$(".deletable").removeClass('deletable mergeable');}
+        if(!tpen.screen.isAddingLines){$(".deletable").removeClass('deletable mergeable');}
         //line.unbind('mousemove');
         $('#imageTip').hide();
         $('#ruler1').hide();
         $('#ruler2').hide();
     }
-    
+
     //Triggered when a user alters a line to either create a new one or destroy one.
     function lineChange(e,event){
         //console.log("show parsing cover");
         $("#parsingCover").show();
-        if(isAddingLines){
+        if(tpen.screen.isAddingLines){
             //console.log("SPLIT LINE");
             splitLine(e,event);
         }
         else{
-            //mrege the line you clicked with the line below.  Delete the line below and grow this line by that lines height.  
+            //mrege the line you clicked with the line below.  Delete the line below and grow this line by that lines height.
             //console.log("Merge / Remove line")
             removeLine(e);
         }
-        
-    }    
-    
+
+    }
+
 </script>

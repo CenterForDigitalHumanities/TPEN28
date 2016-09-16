@@ -102,7 +102,8 @@ authors: bhaberbe and cubap
                             sParameterName = sURLVariables[i].split('=');
 
                             if (sParameterName[0] === "ref") {
-                                return window.location.href = sParameterName[1];
+                                sParameterName.shift(); // drop "ref"
+                                return window.location.href = sParameterName.join("="); // put back "=" for ref URL
                             }
                         }
                         return window.location.href = "index.jsp";

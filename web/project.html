@@ -8,11 +8,11 @@ Open the project management section for a given project ID.
         <title>Project Management</title>
         <link type="text/css" href="css/custom-theme/jQuery.css" rel="Stylesheet" />
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
         <script type="text/javascript" src="js/newberry.js"></script>
         <link rel="stylesheet" href="css/newberryTransSkin.css" type="text/css">
         <style type="text/css" >
-            
+
             #folioManagement{
                 display: none;
                 position: absolute;
@@ -48,11 +48,11 @@ Open the project management section for a given project ID.
                 padding: 0px 12px;
                 color: #002a5c;
             }
-            
+
             #newProjectMetadata{
                 margin-left: 22px;
             }
-            
+
             .label{
                 font-size: 11pt;
                 color: #002a5c;
@@ -65,7 +65,7 @@ Open the project management section for a given project ID.
                 font-size: 10pt;
                 width: 60%;
             }
-            
+
             .promoteUser{
                 font-weight: bold;
             }
@@ -80,23 +80,23 @@ Open the project management section for a given project ID.
             #project li ul,#ms li ul,#team li ul, #options li ul, #export li ul {padding: 0;margin: 0;}
             #project li ul li,#ms li ul li,#team li ul li,  #export li ul li {list-style:outside none;padding: 2px 0px 2px 4px;width:100%;height:100%;}
             #options li{
-                padding: 0.4em; 
-                padding-left: 1.5em; 
-                max-height: 590px; 
-                overflow-y: auto; 
+                padding: 0.4em;
+                padding-left: 1.5em;
+                max-height: 590px;
+                overflow-y: auto;
                 position: relative;
-                margin-right: 1%; 
+                margin-right: 1%;
                 width: 43%;
                 border-right: 1px solid #BFBFBF;
                 display: inline-block !important;
             }
             #project li{
-                padding: 0.4em; 
-                padding-left: 1.5em; 
-                max-height: 590px; 
-                overflow-y: auto; 
+                padding: 0.4em;
+                padding-left: 1.5em;
+                max-height: 590px;
+                overflow-y: auto;
                 position: relative;
-                margin-right: 1%; 
+                margin-right: 1%;
                 width: 43%;
                 border-right: 1px solid #BFBFBF;
                 display: inline-table !important;
@@ -105,18 +105,18 @@ Open the project management section for a given project ID.
             #project li{
                 width: 43%;
             }
-            
+
             #project div.tall {position: absolute;right:0;width: 29%;}
             #project div.tall li {position: absolute;right:20px;height:48%;margin:0;width:100%;min-height: 120px;}
             #project div.tall li:last-child {bottom:-13px;min-height: 80px;}
             #projectList {max-height: 300px;overflow-y:scroll; max-width: 95%;}
-            #projectList li {    
+            #projectList li {
                 margin: 0;
                 border: none;
                 display: block;
             }
             a.tpenButton,button.tpenButton {padding: 2px 27px 2px 10px; margin:2px; display:block;text-align: center; text-decoration: none;min-width: 90px;min-height:16px; cursor:pointer; height: 35px; line-height: 35px;}
-            .delete{   
+            .delete{
                 z-index: 1000;
                 cursor: pointer;
                 color: red;
@@ -158,7 +158,7 @@ Open the project management section for a given project ID.
                 box-shadow: 0 0 200px black inset;
                 top: 0;
                 left: 0;}
-            #form {height: 425px; margin: 0 auto; width:515px;border-width: 1px; 
+            #form {height: 425px; margin: 0 auto; width:515px;border-width: 1px;
                    -webkit-box-shadow: -1px -1px 12px black;
                    -moz-box-shadow: -1px -1px 12px black;
                    box-shadow: -1px -1px 12px black;
@@ -175,7 +175,7 @@ Open the project management section for a given project ID.
             .loadingBook {background-position: center center !important;}
             #xmlImport,#xmlValidate,#linebreaking,#wordbreak,#inviteUser,#template {margin:-4px 5px 2px;background: url(images/linen.png);padding:6px 2px 2px;display:none;overflow: hidden;z-index: 1; border: 1px solid #A68329;
                                                                                     -moz-box-shadow: -1px -1px 2px black;
-                                                                                    -webkit-box-shadow: -1px -1px 2px black; 
+                                                                                    -webkit-box-shadow: -1px -1px 2px black;
                                                                                     box-shadow:-1px -1px 2px black;}
             #xmlImportBtn,#xmlValidateBtn,#linebreakingBtn,#wordbreakBtn,#inviteUserBtn,#templateBtn {padding:2px;text-align: center;position: relative;z-index: 1;cursor: pointer;width:100%;-o-box-sizing:border-box;-webkit-box-sizing:border-box;-moz-box-sizing:-ms-border-box;box-sizing:border-box;}
             #template label {width: 100%;}
@@ -183,7 +183,7 @@ Open the project management section for a given project ID.
             .format{padding:2px;text-align: center;position: relative;z-index: 1;cursor: pointer;}
             .formatDiv{margin:-4px 5px 2px;clear:left;background: url(images/linen.png);padding:6px 2px 2px;display:none;overflow: hidden;z-index: 1; border: 1px solid #A68329;
                        -moz-box-shadow: -1px -1px 2px black;
-                       -webkit-box-shadow: -1px -1px 2px black; 
+                       -webkit-box-shadow: -1px -1px 2px black;
                        box-shadow:-1px -1px 2px black;}
             #pdfOptions {display:block;}
             #exportLinebreakString,#exportWordbreak{width: 40px;}
@@ -216,12 +216,12 @@ Open the project management section for a given project ID.
             span + h4[id] {margin-top:1.25em;}
             .projectTools,.userTools {font-weight: normal;width: auto;padding: 0;clear: left;}
             #customHeader {margin: 1em;background-color: rgba(255,255,255,.5);padding: .5em;display: block;color: gray;border:thin solid gray;overflow: auto;text-overflow:ellipsis;max-height: 300px;font-size: smaller;}
-            #projectOrdering {position: fixed !important;width:50% !important;right:auto !important;} /* battling weird Chrome bug */ 
-            
+            #projectOrdering {position: fixed !important;width:50% !important;right:auto !important;} /* battling weird Chrome bug */
+
         .tpenButton{
             color: white !important;
         }
-        
+
         .tpenButton:hover{
             background-color: #D14836;
         }
@@ -245,15 +245,15 @@ Open the project management section for a given project ID.
         .noBottom{
             margin-bottom: 3px;
         }
-        
+
         #activeProjectName{
             text-decoration:underline;
         }
-        
+
         #projectMembers li{
             border: none !important;
         }
-        
+
         /* jQuery.css overwrites for the tab interface */
         .ui-tabs{
             padding: .2em .2em .2em 0em !important;
@@ -263,18 +263,18 @@ Open the project management section for a given project ID.
             border: none !important;
             padding: 0px 0px 0px 2px !important;
         }
-        
+
         .ui-tabs .ui-tabs-nav li{
             top: -3px !important;
             border-top: none !important;
             border-left: 1px solid #BFBFBF;
-            border-right: 1px solid #BFBFBF; 
+            border-right: 1px solid #BFBFBF;
         }
-        
+
         .ui-tabs .ui-tabs-nav li:hover{
             color: #e21635;
         }
-        
+
         .ui-tabs .ui-tabs-nav li a{
             padding: 0 10px;
             display: block;
@@ -290,34 +290,34 @@ Open the project management section for a given project ID.
             cursor: pointer;
             transition: color 800ms;
         }
-        
+
         .ui-tabs .ui-tabs-nav li.ui-tabs-selected a{
             background-color:white !important;
             color: black !important;
         }
-        
+
         .ui-tabs .ui-tabs-nav li.ui-tabs-selected a:hover{
             border-color: #ccc;
             color: black !important;
             cursor: default;
         }
-        
+
         .ui-tabs .ui-tabs-nav li a:hover, .ui-tabs .ui-tabs-nav li a:focus {
             background-color: #eee;
             border-color: #BFBFBF;
             color: #e21635;
         }
-             
-        
+
+
         .ui-state-default, .ui-widget-content, .ui-widget-header .ui-state-default{
             background: white !important;
         }
-        
+
         .ui-tabs-panel{
             color: #002a5c !important;
             background: #BFBFBF !important;
         }
-        
+
         #tabs{
             border-top: 1px solid #BFBFBF;
             border-left: none !important;
@@ -338,7 +338,7 @@ Open the project management section for a given project ID.
         .ui-tabs .ui-tabs-nav li a{
             color: #002a5c;
         }
-        
+
         h3, h2{
             /*border-bottom: 1px solid #002a5c;*/
             border-bottom: 1px solid lightblue; /*their color under header*/
@@ -347,7 +347,7 @@ Open the project management section for a given project ID.
         p{
             font-size: 12pt;
         }
-        
+
 /*        .ui-state-active a, .ui-state-active a:link{
             color: #002a5c !important;
         }*/
@@ -376,17 +376,17 @@ Open the project management section for a given project ID.
 #site-name a{
     color: black;
 }
-        
-        
+
+
     </style>
     </head>
     <body>
         <h1 id="site-name">
-            <a target="_blank" href="https://paleography.library.utoronto.ca/">French Renaissance 
+            <a target="_blank" href="https://paleography.library.utoronto.ca/">French Renaissance
               <div id="logo" style="display: inline-block;">
                   <img src="images/rp-logo.png">
               </div>
-              <span class="red">Paleography</span> 
+              <span class="red">Paleography</span>
             </a>
         </h1>
         <div class='pageCover'></div>
@@ -395,7 +395,7 @@ Open the project management section for a given project ID.
             <div id="content">
                 <h1 class='projectTitle'>Project Management</h1>
                 <div id="editProjectMetadata"></div>
-                
+
                 <div id="tabs">
                     <ul class="toptabs">
                         <li><a title="Organize your team" href="#tabs-3">Share</a></li>
@@ -409,17 +409,17 @@ Open the project management section for a given project ID.
                             <li class="ui-widget-content ui-corner-tr ui-corner-bl tall">
                                 <h3>Project Selection</h3>
                                 <p id="publicProjectNotice" class="ui-state-highlight">You are viewing public project, <span id="publicProjectName" class="loud bold">THIS PROJECT's NAME</span>. To manage one of your own projects, click below.</p>
-                                
+
                                 <p id="activeProject">Active project is <span id="activeProjectName" class="loud"></span>.</p>
                                 <p> To manage a different project, click one below.</p>
                                 <p>To delete a project click the 'x'.  You must be an administrator for the project.</p>
                                 <h5>All Your Projects</h5>
                                 <ul id="projectList">
-                                    
+
                                 </ul>
                             </li>
                             <li class="left ui-widget-content ui-corner-tr ui-corner-bl tall">
-                                <h3>Current Metadata Summary</h3>                                    
+                                <h3>Current Metadata Summary</h3>
                                 <p style='max-width: 95%;'>
                                     <span class="label">Title: </span><span class="val metadataTitle"></span><br />
                                     <span class="label">Subtitle:</span> <span class="val metadataSubtitle"></span><br />
@@ -436,12 +436,12 @@ Open the project management section for a given project ID.
                                     <span class="label ">Language:</span> <span class="val metadataLanguage"></span><br>
                                     <span class="label ">Description:</span> <span class="val metadataDescription"></span><br>
                                 </p>
-                                
+
                                 <div style='max-width: 95%;' class="permitMetadata isMember">
                                     <p class="mustBeAdmin">To update any of this information:</p>
                                     <a class="tpenButton mustBeAdmin" onclick="$('#projectMetadataWrapper').show(); $('.pageCover').show();"><span class="ui-icon ui-icon-tag right"></span>Update Metadata</a>
                                 </div>
-                         </li> 
+                         </li>
                         </ul>
                     </div>
                     <div id="tabs-3">
@@ -450,12 +450,12 @@ Open the project management section for a given project ID.
                                 <div id="inviteFeedback"></div>
                                 <a style="width: 200px;" class="tpenButton isMember" onclick="showTeamMemberManagement();"><span class="ui-icon ui-icon-person right"></span>Modify Project Team</a>
                                 <p>Add, delete, or just check your group membership on this project.</p>
-                                
+
                                 <h3 class="noBottom">Project Members</h3>
                                 <ul style="margin-left: 5px;" id="projectMembers" class="isMember">
-                                    
+
                                 </ul>
-                               
+
                                 <br />
                                 <form id="inviteUser" class="ui-corner-all" name="invite" action="project.jsp" onsubmit="return simpleFormValidation();" method="get">
                                     <input type="hidden" name="projectID" value="PROJECTID">
@@ -593,8 +593,8 @@ Open the project management section for a given project ID.
                                                 <span class=""><span class="left ui-icon ui-icon-notice"></span>Changes to metadata are not tracked in the project log.</span>
                                             </div>
                                         </label>
-                                            <input style="display: inline-block;" type="reset" value="Clear All" onclick="$('.publicLabel').children('input').prop('checked',false);return false;" class="tpenButton ui-button" />    
-                                            <input style="display: inline-block;" onclick="updatePublicOptions();" type="button" name="publicOptions" value="Submit Changes"  class="tpenButton ui-button" />    
+                                            <input style="display: inline-block;" type="reset" value="Clear All" onclick="$('.publicLabel').children('input').prop('checked',false);return false;" class="tpenButton ui-button" />
+                                            <input style="display: inline-block;" onclick="updatePublicOptions();" type="button" name="publicOptions" value="Submit Changes"  class="tpenButton ui-button" />
                                     </div>
                                 </div>
                             </li>
@@ -640,7 +640,7 @@ Open the project management section for a given project ID.
         <!--                    <iframe src="iframe.html" id="addToolFrame"></iframe>-->
             <input id="addToolName" type="text" maxlength="25" placeholder="Tool Name" />
             <input id="addToolURL" type="text" placeholder="Full URL of tool" />
-            <a class="tpenButton" id="addToolPreview" 
+            <a class="tpenButton" id="addToolPreview"
                onclick="$('#addToolFrame').attr('src',$('#addToolURL').val());">
                 Test Link
             </a>
@@ -674,8 +674,8 @@ Open the project management section for a given project ID.
         </div>
 </body>
 <script type="text/javascript">
-    
-var currentProjectID = 4351; 
+
+var currentProjectID = 4351;
 $("#activeProjectID").val(currentProjectID);
 var minWidth = 10;
 var selecTab = null;
@@ -683,11 +683,11 @@ var currentUser = {uname:"", uid:-1};
 var folioOrderedList = [];
 var isMember=permitOACr=permitOACw=permitExport=permitCopy=permitModify=permitAnnotation=permitButtons=permitParsing=permitMetadata=permitNotes=permitRead=false;
 var userIsProjectAdmin = false;
-/* 
- * Get the required information to properly load the page, then run the functions to populate.  
+/*
+ * Get the required information to properly load the page, then run the functions to populate.
  * You will need to get the projectID of the project being managed (either from the url variable or elsewhere, I am not sure how we enter this page yet.
- * You will need to know the username of the current logged in user and that user's userID. 
- * Once you have that, you can call the other API functions that give you the rest of the information you need throughout the functions on this page. 
+ * You will need to know the username of the current logged in user and that user's userID.
+ * Once you have that, you can call the other API functions that give you the rest of the information you need throughout the functions on this page.
  */
 function getPreloadInformation(){
     //currentProjectID = 4352; However we know this when we get to this page, it is crucial that it get recorded;
@@ -725,9 +725,9 @@ function getPreloadInformation(){
                 loggedInUser = false;
                 alert("You must be logged in.");
             }
-            
+
         },
-        error: function(jqXHR,error, errorThrown) {  
+        error: function(jqXHR,error, errorThrown) {
             //probably just not logged in
                 alert("The server could not tell me what user you are or you don't have permission to be on this page.");
         }
@@ -736,7 +736,7 @@ function getPreloadInformation(){
 
 function updatePublicOptions(){
     var url= "changeUserPermission";
-    
+
     var params = {act:"cpm" , projectID:currentProjectID};
     $('#publicOptionsForm').find('input[type="checkbox"]').each(function(){
         var optionName = $(this).attr('name');
@@ -831,7 +831,7 @@ function updatePublicOptions(){
                 break;
             default:
                 alert('Unknown Project Option');
-              
+
         }
     });
     $.post(url, params);
@@ -850,7 +850,7 @@ function showTeamMemberManagement(){
 function populateEditableXML(xmlTags){
     xmlTags = JSON.parse(xmlTags); // make a array by </span?
     var tagsInOrder = [];
-    for (var tag = 0; tag < xmlTags.length; tag++){ 
+    for (var tag = 0; tag < xmlTags.length; tag++){
         var newTagBtn = xmlTags[tag];
         if(newTagBtn.tag!=="" && newTagBtn.tag!==" "){
              tagsInOrder.push("<li class='projectTag' position='"+newTagBtn.position+"' onclick='editxmlcnfrm("+newTagBtn.position+", event);'>"+newTagBtn.tag+"\n\
@@ -860,9 +860,9 @@ function populateEditableXML(xmlTags){
     $.each(tagsInOrder, function(){
         var button2 = $(''+this);
         $(".xmlTags").append(button2);
-    }); 
+    });
 }
-    
+
 function populateEditableChars(specialCharacters){
     specialCharacters = JSON.parse(specialCharacters);
     var speCharactersInOrder = new Array(specialCharacters.length);
@@ -876,7 +876,7 @@ function populateEditableChars(specialCharacters){
                 var position2 = parseInt(thisChar.position);
                 var newCharacter = $("<li position='"+position2+"' onclick='editcharcnfrm("+position2+", event);'  class='character'>&#"+keyVal+";<span class='removechar' onclick='removecharcnfrm("+position2+");'>X</span></li>");
                 if(position2-1 >= 0 && (position2-1) < specialCharacters.length){
-                    speCharactersInOrder[position2-1] = newCharacter; 
+                    speCharactersInOrder[position2-1] = newCharacter;
                 }
             }
 
@@ -886,7 +886,7 @@ function populateEditableChars(specialCharacters){
             $(".specialCharacters").append(button1);
         });
     }
-    
+
     function addnewcharcnfrm(event){
          var x = event.pageX;
          var y = event.pageY;
@@ -897,7 +897,7 @@ function populateEditableChars(specialCharacters){
             <input type='button' value='Cancel' class='tpenButton' onclick='$(this).parent().remove();'/>\n\
             </div>").appendTo("body").css("top",y).css("left",x);
     }
-    
+
     function addnewtagcnfrm(event){
         var x = event.pageX;
         var y = event.pageY;
@@ -909,7 +909,7 @@ function populateEditableChars(specialCharacters){
             <input type='button' value='Cancel' class='tpenButton' onclick='$(this).parent().remove();'/>\n\
             </div>").appendTo("body").css("top",y).css("left",x);
     }
-    
+
     function addnewchar(){
         var code = $("#newProjectChar").val(); //move out of editcharcnfrm into DOM
         var position = parseInt($(".character:last").attr("position"))+1;
@@ -922,7 +922,7 @@ function populateEditableChars(specialCharacters){
             $(".specialCharacters").children("li[position='"+position+"']").after(newBtn);
         });
     }
-    
+
     function addnewtag(){
         var tag = $("#newProjectTag").val(); //move out of editcharcnfrm into DOM
         var description = $("#newProjectTagDescr").val(); //move out of editcharcnfrm into DOM
@@ -936,7 +936,7 @@ function populateEditableChars(specialCharacters){
             $(".xmlTags").children("li[position='"+position+"']").after(newBtn);
         });
     }
-    
+
     function editcharcnfrm(position, event){
         if (event.target.tagName === "span") return false;
         var x = event.pageX;
@@ -947,9 +947,9 @@ function populateEditableChars(specialCharacters){
             <input type='button' value='Update Character' class='tpenButton' onclick='editchar("+position+");'/>\n\
             <input type='button' value='Cancel' class='tpenButton' onclick='$(this).parent().remove();'/>\n\
             </div>").appendTo("body").css("top",y).css("left",x);
-        
+
     }
-    
+
     function removecharcnfrm(position){
         var cfrm = confirm("Click OK to delete this character from the project.");
         if(!cfrm)return false;
@@ -957,11 +957,11 @@ function populateEditableChars(specialCharacters){
             removechar(position);
         }
     }
-    
+
     function editxmlcnfrm(position, event){
         if (event.target.tagName === "span") return false;
         var x = event.pageX;
-        var y = event.pageY;       
+        var y = event.pageY;
         $("<div class='optionCnfrm' id='editxmlpopover'>\n\
             <p>Enter the word below that you would like this tag to be.</p>\n\
             <span>New Tag: </span><input type='text' id='newProjectTag' />\n\
@@ -969,7 +969,7 @@ function populateEditableChars(specialCharacters){
             <input type='button' value='Cancel' class='tpenButton' onclick='$(this).parent().remove();'/>\n\
             </div>").appendTo("body").css("top",y).css("left",x);
     }
-    
+
     function removetagcnfrm(position){
         var cfrm = confirm("Click OK to delete this tag from the project.");
         if(!cfrm)return false;
@@ -977,8 +977,8 @@ function populateEditableChars(specialCharacters){
             removetag(position);
         }
     }
-    
-    
+
+
     function editchar(position){
         var key = $("#newProjectChar").val(); //move out of editcharcnfrm into DOM
         var url = "updateProjectCharacter";
@@ -989,7 +989,7 @@ function populateEditableChars(specialCharacters){
             $(".specialCharacters").children("li[position='"+position+"']").replaceWith(newCharacter);
         });
     }
-    
+
     function removechar(position){
         var url = "removeProjectCharacter";
         var params = {"projectID":currentProjectID, "position":position};
@@ -997,7 +997,7 @@ function populateEditableChars(specialCharacters){
             $(".specialCharacters").children("li[position='"+position+"']").remove();
         });
     }
-    
+
     function editxml(position){
         var tag = $("#newProjectTag").val(); //move out of editxmlcnfrm into DOM
         var url = "updateProjectTag";
@@ -1008,7 +1008,7 @@ function populateEditableChars(specialCharacters){
             $(".xmlTags").children("li[position='"+position+"']").replaceWith(newxml);
         });
     }
-    
+
     function removetag(position){
         var url = "removeProjectTag";
         var params = {"projectID":currentProjectID, "position":position};
@@ -1044,15 +1044,15 @@ function getActiveProjectMetadata(currentProjectID){
                     var removeUser = ""; //cannot remove admins from group, must demote first.
                     var promoteUser = ""; //admin is already promoted, no need for this.
                     var demoteUser = "";
-                    if(!this.UID == currentUser.uid){ //if this is the current user, they shouldnt be able to demote themselves.  
+                    if(!this.UID == currentUser.uid){ //if this is the current user, they shouldnt be able to demote themselves.
                         demoteUser = "<a class='demoteUser' title='Demote this user' onclick='demoteUser("+this.UID+", $(this));' > - </a>";
                     }
-                    $('#projectMembers').append("<li userID='"+this.UID+"'><span class='userFname'>"+this.fname+" </span><span class='userLname'>"+this.lname+"</span><span style='margin-left:5px;' class='userEmail'>("+this.Uname+")</span><span class='userFname'>"+leaderTag+"</span></li>");               
+                    $('#projectMembers').append("<li userID='"+this.UID+"'><span class='userFname'>"+this.fname+" </span><span class='userLname'>"+this.lname+"</span><span style='margin-left:5px;' class='userEmail'>("+this.Uname+")</span><span class='userFname'>"+leaderTag+"</span></li>");
                     $('#editProjectMembers').append("<li>"+promoteUser+" "+demoteUser+"<span>" + this.Uname + leaderTag + "</span>"+removeUser+"</li>");
                     addedUIDs.push(this.UID);
                 }
             });
-            
+
             $('.metadataLeader').html(leader[0].fname +"&nbsp;"+leader[0].lname+"&nbsp;&nbsp;("+leader[0].Uname+")");
             var users = activeProject.ls_u;
             users=JSON.parse(users);
@@ -1074,7 +1074,7 @@ function getActiveProjectMetadata(currentProjectID){
                     isMember = true;
                     $('.isMember').show();
                     if(userIsProjectAdmin){ //The current user, and this user is an admin
-                        //Can't do these things to yourself, it must be another admin that does them to you.  
+                        //Can't do these things to yourself, it must be another admin that does them to you.
                         removeUser = "";
                         promoteUser="";
                         demoteUser="";
@@ -1086,16 +1086,16 @@ function getActiveProjectMetadata(currentProjectID){
                     demoteUser="";
                 }
                 if($.inArray(this.UID, addedUIDs) === -1){ //check if this user has already been added.
-                     $('#projectMembers').append("<li userID='"+this.UID+"'><span class='userFname'>"+this.fname+" </span><span class='userLname'>"+this.lname+"</span><span style='margin-left:5px;' class='userEmail'>("+this.Uname+")</span><span class='userFname'>"+leaderTag+"</span></li>");               
+                     $('#projectMembers').append("<li userID='"+this.UID+"'><span class='userFname'>"+this.fname+" </span><span class='userLname'>"+this.lname+"</span><span style='margin-left:5px;' class='userEmail'>("+this.Uname+")</span><span class='userFname'>"+leaderTag+"</span></li>");
                      //reference groups.html to find this html element.
                      $('#editProjectMembers').append("<li>"+promoteUser+" "+demoteUser+"<span>" + this.Uname + leaderTag + "</span>"+removeUser+"</li>");
                      addedUIDs.push(this.UID);
                  }
-            });  
-            
+            });
+
             var publicProperties = activeProject.projper;
             publicProperties = JSON.parse(publicProperties);
-            
+
             permitOACr = publicProperties.allow_OAC_read;
             permitOACw = publicProperties.allow_OAC_write;
             permitExport = publicProperties.allow_public_export;
@@ -1107,7 +1107,7 @@ function getActiveProjectMetadata(currentProjectID){
             permitMetadata = publicProperties.allow_public_modify_metadata;
             permitNotes = publicProperties.allow_public_modify_notes;
             permitRead = publicProperties.allow_public_read_transcription;
-            
+
             if(permitOACr){
                 $('#OACr').attr('checked', 'checked');
             }
@@ -1146,7 +1146,7 @@ function getActiveProjectMetadata(currentProjectID){
                 $(".permitExport").show();
                 $('#publicExport').attr('checked','checked');
             }
-            
+
             var projectInformation = activeProject.metadata;
             projectInformation = JSON.parse(projectInformation);
             //console.log("get project information");
@@ -1164,12 +1164,12 @@ function getActiveProjectMetadata(currentProjectID){
             var language = projectInformation.language;
             var description = projectInformation.description;
             var subject = projectInformation.subject;
-            
+
             var specialCharacters = activeProject.projectButtons;
             var xmlTags = activeProject.xml;
             populateEditableXML(xmlTags);
             populateEditableChars(specialCharacters);
-            
+
             //for all non-input areas
             $('.metadataTitle').html(projectTitle);
             $('#activeProjectName').html(projectTitle);
@@ -1185,8 +1185,8 @@ function getActiveProjectMetadata(currentProjectID){
             $('.metadataLocation').html(location);
             $('.metadataLanguage').html(language);
             $('.metadataDescription').html(description);
-            
-            //for all input areas.  
+
+            //for all input areas.
             $('.metadataTitle').val(projectTitle);
             $('#activeProjectName').val(projectTitle);
             $('.metadataSubtitle').val(projectSubtitle)
@@ -1201,14 +1201,14 @@ function getActiveProjectMetadata(currentProjectID){
             $('.metadataLocation').val(location);
             $('.metadataLanguage').val(language);
             $('.metadataDescription').val(description);
-           
+
             //getPageName
             //getImageURL
             //getCollectionName
             //getFolioNumber
             var folioList = activeProject.ls_fs;
             folioList = JSON.parse(folioList);
-            
+
             $.each(folioList, function(){
 //                $("#manuscriptViewer").append("<li class='folios' title='"+folios[i].getCollectionName()+" "+folios[i].getPageName()+"'>\n\
 //                <span class=\"clicked ui-icon ui-icon-arrowthick-1-e right\" title='Move a single image into the holding area'></span>\n\
@@ -1216,7 +1216,7 @@ function getActiveProjectMetadata(currentProjectID){
 //                <input type=\"hidden\" name=\"folio[]\" id=\""+folios[i].getFolioNumber()+"\" value=\""+folios[i].getFolioNumber()+"\"/>\n\
 //                <span class='collection'>"+folios[i].getCollectionName()+"</span> <span class='pageName'>"+folios[i].getPageName()+"</span></li>")
             });
-            
+
             var userToolList = activeProject.userTool;
             $.each(userToolList, function(){
                 //Load these into the tool section for project editing
@@ -1233,25 +1233,25 @@ function getActiveProjectMetadata(currentProjectID){
                 $("#projectTools").append(projectTool);
                 //Load these into the tool section for project editing
             });
-                     
-            var projectManuscriptMetadata = activeProject.ls_ms;
+
+            var projectManuscriptMetadata = activeProject.manifest;
             projectManuscriptMetadata = JSON.parse(projectManuscriptMetadata);
             //console.log("MANUSCRIPT METADATA");
             //console.log(projectManuscriptMetadata[0]);
-            $('#linebreakNotice').html("Preview limited to first "+projectManuscriptMetadata[0].linebreakCharacterLimit+" characters.");            
+            $('#linebreakNotice').html("Preview limited to first "+projectManuscriptMetadata[0].linebreakCharacterLimit+" characters.");
             getUserProjects(currentProjectID, currentUser.uid, currentUser.uname);
         },
-        error: function(jqXHR,error, errorThrown) {  
+        error: function(jqXHR,error, errorThrown) {
             //console.log("there was an error");
             if(jqXHR.status && jqXHR.status==400){
-                 alert(jqXHR.responseText); 
+                 alert(jqXHR.responseText);
             }
             else{
                 alert("Could not retrieve project "+currentProjectID);
             }
        }
     });
-        
+
 }
 
 
@@ -1266,7 +1266,7 @@ function deleteProject(projID, elem){
 
 function getUserProjects(projectID, userID, username){
     var url = "projects?username="+username;
-    //How can I check if current user is the admin of the project? 
+    //How can I check if current user is the admin of the project?
     var projectName = "";
     $.ajax({
         url: url,
@@ -1292,9 +1292,9 @@ function getUserProjects(projectID, userID, username){
                 }
             });
         },
-        error: function(jqXHR,error, errorThrown) {  
+        error: function(jqXHR,error, errorThrown) {
             if(jqXHR.status && jqXHR.status==400){
-                 alert(jqXHR.responseText); 
+                 alert(jqXHR.responseText);
             }
             else if (jqXHR.status && jqXHR.status==404){
                 alert("A project does not exist with this ID:"+projectID+".  Try with a different ID.");
@@ -1322,7 +1322,7 @@ function equalWidth(){
         minWidth = ($(this).width()>minWidth) ? $(this).width() : minWidth;
     }).css({"min-width":minWidth+"px"});
 }
-            
+
 function equalHeights (eClass, minHeight){
     var minHeight = minHeight;
     var lis = $(".toptbas").children("li");
@@ -1333,16 +1333,16 @@ function equalHeights (eClass, minHeight){
         if($(this).attr("class").indexOf("ui-state-active") > -1){
             tabIndex = count;
             $("#tabs-"+tabIndex).find("."+eClass).each(function(){
-                minHeight = ($(this).height()>minHeight) ? $(this).height() : minHeight; 
+                minHeight = ($(this).height()>minHeight) ? $(this).height() : minHeight;
             });
             $("#tabs-"+tabIndex).find("."+eClass).css({"min-height":minHeight+"px"});
         }
     });
-    
+
 }
 
 $(function() {
-        $('#tabs').tabs({ 
+        $('#tabs').tabs({
             fx: { opacity: 'toggle', duration:250 },
             show: function(ui) {equalHeights("tall",100);equalWidth();}
         });
@@ -1372,7 +1372,7 @@ $(function() {
             $( "#noteForm" ).fadeOut(500);
             return false;
         });
-        
+
         if (selecTab) $('#tabs').tabs('option','selected',selecTab);
         $('span.delete').hover(
         function(){$(this).parent('li').find("a.tpenButton").addClass     ("ui-state-error strikeout");},
@@ -1395,22 +1395,22 @@ $(function() {
             $(this).toggleClass("ui-state-active")
             .next("form").add("#QENIx").slideToggle(function(){
                 equalHeights("tall",200);
-            }); 
+            });
         });
         $("#xmlValidateBtn").click(function(){
             $("#xmlValidate").slideToggle(function(){
                 equalHeights("tall",200);
-            }); 
+            });
         });
         $("#linebreakingBtn").click(function(){
             $("#linebreaking").slideToggle(function(){
                 equalHeights("tall",200);
-            }); 
+            });
         });
         $("#wordbreakBtn").click(function(){
             $("#wordbreak").slideToggle(function(){
                 equalHeights("tall",200);
-            }); 
+            });
         });
 //                                        $("#logFilter a").not($("#openNote")).hide(); //delete this line to enable the filters on the projectLog
         $("#logFilter a").not($("#openNote")).click(function(){
@@ -1586,7 +1586,7 @@ $(function() {
             "width" :   "100%",
             "height":   "100%"
         });
-        
+
 //        $("#addT").click(function(){
 //        var addTagData = {projectID:currentProjectID};
 //        $.post("addTag", $.param(addTagData),function(data){
@@ -1598,9 +1598,9 @@ $(function() {
 ////                var rename = (index > 0) ? "b"+position+"p"+index :  "b"+position;
 ////                $(param).attr("name", rename).val("");
 ////            });
-//        },"html");           
+//        },"html");
 //    });
-//    
+//
 //    $("#addH").click(function(){
 //        var addHotkeyData = {projectID:currentProjectID};
 //        $.post("addHotkey", $.param(addHotkeyData),function(data){
@@ -1612,7 +1612,7 @@ $(function() {
 //                "id":"a"+position
 //            }).val("42").end()
 //            .children("a").attr("onclick","deleteHotkey("+position+");");
-//        },"html");           
+//        },"html");
 //    });
 //    $( "#sortable1, #sortable2" ).sortable({
 //        connectWith: ".connectedSortable",
@@ -1620,7 +1620,7 @@ $(function() {
 //        axis:'y'
 //    })
 //    .css("cursor","move");
-//    
+//
 //    $(".tag").children('input').change(function(){
 //        unsavedAlert('#tabs-2');
 //        isValidTag(this);
@@ -1647,19 +1647,19 @@ $(function() {
         $("body").addClass(" ui-state-disabled");
         document.location='transcription.jsp?p='+dropdown.value;
     }
-    
+
     var selectWordbreak = "-";
     function customWordbreak(){
         selectWordbreak = $('#userWord').val();
         $("#currentSetting").html(selectWordbreak);
     }
-    
+
     function scrubListings (){
         $("#listings").ajaxStop(function(){
             $("#listings a[href *= 'transcription']").hide();
         });
     }
-    
+
     function addProjectTool() {
         var name=$("#addToolName").val();
         var URL=$("#addToolURL").val();
@@ -1680,9 +1680,9 @@ $(function() {
         $.post(url, params);
 
     }
-        
+
     function addUserTool(){
-    
+
     }
 
     function removeProjectTool(){
@@ -1692,7 +1692,7 @@ $(function() {
     function removeUserTool(){
 
     }
-    
+
 function expandPanel(btn) {
     $(btn)
         .find(".collapseXML").switchClass("collapseXML","expandXML").end()
@@ -1742,7 +1742,7 @@ function rebuildOrder() {
         }
         return true;
     }
-    
-                              
+
+
 </script>
 </html>

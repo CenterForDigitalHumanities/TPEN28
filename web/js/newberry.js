@@ -251,11 +251,11 @@ function loadTranscription(pid){
                         $("#noLineConfirmation").append(message);
                     }
                 });
-                if(activeProject.manifest.error){
-                    throw new Error(activeProject.manifest.error);
-                }
                 tpen.manifest = activeProject.manifest;
                 tpen.manifest = JSON.parse(tpen.manifest);
+                if(tpen.manifest.error){
+                    throw new Error(activeProject.manifest.error);
+                }
                 var projectData = tpen.manifest;
                 if (projectData.sequences[0] !== undefined
                     && projectData.sequences[0].canvases !== undefined

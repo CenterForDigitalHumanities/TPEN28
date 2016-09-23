@@ -15,8 +15,6 @@
 <%
     if (session.getAttribute("UID") == null) {
 %><%@ include file="loginCheck.jsp" %><%        } else {
-%>
-<%
     int UID = 0;
     user.User thisUser = null;
     if (session.getAttribute("UID") != null) {
@@ -140,7 +138,6 @@
             .partnerName {width:100%;font-size: 125%;font-family: serif;display: block;}
             .partnerDescription {width:100%;padding:3px;margin:2px;display: block;white-space: normal;}
             .partnerSelected {background: green;}
-            #QENI {overflow: auto;width: 100%;}
             #tpenSubmit,#disconnect {width:100%;margin-bottom: 1.25em;}
             #deleteConnection{display: none;}
             span + h4[id] {margin-top:1.25em;}
@@ -177,7 +174,7 @@
             %><%@include file="WEB-INF/includes/errorBang.jspf" %><%
                 return;
                 }
-            } else {
+            } else { // projectID is null
                 if (request.getParameter("delete") != null) {
                     //do they have permission to do that?
                     int projectNumToDelete = Integer.parseInt(request.getParameter("projDelete"));
@@ -188,14 +185,8 @@
                             //redirect to first project
                             out.print("<script>document.location=\"project.jsp\";</script>");
                             return;
-                            //                   textdisplay.project[] p=thisUser.getUserProjects();
-                            //                   if(p.length>0)
-                            //                       projectID=p[0].getProjectID();
                         }
-                        //              else
-                        //                  {
-                        //                   //failed deleting due to some error..shoudlnt happen
-                        //                   }
+
                         textdisplay.Project[] p = thisUser.getUserProjects();
                         if (p.length > 0) {
                             projectID = p[0].getProjectID();
@@ -204,7 +195,7 @@
         <script>
             document.location = "project.jsp?projectID=<%out.print(projectID);%>";
         </script>
-        <%                        //response.sendRedirect("project.jsp?projectID=" + projectID);
+        <%                        
             } else {
                 //couldnt delete, you arent the project creator. You can remove yourself from the group working on this project by visting ...
             }
@@ -218,7 +209,7 @@
         <script>
             document.location = "project.jsp?projectID=<%out.print(projectID);%>";
         </script>
-        <%                         //response.sendRedirect("project.jsp?projectID=" + projectID);
+        <%                         
                     } else {
                         out.print("<div class=\"error\">No project specified!</div>");
                     }
@@ -286,10 +277,7 @@
         </script>
         <%
                     }
-
-
                 }
-
             }
         %>
         <script type="text/javascript">
@@ -332,7 +320,6 @@
                     }
                     $(window).load(function(){
                         equalHeights("tall",100);
-                        //$("body").removeClass("ui-state-disabled",500);
                         $("a:contains('Resume Transcribing')").parent().each(function(){
                             $(this).removeClass('loadingBook').css("background","url('<%
                 int pageno = 501;
@@ -550,7 +537,8 @@
                                         }
                                     }
                                 %>
-                                <br />
+                            </li>
+                            <li>
                                 <div id="inviteUserBtn" class="tpenButton"><span class="ui-icon ui-icon-person right"></span>Invite to T-PEN</div>
                                 <form id="inviteUser" class="ui-corner-all" name="invite" action="project.jsp" onsubmit="return simpleFormValidation();" method="get">
                                     <input type="hidden" name="projectID" value="<%out.print("" + projectID);%>">
@@ -560,211 +548,7 @@
                                     <label for="lname">Last Name</label><input class="text" type="text" name="lname"/><br/>
                                     <button type="submit" value="Register" name="invite" class="ui-button tpenButton"><span class="ui-icon ui-icon-person right"></span>Invite</button>
                                 </form>
-                            </li>
-                            <li class="left ui-widget-content ui-corner-tr ui-corner-bl tall">
-                                <h3>Switchboard</h3>
-                                <p>
-                                    Import recommended XML tag sets, connect to remote XML schema, and enable simple submission with a click.
-                                </p>
-                                <%
-                                if(isMember || permitModify){
-                                    if (request.getParameter("partnerConnect") != null) {
-                                %>
-                                <h4 class="clear-left" id="QENIresults">Results</h4>
-                                <%
-                                        //remove any connection
-                                        if (Integer.parseInt(request.getParameter("template")) == -1) {
-                                            try {
-                                                PartnerProject exTemplate = thisProject.getAssociatedPartnerProject();
-                                                User exController = exTemplate.getControllingUser();
-                                                thisProject.setAssociatedPartnerProject(0);
-                                                out.println("<span class='left clear-left'><span class='ui-icon-circle-minus ui-icon left'></span>Disconnected successfully.</span>");
-                                                out.println("<span class='left clear-left'><span class='ui-icon-info ui-icon left'></span>" + exController.getFname() + " " + exController.getLname() + " has not been removed from your group.</span>");
-                                                out.println("<a id='removeUser' class='right clear-left ui-button tpenButton' href='groups.jsp?act=rem&projectID=" + projectID + "&usr=" + exController.getUID() + "'>Remove " + exController.getFname().toString().substring(0, 1) + " " + exController.getLname() + "</a>");
-                                            } catch (NullPointerException npe) {
-                                                out.println("<span class='left clear-left ui-state-error-text'><span class='ui-icon-alert ui-icon left'></span>Sorry, there was a problem disconnecting. Please <a href='admin.jsp?selecTab=3' target='_blank'>Contact T&#8209;PEN</a>. " + npe.getLocalizedMessage() + "</span>");
-                                            }
-                                        } //attach to partner project
-                                        else if (request.getParameter("template") != null) {
-                                            try (Connection conn = ServletUtils.getDBConnection()) {
-                                                conn.setAutoCommit(false);
-                                                thisProject.setAssociatedPartnerProject(Integer.parseInt(request.getParameter("template")));
-                                                out.println("<span class='left clear-left'><span class='ui-icon-check ui-icon left'></span>Connected successfully.</span>");
-                                                PartnerProject theTemplate = new PartnerProject(Integer.parseInt(request.getParameter("template")));
-                                                thisProject.copyButtonsFromProject(conn, theTemplate.getTemplateProject());
-                                                thisProject.copyHotkeysFromProject(conn, theTemplate.getTemplateProject());
-                                                out.println("<span class='left clear-left'><span class='ui-icon-check ui-icon left'></span>Tags copied successfully.</span>");
-                                                User controller = theTemplate.getControllingUser();
-                                                if (!thisGroup.isMember(controller.getUID())) {
-                                                    thisGroup.addMember(controller.getUID());
-                                                    out.println("<span class='left clear-left'><span class='ui-icon-check ui-icon left'></span>" + theTemplate.getControllingUser().getFname() + " " + theTemplate.getControllingUser().getLname() + " added to group.</span>");
-                                                } else {
-                                                    out.println("<span class='left clear-left'><span class='ui-icon-info ui-icon left'></span>" + theTemplate.getControllingUser().getFname() + " " + theTemplate.getControllingUser().getLname() + " is already in this group.</span>");
-                                                }
-                                                String schema = theTemplate.getTemplateProject().getSchemaURL();
-                                                if (schema.length() > 2) {
-                                                    try {
-                                                       thisProject.setSchemaURL(conn, schema);
-                                                       out.println("<span class='left clear-left'><span class='ui-icon-check ui-icon left'></span>Schema URL: " + schema + "</span>");
-                                                    } catch (Exception ex) {
-                                                       out.println("<span class='left clear-left ui-state-error-text'><span class='ui-icon-alert ui-icon left'></span>Schema URL copy failed.</span>");
-                                                    }
-                                                } else {
-                                                    out.println("<span class='left clear-left'><span class='ui-icon-info ui-icon left'></span>Template has no schema URL.</span>");
-                                                }
-                                                conn.commit();
-                                            }
-                                        }
-                                    }
-                                    //create as template
-                                    if (request.getParameter("makeTemplate") != null) {
-                                        String tName = (request.getParameter("templateName") != null) ? request.getParameter("templateName") : "unnamed";
-                                        String tDesc = (request.getParameter("templateDesc") != null) ? request.getParameter("templateDesc") : "no description";
-                                        String url = "#"; //dummy for now
-                                        PartnerProject tPartner = new PartnerProject(tName, tDesc, url, UID, projectID);
-                                    }
-                                    //remove template
-                                    if (request.getParameter("disconnectTemplate") != null) {
-                                %>
-                                <h4 class="clear-left" id="QENIresults">Results</h4>
-                                <%
-                                        String[] msg = PartnerProject.removeTemplateProject(Integer.parseInt(request.getParameter("disconnectTemplate")));
-                                        out.print(msg[0] + " disconnected from this template and "
-                                                + msg[2] + " " + msg[1] + ".");
-                                    }
-                                    if (thisUser.isAdmin() || (groupLeader[0].getUID() == thisUser.getUID())) {
-                                        PartnerProject[] partners = PartnerProject.getAllPartnerProjects();
-                                        int partnersLength = partners.length;
-                                        boolean isTemplate = false;
-                                        int thisPartnerID = 0;
-                                        for (int i = 0; i < partnersLength; i++) {
-                                            if (partners[i].getTemplateProject().getProjectID() == projectID) {
-                                                isTemplate = true;
-                                                thisPartnerID = partners[i].getID();
-                                                break;
-                                            }
-                                        }
-                                        if (isTemplate) {
-                                %>
-                                <h4 class="clear-left" id="QENItemplate">Conduit Summary</h4>
-                                <%
-                                    //show a template control panel
-                                    PartnerProject thisPartner = new PartnerProject(thisPartnerID);
-                                    user.User thisController = thisPartner.getControllingUser();
-                                    int numOfConnections = Project.getAllAssociatedProjects(thisPartnerID).length;
-                                    String connections = (numOfConnections == 1) ? "1 connected project" : numOfConnections + " connected projects";
-                                %>
-                                <p class="loud">This project is a <span class="bold" title="The group leader has designated this project as a Switchboard template">template project</span>.</p>
-                                <dl>
-                                    <dt>Name</dt>
-                                    <dd><%out.print(thisPartner.getName());%></dd>
-                                    <dt>Description</dt>
-                                    <dd><%out.print(thisPartner.getDescription());%></dd>
-                                    <dt>Controlled By</dt>
-                                    <dd><%out.print(thisController.getFname() + " " + thisController.getLname());%></dd>
-                                    <dt>Conduit URL</dt>
-                                    <dd><%out.print(thisPartner.getURL());%></dd>
-                                    <dt>Connections</dt>
-                                    <dd><%out.print(connections);%></dd>
-                                </dl>
-                                <a class="tpenButton" href="project.jsp?selecTab=2&disconnectTemplate=<%out.print(thisPartner.getID() + projectAppend);%>">Disconnect Template from T&#8209;PEN</a>
-                                <p class="small clear"><span class="ui-icon ui-icon-info" style="float:left;height:14px;"></span>
-                                    This project will not be deleted, but will no longer appear on the Switchboard list and all associated projects will be disconnected. If you decide to reconnect in the future, all leaders of associated projects will have to reattach their projects.
-                                </p>
-                                <%
-                                } else {
-                                %>
-                                <div id="QENIx" class="clear-left">
-                                    <form method="GET" action="project.jsp" class="clear">
-                                        <h4 class="clear-left" id="QENIconnected">Currently Connected</h4>
-                                        <%
-                                            if (thisProject.getAssociatedPartnerProject() != null) {
-                                                textdisplay.PartnerProject connect = new PartnerProject(thisProject.getAssociatedPartnerProject().getID());
-                                                if (connect.getURL().length() > 4) {
-                                                    out.print("Click to submit to this conduit");
-                                                }
-                                                out.print("<div id='disconnect' class='clear-left left tpenButton' data-partnerid='none'><span class='partnerName'>" + connect.getName() + ""
-                                                        + "<span class='ui-icon ui-icon-closethick right' title='Remove this connection. You must manually delete any collaborators.'></span></span>"
-                                                        + "<input class='hide' type='radio' name='template' value='-1' />"
-                                                        + "<span id='deleteConnection' class='partnerDescription clear-left left'>Remove this connection. You must manually delete any collaborators.</span>"
-                                                        + "</div><span></span>");
-                                            } else {
-                                                out.print("<p>No current connections.</p>");
-                                            }
-                                        %>
-                                        <!--                                List in fancy checkboxes each project with maybe lists of available stuff with each-->
-                                        <h4 class="clear-left" id="QENIconnections">Available Connections</h4>
-                                        <div id="QENI" style='height:<%
-                                            int listHeight;
-                                            listHeight = 16 + 54 * partnersLength; // padding + each
-                                            listHeight = (listHeight > 300) ? 300 : listHeight; // 300px max
-                                            out.print(listHeight);%>px;'>
-                                            <input type="hidden" value="<%out.print(projectID);%>" name="projectID" />
-                                            <input type="hidden" value="2" name="selecTab" />
-                                            <%//if(thisProject.getAssociatedPartnerProject() != null){%>
-                                            <!--   <div id="disconnect" class="partnerListing tpenButton" data-partnerid="none">
-                                                       <input class="hide" type="radio" name="template" value="-1" />
-                                                       <span class="partnerName"><span class="ui-icon ui-icon-circle-minus left"></span>Disconnect</span>
-                                                       <span class="partnerDescription">Remove any connections. You must manually delete any collaborators.</span>
-                                               </div> -->
-                                            <%//}
-                                                for (int i = 0; i < partnersLength; i++) {
-                                            %>
-                                            <div class="partnerListing tpenButton" data-template="<%out.print(partners[i].getTemplateProject().getProjectID());%>">
-                                                <input class="hide" type="radio" name="template" value="<%out.print(partners[i].getID());%>" />
-                                                <span class="partnerName"><%out.print(partners[i].getName());%></span>
-                                                <span class="partnerDescription"><%out.print(partners[i].getDescription());%></span>
-                                            </div>
-                                            <%
-                                                }
-                                            %>
-                                        </div>
-                                        <input class="right tpenButton ui-button hide" type="submit" value="Submit Changes" name="partnerConnect" />
-                                    </form>
-                                    <p class="small clear"><span class="ui-icon ui-icon-info" style="float:left;height:14px;"></span>
-                                        By connecting this project to a Switchboard, TPEN automatically adds the appropriate individuals to this project and enables direct submission to the collaborating entity. This connection grants the entity access to your project, but you will still retain control of available customizations. 
-                                    </p>
-                                </div>
-                                <%if (!isTemplate) {%>
-                                <h4 class="clear-left" id="QENItemplate">Create a New Template</h4>
-                                <div id="templateBtn" class='tpenButton ui-button' title="Allow others to connect to this project and use its button sets"><span class="right ui-icon-star ui-icon"></span>Use Current Project as Template</div>
-                                <form id="template" class='ui-corner-all' name="template" action="project.jsp" method="get">
-                                    <input type="hidden" name="projectID" value="<%out.print("" + projectID);%>">
-                                    <input type="hidden" name="selecTab" value="2">
-                                    <div id="sampleTemplate" class="partnerListing tpenButton">
-                                        <span class="partnerName">Name</span>
-                                        <span class="partnerDescription">This description will update as you type below</span>
-                                    </div>
-                                    <label for="templateName">Name
-                                        <input name="templateName" id="templateName" type="text" placeholder="Brief Title"/>
-                                    </label>
-                                    <label for="templateDesc">Description
-                                        <textarea name="templateDesc" id="templateDesc" placeholder="Enter a short description to appear on the linking button"></textarea>
-                                    </label>
-                                    <label for="templateDesc">URL
-                                    </label>
-                                    <p class="small clear"><span class="ui-icon ui-icon-info" style="float:left;height:14px;"></span>
-                                        Setting up a web service and providing a URL allows TPEN users to submit transcriptions directly to non-TPEN services. <a href="admin.jsp?selecTab=3" target="_blank">Contact T&#8209;PEN</a> for more information.
-                                    </p>
-                                    <input type="submit" class="right tpenButton ui-button" name="makeTemplate" value="Create Template" />
-                                </form>
-                                <%     }
-                                    }
-                                } else {%>
-                                <span class="ui-corner-all ui-state-error left"><span class="ui-icon-alert ui-icon left"></span>This feature is limited to the Group Leader.</span>
-                                <!--                                List any connected projects-->
-                                <%
-                                        if (thisProject.getAssociatedPartnerProject() != null) {
-                                            textdisplay.PartnerProject connect = new PartnerProject(thisProject.getAssociatedPartnerProject().getID());
-                                            out.print("<p class='clear-left left'>Connected to " + connect.getName() + ".</p>");
-                                        } else {
-                                            out.print("<p class='clear-left left'>No current connections.</p>");
-                                        }
-                                    }
-                                } else {
-                                            out.print("<p class='clear-left left'>Public projects can only be connected to the Group Leader.</p>");
-                                                                                       }
-                            %>
+                                    <p>Request T-PEN send an email to a new user on your behalf so you may include them on your project.</p>
                             </li>
                             <li class="left ui-widget-content ui-corner-tr ui-corner-bl tall">
                                 <h3>Recent Activity on this Project</h3>
@@ -1027,10 +811,6 @@
                     </div>
                     <%if (isMember || permitExport){%>
                         <div id="tabs-5">
-                            <%@include file="WEB-INF/includes/switchboardSubmit.jspf" %>
-                        <%
-                                }
-                            }%>
                         <form action="export" method="get" onsubmit="return Export.validForm();">
                             <ul id="export" class="ui-helper-reset">
                                 <li class="left ui-widget-content ui-corner-tr ui-corner-bl tall">
@@ -1041,11 +821,6 @@
                                     <label for="pdf" title="Portable Document Format"><input id="pdf" type="radio" checked name="type" value="pdf"/>PDF</label><br />
                                     <label for="rtf" title="Rich Text Format"><input id="rtf" type="radio" name="type" value="rtf">RTF</label><br />
                                     <label for="xml" title="XML/Plaintext"><input id="xml" type="radio" name="type" value="xml">XML/Plaintext</label><br />
-                                    <!--                        </span>
-                                                        <span class='label left clear-left'>Colors:</span>
-                                                            <span class="left">
-                                                                <label for="bw" title="Standard output"><input id="bw" type="radio" checked name="color" value="bw"/>Black &amp; White</label><br />
-                                                                <label for="color" title="Colors are defined by the project buttons"><input disabled id="color" type="radio" name="color" value="color">Color Tags</label><br />-->
                                     <h3 class="clear">Metadata and Page Labels</h3>
                                     <p class="xmlDisclaimer">Metadata export and page labels are not supported in plaintext.</p>
                                     <span class="xmlHide">
@@ -1413,7 +1188,7 @@ if(request.getParameter("publicOptions")!=null && UID == thisGroup.getLeader()[0
                                         });
                                         $("#xmlImportBtn,#inviteUserBtn,#templateBtn").click(function(){
                                             $(this).toggleClass("ui-state-active")
-                                            .next("form").add("#QENIx").slideToggle(function(){
+                                            .next("form").slideToggle(function(){
                                                 equalHeights("tall",200);
                                             }); 
                                         });
@@ -1519,51 +1294,6 @@ if(request.getParameter("publicOptions")!=null && UID == thisGroup.getLeader()[0
                                                     .html("Submit Set Range");
                                             }
                                         });
-
-                                        $(".partnerListing").find("input:radio").click(function(event){
-                                            event.preventDefault();
-                                        });
-                                        $("#QENI").find(".partnerListing").click(function(){
-                                            $(this).find("input:radio").attr("checked",true);
-                                            $("#QENI").scrollTop(0).find("input:checked")
-                                            .parent(".partnerListing")
-                                            .addClass("ui-state-active")
-                                            .fadeOut(250,function(){
-                                                $(this).css("opacity", 0)
-                                                .prependTo("#QENI").slideDown()
-                                                .animate({"opacity":1},250)
-                                            })
-                                            .siblings().removeClass("ui-state-active");
-                                            if($("#QENI").parent("form").find("input[type='submit']").hasClass('hide')){
-                                                $("#QENI").parent("form").find("input[type='submit']").slideDown().removeClass('hide');
-                                            }
-                                        });
-                                        $("#disconnect").find(".partnerName").click(function(event){
-                                            if(event.target != this){return true;}
-                                            $("#tabs").tabs("select",4);
-                                            setTimeout('$("#tpenSubmit").click()',350);
-                                        })
-                                        .find(".ui-icon-closethick").bind({
-                                            mouseenter: function(){
-                                                $("#deleteConnection").stop(true,true).slideDown();
-                                                $("#disconnect").addClass("ui-state-error");
-                                            },
-                                            mouseleave: function(){
-                                                $("#deleteConnection").stop(true,true).slideUp();
-                                                $("#disconnect").removeClass("ui-state-error");
-                                            },
-                                            click: function(){
-                                                $("#disconnect").find("input:radio").attr("checked",true);
-                                                $("#QENI").find(".partnerListing").removeClass("ui-state-active")
-                                                .parents("form").find("input[type='submit']").click();
-                                            }
-                                        })
-                                        $("#template").find("input:text").keyup(function(){
-                                            $("#template").find(".partnerName").html($(this).val());
-                                        }).end()
-                                        .find("textarea").keyup(function(){
-                                            $("#template").find(".partnerDescription").html($(this).val());
-                                        });
                                         $("#toolSelection").submit(function(){
                                             $(this).find(".projectTools").each(function(){
                                                 var thisInput = $(this).find("input");
@@ -1587,12 +1317,10 @@ $("#samplePreview").hover(function(){
                                             $(document).bind('mousemove', function(e){
                                                 imgLeft = -(e.pageX-posX) * (imgX-sampleX-68) / sampleX;    // 68 pixel nudge for padding and box-model inconsistencies
                                                 imgTop  = -(e.pageY-posY) * (imgY-sampleY-30) / sampleY;    // 30 pixel nudge for padding and box-model inconsistencies
-                                                //alert("e.pageX:"+e.pageX+"\nposX:"+posX+"\nposY:"+posY+"\nsampleX:"+sampleX+"\nsampleY:"+sampleY+"\nimgLeft:"+imgLeft+"\nimgTop:"+imgTop);
                                                 $("#samplePreview").find("img").css({
                                                     "left"  :   imgLeft,
                                                     "top"   :   imgTop
                                                 });
-                    //                        $("#samplePreview span").html(Math.round(e.pageY)+", "+Math.round(posY)+", "+Math.round(sampleY));
                                             });
                                         },function(){
                                             $(this).find("img").css({

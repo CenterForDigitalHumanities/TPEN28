@@ -15,8 +15,6 @@
 <%
     if (session.getAttribute("UID") == null) {
 %><%@ include file="loginCheck.jsp" %><%        } else {
-%>
-<%
     int UID = 0;
     user.User thisUser = null;
     if (session.getAttribute("UID") != null) {
@@ -140,7 +138,6 @@
             .partnerName {width:100%;font-size: 125%;font-family: serif;display: block;}
             .partnerDescription {width:100%;padding:3px;margin:2px;display: block;white-space: normal;}
             .partnerSelected {background: green;}
-            #QENI {overflow: auto;width: 100%;}
             #tpenSubmit,#disconnect {width:100%;margin-bottom: 1.25em;}
             #deleteConnection{display: none;}
             span + h4[id] {margin-top:1.25em;}
@@ -177,7 +174,7 @@
             %><%@include file="WEB-INF/includes/errorBang.jspf" %><%
                 return;
                 }
-            } else {
+            } else { // projectID is null
                 if (request.getParameter("delete") != null) {
                     //do they have permission to do that?
                     int projectNumToDelete = Integer.parseInt(request.getParameter("projDelete"));
@@ -188,14 +185,8 @@
                             //redirect to first project
                             out.print("<script>document.location=\"project.jsp\";</script>");
                             return;
-                            //                   textdisplay.project[] p=thisUser.getUserProjects();
-                            //                   if(p.length>0)
-                            //                       projectID=p[0].getProjectID();
                         }
-                        //              else
-                        //                  {
-                        //                   //failed deleting due to some error..shoudlnt happen
-                        //                   }
+
                         textdisplay.Project[] p = thisUser.getUserProjects();
                         if (p.length > 0) {
                             projectID = p[0].getProjectID();
@@ -204,7 +195,7 @@
         <script>
             document.location = "project.jsp?projectID=<%out.print(projectID);%>";
         </script>
-        <%                        //response.sendRedirect("project.jsp?projectID=" + projectID);
+        <%                        
             } else {
                 //couldnt delete, you arent the project creator. You can remove yourself from the group working on this project by visting ...
             }
@@ -218,7 +209,7 @@
         <script>
             document.location = "project.jsp?projectID=<%out.print(projectID);%>";
         </script>
-        <%                         //response.sendRedirect("project.jsp?projectID=" + projectID);
+        <%                         
                     } else {
                         out.print("<div class=\"error\">No project specified!</div>");
                     }
@@ -286,10 +277,7 @@
         </script>
         <%
                     }
-
-
                 }
-
             }
         %>
         <script type="text/javascript">
@@ -332,7 +320,6 @@
                     }
                     $(window).load(function(){
                         equalHeights("tall",100);
-                        //$("body").removeClass("ui-state-disabled",500);
                         $("a:contains('Resume Transcribing')").parent().each(function(){
                             $(this).removeClass('loadingBook').css("background","url('<%
                 int pageno = 501;
@@ -837,11 +824,6 @@
                                     <label for="pdf" title="Portable Document Format"><input id="pdf" type="radio" checked name="type" value="pdf"/>PDF</label><br />
                                     <label for="rtf" title="Rich Text Format"><input id="rtf" type="radio" name="type" value="rtf">RTF</label><br />
                                     <label for="xml" title="XML/Plaintext"><input id="xml" type="radio" name="type" value="xml">XML/Plaintext</label><br />
-                                    <!--                        </span>
-                                                        <span class='label left clear-left'>Colors:</span>
-                                                            <span class="left">
-                                                                <label for="bw" title="Standard output"><input id="bw" type="radio" checked name="color" value="bw"/>Black &amp; White</label><br />
-                                                                <label for="color" title="Colors are defined by the project buttons"><input disabled id="color" type="radio" name="color" value="color">Color Tags</label><br />-->
                                     <h3 class="clear">Metadata and Page Labels</h3>
                                     <p class="xmlDisclaimer">Metadata export and page labels are not supported in plaintext.</p>
                                     <span class="xmlHide">

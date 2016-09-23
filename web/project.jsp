@@ -824,7 +824,6 @@
                     </div>
                     <%if (isMember || permitExport){%>
                         <div id="tabs-5">
-                            <%@include file="WEB-INF/includes/switchboardSubmit.jspf" %>
                         <%
                                 }
                             }%>
@@ -1210,7 +1209,7 @@ if(request.getParameter("publicOptions")!=null && UID == thisGroup.getLeader()[0
                                         });
                                         $("#xmlImportBtn,#inviteUserBtn,#templateBtn").click(function(){
                                             $(this).toggleClass("ui-state-active")
-                                            .next("form").add("#QENIx").slideToggle(function(){
+                                            .next("form").slideToggle(function(){
                                                 equalHeights("tall",200);
                                             }); 
                                         });
@@ -1316,51 +1315,6 @@ if(request.getParameter("publicOptions")!=null && UID == thisGroup.getLeader()[0
                                                     .html("Submit Set Range");
                                             }
                                         });
-
-                                        $(".partnerListing").find("input:radio").click(function(event){
-                                            event.preventDefault();
-                                        });
-                                        $("#QENI").find(".partnerListing").click(function(){
-                                            $(this).find("input:radio").attr("checked",true);
-                                            $("#QENI").scrollTop(0).find("input:checked")
-                                            .parent(".partnerListing")
-                                            .addClass("ui-state-active")
-                                            .fadeOut(250,function(){
-                                                $(this).css("opacity", 0)
-                                                .prependTo("#QENI").slideDown()
-                                                .animate({"opacity":1},250)
-                                            })
-                                            .siblings().removeClass("ui-state-active");
-                                            if($("#QENI").parent("form").find("input[type='submit']").hasClass('hide')){
-                                                $("#QENI").parent("form").find("input[type='submit']").slideDown().removeClass('hide');
-                                            }
-                                        });
-                                        $("#disconnect").find(".partnerName").click(function(event){
-                                            if(event.target != this){return true;}
-                                            $("#tabs").tabs("select",4);
-                                            setTimeout('$("#tpenSubmit").click()',350);
-                                        })
-                                        .find(".ui-icon-closethick").bind({
-                                            mouseenter: function(){
-                                                $("#deleteConnection").stop(true,true).slideDown();
-                                                $("#disconnect").addClass("ui-state-error");
-                                            },
-                                            mouseleave: function(){
-                                                $("#deleteConnection").stop(true,true).slideUp();
-                                                $("#disconnect").removeClass("ui-state-error");
-                                            },
-                                            click: function(){
-                                                $("#disconnect").find("input:radio").attr("checked",true);
-                                                $("#QENI").find(".partnerListing").removeClass("ui-state-active")
-                                                .parents("form").find("input[type='submit']").click();
-                                            }
-                                        })
-                                        $("#template").find("input:text").keyup(function(){
-                                            $("#template").find(".partnerName").html($(this).val());
-                                        }).end()
-                                        .find("textarea").keyup(function(){
-                                            $("#template").find(".partnerDescription").html($(this).val());
-                                        });
                                         $("#toolSelection").submit(function(){
                                             $(this).find(".projectTools").each(function(){
                                                 var thisInput = $(this).find("input");
@@ -1384,12 +1338,10 @@ $("#samplePreview").hover(function(){
                                             $(document).bind('mousemove', function(e){
                                                 imgLeft = -(e.pageX-posX) * (imgX-sampleX-68) / sampleX;    // 68 pixel nudge for padding and box-model inconsistencies
                                                 imgTop  = -(e.pageY-posY) * (imgY-sampleY-30) / sampleY;    // 30 pixel nudge for padding and box-model inconsistencies
-                                                //alert("e.pageX:"+e.pageX+"\nposX:"+posX+"\nposY:"+posY+"\nsampleX:"+sampleX+"\nsampleY:"+sampleY+"\nimgLeft:"+imgLeft+"\nimgTop:"+imgTop);
                                                 $("#samplePreview").find("img").css({
                                                     "left"  :   imgLeft,
                                                     "top"   :   imgTop
                                                 });
-                    //                        $("#samplePreview span").html(Math.round(e.pageY)+", "+Math.round(posY)+", "+Math.round(sampleY));
                                             });
                                         },function(){
                                             $(this).find("img").css({

@@ -270,7 +270,6 @@ td {
     color: rgb(105, 172, 201);
     font-weight: 700;
     text-decoration: none;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
     max-width: 250px;
 }
 /* maps for repository listings */
@@ -443,7 +442,6 @@ td {
     font-weight: 700;
     text-decoration: none;
     padding: 0 15px;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
 }
 #footer2 a:hover{
     color: #A64129;
@@ -525,10 +523,8 @@ td {
 }
 #projectList tr:hover td * {
     display:block;
-    text-shadow: 0 1px 0 white;
 }
 #projectList td:first-child,#publicProjectList td:first-child {
-    text-shadow: 0 1px 0 white;
     font-size: larger;
     font-weight: 700;
     width:auto;
@@ -560,99 +556,11 @@ td {
 #recentProject:hover #pagename {
     background: #A64129;
     color:white;
-    text-shadow:0 1px 0px #761109;
     box-shadow:0 -1px 3px black;
     z-index: 1;
     text-decoration: none;
 }
-#blogLoad {
-    position: absolute;
-    font-size: 18px;
-    font-weight: bold;
-    width: 100%;
-    text-align: center;
-    left: 0;
-    height: 100%;
-    background: rgba(0, 0, 0, .5);
-    top: 0;
-    line-height: 140px;
-    color: skyBlue;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
-}
-#blogLoad a {
-    color:skyBlue;
-}
-#blogTitles {
-    list-style: none;width: 30%;
-    overflow: hidden;
-    padding: 1px;
-    margin:0;
-    background: #A64129;
-    float: left;
-    z-index: 1;
-}
-.blogTitle {
-    position: relative;
-    text-overflow:ellipsis;
-    padding: 3px;
-    margin: 1px;
-    width:auto;
-    text-shadow: 0px -1px 0px #DDEAFF;
-    color: #226683;
-    border:none;
-}
-.blogTitle:not(.T-PEN) {
-    display:none;
-}
-.blogTitle:hover,.blogTitleHover {
-    margin-right: -2px;
-    padding-right: 6px;
-}
-.blogTitle:hover,.blogTitleHover,#blogContent{
-    background: white !important;
-}
-#blogLink{
-    position:absolute;
-    bottom:0;
-    left:0;
-    opacity:0;
-    background: #A64129;
-    color:white;
-    text-shadow:0 1px 0px #761109;
-    padding: 10px 20px;
-    font-size: larger;
-    font-weight: bold;
-    width:100%;
-    box-shadow:0 -1px 3px black;
-    z-index: 1;
-    text-decoration: none;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-}
-#blogLink:hover {
-    opacity:1;
-}
-#blogContent {
-    width:70%;
-    float: left;
-    position: relative;
-    overflow: auto;
-    height: 100%;
-    margin: 0;
-    padding: 0 10px;
-    overflow-x: hidden;
-    overflow-y:auto;
-    border:solid 2px #A64129;
-    border-left-width: 0px;
-}
-.byline {
-    width:60%;
-    background:#A64129;
-    text-shadow:0 1px 0px #761109;
-    margin: -5px 0 0 -15px;
-    padding: 0 20px;
-    color: white;
-}
+
 /* pubic project listings */
 #publicProjectList a,.permitNone,.permitSome,.permitAll,.publicProjectHeader {
     width:26px !important;
@@ -843,7 +751,6 @@ h1 {
     line-height:1;
     margin-bottom:0.5em;
     font-variant:small-caps;
-    text-shadow:0px 1px 0 black, 0px -1px 0 #FF987F;
 }
 h2 {
     font-size:2em;
@@ -1263,7 +1170,6 @@ p span.label {
     border-width: 1px;
     margin-right: -1px;
     margin-bottom: -1px;
-    text-shadow: 0 -1px rgba(229,229,229,1);
     background: rgb(168,210,228); /* Old browsers */
     background: -moz-linear-gradient(top,  rgba(168,210,228,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
     background: -webkit-linear-gradient(top,  rgba(168,210,228,1) 0%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
@@ -1275,7 +1181,6 @@ p span.label {
     white-space: nowrap;
     display: inline-block;}
 .lookLikeButtons:hover{
-    text-shadow: 0 1px rgba(229,229,229,1);
     border-color: #a64129;
     background: rgb(201,219,226); /* Old browsers */
     background: -moz-linear-gradient(top,  rgba(201,219,226,1) 0%, rgba(168,210,228,1) 100%); /* FF3.6+ */
@@ -1291,7 +1196,6 @@ p span.label {
     top: -3px;
     right: -3px;
     border: none 0;
-    text-shadow: 0 0 0 transparent;
 }
 
 .combobox+.ui-combobox {
@@ -1325,7 +1229,6 @@ p span.label {
 .ui-menu-item a.ui-corner-all,.ui-menu-item a.ui-corner-all:hover {
     border: none;
     background: transparent;
-    text-shadow: none;
     display: block;
     cursor: default;
     text-align: left;
@@ -1341,14 +1244,11 @@ p span.label {
     color:#a64129;
 }
 .tpenButton, .returnButton {
-    text-shadow: 0px -1px 0px #DDEAFF;
     text-align: center;
     cursor: pointer;
     text-decoration: none;
 }
-.tpenButton:hover, .returnButton:hover {
-    text-shadow: 0px 1px 0px #DDEAFF;
-}
+
 /* Project Log */
 #projectLog {
     height:210px;
@@ -1424,22 +1324,7 @@ div.logEntry:nth-child(2n-1) {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
 }
-/* fullscreen elements */
-/*.modalPopup {                     /* TODO handling not generalized
-    position: fixed;
-    width: 60%;
-    height: 90%;
-    top:5%;
-    left:20%;
-   margin:5px;
-    padding:3px 10px;
-    display: none;
-    clear:both;
-    overflow:hidden;}
-/*.modalPopup:after{                   /* TODO handling not generalized
-    content:'Click the page to return';
-    position: fixed;top:2%;right:2%;white-space: nowrap;font-size: large;
-    font-weight: 700;font-family: monospace;text-shadow:1px 1px 0 white;}*/
+
 #overlay {
     z-index: 499;
 }
@@ -1592,7 +1477,6 @@ div.logEntry:nth-child(2n-1) {
     left:-1%;
     font-size: 48px;
     font-style: italic;
-    text-shadow:1px 2px 2px #4e8196;
     -webkit-animation-name:load_text;
     -webkit-animation-duration:25s;
     -webkit-animation-iteration-count:1;

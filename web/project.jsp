@@ -811,9 +811,6 @@
                     </div>
                     <%if (isMember || permitExport){%>
                         <div id="tabs-5">
-                        <%
-                                }
-                            }%>
                         <form action="export" method="get" onsubmit="return Export.validForm();">
                             <ul id="export" class="ui-helper-reset">
                                 <li class="left ui-widget-content ui-corner-tr ui-corner-bl tall">

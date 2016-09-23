@@ -50,6 +50,7 @@ import utils.UserTool;
 import com.google.gson.Gson;
 
 import edu.slu.tpen.transfer.JsonImporter;
+import edu.slu.tpen.transfer.JsonLDExporter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -57,6 +58,7 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import net.sf.json.JSON;
+import net.sf.json.JSONException;
 
 /**
  * Get tpen project. 
@@ -83,9 +85,7 @@ public class GetProjectTPENServlet extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-// Force PrintWriter to use UTF-8 encoded strings.
         response.setContentType("application/json; charset=UTF-8");
-        //PrintWriter out = response.getWriter();
         PrintWriter out = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), "UTF8"), true);
         String manifest_obj_str = "";
         Gson gson = new Gson();
@@ -93,7 +93,6 @@ public class GetProjectTPENServlet extends HttpServlet {
         JSONObject jo_error = new JSONObject();
         JSONObject man_obj = new JSONObject();
         jo_error.element("error", "No Manifest URL");
-//        JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
         if (uid >= 0) {
 //            System.out.println("UID ================= "+uid);
             try {
@@ -105,45 +104,32 @@ public class GetProjectTPENServlet extends HttpServlet {
 //                    System.out.println("group Id ===== " + proj.getGroupID() + " is member " + group.isMember(uid));
                     if (group.isMember(uid) || isTPENAdmin) {
                         if (checkModified(request, proj)) {
-                            
                             jsonMap.put("project", gson.toJson(proj));
 //                            System.out.println("project json ====== " + gson.toJson(proj));
                             int projectID = proj.getProjectID();
-                            //get folio
                             Folio[] folios = proj.getFolios();
                             jsonMap.put("ls_fs", gson.toJson(folios));
 //                            System.out.println("folios json ========== " + gson.toJson(folios));
-                            //get manuscripts
-                            List<JSONObject> ls_ms = new ArrayList();
-                            Manuscript man = new Manuscript(folios[0].folioNumber);
-                            String manifest_uri = man.getArchive(); //All the manifest URIs are stored in manuscript.archive field. See createProject servlets to see how/why.  
-                            if(manifest_uri.equals("")){
-                                ls_ms.add(jo_error);
+                            JSONObject manifest = new JSONObject();
+                            if (new Group(proj.getGroupID()).isMember(uid)){
+                                manifest_obj_str = new JsonLDExporter(proj, new User(uid)).export();
                             }
-                            else{
-                                try{
-                                    URL manifest_data = new URL(manifest_uri);
-                                    BufferedReader in = new BufferedReader(
-                                        new InputStreamReader(manifest_data.openStream())
-                                    );
-                                    String inputLine;
-                                    
-                                    while ((inputLine = in.readLine()) != null){
-                                        manifest_obj_str+= inputLine;
-                                    }
-                                    in.close();
-                                    man_obj = JSONObject.fromObject(manifest_obj_str);
-                                    ls_ms.add(man_obj);
-                                }
-                                catch (Exception e){
-                                    jo_error.element("error" , "Could not resolve manifest.");
-                                    ls_ms.add(jo_error);
-                                }
+                            else {
+                                //This user is noth authorized to receive this manifest.
+                                jo_error.element("error" , "Manifest Access Unauthorized");
+                                manifest_obj_str = jo_error.toString();
+                             }
+                           // }
+//
+                            try{ //Try to parse the manifest string
+                                man_obj = JSONObject.fromObject(manifest_obj_str);
+                                manifest = man_obj;
                             }
-                            
-                            
-                            jsonMap.put("manifest", gson.toJson(ls_ms));
-//                            System.out.println("manuscript json ======= " + gson.toJson(ls_ms));
+                            catch (JSONException e2){
+                                jo_error.element("error", "Not a valid JSON manifest");
+                                manifest = jo_error;
+                            }
+                            jsonMap.put("manifest", manifest.toString());
                             //get project header
                             String header = proj.getHeader();
                             jsonMap.put("ph", header);
@@ -154,7 +140,6 @@ public class GetProjectTPENServlet extends HttpServlet {
 //                            System.out.println("users json ========= " + gson.toJson(users));
                             //get group leader
                             User[] leaders = group.getLeader();
-                            
                             // if current user is admin AND not in leaders, add them to leaders array
                             boolean isLeader = false;
                             for (User u: leaders) {
@@ -165,12 +150,12 @@ public class GetProjectTPENServlet extends HttpServlet {
                             }
                             Object role = session.getAttribute("role");
                             if (!isLeader) {
-	                            if (role != null && role.toString().equals("1")) {
-	                                User currentUser = new User(uid);
-	                                ArrayList<User> leaderList = new ArrayList<User>(Arrays.asList(leaders));
-	                                leaderList.add(currentUser);
-	                                leaders = leaderList.toArray(new User[leaderList.size()]);
-	                            }
+                                if (role != null && role.toString().equals("1")) {
+                                    User currentUser = new User(uid);
+                                    ArrayList<User> leaderList = new ArrayList<User>(Arrays.asList(leaders));
+                                    leaderList.add(currentUser);
+                                    leaders = leaderList.toArray(new User[leaderList.size()]);
+                                }
                             }
 //                            System.out.println("project leaders json ========= " + gson.toJson(leaders));
                             jsonMap.put("ls_leader", gson.toJson(leaders));

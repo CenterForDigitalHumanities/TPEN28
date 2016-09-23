@@ -76,9 +76,6 @@
                 <i onclick="lastFolio();" title="Last Folio"><img src='images/endpage.png' ></i>
             </span>
             <span class="trimSection">USER: <span id="trimCurrentUser"></span></span>
-<!--            <span class="trimSection">Help</span> -->
-<!--             <span class="trimSection"><a href="https://paleography.library.utoronto.ca/contact" target="_blank">Contact</a></span>
- -->
         </div>
 
         <div class="instructions">
@@ -272,83 +269,6 @@
                 </div>
             </div>
 
-            <div id="startSplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe data_src="https://paleography.library.utoronto.ca/content/get-started"></iframe>
-            </div>
-
-            <div id="calligraphySplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe data_src="https://paleography.library.utoronto.ca/islandora/object/paleography%3Acalligraphybooks?response_type=embed"></iframe>
-            </div>
-
-            <div id="mapsSplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe data_src="https://paleography.library.utoronto.ca/islandora/object/paleography%3Ahistoricalmaps?response_type=embed"></iframe>
-            </div>
-
-            <div id="scriptsSplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe data_src="https://paleography.library.utoronto.ca/content/scripts?response_type=embed"></iframe>
-            </div>
-
-            <div id="documentsSplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe data_src="https://paleography.library.utoronto.ca/content/about-french-documents?response_type=embed"></iframe>
-            </div>
-
-            <div id="conservationSplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe data_src="https://paleography.library.utoronto.ca/content/conservation?response_type=embed"></iframe>
-            </div>
-
-            <div id="conventionsSplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe data_src="https://paleography.library.utoronto.ca/content/transcribing-editing-conventions?response_type=embed"></iframe>
-            </div>
-
-            <div id="teachersSplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe data_src="https://paleography.library.utoronto.ca/content/teachers?response_type=embed"></iframe>
-            </div>
-
-            <div id="groupSplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe id="forum_embed"
-                 src="javascript:void(0)"
-                 scrolling="no"
-                 frameborder="0"
-                 width="900"
-                 height="700">
-                </iframe>
-            </div>
-
-            <div id="abbrevSplit" class="split" >
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe data_src="https://paleography.library.utoronto.ca/content/abbreviations?response_type=embed"></iframe>
-            </div>
-
-            <div id="dictionarySplit" class="split iTool">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe id="frenchDictionary" data_src="https://paleography.library.utoronto.ca/content/dictionaries?response_type=embed">
-                </iframe>
-            </div>
-
-            <div id="glossarySplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe data_src="https://paleography.library.utoronto.ca/content/glossary-of-terms?response_type=embed"></iframe>
-            </div>
-
-            <div id="fInstitutionsSplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe data_src="https://paleography.library.utoronto.ca/content/french-institutions?response_type=embed"></iframe>
-            </div>
-
-            <div id="otherSplit" class="split">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe data_src="https://paleography.library.utoronto.ca/content/other-reference-resources?response_type=embed"></iframe>
-            </div>
-
            <div id="linebreakSplit" class="ui-widget ui-widget-content split">
                <button class="fullScreenTrans">Full Screen Transcription</button>
                 <h3>Linebreak Existing Transcription (In Development)</h3>
@@ -385,16 +305,6 @@
                 </div>
                 <div id="fullPageSplitCanvas"><img id="fullPageImg" src="" /></div>
                             </div>
-            <div id="essaySplit" class="split iTool">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe id="contextualEssay" data_src="https://paleography.library.utoronto.ca/content/background-essays?response_type=embed">
-                </iframe>
-            </div>
-            <div id="partialTransSplit" class="split iTool">
-                <button class="fullScreenTrans">Full Screen Transcription</button>
-                <iframe id="contextualEssay" data_src="https://paleography.library.utoronto.ca/content/partial_transcriptions?response_type=embed">
-                </iframe>
-            </div>
         <div id="zoomDiv" class="ui-corner-all"></div>
         <div id="ruler1"></div><div id="ruler2"></div>
     </body>
@@ -426,9 +336,9 @@
             type: "GET",
             dataType: "json",
             success: function(data){
+                tpen.user.current = data;
                 if(data.uname && data.uname !== ""){
                     user = data.uname;
-                    tpen.user.current = data.uid;
                     $("#trimCurrentUser").html(user);
                     $("#trimCurrentUser").attr("title",user);
                     var theURL = window.location.href;
@@ -585,7 +495,6 @@
             }
             else if (event.which === 27){
                 //Esc during any active tool means stop the tool.  In this case, our only worry is moving the image around.  We may add others later.
-                ////console.log("ESC DOWN");
                 $("#imgTop, #imgBottom").unbind("mousemove");
                 $("#imgTop, #imgBottom").unbind("mousedown");
                 $("#imgTop, #imgBottom").unbind("mouseup");
@@ -596,13 +505,22 @@
                 $("#moveImage").removeClass("selected");
                 $(".transcriptlet").children("textarea").removeClass("imageMove").removeAttr("disabled");
             }
-            else if (event.which === 13){ //entr
+            else if (event.which === 13){ //enter
                 var activeTranscriptlet = $(".transcriptlet:visible");
                 if(activeTranscriptlet.find('textarea').is(":focus")){
                     nextTranscriptlet();
                 }
             }
-            else{
+            else if (event.which === 9){ // tab
+            //TAB hijack to keep behavior as expected
+                var inForm = $(document.activeElement).is('input,textarea') && !$(document.activeElement).parent().is('.transcriptlet');
+                if(event.which === 9 && !inForm){
+                    event.preventDefault();
+                    if(event.shiftKey) $("#prevLine").click();
+                    else $("#nextLine").click();
+                }
+            }
+            else {
             }
             })
             .keyup(function(event){
@@ -610,11 +528,8 @@
                     $("#imgTop,#imgBottom").unbind("mousemove").css("cursor", "default");
                     $("#imgTop, #imgBottom").unbind("mousedown");
                     $("#imgTop, #imgBottom").unbind("mouseup");
-                    //restoreTransition();
-                    //unShiftInterface();
                 }
                 else{
-                   // //console.log(event.which+' UP');
                 }
             });
 
@@ -790,8 +705,6 @@
                         click: function() {
                           removeColumn($(this));
                           $(this).hide("blind", 250, function() {
-                            //$("#destroyColumnInst").slideUp();
-                            //$("#destroyColumn").removeClass("ui-state-active");
                           });
                         }
                       });
@@ -851,7 +764,6 @@
                               var thisLineID = thisLine.attr("lineserverid");
                               var thisLineW = parseFloat(thisLine.attr("linewidth")) * (newW / originalW);
                               thisLine.attr("linewidth", thisLineW);
-                              //console.log("update line with ID: "+thisLineID);
                               updateLine(thisLine);
                               $("#progress").html("Line Saved").delay(3000).fadeOut(1000);
                               $("#lineResizing").delay(3000).fadeOut(1000);
@@ -860,7 +772,6 @@
                         }
                     }
                     if (thisID == "addLines"){
-                        //writeLines($("#imgTop img"));
                         $("#addLines").addClass("active");
                         $("#removeLines").removeClass("active");
                         tpen.screen.isAddingLines = true;
@@ -882,7 +793,6 @@
                         $("#removeLines").addClass("active");
                         $("#addLines").removeClass("active");
                         //prep for column adjustment
-                        //writeLines($("#imgTop img"));
                         tpen.screen.isAddingLines = false;
                         $(".parsing").bind({
                             mouseenter: function(){

@@ -233,7 +233,7 @@ function loadTranscription(pid){
             url: url,
             type:"GET",
             success: function(activeProject){
-                tpen.project.tools = JSON.parse(activeProject.projectTools);
+                tpen.project.tools = JSON.parse(activeProject.projectTool);
                 var count = 0;
                 var url = "";
                 var currentUser = activeProject.cuser;
@@ -251,6 +251,9 @@ function loadTranscription(pid){
                         $("#noLineConfirmation").append(message);
                     }
                 });
+                if(activeProject.manifest.error){
+                    throw new Error(activeProject.manifest.error);
+                }
                 tpen.manifest = activeProject.manifest;
                 tpen.manifest = JSON.parse(tpen.manifest);
                 var projectData = tpen.manifest;
@@ -321,12 +324,18 @@ function loadTranscription(pid){
                 var splitToolSelector = $('<option splitter="' + toolLabel
                     + '" class="splitTool">' + toolLabel + '</option>');
                 splitTool.append(splitToolIframe);
-                $("#splitScreenTools").append(splitToolSelector);
-                $(".iTool:last").after(splitTool);
+                $("#splitScreenTools")
+                    .append(splitToolSelector);
+                $(".iTool:last")
+                    .after(splitTool);
             });
         }
-        populateSpecialCharacters(tpen.project.projectButtons);
-        populateXML(tpen.project.xml);
+        if (tpen.project.projectButtons) {
+            populateSpecialCharacters(tpen.project.projectButtons);
+        }
+        if (tpen.project.xml) {
+            populateXML(tpen.project.xml);
+        }
     }
     else if (isJSON(userTranscription)){
         userTranscription = JSON.parse(userTranscription);

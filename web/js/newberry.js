@@ -227,15 +227,13 @@ function loadTranscription(pid){
     var currentFolio = tpen.screen.currentFolio || 0;
     if (pid || $.isNumeric(userTranscription)){
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
-        projectID = userTranscription;
-        var theProjectID = projectID;
+        projectID = pid || userTranscription;
         var url = "getProjectTPENServlet?projectID=" + projectID;
         $.ajax({
             url: url,
             type:"GET",
             success: function(activeProject){
-                var projectTools = activeProject.projectTool;
-                projectTools = JSON.parse(projectTools);
+                tpen.project.tools = JSON.parse(activeProject.projectTools);
                 var count = 0;
                 var url = "";
                 var currentUser = activeProject.cuser;
@@ -310,7 +308,7 @@ function loadTranscription(pid){
                 loadIframes();
             }
         });
-        $.each(projectTools, function(){
+        $.each(tpen.project.tools, function(){
             var splitHeight = window.innerHeight + "px";
             var toolLabel = this.name;
             var toolSource = this.url;
@@ -325,8 +323,8 @@ function loadTranscription(pid){
             $("#splitScreenTools").append(splitToolSelector);
             $(".iTool:last").after(splitTool);
         });
-        populateSpecialCharacters(activeProject.projectButtons);
-        populateXML(activeProject.xml);
+        populateSpecialCharacters(tpen.project.projectButtons);
+        populateXML(tpen.project.xml);
     }
     else if (isJSON(userTranscription)){
         userTranscription = JSON.parse(userTranscription);

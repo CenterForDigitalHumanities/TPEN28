@@ -308,21 +308,23 @@ function loadTranscription(pid){
                 loadIframes();
             }
         });
-        $.each(tpen.project.tools, function(){
-            var splitHeight = window.innerHeight + "px";
-            var toolLabel = this.name;
-            var toolSource = this.url;
-            var splitTool = $('<div toolName="' + toolLabel
-                + '" class="split iTool"><button class="fullScreenTrans">'
-                + 'Full Screen Transcription</button></div>');
-            var splitToolIframe = $('<iframe style="height:' + splitHeight
-                + ';" src="' + toolSource + '"></iframe>');
-            var splitToolSelector = $('<option splitter="' + toolLabel
-                + '" class="splitTool">' + toolLabel + '</option>');
-            splitTool.append(splitToolIframe);
-            $("#splitScreenTools").append(splitToolSelector);
-            $(".iTool:last").after(splitTool);
-        });
+        if(tpen.project.tools){
+            $.each(tpen.project.tools, function(){
+                var splitHeight = window.innerHeight + "px";
+                var toolLabel = this.name;
+                var toolSource = this.url;
+                var splitTool = $('<div toolName="' + toolLabel
+                    + '" class="split iTool"><button class="fullScreenTrans">'
+                    + 'Full Screen Transcription</button></div>');
+                var splitToolIframe = $('<iframe style="height:' + splitHeight
+                    + ';" src="' + toolSource + '"></iframe>');
+                var splitToolSelector = $('<option splitter="' + toolLabel
+                    + '" class="splitTool">' + toolLabel + '</option>');
+                splitTool.append(splitToolIframe);
+                $("#splitScreenTools").append(splitToolSelector);
+                $(".iTool:last").after(splitTool);
+            });
+        }
         populateSpecialCharacters(tpen.project.projectButtons);
         populateXML(tpen.project.xml);
     }

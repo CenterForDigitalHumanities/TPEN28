@@ -143,7 +143,7 @@ td {
 #noscript, #urgentError {                                 /* errors, urgent notices */
     position: fixed;
     overflow: visible;
-    box-shadow:0 5px 15px black;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
     -moz-box-shadow:0 5px 15px black;
     width: 300%;
     text-align: center;
@@ -187,12 +187,14 @@ td {
     width:26px;
     position: relative;
     z-index: 1;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
 #sharing a:hover img{
     margin: -3px;
     width:32px;
     z-index: 2;
-    box-shadow: -1px -1px 4px black;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 #wrapper {
     width:1000px;
@@ -213,7 +215,7 @@ td {
 }
 #tabs,#main {                      /* general content body */
     overflow: hidden;
-    box-shadow:-1px -1px 2px gray;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 #location {
     bottom:0;
@@ -246,7 +248,7 @@ td {
     position: absolute;
     text-align:left;
     width: 300px;
-    box-shadow:-1px -1px 2px black;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 #forgetFormBtn {
     position: absolute;
@@ -265,7 +267,7 @@ td {
     background: rgba(255, 255, 255, .5);
     padding: 5px;
     border-bottom-left-radius: 4px;
-    box-shadow: -1px -1px 1px -1px black;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     overflow: visible;
     color: rgb(105, 172, 201);
     font-weight: 700;
@@ -304,7 +306,7 @@ td {
     top:2%;
     left:2%;
     border:thin black solid;
-    box-shadow:-1px -1px 4px black;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 #cityMap,#cityMapZoom {
     position: absolute;
@@ -320,7 +322,7 @@ td {
     width: 30%;
     height:30%;
     overflow: hidden;
-    box-shadow:-1px -1px 3px black;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
     border:thin black solid;
 }
 #cityMapZoom img {
@@ -413,7 +415,7 @@ td {
 #header2, #footer2 {
     background-color: rgb(161, 203, 221); /* IE */
     background: rgba(255,255,255,.5);
-    box-shadow:-1px -1px 1px -1px black;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     width:100%;
 }
 #header2 {
@@ -537,9 +539,11 @@ td {
     display:block;
     position: relative;
     float: right;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
 #recentProject:hover {
-    box-shadow:-1px -1px 5px rgba(0,0,0,.5);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 #pagename {
     position: absolute;
@@ -552,7 +556,7 @@ td {
 #recentProject:hover #pagename {
     background: #A64129;
     color:white;
-    box-shadow:0 -1px 3px black;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
     z-index: 1;
     text-decoration: none;
 }
@@ -626,7 +630,7 @@ td {
     position: absolute;
     z-index: 2;
     width: 50%;
-    box-shadow: -2px -2px 15px black;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
     padding: 4px;
     bottom:10px;
     right:10px;}
@@ -713,7 +717,7 @@ td {
     bottom:2px;
     padding: .4em;
     z-index: 501;
-    box-shadow:-1px -1px 2px black;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 .orderProject {
     margin: .2em;
@@ -1218,7 +1222,7 @@ p span.label {
 .ui-autocomplete {
     max-height: 300px;
     max-width: 70%;
-    box-shadow: 2px 2px 4px black;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     overflow: auto;
 }
 .ui-combobox-input {width:90%}

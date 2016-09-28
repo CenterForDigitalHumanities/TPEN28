@@ -344,11 +344,10 @@
                     var theURL = window.location.href;
                     if (theURL.indexOf("projectID=") > -1){
                         var projID = theURL.substring(theURL.indexOf("projectID=")+10);
-                        theProjectID = parseInt(projID);
-                        $("#transcriptionText").val(projID);
-                        $("#loadBtn").click();
+                        tpen.project.id = parseInt(projID);
+                        loadTranscription(tpen.project.id);
                     }
-                    else{
+                    else {
                         $('#transcriptionTemplate').hide();
                         $('#setTranscriptionObjectArea').show();
                         $(".instructions").show();
@@ -356,41 +355,16 @@
                     }
                 }
                 else {
-                    $("#trimCurrentUser").html("No User");
+                    tpen.user.current = false;
                     var theURL = window.location.href;
-                    var projID = theURL.substring(theURL.indexOf("projectID=")+10);
-                    if (theURL.indexOf("projectID=") > -1){
-                        alert("You must be logged in to view project "+projID);
-                    }
-                    $('#transcriptionTemplate').hide();
-                    $('#setTranscriptionObjectArea').show();
-                    $(".instructions").show();
-                    $(".hideme").show();
-                    $("#parsingBtn").unbind("click");
-                    $("#parsingBtn").attr("onclick","");
-                    $("#parsingBtn").click(function(){
-                        alert("You must be logged in to correct line parsing.  Log in and refresh the page to correct parsing.");
-                    });
+                    return window.location.href = "login.html?ref="+encodeURIComponent(theURL);
                 }
                 //only get iframes after confirmed user authentication
-
             },
             error: function(jqXHR,error, errorThrown) {
-                $("#trimCurrentUser").html("No User");
+                tpen.user.current = false;
                 var theURL = window.location.href;
-                var projID = theURL.substring(theURL.indexOf("projectID=")+10);
-                if (theURL.indexOf("projectID=") > -1){
-                    alert("You must be logged in to view project "+projID);
-                }
-                $('#transcriptionTemplate').hide();
-                $('#setTranscriptionObjectArea').show();
-                $(".instructions").show();
-                $(".hideme").show();
-                $("#parsingBtn").unbind("click");
-                $("#parsingBtn").attr("onclick","");
-                $("#parsingBtn").click(function(){
-                    alert("You must be logged in to correct line parsing.  Log in and refresh the page to correct parsing.");
-                });
+                return window.location.href = "login.html?ref="+encodeURIComponent(theURL);
             }
         });
 
@@ -561,7 +535,7 @@
 
             $("#parsingBtn").click(function(){
                 tpen.screen.liveTool = "parsing";
-                if(tpen.screen.isFullscreen)isUnadjusted = true;
+                if(tpen.screen.isFullscreen)tpen.screen.isUnadjusted = true;
                 tpen.screen.isFullscreen = false;
                 hideWorkspaceForParsing();
                 $("#confirmParsingInst").show();
@@ -929,7 +903,6 @@
         else if (direction === "right"){
             var currentLineLeft = activeLine.css("left");
             var currentLineLeftPerc = (parseFloat(currentLineLeft) / $("#imgTop").width()) * 100;
-            //console.log(currentLineLeftPerc);
             if (currentLineLeftPerc < 99.7){ //no left values greater than 100
                 currentLineLeftPerc += .3;
             }
@@ -948,12 +921,11 @@
     //UI effects for when a user decides to edit a line within the preview split tool.
     function edit(line){
         var focusLineID = $(line).siblings(".previewLineNumber").attr("lineserverid");
-        //var focusFolio = $(line).parent(".previewPage").attr("data-pagenumber");
         var transcriptionText = ($(line).hasClass("previewText")) ? ".theText" : ".notes";
         var pair = $(".transcriptlet[lineserverid='"+focusLineID+"']").find(transcriptionText);
         var transcriptlet = $(".transcriptlet[lineserverid='"+focusLineID+"']");
         if ($(line).hasClass("currentPage")){
-          if (pair.parent().attr('id') !== tpen.focusItem[1].attr('id')){
+          if (pair.parent().attr('id') !== tpen.screen.focusItem[1].attr('id')){
               updatePresentation(transcriptlet);
           }
             line.focus();

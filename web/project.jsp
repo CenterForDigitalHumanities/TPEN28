@@ -1338,7 +1338,7 @@ $("#samplePreview").hover(function(){
                                         
                                     function navigateTo(dropdown){
                                         $("body").addClass(" ui-state-disabled");
-                                        document.location='transcription.jsp?p='+dropdown.value;
+                                        document.location='transcription.html?p='+dropdown.value+"projectID=<%out.print(projectID);%>";
                                     }
                                     function equalHeights (eClass, minHeight){
                                         var minHeight = minHeight;

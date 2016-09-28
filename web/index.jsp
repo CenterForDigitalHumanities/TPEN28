@@ -112,7 +112,6 @@
             #tabs {
                 clear:both;
                 height:90%;
-                border-radius:10px;
             }
             #manuscripts li a {
                 text-shadow: 0 -1px 0px rgba(255, 255, 255, .5);

@@ -227,22 +227,20 @@ function populateXML(xmlTags){
 /*
          * Load the transcription from the text in the text area.
          */
-function loadTranscription(){
+function loadTranscription(pid){
     //Object validation here.
     var projectID = tpen.project.id || 4080;
     var userTranscription = $('#transcriptionText').val();
     var currentFolio = tpen.screen.currentFolio || 0;
-    if ($.isNumeric(userTranscription)){
+    if (pid || $.isNumeric(userTranscription)){
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
-        projectID = userTranscription;
-        var theProjectID = projectID;
+        projectID = pid || userTranscription;
         var url = "getProjectTPENServlet?projectID=" + projectID;
         $.ajax({
             url: url,
             type:"GET",
             success: function(activeProject){
-                tpen.project.tools = activeProject.projectTool;
-                tpen.project.tools = JSON.parse(tpen.project.tools);
+                tpen.project.tools = JSON.parse(activeProject.projectTool);
                 var count = 0;
                 var url = "";
                 tpen.user.current = activeProject.cuser;
@@ -262,6 +260,9 @@ function loadTranscription(){
                 });
                 tpen.manifest = activeProject.manifest;
                 tpen.manifest = JSON.parse(tpen.manifest);
+                if(tpen.manifest.error){
+                    throw new Error(activeProject.manifest.error);
+                }
                 var projectData = tpen.manifest;
                 if (projectData.sequences[0] !== undefined
                     && projectData.sequences[0].canvases !== undefined
@@ -318,24 +319,32 @@ function loadTranscription(){
                 loadIframes();
             }
         });
-        $.each((tpen.project.tools || []), function(){
-            var splitHeight = window.innerHeight + "px";
-            var toolLabel = this.name;
-            var toolSource = this.url;
-            var splitTool = $('<div toolName="' + toolLabel
-                + '" class="split iTool"><button class="fullScreenTrans">'
-                + 'Full Screen Transcription</button></div>');
-            var splitToolIframe = $('<iframe style="height:' + splitHeight
-                + ';" src="' + toolSource + '"></iframe>');
-            var splitToolSelector = $('<option splitter="' + toolLabel
-                + '" class="splitTool">' + toolLabel + '</option>');
-            splitTool.append(splitToolIframe);
-            $("#splitScreenTools").append(splitToolSelector);
-            $(".iTool:last").after(splitTool);
-        });
-        populateSpecialCharacters(tpen.project.buttons);
-        populateXML(tpen.project.xml);
-	}
+        if(tpen.project.tools){
+            $.each(tpen.project.tools, function(){
+                var splitHeight = window.innerHeight + "px";
+                var toolLabel = this.name;
+                var toolSource = this.url;
+                var splitTool = $('<div toolName="' + toolLabel
+                    + '" class="split iTool"><button class="fullScreenTrans">'
+                    + 'Full Screen Transcription</button></div>');
+                var splitToolIframe = $('<iframe style="height:' + splitHeight
+                    + ';" src="' + toolSource + '"></iframe>');
+                var splitToolSelector = $('<option splitter="' + toolLabel
+                    + '" class="splitTool">' + toolLabel + '</option>');
+                splitTool.append(splitToolIframe);
+                $("#splitScreenTools")
+                    .append(splitToolSelector);
+                $(".iTool:last")
+                    .after(splitTool);
+            });
+        }
+        if (tpen.project.projectButtons) {
+            populateSpecialCharacters(tpen.project.projectButtons);
+        }
+        if (tpen.project.xml) {
+            populateXML(tpen.project.xml);
+        }
+    }
     else if (isJSON(userTranscription)){
         tpen.manifest = userTranscription = JSON.parse(userTranscription);
         if (userTranscription.sequences[0] !== undefined

@@ -874,7 +874,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 #brightnessSlider, #contrastSlider{
     margin: 7px 0px 18px 0px;
 }
-.character, .lookLikeButtons{
+.character, .lookLikeButtons, .xmlTag{
   display: block;
   /*background-color: #D14836;*/
   background-color:white;

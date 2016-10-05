@@ -310,7 +310,6 @@
     </body>
 </html>
 <script>
-    var theProjectID = -1;
 
     //Must explicitly set new height and width for percentages values in the DOM to take effect.
     window.onresize = function(event) {
@@ -336,7 +335,7 @@
             type: "GET",
             dataType: "json",
             success: function(data){
-                tpen.user.current = data;
+                //tpen.user.UID = JSON.parse(data);
                 if(data.uname && data.uname !== ""){
                     user = data.uname;
                     $("#trimCurrentUser").html(user);
@@ -344,8 +343,7 @@
                     var theURL = window.location.href;
                     if (theURL.indexOf("projectID=") > -1){
                         var projID = theURL.substring(theURL.indexOf("projectID=")+10);
-                        tpen.project.id = parseInt(projID);
-                        loadTranscription(tpen.project.id);
+                        loadTranscription(projID);
                     }
                     else {
                         $('#transcriptionTemplate').hide();
@@ -355,14 +353,14 @@
                     }
                 }
                 else {
-                    tpen.user.current = false;
+                    tpen.user.UID = 0;
                     var theURL = window.location.href;
                     return window.location.href = "login.html?ref="+encodeURIComponent(theURL);
                 }
                 //only get iframes after confirmed user authentication
             },
             error: function(jqXHR,error, errorThrown) {
-                tpen.user.current = false;
+                tpen.user.UID = 0;
                 var theURL = window.location.href;
                 return window.location.href = "login.html?ref="+encodeURIComponent(theURL);
             }
@@ -417,7 +415,7 @@
 
         $("#xmlTagPopin").on("change", function(event){
             var val = $("#xmlTagPopin").val();
-            addchar(val, "");
+            insterTag(val, "");
         });
 
         $(".magnifyBtn").click(function(event){

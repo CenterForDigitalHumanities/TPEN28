@@ -1,6 +1,26 @@
 var tpen = {
-    project: {},
-    manifest: {},
+    project: {
+        id: 0,
+        tools: [],
+        leaders: [],
+        buttons: [],
+        hotkeys: [],
+        xml: [],
+        specialChars:[],
+        permissions: [],
+        metadata: [],
+        folios: [],
+        user_list: [],
+        leader_list: [],
+        projectName: "",
+        groupID:0,
+        linebreakSymbol:"",
+        projectImageBounding:"",
+        linebreakCharacterLimit:0
+    },
+    manifest: {
+        
+    },
     screen:{
         focusItem:[null, null],
         liveTool: "none",
@@ -21,8 +41,11 @@ var tpen = {
         currentAnnoList: 0
     },
     user: {
-        current: false,
-        isAdmin: false
+        isAdmin: false,
+        UID: 0,
+        fname: "",
+        lname: "",
+        openID : 0
     }
 };
 var dragHelper = "<div id='dragHelper'></div>";
@@ -40,7 +63,7 @@ function redraw () {
         if (tpen.screen.liveTool === "parsing") {
             $(".pageTurnCover").show();
             fullPage();
-            tpen.screen.currentFolio = parseInt(tpen.screen.currentFolio);
+            tpen.screen.currentFolio = parseInt(tpen.screen.currentFolio);show
             var canvas = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio];
             if (!canvas) {
                 canvas = tpen.manifest.sequences[0].canvases[0];
@@ -183,10 +206,7 @@ function populatePreview(lines, pageLabel, currentPage, order){
 }
 
 function populateSpecialCharacters(specialCharacters){
-    if(!specialCharacters){
-        return false;
-    }
-    specialCharacters = JSON.parse(specialCharacters);
+    var specialCharacters = tpen.project.specialChars;
     var speCharactersInOrder = new Array(specialCharacters.length);
     for (var char = 0; char < specialCharacters.length; char++){
         var thisChar = specialCharacters[char];
@@ -206,68 +226,142 @@ function populateSpecialCharacters(specialCharacters){
     });
 }
 
-function populateXML(xmlTags){
-    if(!xmlTags){
-        return false;
-    }
-    xmlTags = xmlTags.split(",");
+function populateXML(){
+    var xmlTags = tpen.project.xml;
     var tagsInOrder = [];
-    for (var tag = 0; tag < xmlTags.length; tag++){
-        var newTagBtn = xmlTags[tag];
-        if (newTagBtn !== "" && newTagBtn !== " "){
-            tagsInOrder.push("<option>" + newTagBtn + "</option>");
+    //TODO make sure this respects xmlTags.position order
+    for (var tagIndex = 0; tagIndex < xmlTags.length; tagIndex++){
+        var newTagBtn = "";
+        if(xmlTags[tagIndex].tag && xmlTags[tagIndex].tag!== "" && xmlTags[tagIndex].tag !== " "){
+            newTagBtn = "<option class='xmlTag'>"+xmlTags[tagIndex].tag+"</option>";
+            var button = $(newTagBtn);
+            $(".xmlTags").append(button);
         }
     }
-    $.each(tagsInOrder, function(){
-        var button = $('' + this);
-        $(".xmlTags").append(button);
-    });
+}
+
+function setTPENObjectData(data){
+    if(data.project){
+        if(data.projectTool){
+            tpen.project.tools = JSON.parse(data.projectTool);
+        }
+        if(data.ls_u){
+            tpen.project.user_list = JSON.parse(data.ls_u);
+        }
+        if(data.ls_leader){
+            tpen.project.leaders = JSON.parse(data.ls_leader);
+        }
+        if(data.projectButtons){
+            tpen.project.specialChars = JSON.parse(data.projectButtons);
+        }
+        if(data.ls_hk){
+            tpen.project.hotkeys = JSON.parse(data.ls_hk);
+        }
+        if(data.xml){
+            tpen.project.xml = JSON.parse(data.xml);
+        }
+        if(data.projper){
+            tpen.project.permissions = JSON.parse(data.projper);
+        }
+        if(data.metadata){
+            tpen.project.metadata = JSON.parse(data.metadata);
+        }
+        if(data.ls_fs){
+            tpen.project.folios = JSON.parse(data.ls_fs);
+        }
+        if(data.projectName){
+            tpen.project.projectName = data.projectName;
+        }
+        if(data.project.projectID){
+            tpen.project.id = parseInt(data.project.projectID);
+        }
+        if(data.project.groupID){
+            tpen.project.groupID = parseInt(data.project.groupID);
+        }
+        if(data.project.linebreakSymbol){
+            tpen.project.linebreakSymbol = data.project.linebreakSymbol;
+        }
+        if(data.project.projectImageBounding){
+            tpen.project.projectImageBounding = data.project.projectImageBounding;
+        }
+        if(data.project.linebreakCharacterLimit){
+            tpen.project.linebreakCharacterLimit = parseInt(data.project.linebreakCharacterLimit);
+        }
+    }
+    
+    if(data.manifest){
+        tpen.manifest = JSON.parse(data.manifest);
+    }
+    
+    var count = 0;
+    var length = tpen.project.leaders.length;
+    $.each(tpen.project.leaders, function(){
+        count++;
+        if (this.UID === parseInt(data.cuser)){
+            if(this.fname){
+                tpen.user.fname = this.fname;
+            }
+            if(this.lname){
+                tpen.user.lname = this.lname;
+            }
+            if(this.openID){
+                tpen.user.openID = this.openID;
+            }
+            tpen.user.isAdmin = true;
+            tpen.user.UID = parseInt(this.UID);
+        }
+        else if(count == length){ //we did not find this user in the list of leaders.
+            console.warn("Not an admin");
+        }
+    });   
+}
+
+function setProjectInfo(projectData){
+    
+}
+
+function setManifestInfo(manifestData){
+    
+}
+
+function setUserInfo(userData){
+    
 }
 
 /*
-         * Load the transcription from the text in the text area.
-         */
-function loadTranscription(pid){
+* Load the transcription from the text in the text area.
+*/
+function loadTranscription(pid){ //This is the first thing called when coming into transcription.html when it recognizes a projectID in the URL.
     //Object validation here.
-    var projectID = tpen.project.id || 4080;
+    var projectID = 0; 
     var userTranscription = $('#transcriptionText').val();
     var currentFolio = tpen.screen.currentFolio || 0;
     if (pid || $.isNumeric(userTranscription)){
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
         projectID = pid || userTranscription;
+        tpen.project.id = projectID;
         var url = "getProjectTPENServlet?projectID=" + projectID;
         $.ajax({
             url: url,
             type:"GET",
             success: function(activeProject){
-                tpen.project.tools = JSON.parse(activeProject.projectTool);
                 var count = 0;
                 var url = "";
-                tpen.user.current = activeProject.cuser;
-                tpen.project.leaders = activeProject.ls_leader;
-                tpen.project.leaders = JSON.parse(tpen.project.leaders);
-                $.each(tpen.project.leaders, function(){
-                    if (this.UID === parseInt(tpen.user.current)){
-                        tpen.user.isAdmin = true;
-                        $("#parsingBtn").show();
+                setTPENObjectData(activeProject);
+                if(tpen.user.isAdmin){
+                    $("#parsingBtn").show();
                         var message = $('<span>This canvas has no lines. If you would like to create lines</span>'
                             + '<span style="color: blue;" onclick="hideWorkspaceForParsing()">click here</span>.'
                             + 'Otherwise, you can <span style="color: red;" onclick="$(\'#noLineWarning\').hide()">'
                             + 'dismiss this message</span>.');
                         $("#noLineConfirmation").empty();
                         $("#noLineConfirmation").append(message);
-                    }
-                });
-                tpen.manifest = activeProject.manifest;
-                tpen.manifest = JSON.parse(tpen.manifest);
-                if(tpen.manifest.error){
-                    throw new Error(activeProject.manifest.error);
                 }
-                var projectData = tpen.manifest;
-                if (projectData.sequences[0] !== undefined
-                    && projectData.sequences[0].canvases !== undefined
-                    && projectData.sequences[0].canvases.length > 0){
-                    transcriptionFolios = projectData.sequences[0].canvases;
+                if (tpen.manifest.sequences[0] !== undefined
+                    && tpen.manifest.sequences[0].canvases !== undefined
+                    && tpen.manifest.sequences[0].canvases.length > 0)
+                {
+                    transcriptionFolios = tpen.manifest.sequences[0].canvases;
                     scrubFolios();
                     var count = 1;
                     $.each(transcriptionFolios, function(){
@@ -294,7 +388,7 @@ function loadTranscription(pid){
                         }
                     });
                     loadTranscriptionCanvas(transcriptionFolios[0], "");
-                    var projectTitle = projectData.label;
+                    var projectTitle = tpen.manifest.label;
                     $("#trimTitle").text(projectTitle);
                     $("#trimTitle").attr("title", projectTitle);
                     $('#transcriptionTemplate').css("display", "inline-block");
@@ -307,6 +401,31 @@ function loadTranscription(pid){
                 else {
                     throw new Error("This transcription object is malformed. No canvas sequence is defined.");
                 }
+                if(tpen.project.tools){
+                    $.each(tpen.project.tools, function(){
+                        var splitHeight = window.innerHeight + "px";
+                        var toolLabel = this.name;
+                        var toolSource = this.url;
+                        var splitTool = $('<div toolName="' + toolLabel
+                            + '" class="split iTool"><button class="fullScreenTrans">'
+                            + 'Full Screen Transcription</button></div>');
+                        var splitToolIframe = $('<iframe style="height:' + splitHeight
+                            + ';" src="' + toolSource + '"></iframe>');
+                        var splitToolSelector = $('<option splitter="' + toolLabel
+                            + '" class="splitTool">' + toolLabel + '</option>');
+                        splitTool.append(splitToolIframe);
+                        $("#splitScreenTools")
+                            .append(splitToolSelector);
+                        $(".iTool:last")
+                            .after(splitTool);
+                    });
+                    }
+                    if (tpen.project.projectButtons) {
+                        populateSpecialCharacters();
+                    }
+                    if (tpen.project.xml) {
+                        populateXML();
+                    }
             },
             error: function(jqXHR, error, errorThrown) {
                 if (jqXHR.status && jqXHR.status > 400){
@@ -319,37 +438,14 @@ function loadTranscription(pid){
                 loadIframes();
             }
         });
-        if(tpen.project.tools){
-            $.each(tpen.project.tools, function(){
-                var splitHeight = window.innerHeight + "px";
-                var toolLabel = this.name;
-                var toolSource = this.url;
-                var splitTool = $('<div toolName="' + toolLabel
-                    + '" class="split iTool"><button class="fullScreenTrans">'
-                    + 'Full Screen Transcription</button></div>');
-                var splitToolIframe = $('<iframe style="height:' + splitHeight
-                    + ';" src="' + toolSource + '"></iframe>');
-                var splitToolSelector = $('<option splitter="' + toolLabel
-                    + '" class="splitTool">' + toolLabel + '</option>');
-                splitTool.append(splitToolIframe);
-                $("#splitScreenTools")
-                    .append(splitToolSelector);
-                $(".iTool:last")
-                    .after(splitTool);
-            });
-        }
-        if (tpen.project.projectButtons) {
-            populateSpecialCharacters(tpen.project.projectButtons);
-        }
-        if (tpen.project.xml) {
-            populateXML(tpen.project.xml);
-        }
+        
     }
     else if (isJSON(userTranscription)){
         tpen.manifest = userTranscription = JSON.parse(userTranscription);
         if (userTranscription.sequences[0] !== undefined
             && userTranscription.sequences[0].canvases !== undefined
-            && userTranscription.sequences[0].canvases.length > 0){
+            && userTranscription.sequences[0].canvases.length > 0)
+        {
             var transcriptionFolios = userTranscription.sequences[0].canvases;
             scrubFolios();
             var count = 1;
@@ -393,16 +489,16 @@ function loadTranscription(pid){
     }
     else if (userTranscription.indexOf("http://") >= 0 || userTranscription.indexOf("https://") >= 0) {
         var localProject = false;
-        if (userTranscription.indexOf("/project/") > - 1){
-            if (userTranscription.indexOf("t-pen.org") > - 1){
-            localProject = false;
-            projectID = 0; //This way, it will not grab the t-pen project id.
-            }
-            else {
-                localProject = true; //Well, probably anyway.  I forsee this being an issue like with t-pen.
-                projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/project/') + 9));
-                theProjectID = projectID;
-            }
+        if (userTranscription.indexOf("/TPEN28/project") > - 1 || userTranscription.indexOf("/TPEN28/manifest") > - 1){
+//            if (userTranscription.indexOf("t-pen.org") > - 1){
+//                localProject = false;
+//                projectID = 0; //This way, it will not grab the t-pen project id.
+//            }
+//            else {
+            localProject = true; //Well, probably anyway.  I forsee this being an issue like with t-pen.
+            //TODO: this URL exists in more ways now (/manifest/PID/manifest.json)
+            projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/project/') + 9));
+           // }
         }
         else {
             projectID = 0;
@@ -414,13 +510,10 @@ function loadTranscription(pid){
                 url: url,
                 type:"GET",
                 success: function(activeProject){
-                    tpen.project.tools = activeProject.projectTool;
-                    tpen.project.tools = JSON.parse(projectTools);
+                    setTPENObjectData(activeProject);
                     var count = 0;
                     var url = "";
-                    if (activeProject.manifest !== undefined){
-                        var manifest = activeProject.manifest;
-                        tpen.manifest = JSON.parse(manifest);
+                    if (!$.isEmptyObject(tpen.manifest)){
                         if (tpen.manifest.sequences[0] !== undefined
                             && tpen.manifest.sequences[0].canvases !== undefined
                             && tpen.manifest.sequences[0].canvases.length > 0){
@@ -483,8 +576,8 @@ function loadTranscription(pid){
                         $("#splitScreenTools").append(splitToolSelector);
                         $(".iTool:last").after(splitTool);
                     });
-                    populateSpecialCharacters(activeProject.projectButtons);
-                    populateXML(activeProject.xml);
+                    populateSpecialCharacters();
+                    populateXML();
                 },
                 error: function(jqXHR, error, errorThrown) {
                     if (jqXHR.status && jqXHR.status > 400){
@@ -499,6 +592,7 @@ function loadTranscription(pid){
         else {
         //it is not a local project, so just grab the url that was input and request the manifest.
         var url = userTranscription;
+        tpen.project.id = -1; //This means it is not a T-PEN projec5t, but rather a manifest from another source.  
         $.ajax({
             url: url,
             success: function(projectData){
@@ -522,8 +616,7 @@ function loadTranscription(pid){
                             }
                             else {
                                 //otherContent was empty (IIIF says otherContent
-                                //should have URI's to AnnotationLists).  We will
-                                //check the store for these lists still.
+                                //should have URI's to AnnotationLists).
                                 console.warn("`otherContent` exists, but has no content.");
                             }
                         }
@@ -2256,7 +2349,7 @@ function closeTag(tagName, fullTag){
     $.get("tagTracker", {
         addTag      : true,
         tag         : tagName,
-        projectID   : tpen.project.projectID,
+        projectID   : tpen.project.id,
         line        : tagLineID
         }, function(data){
             tagID = data;

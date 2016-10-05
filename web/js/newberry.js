@@ -220,10 +220,11 @@ function populateSpecialCharacters(specialCharacters){
             }
         }
     }
-    $.each(speCharactersInOrder, function(){
-        var button1 = $('' + this);
+    for (var char2 = 0; char2 < speCharactersInOrder.length; char2++){
+        var textButton = speCharactersInOrder[char2];
+        var button1 = $(textButton);
         $(".specialCharacters").append(button1);
-    });
+    }
 }
 
 function populateXML(){
@@ -420,7 +421,7 @@ function loadTranscription(pid){ //This is the first thing called when coming in
                             .after(splitTool);
                     });
                     }
-                    if (tpen.project.projectButtons) {
+                    if (tpen.project.specialChars) {
                         populateSpecialCharacters();
                     }
                     if (tpen.project.xml) {

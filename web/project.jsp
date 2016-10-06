@@ -1338,7 +1338,6 @@ $("#samplePreview").hover(function(){
                                         
                                     function navigateTo(dropdown){
                                         $("body").addClass(" ui-state-disabled");
-                                        document.location='transcription.html?p='+dropdown.value+"projectID=<%out.print(projectID);%>";
                                         document.location='transcription.html?p='+dropdown.value;
                                     
                                     }

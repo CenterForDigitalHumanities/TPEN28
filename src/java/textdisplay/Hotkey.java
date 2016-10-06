@@ -340,7 +340,7 @@ public class Hotkey {
                 int button = rs.getInt("position") + buttonOffset;
                 //toret+="<script>if(pressedkey=="+(buttonOffset+rs.getInt("position"))+"){addchar('&#"+rs.getInt("key")+";');  return false;}</script>";
                 vars += "var char" + button + "=\"" + rs.getInt("key") + "\";\n";
-                toret += "&#" + rs.getInt("key");
+                toret += "&#" + rs.getInt("key")+";<br>";
             }
             if (ctr == 0) {
 

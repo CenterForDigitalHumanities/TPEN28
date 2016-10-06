@@ -1275,3 +1275,8 @@ a{
     cursor: default !important;
 }
 
+/* *********************** 2.8 fixes ********************* */
+
+#allXml{
+    margin-bottom: 10px;
+}

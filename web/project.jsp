@@ -4,6 +4,8 @@
     Author     : jdeerin1
 --%>
 
+<%@page import="net.sf.json.JSONObject"%>
+<%@page import="net.sf.json.JSONArray"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="org.owasp.esapi.ESAPI" %>
 <%@page import="edu.slu.util.ServletUtils"%>
@@ -638,7 +640,13 @@
                                 <h6>XML Tags</h6>
                                 <div id="allXML"><%
                                     /**Retrieve stored button information*/
-                                    out.print(TagButton.getAllProjectButtons(projectID));
+                                    String buttons = TagButton.getAllProjectButtons(projectID);
+                                    JSONArray buttons_obj = JSONArray.fromObject(buttons);
+                                    for(int i=0; i<buttons_obj.size(); i++){
+                                        JSONObject thisButton = buttons_obj.getJSONObject(i);
+                                        out.print(thisButton.getString("tag")+"<br>");
+                                    }
+                                    //out.print(TagButton.getAllProjectButtons(projectID));
                                                                    %></div>
                                 <%if(isMember || permitButtons){%>
                                <p class="clear-left">If you wish, you can copy XML tags between projects: <a href="buttonProjectImport.jsp?a=1<%out.print(projectAppend);%>" class="ui-button tpenButton">Copy XML Tags</a></p>

@@ -145,12 +145,32 @@ function createPreviewPages(){
             if (i === tpen.screen.currentFolio) {
                 currentPage = "currentPage";
             }
-            var lines = [];
-            if (currentFolioToUse.resources && currentFolioToUse.resources.length > 0){
-                lines = currentFolioToUse.resources;
-                populatePreview(lines, pageLabel, currentPage);
+            if (currentFolioToUse.otherContent && currentFolioToUse.otherContent.length > 0){
+                var allAnnoLists = currentFolioToUse.otherContent;
+                for(var j=0; j<allAnnoLists.length; j++){
+                    var thisList = allAnnoLists[j];
+                    makePreviewPage(thisList, pageLabel, currentPage, i, j, allAnnoLists.length);
+                }
+            }
+            else{
+                console.warn("otherContent was null or empty, passing an empty array of lines");
+                populatePreview([], pageLabel, currentPage, 0);
             }
         }
+}
+
+function makePreviewPage(thisList, pageLabel, currentPage, i, j, l){
+    $.get(thisList,function(data){
+        if(data.proj == tpen.project.id){
+            var linesForThisProject = data.resources;
+            console.log("found the right one");
+            populatePreview(linesForThisProject, pageLabel, currentPage, i);
+        }
+        else if(j == l){ //we did not find the proper annotation list, send this off to create an empty page
+            console.log("Did not find lines for this project");
+            populatePreview(linesForThisProject, pageLabel, currentPage, i);
+        }
+    });
 }
 
 /* Gather the annotations for a canvas and populate the preview interface with them. */

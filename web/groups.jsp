@@ -111,7 +111,10 @@
                            //Was this a user add request?
                            if (request.getParameter("uname") != null) {
                               //The lovely bit is that since the requestor has no idea if the target already has an account with us, we have to check on that
-                              if (!thisGroup.addMember(request.getParameter("uname"))) {
+                               if(thisGroup.isMember(request.getParameter("uname"))){
+                                 out.print("This user is already a member of this group");
+                               }
+                               else if (!thisGroup.addMember(request.getParameter("uname"))) {
                                  out.print("Failed to add that person because they have never used TPEN!<br>");
                               }
                            }

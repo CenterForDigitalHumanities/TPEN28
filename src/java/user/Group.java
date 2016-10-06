@@ -328,6 +328,30 @@ public class Group {
          }
       }
    }
+   
+      /**
+    * True if the requested UID is a group member, false otherwise
+    *
+    * @param UID unique id of the user
+    * @return true if they are a member of the group, false if they are not
+    */
+   public Boolean isMember(String uname) {
+      try {
+          //System.out.println("sample ============== " + UID);
+          //System.out.println("memeber len ===== " + this.getMembers().length);
+         User[] groupmembers = this.getMembers();
+         for (int i = 0; i < groupmembers.length; i++) {
+            User thisUser = groupmembers[i];
+            // System.out.println("mem user ID ====== " + thisUser.getUID());
+            if (thisUser.getUname().equals(uname)) {
+               return true;
+            }
+         }
+         return false;
+      } catch (SQLException e) {
+         return false;
+      }
+   }
 
    /**
     * True if the requested UID is a group member, false otherwise

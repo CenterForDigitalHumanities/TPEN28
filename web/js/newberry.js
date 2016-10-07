@@ -2579,90 +2579,80 @@ function updateLinesInColumn(column){
 function columnUpdate(linesInColumn){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var currentFolio = parseInt(tpen.screen.currentFolio);
-    var currentAnnoListID = annoLists[currentFolio - 1];
+    var currentAnnoListID = tpen.screen.currentAnnoListID;
     var currentAnnoListResources = [];
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2;
-    var annosURL = "getAnno";
-    var properties = {"@id": currentAnnoListID};
-    var paramOBJ = {"content": JSON.stringify(properties)};
-    $.post(annosURL, paramOBJ, function(annoLists){
-        annoLists = JSON.parse(annoLists);
-        var currentAnnoList;
-        $.each(annoLists, function(){
-            if (this.proj === "master"){
-                currentAnnoListResources = this.resources;
-            }
-            if (this.proj !== undefined && this.proj !== "" && this.proj == theProjectID){
-            //These are the lines we want to draw because the projectID matches.  Overwrite master if necessary.
-                currentAnnoListResources = this.resources;
+    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio]);
+        //Go over each line from the column resize.
+    $.each(linesInColumn, function(){
+        var line = $(this);
+        lineTop = parseFloat(line.attr("linetop")) * 10;
+        lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
+        lineWidth = parseFloat(line.attr("linewidth")) * (10 * ratio);
+        lineHeight = parseFloat(line.attr("lineheight")) * 10;
+        //round up.
+        lineTop = Math.round(lineTop, 0);
+        lineLeft = Math.round(lineLeft, 0);
+        lineWidth = Math.round(lineWidth, 0);
+        lineHeight = Math.round(lineHeight, 0);
+        line.css("width", line.attr("linewidth") + "%");
+        var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
+        var currentLineServerID = line.attr('lineserverid');
+        var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
+        var dbLine = {
+            "@id" : currentLineServerID,
+            "@type" : "oa:Annotation",
+            "motivation" : "sc:painting",
+            "resource" : {
+                "@type" : "cnt:ContentAsText",
+                "cnt:chars" : currentLineText
+            },
+            "on" : onCanvas + "#xywh=" + lineString,
+            "otherContent" : [],
+            "forProject": tpen.manifest['@id']
+        };
+        var index = - 1;
+        //find the line in the anno list resources and replace its position with the new line resource.
+        $.each(currentAnnoList, function(){
+            index++;
+            if (this["@id"] == currentLineServerID){
+                currentAnnoList[index] = dbLine;
                 return false;
             }
         });
-        //Go over each line from the column resize.
-        $.each(linesInColumn, function(){
-            var line = $(this);
-            lineTop = parseFloat(line.attr("linetop")) * 10;
-            lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
-            lineWidth = parseFloat(line.attr("linewidth")) * (10 * ratio);
-            lineHeight = parseFloat(line.attr("lineheight")) * 10;
-            //round up.
-            lineTop = Math.round(lineTop, 0);
-            lineLeft = Math.round(lineLeft, 0);
-            lineWidth = Math.round(lineWidth, 0);
-            lineHeight = Math.round(lineHeight, 0);
-            line.css("width", line.attr("linewidth") + "%");
-            var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
-            var currentLineServerID = line.attr('lineserverid');
-            var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
-            var dbLine = {
-                "@id" : currentLineServerID,
-                "@type" : "oa:Annotation",
-                "motivation" : "sc:painting",
-                "resource" : {
-                    "@type" : "cnt:ContentAsText",
-                    "cnt:chars" : currentLineText
-                },
-                "on" : onCanvas + "#xywh=" + lineString,
-                "otherContent" : [],
-                "forProject": tpen.manifest['@id']
-            };
-            var index = - 1;
-            //find the line in the anno list resources and replace its position with the new line resource.
-            $.each(currentAnnoListResources, function(){
-                index++;
-                if (this["@id"] == currentLineServerID){
-                    currentAnnoListResources[index] = dbLine;
-                    return false;
-                }
-            });
-        });
-        //Now that all the resources are edited, update the list.
-        var url = "updateAnnoList";
-        var paramObj = {
-            "@id":currentAnnoListID,
-            "resources": currentAnnoListResources
-        };
-        var params = {"content":JSON.stringify(paramObj)};
-        $.post(url, params, function(data){
-            currentFolio = parseInt(currentFolio);
-            annoLists[currentFolio - 1] = currentAnnoListID;
-        });
     });
+    //Now that all the resources are edited, update the list.
+    var url = "updateAnnoList";
+    var paramObj = {
+        "@id":currentAnnoListID,
+        "resources": currentAnnoListResources
+    };
+    var params = {"content":JSON.stringify(paramObj)};
+    $.post(url, params, function(data){
+        //currentFolio = parseInt(currentFolio);
+        //annoLists[currentFolio - 1] = currentAnnoListID;
+    });
+    
 }
 
     function getList(canvas){
         var lists = canvas.otherContent;
         var annos = [];
         $.each(lists,function(){
-            var l = this;
-            if (this.resources) {
-                $.each(this.resources,function(){
-                    if(this.on.startsWith(canvas['@id'])){
-                        annos.push(this);
-                        tpen.screen.currentAnnoListID = l['@id'];
+            var list = this;
+            if(this.proj === tpen.project.id){
+                if (this.resources) {
+                    var resources = this.resources;
+                    //there was a scope problem using $.each
+                    for(var l=0; l<resources.length; l++){
+                        var currentResource = resources[l];
+                        if(currentResource.on.startsWith(canvas['@id'])){
+                             annos.push(currentResource);
+                             tpen.screen.currentAnnoListID = list['@id'];
+                         } 
                     }
-                });
+                }
             }
         });
         return annos;
@@ -2806,16 +2796,16 @@ function saveNewLine(lineBefore, newLine){
                         "lineserverid" : dbLine["@id"],
                         "linenum" : $(".parsing").length
                     }).removeClass("newColumn");
-                    currentAnnoList.resources.push(dbLine);
+                    currentAnnoList.push(dbLine);
                 }
                 else {
-                    currentAnnoList.resources.splice(beforeIndex + 1, 0, dbLine);
+                    currentAnnoList.splice(beforeIndex + 1, 0, dbLine);
                 }
                 currentFolio = parseInt(currentFolio);
-                tpen.manifest.sequences[0].canvases[currentFolio - 1].otherContent[0] = annoList;
+                tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio] = currentAnnoList;
                 //Write back to db to update list
                 var url1 = "updateAnnoList";
-                var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList.resources};
+                var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
                 var params1 = {"content":JSON.stringify(paramObj1)};
                 $.post(url1, params1, function(data){
                     if (lineBefore !== undefined && lineBefore !== null){
@@ -3086,7 +3076,8 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
             if (this["@id"] === lineIDToCheck){
                 currentAnnoList.resources.splice(index, 1);
                 var url = "updateAnnoList";
-                var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
+                tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio] = currentAnnoList;
+                var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
                 var params = {"content":JSON.stringify(paramObj)};
                 $.post(url, params, function(data){
                     if (!removeNextLine){
@@ -3137,6 +3128,7 @@ function removeColumnTranscriptlets(lines, recurse){
                     var url = "updateAnnoList";
                     var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
                     var params = {"content":JSON.stringify(paramObj)};
+                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio] = currentAnnoList;
                     $.post(url, params, function(data){
                         if (recurse){
                             tpen.screen.nextColumnToRemove.remove();

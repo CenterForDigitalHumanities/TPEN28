@@ -32,7 +32,7 @@ public class SaveNewTransLineServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if(null != req.getSession().getAttribute("UID")){
-            int UID = (Integer) req.getSession().getAttribute("UID");
+            int UID = Integer.parseInt(req.getSession().getAttribute("UID").toString());
             Annotation anno = new Annotation();
             anno.setContent(req.getParameter("content"));
             JSONObject jo = JSONObject.fromObject(anno.getContent());

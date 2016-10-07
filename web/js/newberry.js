@@ -38,7 +38,8 @@ var tpen = {
             "rgba(255,0,0,.4)"],
         colorThisTime: "rgba(255,255,255,.4)",
         currentFolio: 0,
-        currentAnnoList: 0
+        currentAnnoList: 0,
+        nextColumnToRemove: null
     },
     user: {
         isAdmin: false,
@@ -2016,8 +2017,6 @@ function removeColumn(column, destroy){
     var colX = column.attr("lineleft");
     // collect lines from column
     var lines = $(".parsing[lineleft='" + colX + "']");
-    var lineLen = lines.length;
-    var lineCnt = 0;
     lines.addClass("deletable");
     removeColumnTranscriptlets(lines);
     column.remove();//rather remove than hide to not trip out the full transcription view.
@@ -2026,10 +2025,10 @@ function removeColumn(column, destroy){
 }
 
 function destroyPage(){
-    nextColumnToRemove = $(".parsingColumn:first");
-    var colX = nextColumnToRemove.attr("lineleft");
+    tpen.screen.nextColumnToRemove = $(".parsingColumn:first");
+    var colX = tpen.screen.nextColumnToRemove.attr("lineleft");
     var lines = $(".parsing[lineleft='" + colX + "']");
-    if (nextColumnToRemove.length > 0) {
+    if (tpen.screen.nextColumnToRemove.length > 0) {
         removeColumnTranscriptlets(lines, true);
     }
     else {
@@ -2672,9 +2671,8 @@ function columnUpdate(linesInColumn){
 /* Update line information for a particular line. */
 function updateLine(line, cleanup){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
-    var currentFolio = parseInt(tpen.screen.currentFolio);
-    var currentAnnoListID = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[tpen.screen.currentAnnoList]["@id"];
-    var currentAnnoList = tpen.screen.currentAnnoList;
+    var currentAnnoListID = tpen.screen.currentAnnoListID
+    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio]);
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2;
     lineTop = parseFloat(line.attr("linetop")) * 10;
@@ -2722,10 +2720,10 @@ function updateLine(line, cleanup){
         if(currentLineServerID.startsWith("http")){
             var url = "http://165.134.241.141/annotationstore/anno/updateAnnotation.action";
             var payload = { // Just send what we expect to update
-            	content : JSON.stringify({
-            		"@id" : dbLine['@id'],			// URI to find it in the repo
-            		"resource" : dbLine.resource,	// the transcription content
-            		"on" : dbLine.on 				// parsing update of xywh=
+                    content : JSON.stringify({
+                    "@id" : dbLine['@id'],			// URI to find it in the repo
+                    "resource" : dbLine.resource,	// the transcription content
+                    "on" : dbLine.on 				// parsing update of xywh=
             	})
             };
             $.post(url,payload,function(){
@@ -2803,39 +2801,33 @@ function saveNewLine(lineBefore, newLine){
             var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio]);
             if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
                 // if it IIIF, we need to update the list
-                var annosURL = "getAnno";
-                var properties = {"@id": currentAnnoList};
-                var paramOBJ = {"content": JSON.stringify(properties)};
-                $.post(annosURL, paramOBJ, function(annoList){
-                    annoList = JSON.parse(annoList);
-                    currentAnnoList = annoList[0];
-                    if (beforeIndex == - 1){
-                        $(".newColumn").attr({
-                            "lineserverid" : dbLine["@id"],
-                            "linenum" : $(".parsing").length
-                        }).removeClass("newColumn");
-                        currentAnnoList.resources.push(dbLine);
+                if (beforeIndex == - 1){
+                    $(".newColumn").attr({
+                        "lineserverid" : dbLine["@id"],
+                        "linenum" : $(".parsing").length
+                    }).removeClass("newColumn");
+                    currentAnnoList.resources.push(dbLine);
+                }
+                else {
+                    currentAnnoList.resources.splice(beforeIndex + 1, 0, dbLine);
+                }
+                currentFolio = parseInt(currentFolio);
+                tpen.manifest.sequences[0].canvases[currentFolio - 1].otherContent[0] = annoList;
+                //Write back to db to update list
+                var url1 = "updateAnnoList";
+                var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList.resources};
+                var params1 = {"content":JSON.stringify(paramObj1)};
+                $.post(url1, params1, function(data){
+                    if (lineBefore !== undefined && lineBefore !== null){
+                        //This is the good case.  We called split line and saved
+                        //the new line, now we need to update the other one.
+                        updateLine(lineBefore);
                     }
-                    else {
-                        currentAnnoList.resources.splice(beforeIndex + 1, 0, dbLine);
+                    else{
                     }
-                    currentFolio = parseInt(currentFolio);
-                    tpen.manifest.sequences[0].canvases[currentFolio - 1].otherContent[0] = annoList;
-                    //Write back to db to update list
-                    var url1 = "updateAnnoList";
-                    var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList.resources};
-                    var params1 = {"content":JSON.stringify(paramObj1)};
-                    $.post(url1, params1, function(data){
-                        if (lineBefore !== undefined && lineBefore !== null){
-                            //This is the good case.  We called split line and saved
-                            //the new line, now we need to update the other one.
-                            updateLine(lineBefore);
-                        }
-                        else{
-                        }
-                            $("#parsingCover").hide();
-                    });
+                        $("#parsingCover").hide();
                 });
+
             }
             else if (currentAnnoList == "empty"){
                 //This means we know no AnnotationList was on the store for this canvas,
@@ -3080,38 +3072,31 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     var index = - 1;
     var currentFolio = parseInt(tpen.screen.currentFolio);
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio]);
-    if (currentAnnoList.startsWith("http")){ // dereference
-        var annosURL = "getAnno";
-        var paramOBJ = {"content": JSON.stringify({"@id": currentAnnoList})};
-        $.post(annosURL, paramOBJ, function(annoList){
-            annoList = JSON.parse(annoList);
-            var annoListID = currentAnnoList;
-            currentAnnoList = annoList[0];
-            $.each(currentAnnoList.resources, function(){
-                index++;
-                var lineIDToCheck = "";
-                if (removeNextLine){
-                    lineIDToCheck = lineid;
-                    removedLine2.remove(); //remove the transcriptlet from UI
-                }
-                else{
-                    lineIDToCheck = updatedLineID;
-                }
-                if (this["@id"] === lineIDToCheck){
-                    currentAnnoList.resources.splice(index, 1);
-                    var url = "updateAnnoList";
-                    var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
-                    var params = {"content":JSON.stringify(paramObj)};
-                    $.post(url, params, function(data){
-                        if (!removeNextLine){
-                            $("#parsingCover").hide();
-                        }
-                        else {
-                            updateLine(toUpdate);
-                        }
-                    });
-                }
-            });
+    if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){ // dereference
+        $.each(currentAnnoList.resources, function(){
+            index++;
+            var lineIDToCheck = "";
+            if (removeNextLine){
+                lineIDToCheck = lineid;
+                removedLine2.remove(); //remove the transcriptlet from UI
+            }
+            else{
+                lineIDToCheck = updatedLineID;
+            }
+            if (this["@id"] === lineIDToCheck){
+                currentAnnoList.resources.splice(index, 1);
+                var url = "updateAnnoList";
+                var paramObj = {"@id":annoListID, "resources": currentAnnoList.resources};
+                var params = {"content":JSON.stringify(paramObj)};
+                $.post(url, params, function(data){
+                    if (!removeNextLine){
+                        $("#parsingCover").hide();
+                    }
+                    else {
+                        updateLine(toUpdate);
+                    }
+                });
+            }
         });
     }
     else if (currentAnnoList == "empty"){
@@ -3135,34 +3120,26 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
 function removeColumnTranscriptlets(lines, recurse){
     var index = - 1;
     var currentFolio = parseInt(tpen.screen.currentFolio);
-    var currentAnnoList = tpen.screen.currentAnnoList;
+    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio]);
     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
         // if it IIIF, we need to update the list
-        var annosURL = "getAnno";
-        var properties = {"@id": currentAnnoList};
-        var paramOBJ = {"content": JSON.stringify(properties)};
-        $.post(annosURL, paramOBJ, function(annoList){
-            annoList = JSON.parse(annoList);
-            var list = tpen.manifest.sequences[0].canvases[currentFolio].otherContent[currentAnnoList] = annoList[0];
             var annoListID = list['@id'];
             for (var l = lines.length - 1; l >= 0; l--){
                 var theLine = $(lines[l]);
-                var index2 = - 1;
-                $.each(list.resources, function(){
+                for(var k=0; k<currentAnnoList.length; k++){
                     var currentResource = this;
-                    index2++;
                     if (currentResource["@id"] == theLine.attr("lineserverid")){
-                        list.resources.splice(index2, 1);
+                        currentAnnoList.splice(k, 1);
                         theLine.remove();
                     }
-                });
+                }
                 if (l === 0){
                     var url = "updateAnnoList";
-                    var paramObj = {"@id":annoListID, "resources": list.resources};
+                    var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
                     var params = {"content":JSON.stringify(paramObj)};
                     $.post(url, params, function(data){
                         if (recurse){
-                            nextColumnToRemove.remove();
+                            tpen.screen.nextColumnToRemove.remove();
                             // FIXME: I cannot find this object always?
                             destroyPage();
                         }
@@ -3172,7 +3149,6 @@ function removeColumnTranscriptlets(lines, recurse){
                     });
                 }
             }
-        });
     }
     else {
         //It was not a part of the list, but we can still cleanup the transcriptlets from the interface. This could happen when a object is fed to the

@@ -128,24 +128,8 @@
                     <select id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
                         <option id="activeTags">XML Tags</option>
                     </select>
+                    <!-- add the tools to this area -->
                     <select id="splitScreenTools" >
-                         <option id="activeSplitTool" >Split Page Tools</option>
-                         <option splitter='start' class="splitTool" >Get Started</option>
-                         <option splitter='essay' class="splitTool" >Background Essay</option>
-                         <option splitter='partialTrans' class="splitTool" >Partial Transcriptions</option>
-                         <option splitter='groupwork' class="splitTool" >Group Work</option>
-                         <option splitter='calligraphy' class="splitTool" >Calligraphy Books</option>
-                         <option splitter='scripts' class="splitTool" >French Scripts and Hands</option>
-                         <option splitter='frenchdocs' class="splitTool" >About French Documents</option>
-                         <option splitter='conservation' class="splitTool" >Manuscript Preservation</option>
-                         <option splitter='conventions' class="splitTool" >Transcribing & Editing Conventions</option>
-                         <option splitter='teachers' class="splitTool" >Teaching</option>
-                         <option splitter='dictionary' class="splitTool" >Dictionaries</option>
-                         <option splitter='glossary' class="splitTool" >Glossary</option>
-                         <option splitter='fInstitutions' class="splitTool" >French Institutions</option>
-                         <option splitter='other' class="splitTool" >Other Reference Resources</option>
-                         <option splitter='abbreviations' class="splitTool" >Abbreviations</option>
-                         <option splitter='maps' class="splitTool" >Historical Maps</option>
                          <option splitter='preview' class="splitTool" >Text Preview</option>
                          <option splitter='fullPage' class="splitTool"  >View Full Page</option>
                          <option splitter='compare' class="splitTool" >Compare Page</option>
@@ -702,8 +686,6 @@
                         },
                         click: function() {
                           removeColumn($(this));
-                          $(this).hide("blind", 250, function() {
-                          });
                         }
                       });
                     }

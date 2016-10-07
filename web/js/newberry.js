@@ -2020,7 +2020,9 @@ function removeColumn(column, destroy){
     var lineCnt = 0;
     lines.addClass("deletable");
     removeColumnTranscriptlets(lines);
-    column.remove();
+    column.remove();//rather remove than hide to not trip out the full transcription view.
+    //column.hide("blind", 250);
+                        
 }
 
 function destroyPage(){

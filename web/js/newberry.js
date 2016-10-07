@@ -2639,8 +2639,8 @@ function columnUpdate(linesInColumn){
     function getList(canvas){
         var lists = canvas.otherContent;
         var annos = [];
-        $.each(lists,function(){
-            var list = this;
+        for(var i=0; i<lists.length; i++){
+            var list = lists[i];
             if(this.proj === tpen.project.id){
                 if (this.resources) {
                     var resources = this.resources;
@@ -2653,8 +2653,9 @@ function columnUpdate(linesInColumn){
                          } 
                     }
                 }
+                break;
             }
-        });
+        }
         return annos;
     };
 

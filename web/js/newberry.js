@@ -1239,7 +1239,7 @@ function adjustImgs(positions) {
 function loadTranscriptlet(lineid){
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if ($('#transcriptlet_' + lineid).length > 0){
-        if (tpen.user.current){
+        if (tpen.user.UID){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate);
             updatePresentation($('#transcriptlet_' + lineid));
@@ -1272,7 +1272,7 @@ function nextTranscriptlet() {
     var nextID = thisLine;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if ($('#transcriptlet_' + nextID).length > 0){
-        if (tpen.user.current){
+        if (tpen.user.UID){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate);
             updatePresentation($('#transcriptlet_' + nextID));
@@ -1303,7 +1303,7 @@ function previousTranscriptlet() {
     var prevID = parseFloat(tpen.screen.focusItem[1].attr('lineID')) - 1;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineServerID");
     if (prevID >= 0){
-        if (tpen.user.current){
+        if (tpen.user.UID){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate);
             updatePresentation($('#transcriptlet_' + prevID));

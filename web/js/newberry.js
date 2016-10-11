@@ -60,23 +60,30 @@ var adjustRatio = 0; // QUERY: not sure what this is -cubap
  *
  * @return {undefined}
 */
-function redraw () {
+function redraw() {
     tpen.screen.focusItem = [null, null];
+    var canvas = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio];
     if (tpen.screen.currentFolio > - 1) {
         if (tpen.screen.liveTool === "parsing") {
             $(".pageTurnCover").show();
             fullPage();
             tpen.screen.currentFolio = parseInt(tpen.screen.currentFolio);
-            var canvas = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio];
             if (!canvas) {
                 canvas = tpen.manifest.sequences[0].canvases[0];
                 console.warn("Folio was not found in Manifest. Loading first page...");
             }
-            loadTranscriptionCanvas(canvas, true);
+            loadTranscriptionCanvas(canvas, "parsing");
             setTimeout(function () {
             hideWorkspaceForParsing();
                 $(".pageTurnCover").fadeOut(1500);
             }, 800);
+        }
+        else{
+            if (!canvas) {
+                canvas = tpen.manifest.sequences[0].canvases[0];
+                console.warn("Folio was not found in Manifest. Loading first page...");
+            }
+            loadTranscriptionCanvas(canvas, "");
         }
     } else {
     // failed to draw, no Canvas selected
@@ -86,13 +93,13 @@ function redraw () {
 /* Load the interface to the first page of the manifest. */
 function firstFolio () {
     tpen.screen.currentFolio = 0;
-    redraw();
+    redraw("");
 }
 
 /* Load the interface to the last page of the manifest. */
 function lastFolio(){
     tpen.screen.currentFolio = tpen.manifest.sequences[0].canvases.length - 1;
-    redraw();
+    redraw("");
 }
 /* Load the interface to the previous page from the one you are on. */
 function previousFolio (parsing) {
@@ -100,7 +107,7 @@ function previousFolio (parsing) {
         throw new Error("You are already on the first page.");
     }
     tpen.screen.currentFolio--;
-    redraw();
+    redraw("");
 }
 
 /* Load the interface to the next page from the one you are on. */
@@ -109,7 +116,7 @@ function nextFolio (parsing) {
         throw new Error("That page is beyond the last page.");
     }
     tpen.screen.currentFolio++;
-    redraw();
+    redraw("");
 }
 
 /** Test if a given string can be parsed into a valid JSON object.
@@ -2478,13 +2485,14 @@ function togglePageJump(){
 function pageJump(page, parsing){
     var folioNum = parseInt(page); //1,2,3...
     var canvasToJumpTo = folioNum - 1; //0,1,2...
-    if (tpen.screen.currentFolio !== folioNum && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio
+    if (tpen.screen.currentFolio !== canvasToJumpTo && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio
         tpen.screen.currentFolio = canvasToJumpTo;
         if (parsing === "parsing"){
             $(".pageTurnCover").show();
             fullPage();
             tpen.screen.focusItem = [null, null];
-            loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[canvasToJumpTo], parsing);
+            redraw(parsing);
+            //loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[canvasToJumpTo], parsing);
             setTimeout(function(){
                 hideWorkspaceForParsing();
                 $(".pageTurnCover").fadeOut(1500);
@@ -2493,7 +2501,8 @@ function pageJump(page, parsing){
         else {
             tpen.screen.currentFolio = canvasToJumpTo;
             tpen.screen.focusItem = [null, null];
-            loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[canvasToJumpTo], "");
+            redraw("");
+            //loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[canvasToJumpTo], "");
         }
     }
     else{

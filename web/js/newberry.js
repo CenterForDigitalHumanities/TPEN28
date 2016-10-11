@@ -2008,9 +2008,9 @@ function removeColumn(column, destroy){
     // collect lines from column
     var lines = $(".parsing[lineleft='" + colX + "']");
     lines.addClass("deletable");
-    removeColumnTranscriptlets(lines);
-    column.remove();//rather remove than hide to not trip out the full transcription view.
-    //column.hide("blind", 250);
+    tpen.screen.nextColumnToRemove = column;
+    removeColumnTranscriptlets(lines, false);
+    
                         
 }
 
@@ -2023,6 +2023,7 @@ function destroyPage(){
     }
     else {
         cleanupTranscriptlets(true);
+        $("#parsingCover").hide();
     }
 }
 
@@ -2664,6 +2665,7 @@ function columnUpdate(linesInColumn){
             }
             else{
                 console.warn("canvas to get anno list for does not have otherContent");
+                lists = "noList";
             }
             for(var i=0; i<lists.length; i++){
                 var list = lists[i];
@@ -2673,7 +2675,7 @@ function columnUpdate(linesInColumn){
                         tpen.screen.dereferencedLists[tpen.screen.currentFolio] = annoListData;
                         if (annoListData.resources) {
                             var resources = annoListData.resources;
-                            //there was a scope problem using $.each
+                            //Here is when we would set empty, but its best just to return the empty array.  Maybe get rid of "empty" check in this file. 
                             for(var l=0; l<resources.length; l++){
                                 var currentResource = resources[l];
                                 if(currentResource.on.startsWith(canvas['@id'])){
@@ -2753,6 +2755,7 @@ function updateLine(line, cleanup){
             };
             $.post(url,payload,function(){
             	line.attr("hasError",null);
+                $("#parsingCover").hide();
             	// success
             }).fail(function(err){
             	line.attr("hasError","Saving Failed "+err.status);
@@ -2770,7 +2773,7 @@ function saveNewLine(lineBefore, newLine){
     var theURL = window.location.href;
     var projID = - 1;
     if (theURL.indexOf("projectID") === - 1){
-        projID = theProjectID;
+        projID = tpen.project.id;
     }
     else{
         projID = theURL.substring(theURL.indexOf("projectID=") + 10);
@@ -2781,6 +2784,7 @@ function saveNewLine(lineBefore, newLine){
     }
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var newLineTop, newLineLeft, newLineWidth, newLineHeight = 0;
+    var oldLineTop, oldLineLeft, oldLineWidth, oldLineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2;
     newLineTop = parseFloat(newLine.attr("linetop"));
     newLineLeft = parseFloat(newLine.attr("lineleft"));
@@ -2795,7 +2799,24 @@ function saveNewLine(lineBefore, newLine){
     newLineLeft = Math.round(newLineLeft, 0);
     newLineWidth = Math.round(newLineWidth, 0);
     newLineHeight = Math.round(newLineHeight, 0);
+    
+    if(lineBefore){
+        oldLineTop = parseFloat(lineBefore.attr("linetop"));
+        oldLineLeft = parseFloat(lineBefore.attr("lineleft"));
+        oldLineWidth = parseFloat(lineBefore.attr("linewidth"));
+        oldLineHeight = parseFloat(lineBefore.attr("lineheight"));
+        oldLineTop = oldLineTop * 10;
+        oldLineLeft = oldLineLeft * (10 * ratio);
+        oldLineWidth = oldLineWidth * (10 * ratio);
+        oldLineHeight = oldLineHeight * 10;
+        //round up.
+        oldLineTop = Math.round(oldLineTop, 0);
+        oldLineLeft = Math.round(oldLineLeft, 0);
+        oldLineWidth = Math.round(oldLineWidth, 0);
+        oldLineHeight = Math.round(oldLineHeight, 0);
+    }
     var lineString = onCanvas + "#xywh=" + newLineLeft + "," + newLineTop + "," + newLineWidth + "," + newLineHeight;
+    var updateLineString =  onCanvas + "#xywh=" + oldLineLeft + "," + oldLineTop + "," + oldLineWidth + "," + oldLineHeight;
     var currentLineText = "";
     var dbLine = {
         "@id" : "",
@@ -2836,6 +2857,7 @@ function saveNewLine(lineBefore, newLine){
                 }
                 else {
                     currentAnnoList.splice(beforeIndex + 1, 0, dbLine);
+                    currentAnnoList[beforeIndex].on = updateLineString;
                 }
                 currentFolio = parseInt(currentFolio);
                 //Write back to db to update list
@@ -2846,7 +2868,7 @@ function saveNewLine(lineBefore, newLine){
                     if (lineBefore !== undefined && lineBefore !== null){
                         //This is the good case.  We called split line and saved
                         //the new line, now we need to update the other one.
-                        updateLine(lineBefore);
+                        updateLine(lineBefore); //This will update the line on the server.
                     }
                     else{
                     }
@@ -3095,12 +3117,10 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     }
     else {
     }
-    var index = - 1;
     var currentFolio = parseInt(tpen.screen.currentFolio);
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
-    if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){ // dereference
-        $.each(currentAnnoList.resources, function(){
-            index++;
+    if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){ 
+        $.each(currentAnnoList, function(index){
             var lineIDToCheck = "";
             if (removeNextLine){
                 lineIDToCheck = lineid;
@@ -3110,7 +3130,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
                 lineIDToCheck = updatedLineID;
             }
             if (this["@id"] === lineIDToCheck){
-                currentAnnoList.resources.splice(index, 1);
+                currentAnnoList.splice(index, 1);
                 var url = "updateAnnoList";
                 tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio] = currentAnnoList;
                 var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
@@ -3120,7 +3140,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
                         $("#parsingCover").hide();
                     }
                     else {
-                        updateLine(toUpdate);
+                        updateLine(toUpdate); //put $(#parsingCover).hide() in updateLine(), but may just need it here for this scenario. 
                     }
                 });
             }
@@ -3145,16 +3165,14 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
 
 /* Remove all transcriptlets in a column */
 function removeColumnTranscriptlets(lines, recurse){
-    var index = - 1;
-    var currentFolio = parseInt(tpen.screen.currentFolio);
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+    $("#parsingCover").show();
     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
         // if it IIIF, we need to update the list
-            var annoListID = list['@id'];
             for (var l = lines.length - 1; l >= 0; l--){
                 var theLine = $(lines[l]);
                 for(var k=0; k<currentAnnoList.length; k++){
-                    var currentResource = this;
+                    var currentResource = currentAnnoList[k];
                     if (currentResource["@id"] == theLine.attr("lineserverid")){
                         currentAnnoList.splice(k, 1);
                         theLine.remove();
@@ -3173,6 +3191,8 @@ function removeColumnTranscriptlets(lines, recurse){
                         }
                         else{
                             cleanupTranscriptlets(true);
+                            tpen.screen.nextColumnToRemove.remove();
+                            $("#parsingCover").hide();
                         }
                     });
                 }
@@ -3189,6 +3209,7 @@ function removeColumnTranscriptlets(lines, recurse){
             $(".transcriptlet[lineserverid='" + lineID + "']").remove(); //remove the transcriptlet
             $(".lineColIndicator[lineserverid='" + lineID + "']").remove(); //Remove the line representing the transcriptlet
             $(".previewLineNumber[lineserverid='" + lineID + "']").parent().remove(); //Remove the line in text preview of transcription.
+            $("#parsingCover").hide()
         }
     }
 }
@@ -3202,8 +3223,7 @@ function cleanupTranscriptlets(draw) {
         $("#parsingSplit").find('.fullScreenTrans').unbind();
         $("#parsingSplit").find('.fullScreenTrans').bind("click", function(){
             fullPage();
-            currentFolio = parseInt(currentFolio);
-            drawLinesToCanvas(tpen.manifest.sequences[0].canvases[currentFolio - 1], "");
+            drawLinesToCanvas(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], "");
         });
     }
 }

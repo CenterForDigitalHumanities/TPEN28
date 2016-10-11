@@ -184,6 +184,7 @@ public class Canvas {
         }
         reader.close();
         connection.disconnect();
+        //FIXME: Every now and then, this line throws an error: A JSONArray text must start with '[' at character 1 of &lt
         JSONArray theLists = JSONArray.fromObject(sb.toString());
         //System.out.println("Found "+theLists.size()+" lists matching those params.");
         String[] annotationLists = new String[theLists.size()];

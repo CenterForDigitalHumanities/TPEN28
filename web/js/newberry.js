@@ -367,16 +367,16 @@ function loadTranscription(pid){ //This is the first thing called when coming in
     var projectID = 0; 
     var userTranscription = $('#transcriptionText').val();
     var currentFolio = tpen.screen.currentFolio || 0;
+    $("#transTemplateLoading").show();
     if (pid || $.isNumeric(userTranscription)){
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
         projectID = pid || userTranscription;
-        tpen.project.id = projectID;
+        tpen.project.id = projectID; //this must be set or the canvas won't draw
         var url = "getProjectTPENServlet?projectID=" + projectID;
         $.ajax({
             url: url,
             type:"GET",
             success: function(activeProject){
-                var count = 0;
                 var url = "";
                 setTPENObjectData(activeProject);
                 if(tpen.user.isAdmin){
@@ -528,12 +528,19 @@ function loadTranscription(pid){ //This is the first thing called when coming in
 //            else {
             localProject = true; //Well, probably anyway.  I forsee this being an issue like with t-pen.
             //TODO: this URL exists in more ways now (/manifest/PID/manifest.json)
-            projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/project/') + 9));
+            if(userTranscription.indexOf("/TPEN28/project") > - 1){
+                projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/project/') + 9));
+            }
+            else if(userTranscription.indexOf("/TPEN28/manifest") > - 1){
+                projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/manifest/') + 10).replace("/manifest.json", ""));
+            }
+            
            // }
         }
         else {
             projectID = 0;
         }
+        
         if (localProject){
             //get project info first, get manifest out of it, populate
             var url = "getProjectTPENServlet?projectID=" + projectID;
@@ -541,82 +548,96 @@ function loadTranscription(pid){ //This is the first thing called when coming in
                 url: url,
                 type:"GET",
                 success: function(activeProject){
+                    tpen.project.id = projectID; //this must be set or the canvas won't draw
                     setTPENObjectData(activeProject);
-                    var count = 0;
-                    var url = "";
-                    if (!$.isEmptyObject(tpen.manifest)){
-                        if (tpen.manifest.sequences[0] !== undefined
-                            && tpen.manifest.sequences[0].canvases !== undefined
-                            && tpen.manifest.sequences[0].canvases.length > 0){
-                            scrubFolios();
-                            var count = 1;
-                            $.each(tpen.manifest.sequences[0].canvases, function(){
-                                $("#pageJump").append("<option folioNum='" + count
-                                    + "' class='folioJump' val='" + this.label + "'>"
-                                    + this.label + "</option>");
-                                $("#compareJump").append("<option class='compareJump' folioNum='"
-                                    + count + "' val='" + this.label + "'>"
-                                    + this.label + "</option>");
-                                count++;
-                                if (this.otherContent){
-                                    if (this.otherContent.length > 0){
-                                        // all's well
-                                    }
-                                    else {
-                                        // otherContent was empty (IIIF says otherContent
-                                        // should have URI's to AnnotationLists).  We will
-                                        // check the store for these lists still.
-                                    }
+                    if(tpen.user.isAdmin){
+                        $("#parsingBtn").show();
+                            var message = $('<span>This canvas has no lines. If you would like to create lines</span>'
+                                + '<span style="color: blue;" onclick="hideWorkspaceForParsing()">click here</span>.'
+                                + 'Otherwise, you can <span style="color: red;" onclick="$(\'#noLineWarning\').hide()">'
+                                + 'dismiss this message</span>.');
+                            $("#noLineConfirmation").empty();
+                            $("#noLineConfirmation").append(message);
+                    }
+                    if (tpen.manifest.sequences[0] !== undefined
+                        && tpen.manifest.sequences[0].canvases !== undefined
+                        && tpen.manifest.sequences[0].canvases.length > 0)
+                    {
+                        transcriptionFolios = tpen.manifest.sequences[0].canvases;
+                        scrubFolios();
+                        var count = 1;
+                        $.each(transcriptionFolios, function(){
+                            $("#pageJump").append("<option folioNum='" + count
+                                + "' class='folioJump' val='" + this.label + "'>"
+                                + this.label + "</option>");
+                            $("#compareJump").append("<option class='compareJump' folioNum='"
+                                + count + "' val='" + this.label + "'>"
+                                + this.label + "</option>");
+                            count++;
+                            if (this.otherContent){
+                                if (this.otherContent.length > 0){
+                                    // all's well
                                 }
                                 else {
-                                    // no otherContent, so create one to hold new annotations
-                                    this.otherContent=[];
+                                //otherContent was empty (IIIF says otherContent should
+                                //have URI's to AnnotationLists).  We will check the
+                                //store for these lists still.
                                 }
-                            });
-                            loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[0], "");
-                            var projectTitle = tpen.manifest.label || tpen.manifest['@id'] || "unlabelled";
-                            $("#trimTitle").html(projectTitle);
-                            $("#trimTitle").attr("title", projectTitle);
-                            $('#transcriptionTemplate').css("display", "inline-block");
-                            $('#setTranscriptionObjectArea').hide();
-                            $(".instructions").hide();
-                            $(".hideme").hide();
-                        }
-                        else {
-                        //ERROR! It is a malformed transcription object.  There is no canvas sequence defined.
-                        }
+                            }
+                            else {
+                                // no list at all, let's create a spot
+                                this.otherContent = [];
+                            }
+                        });
+                        loadTranscriptionCanvas(transcriptionFolios[0], "");
+                        var projectTitle = tpen.manifest.label;
+                        $("#trimTitle").text(projectTitle);
+                        $("#trimTitle").attr("title", projectTitle);
+                        $('#transcriptionTemplate').css("display", "inline-block");
+                        $('#setTranscriptionObjectArea').hide();
+                        $(".instructions").hide();
+                        $(".hideme").hide();
                         //load Iframes after user check and project information data call
                         loadIframes();
                     }
                     else {
-                        alert("No Manifest Found");
-                        //load Iframes after user check and project information data call
-                        loadIframes();
+                        throw new Error("This transcription object is malformed. No canvas sequence is defined.");
                     }
-                    $.each(tpen.project.tools, function(){
-                        var splitHeight = window.innerHeight + "px";
-                        var toolLabel = this.name;
-                        var toolSource = this.url;
-                        var splitTool = $('<div toolName="' + toolLabel
-                            + '" class="split iTool"><button class="fullScreenTrans">Full Screen Transcription</button></div>');
-                        var splitToolIframe = $('<iframe style="height:'
-                            + splitHeight + ';" src="' + toolSource + '"></iframe>');
-                        var splitToolSelector = $('<option splitter="'
-                            + toolLabel + '" class="splitTool">' + toolLabel + '</option>');
-                        splitTool.append(splitToolIframe);
-                        $("#splitScreenTools").append(splitToolSelector);
-                        $(".iTool:last").after(splitTool);
-                    });
-                    populateSpecialCharacters();
-                    populateXML();
+                    if(tpen.project.tools){
+                        $.each(tpen.project.tools, function(){
+                            var splitHeight = window.innerHeight + "px";
+                            var toolLabel = this.name;
+                            var toolSource = this.url;
+                            var splitTool = $('<div toolName="' + toolLabel
+                                + '" class="split iTool"><button class="fullScreenTrans">'
+                                + 'Full Screen Transcription</button></div>');
+                            var splitToolIframe = $('<iframe style="height:' + splitHeight
+                                + ';" src="' + toolSource + '"></iframe>');
+                            var splitToolSelector = $('<option splitter="' + toolLabel
+                                + '" class="splitTool">' + toolLabel + '</option>');
+                            splitTool.append(splitToolIframe);
+                            $("#splitScreenTools")
+                                .append(splitToolSelector);
+                            $(".iTool:last")
+                                .after(splitTool);
+                        });
+                        }
+                        if (tpen.project.specialChars) {
+                            populateSpecialCharacters();
+                        }
+                        if (tpen.project.xml) {
+                            populateXML();
+                        }
                 },
                 error: function(jqXHR, error, errorThrown) {
                     if (jqXHR.status && jqXHR.status > 400){
                         alert(jqXHR.responseText);
                     }
                     else {
-                        alert("Something went wrong. Could not get the project. 4");
+                        alert("Something went wrong. Could not get the project. 1");
                     }
+                    //load Iframes after user check and project information data call
+                    loadIframes();
                 }
             });
         }

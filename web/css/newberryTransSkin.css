@@ -1280,3 +1280,47 @@ a{
 #allXML{
     margin-bottom: 10px;
 }
+
+
+            .navigation {
+              color: white;
+              background: rgb(166,65,41); /* Old browsers */
+background: -moz-linear-gradient(top,  rgba(166,65,41,1) 0%, rgba(244,150,129,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(166,65,41,1)), color-stop(100%,rgba(244,150,129,1))); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  rgba(166,65,41,1) 0%,rgba(244,150,129,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  rgba(166,65,41,1) 0%,rgba(244,150,129,1) 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  rgba(166,65,41,1) 0%,rgba(244,150,129,1) 100%); /* IE10+ */
+background: linear-gradient(to bottom,  rgba(166,65,41,1) 0%,rgba(244,150,129,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', endColorstr='#f49681',GradientType=0 ); /* IE6-9 */
+            }
+            .navigation .ui-icon {
+background-image: url(css/custom-theme/images/ui-icons_ffffff_256x240.png);            }
+            a.navigation:hover .ui-icon {
+background-image: url(css/custom-theme/images/ui-icons_a64129_256x240.png); 
+            border-color: #a64129;}
+            a.navigation {
+              border-color: white;
+            }
+
+            #siteNavigation {
+              position:relative;
+              top:0;left:0;
+              width:100%;/*width:100vw;*/
+              z-index: 5;
+            }
+            #siteNavigation {
+              box-shadow: 0 0 4px black;
+            }
+            #siteNavigation a {
+              border-color: transparent;
+              background: none;
+              padding:.25em;
+              color: white;
+              display: inline-block;
+            }
+            #siteNavigation a:hover {
+              background-color: white;
+              background-color: rgba(255,255,255,.5);
+              border: solid thin;
+              color: #a64129;
+            }

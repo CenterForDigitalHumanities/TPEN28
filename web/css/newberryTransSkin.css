@@ -1152,9 +1152,14 @@ button.imgTool{
 * Paleography Site Skinning
 *
 */
+html{
+  overflow: hidden;
+}
 body{
     font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
     overflow-x: hidden;
+    height: 100%;
+    height: 100vh;
 }
 button{
 /*    font-family: 'Open Sans','Helvetica Neue',sans-serif;*/

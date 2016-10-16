@@ -1283,10 +1283,25 @@ a{
 
 /* *********************** 2.8 fixes ********************* */
 
+.ui-resizable:not(.ui-resizable-disabled),.noTransition,.lineColIndicatorArea {
+    -webkit-transition: all 0s !important;
+    -moz-transition: all 0s !important;
+    -o-transition: all 0s !important;
+    transition: all 0s !important;
+}
 #allXML{
     margin-bottom: 10px;
 }
-
+html {
+  height: 100%;
+  height: 100vh;
+}
+body {
+  overflow: hidden;
+}
+#helpBtns {
+  float: right;
+}
 
             .navigation {
               color: white;
@@ -1309,9 +1324,10 @@ background-image: url(css/custom-theme/images/ui-icons_a64129_256x240.png);
             }
 
             #siteNavigation {
-              position:relative;
-              top:0;left:0;
-              width:100%;/*width:100vw;*/
+              position:fixed;
+              bottom:0;left:0;
+              width:100%;
+              width:100vw;
               z-index: 5;
             }
             #siteNavigation {

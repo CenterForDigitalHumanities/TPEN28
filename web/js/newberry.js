@@ -1097,9 +1097,13 @@ function linesToScreen(lines){
             var lineToUpdate = $(this).parent();
             clearTimeout(typingTimer);
             //when a user stops typing for 2 seconds, fire an update to get the new text.
-            typingTimer = setTimeout(function(){
-                updateLine(lineToUpdate);
-            }, 2000);
+            if(e.which !== 18){
+                typingTimer = setTimeout(function(){
+                    console.log("timer update");
+                    updateLine(lineToUpdate, false, false);
+                }, 2000);
+            }
+            
     });
 }
 
@@ -1269,7 +1273,7 @@ function loadTranscriptlet(lineid){
     if ($('#transcriptlet_' + lineid).length > 0){
         if (tpen.user.UID){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
-            updateLine(lineToUpdate);
+            updateLine(lineToUpdate, false, false);
             updatePresentation($('#transcriptlet_' + lineid));
         }
         else {
@@ -1302,7 +1306,7 @@ function nextTranscriptlet() {
     if ($('#transcriptlet_' + nextID).length > 0){
         if (tpen.user.UID){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
-            updateLine(lineToUpdate);
+            updateLine(lineToUpdate, false, false);
             updatePresentation($('#transcriptlet_' + nextID));
         }
         else {
@@ -1333,7 +1337,7 @@ function previousTranscriptlet() {
     if (prevID >= 0){
         if (tpen.user.UID){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
-            updateLine(lineToUpdate);
+            updateLine(lineToUpdate, false, false);
             updatePresentation($('#transcriptlet_' + prevID));
         }
         else {
@@ -2735,7 +2739,8 @@ function columnUpdate(linesInColumn){
     };
 
 /* Update line information for a particular line. */
-function updateLine(line, cleanup){
+function updateLine(line, cleanup, updateList){
+    console.log("update line function");
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
@@ -2773,7 +2778,7 @@ function updateLine(line, cleanup){
             // unlikely, but just in case
             $.getJSON(currentAnnoList,function(list){
                 tpen.screen.currentAnnoList = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[tpen.screen.currentAnnoList] = list;
-                return updateLine(line, cleanup);
+                return updateLine(line, cleanup, updateList);
             }).fail(function(err){
                 throw err;
             });
@@ -2785,7 +2790,8 @@ function updateLine(line, cleanup){
     }
     else if (currentAnnoListID){
         if(currentLineServerID.startsWith("http")){
-            var url = "http://165.134.241.141/annotationstore/anno/updateAnnotation.action";
+            //var url = "http://165.134.241.141/annotationstore/anno/updateAnnotation.action"; //This gets a 403 Forbidden....
+            var url = "http://165.134.241.141/TPEN28/updateAnnoList";
             var payload = { // Just send what we expect to update
                     content : JSON.stringify({
                     "@id" : dbLine['@id'],			// URI to find it in the repo
@@ -2793,6 +2799,23 @@ function updateLine(line, cleanup){
                     "on" : dbLine.on 				// parsing update of xywh=
             	})
             };
+            if(updateList){
+                var url1 = "updateAnnoList";
+                console.log("update list");
+                for(var i=0  ;i < currentAnnoList.length; i++){
+                    if(currentAnnoList[i]["@id"] === dbLine['@id']){
+                        currentAnnoList[i].on = dbLine.on;
+                    }
+                    if(i===currentAnnoList.length -1){
+                        var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
+                        var params1 = {"content":JSON.stringify(paramObj1)};
+                        $.post(url1, params1, function(data){
+                        });
+                    }
+                }
+                
+            }
+            console.log("update line");
             $.post(url,payload,function(){
             	line.attr("hasError",null);
                 $("#parsingCover").hide();
@@ -2805,7 +2828,7 @@ function updateLine(line, cleanup){
             throw new Error("No good. The ID could not be dereferenced. Maybe this is a new annotation?");
         }
     }
-
+    //I am not sure if cleanup is ever true
     if (cleanup) cleanupTranscriptlets(true);
 }
 
@@ -2908,7 +2931,7 @@ function saveNewLine(lineBefore, newLine){
                     if (lineBefore !== undefined && lineBefore !== null){
                         //This is the good case.  We called split line and saved
                         //the new line, now we need to update the other one.
-                        updateLine(lineBefore); //This will update the line on the server.
+                        updateLine(lineBefore, false, false); //This will update the line on the server.
                     }
                     else{
                     }
@@ -3180,7 +3203,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
                         $("#parsingCover").hide();
                     }
                     else {
-                        updateLine(toUpdate); //put $(#parsingCover).hide() in updateLine(), but may just need it here for this scenario. 
+                        updateLine(toUpdate, false, false); //put $(#parsingCover).hide() in updateLine(), but may just need it here for this scenario. 
                     }
                 });
             }

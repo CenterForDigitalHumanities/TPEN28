@@ -473,7 +473,7 @@
                 }
             }
             else if (event.which == 18 || event.altKey){
-              // console.log('ALT KEY');
+               //console.log('ALT KEY');
                var lineForEditing = $(".activeLine");
                lineForEditing.resizable();
                //alt + arrows will bump active line left and right
@@ -519,13 +519,17 @@
             else {
             }
             })
-            .keyup(function(event){
-                if(event.which == 18 || event.altKey){
+            .keyup(function(event){;
+                //|| event.altKey is true while it is held down.
+                if(event.which == 18){
                     $("#imgTop,#imgBottom").unbind("mousemove").css("cursor", "default");
                     $("#imgTop, #imgBottom").unbind("mousedown");
                     $("#imgTop, #imgBottom").unbind("mouseup");
+                    var lineForEditing = $(".transcriptlet[lineserverid='" + $(".activeLine").attr("lineserverid") + "']");
+                    updateLine(lineForEditing, false, true); //update the active line in case it was bumped.  
                 }
                 else{
+                    
                 }
             });
 
@@ -758,7 +762,7 @@
                               var thisLineID = thisLine.attr("lineserverid");
                               var thisLineW = parseFloat(thisLine.attr("linewidth")) * (newW / originalW);
                               thisLine.attr("linewidth", thisLineW);
-                              updateLine(thisLine);
+                              updateLine(thisLine, false, false);
                               $("#progress").html("Line Saved").delay(3000).fadeOut(1000);
                               $("#lineResizing").delay(3000).fadeOut(1000);
                             }
@@ -908,9 +912,9 @@
         var currentLineLeftPX = parseFloat(currentLineLeftPerc/100) * $("#imgTop").width() + "px";
         $(".transcriptlet[lineserverid='"+id+"']").attr("lineleft", currentLineLeftPerc);
         activeLine.css("left", currentLineLeftPX);
-        updateLine($(".transcriptlet[lineserverid='"+id+"']"), "no");
-
+        //updateLine($(".transcriptlet[lineserverid='"+id+"']"), false, true);      
     }
+
 
     //UI effects for when a user decides to edit a line within the preview split tool.
     function edit(line){

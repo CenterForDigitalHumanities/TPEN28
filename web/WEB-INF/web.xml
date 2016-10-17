@@ -184,6 +184,10 @@
         <servlet-class>edu.slu.tpen.servlet.ProjectServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>CanvasServlet</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.CanvasServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>updateMetadataByProjectIDServlet</servlet-name>
         <servlet-class>edu.slu.tpen.servlet.UpdateMetadataByProjectIDServlet</servlet-class>
     </servlet>
@@ -366,6 +370,10 @@
     <servlet-mapping>
         <servlet-name>ProjectServlet</servlet-name>
         <url-pattern>/manifest/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CanvasServlet</servlet-name>
+        <url-pattern>*/canvas/*</url-pattern>
     </servlet-mapping>
     <!-- tpen webservices for newberry starts -->
     <servlet>

@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.List;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -151,7 +152,7 @@ public class Canvas {
     /**
      * Check the annotation store for the annotation list on this canvas for this project.
      * @param projectID : the projectID the canvas belongs to
-     * @param canavsID: The canvas ID the annotation list is on
+     * @param canvasID: The canvas ID the annotation list is on
      * @param UID: The current UID of the user in session.
      * @return : The annotation lists @id property, not the object.  Meant to look like an otherContent field.
      */
@@ -159,7 +160,9 @@ public class Canvas {
         URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/getAnnotationByProperties.action");
         JSONObject parameter = new JSONObject();
         parameter.element("@type", "sc:AnnotationList");
-        parameter.element("proj", projectID);
+        if(projectID > -1){
+            parameter.element("proj", projectID);
+        }
         parameter.element("on", canvasID);
         //System.out.println("Get anno list for proj "+projectID+" on canvas "+canvasID);
         HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
@@ -191,9 +194,11 @@ public class Canvas {
         for(int i=0; i<theLists.size(); i++){
             JSONObject currentList = theLists.getJSONObject(i);
             String id = currentList.getString("@id");
-            //System.out.println("List ID: "+id);
+           // System.out.println("List ID: "+id);
             annotationLists[i] = id;
         }
+        //System.out.println("Return this array");
+        //System.out.println(Arrays.toString(annotationLists));
         return annotationLists;
     }
     

@@ -373,7 +373,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CanvasServlet</servlet-name>
-        <url-pattern>*/canvas/*</url-pattern>
+        <url-pattern>/canvas/*</url-pattern>
     </servlet-mapping>
     <!-- tpen webservices for newberry starts -->
     <servlet>

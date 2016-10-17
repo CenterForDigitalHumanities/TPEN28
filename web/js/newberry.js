@@ -372,6 +372,11 @@ function loadTranscription(pid){ //This is the first thing called when coming in
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
         projectID = pid || userTranscription;
         tpen.project.id = projectID; //this must be set or the canvas won't draw
+        var aBar = document.location.href;
+        var toAddressBar = aBar+"?projectID=" + projectID;
+        if(aBar.indexOf("projectID=") === -1){
+            window.history.pushState("", "T-PEN Transcription", toAddressBar);
+        }
         var url = "getProjectTPENServlet?projectID=" + projectID;
         $.ajax({
             url: url,
@@ -543,6 +548,11 @@ function loadTranscription(pid){ //This is the first thing called when coming in
         
         if (localProject){
             //get project info first, get manifest out of it, populate
+            var aBar = document.location.href;
+            var toAddressBar = aBar+"?projectID=" + projectID;
+            if(aBar.indexOf("projectID=") === -1){
+                window.history.pushState("", "T-PEN Transcription", toAddressBar);
+            }
             var url = "getProjectTPENServlet?projectID=" + projectID;
             $.ajax({
                 url: url,

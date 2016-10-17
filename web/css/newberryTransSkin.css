@@ -255,7 +255,7 @@ body{
     }
 
     #transWorkspace {
-       background-color: #C8DDD8;
+        background: white url(../images/linen.png);
         box-shadow: 0px 6px 32px 4px #000;
         display: block;
         position: relative;
@@ -588,7 +588,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
                 -webkit-box-shadow: 0 0 5px #A64129;
                 box-shadow:0 0 5px #A64129;}
 #abbreviations select {width:100%;}
-iframe {background: url('images/linen.png') white scroll repeat; position: relative;width: 100%;height:100%; margin-top:32px;}
+iframe {background: url('../images/linen.png') white scroll repeat; position: relative;width: 100%;height:100%; margin-top:32px;}
 .xmlClosingTags {position: absolute; bottom:0;right:10px;z-index: 20;}
 .tags {font-size: 80%; padding: 1px;margin: 0px -1px 1px 0px;display: inline-block;z-index: 20;cursor: pointer;position: relative;}
 .destroyTag {position:absolute;top:-15px;right:0;}
@@ -1152,9 +1152,14 @@ button.imgTool{
 * Paleography Site Skinning
 *
 */
+html{
+  overflow: hidden;
+}
 body{
     font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
     overflow-x: hidden;
+    height: 100%;
+    height: 100vh;
 }
 button{
 /*    font-family: 'Open Sans','Helvetica Neue',sans-serif;*/
@@ -1278,10 +1283,25 @@ a{
 
 /* *********************** 2.8 fixes ********************* */
 
+.ui-resizable:not(.ui-resizable-disabled),.noTransition,.lineColIndicatorArea {
+    -webkit-transition: all 0s !important;
+    -moz-transition: all 0s !important;
+    -o-transition: all 0s !important;
+    transition: all 0s !important;
+}
 #allXML{
     margin-bottom: 10px;
 }
-
+html {
+  height: 100%;
+  height: 100vh;
+}
+body {
+  overflow: hidden;
+}
+#helpBtns {
+  float: right;
+}
 
             .navigation {
               color: white;
@@ -1304,9 +1324,10 @@ background-image: url(css/custom-theme/images/ui-icons_a64129_256x240.png);
             }
 
             #siteNavigation {
-              position:relative;
-              top:0;left:0;
-              width:100%;/*width:100vw;*/
+              position:fixed;
+              bottom:0;left:0;
+              width:100%;
+              width:100vw;
               z-index: 5;
             }
             #siteNavigation {

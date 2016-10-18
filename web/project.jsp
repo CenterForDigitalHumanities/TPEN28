@@ -504,7 +504,7 @@
                             </li>
                                                                <%}
                                     if(permitParsing || isMember){%>
- <li class="left ui-widget-content ui-corner-tr ui-corner-bl tall"><a class="tpenButton" href="transcription.html?tool=parsing&projectID=<%out.print("" + projectID);%>"><span class="ui-icon ui-icon-note right"></span>Check line parsings</a>
+ <li class="left ui-widget-content ui-corner-tr ui-corner-bl tall"><a class="tpenButton" href="transcription.html?parsing=true&projectID=<%out.print("" + projectID);%>"><span class="ui-icon ui-icon-note right"></span>Check line parsings</a>
                                 <p>Verify the automatic line detection for the project or define the columns and lines manually. Access independent control over each page in the project.</p>
                             </li>
 <%}%>

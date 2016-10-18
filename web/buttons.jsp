@@ -557,7 +557,7 @@ if (thisProject.getSchemaURL().length() > 5){%>
      </div>
 <%
         if (p.length() > 0){
-            out.print("<a class=\"returnButton\" href=\"transcription.jsp?p=" + request.getParameter("p") + appendProject + "\">Return to transcribing</a>");
+            out.print("<a class=\"returnButton\" href=\"transcription.html?p=" + request.getParameter("p") + appendProject + "\">Return to transcribing</a>");
         %><a class="returnButton" href="project.jsp?<%out.print(projectAppend);%>">Project Management</a><%
         } else {%>
         <a class="returnButton" href="project.jsp?<%out.print(projectAppend);%>">Return to Project Management</a>

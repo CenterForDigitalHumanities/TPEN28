@@ -413,6 +413,7 @@ body{
 #lineCtrlLabel{
     top: -1px !important;
     margin-bottom: 2px;
+    cursor: move;
 }
 #prevPage, #nextPage{
     font-size: 30pt;
@@ -847,19 +848,41 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     left: 200px;
     text-align:center;
 }
-#imageTools{
-    height: 31px;
-    background-color: #BFBFBF;
+.closeBtn{
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    border: 1px solid black;
+    padding: 2px;
+    cursor: pointer;
+    width: 16px;
+    font-size: 13px;
     display: inline-block;
+    text-align: center;
+    z-index: 4;
+}
+.popupTitle{
+    margin: 0 auto;
+    position: relative;
+    display: inline-block;
+    top: 4px;
+    cursor: move;
+    font-weight: bold;
+    font-size: 12pt;
+}
+#imageTools{
+    background-color: #BFBFBF;
+    display: none;
     color: black;
     text-align: center;
     position: absolute;
-    bottom: -13px;
+    /*bottom: -13px;*/
     z-index: 3;
-    transition: height 1s;
+    /*transition: height 1s;*/
     border: 2px solid black;
     margin-left: 6px;
     color: rgba(0,42,92,1);
+    position: fixed;
 }
 #charactersPopin, #xmlTagPopin{
   position: relative;
@@ -900,7 +923,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     overflow: hidden;
     float: right;
 }
-#activeImageTool{
+/*#activeImageTool{
     padding: 4px 6px;
     background-color: white;
     cursor: default;
@@ -910,7 +933,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     height: 23px;
     line-height: 23px;
     text-align: left;
-}
+}*/
 #activeImageTool i {
     right: 5px;
     top: 3px;
@@ -920,7 +943,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     transform: rotate(180deg);
 }
 .toolWrap{
-    display: none;
+    display: block;
     height: auto;
 }
 button.imgTool{
@@ -1125,11 +1148,13 @@ button.imgTool{
     height: 73px;
     background-color: #BFBFBF;
     position: relative;
-    display: inline-block;
+    display: none;
     font-size: 10pt;
     top: 1px;
     padding: 3px;
     border: 2px outset rgba(0,42,92,.4);
+    position: fixed;
+    z-index: 3
 }
 #lineColControls input[type="checkbox"]{
     margin: 0px 0px 0px 4px;

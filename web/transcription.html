@@ -139,32 +139,17 @@
                          <option splitter='abbreviation' class="splitTool"  >Capelli Abbreviation</option>
                      </select>
                 </div>
-                <div class="bottomButtons" style="width: 201px; top:-4px;">
-                    <div id="imageTools" style="width: 201px;">
-                        <div id="activeImageTool" onclick="toggleImgTools();" ><span>Image Tools</span> <i>&#9660;</i></div> <!--  -->
-                           <div class="toolWrap">
-                                <button style="margin-right: 18px; margin-top: 15px;" class="imgTool" which="grayscale" onclick="toggleFilter('grayscale');">Grayscale</button>
-                                <button style="margin-bottom: 10px;" class="imgTool" which="invert" onclick="toggleFilter('invert');">Invert</button>
-                                <div id="imageToolSliders" class="imgTool">
-                                    Brightness
-                                    <div id="brightnessSlider"></div>
-                                    Contrast
-                                    <div id="contrastSlider"></div>
-                                </div>
-                           </div>
-                    </div>
-                </div>
+<!--                <div class="bottomButtons" style="width: 201px; top:-4px;">
+                    
+                </div>-->
                 <div class="bottomButtons">
+                     <button id="activeImageTool" onclick="toggleImgTools(event);" >Image Tools</button> <!--  -->
                      <button class="magnifyBtn" magnifyImg="trans" title="Magnify Transcription Image" >Magnify</button> <!--Page event on the listener for this class in js.-->
                      <button id="moveImage" title="Move Transcription Image" onclick="startMoveImg();">Move Img</button>
                      <button id="parsingBtn" title="Correct Page Parsing" >Correct Parsing</button> <!--Page event on the listener for this class in js.-->
                      <!--<button id="linebreakBtn">Linebreak</button>-->
-                    <div  id="lineColControls">
-                        <div title="Control Drawn Line Settings" id="lineCtrlLabel">Line Control</div>
-                        <span style="top:14px;" title="Toggle Entire Lines" class="linehdr">Lines</span><input style="top:14px;" title="Toggle Lines" type="checkbox" onchange="toggleLineMarkers();" checked="checked"><br>
-                        <span style="top:10px;" title="Toggle Lines' Indicator" class="linehdr">Line #s</span><input style="top:10px;" type="checkbox" onchange="toggleLineCol();" checked="checked">
-                        <button id="markerColors" onclick="markerColors();">Line Color</button>
-                    </div>
+                     <button id="lineControlBtn" onclick="toggleLineControls(event);" title="View Line Controls" >Line Controls</button>
+                    
                 </div>
 
               </div>
@@ -296,18 +281,37 @@
         <div id="zoomDiv" class="ui-corner-all"></div>
         <div id="ruler1"></div><div id="ruler2"></div>
         <div id="siteNavigation" class="left right navigation">
-                                                      <span class="right">
-                              CURRENT USER
-                    <span id="helpBtns">
+            <span class="right">
+                CURRENT USER
+                <span id="helpBtns">
                     <a id="helpMe" class="wBtn ui-state-default ui-button listBegin">Help<span class="fa fa-help right"></span></a>
                     <a id="helpContact" href="admin.jsp#aboutTab" target="_blank" class="wBtn ui-state-default ui-button listEnd">Contact<span class="fa fa-comment right"></span></a>
-                    </span>
-                            </span>
-                            <a class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="left fa fa-home"></span>T-PEN Home</a>
-
-                            <a class="exitPage wBtn ui-state-default ui-button listEnd" title="My Projects" href="project.jsp">My&nbsp;Projects</a>
-
-                        </div>
+                </span>
+            </span>
+            <a class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="left fa fa-home"></span>T-PEN Home</a>
+            <a class="exitPage wBtn ui-state-default ui-button listEnd" title="My Projects" href="project.jsp">My&nbsp;Projects</a>
+        </div>
+        <div id="imageTools" style="width: 201px;">
+            <div class="popupTitle" > Image Controls </div>
+            <div class="closeBtn" onclick="$('#imageTools').hide();$('#imageTools').draggable('destroy')"> X </div>
+               <div class="toolWrap">
+                    <button style="margin-right: 18px; margin-top: 15px;" class="imgTool" which="grayscale" onclick="toggleFilter('grayscale');">Grayscale</button>
+                    <button style="margin-bottom: 10px;" class="imgTool" which="invert" onclick="toggleFilter('invert');">Invert</button>
+                    <div id="imageToolSliders" class="imgTool">
+                        Brightness
+                        <div id="brightnessSlider"></div>
+                        Contrast
+                        <div id="contrastSlider"></div>
+                    </div>
+               </div>
+        </div>
+        <div  id="lineColControls">
+            <div class="closeBtn" onclick="$('#lineColControls').hide(); $('#lineColControls').draggable('destroy');"> X </div>
+            <div title="Control Drawn Line Settings" id="lineCtrlLabel">Line Control</div>
+            <span style="top:14px;" title="Toggle Entire Lines" class="linehdr">Lines</span><input style="top:14px;" title="Toggle Lines" type="checkbox" onchange="toggleLineMarkers();" checked="checked"><br>
+            <span style="top:10px;" title="Toggle Lines' Indicator" class="linehdr">Line #s</span><input style="top:10px;" type="checkbox" onchange="toggleLineCol();" checked="checked">
+            <button id="markerColors" onclick="markerColors();">Line Color</button>
+        </div>
     </body>
 </html>
 <script>

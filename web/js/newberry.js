@@ -3339,19 +3339,7 @@ function scrubFolios(){
     });
 }
 
-/* Control the hiding and showing of the image tools in the transcription interface. */
-function toggleImgTools(){
-    if ($("#imageTools").attr("class") !== undefined && $("#imageTools").attr("class").indexOf("activeTools") > - 1){
-        $('.toolWrap').hide();
-        $("#imageTools").removeClass("activeTools");
-        $("#activeImageTool").children("i").css("transform", "rotate(180deg)");
-    }
-    else{
-        $("#imageTools").addClass("activeTools");
-        $('.toolWrap').show();
-        $("#activeImageTool").children("i").css("transform", "rotate(0deg)");
-    }
-}
+
 
 function stopMagnify(){
     tpen.screen.isMagnifying = false;
@@ -3381,6 +3369,42 @@ function loadIframes(){
         var src = $(this).attr("data_src");
         $(this).attr("src", src);
     });
+}
+
+function toggleImgTools(event){
+    var locationX = event.pageX;
+    var locationY = event.pageY;
+    $("#imageTools").css({
+        "display":  "block",
+        "left" : locationX + "px",
+        "top" : locationY + 15 + "px"
+    });  
+    $("#imageTools").draggable();
+}
+
+/* Control the hiding and showing of the image tools in the transcription interface. Depricated
+function toggleImgTools(){
+    if ($("#imageTools").attr("class") !== undefined && $("#imageTools").attr("class").indexOf("activeTools") > - 1){
+        $('.toolWrap').hide();
+        $("#imageTools").removeClass("activeTools");
+        $("#activeImageTool").children("i").css("transform", "rotate(180deg)");
+    }
+    else{
+        $("#imageTools").addClass("activeTools");
+        $('.toolWrap').show();
+        $("#activeImageTool").children("i").css("transform", "rotate(0deg)");
+    }
+}
+*/
+function toggleLineControls(event){
+    var locationX = event.pageX;
+    var locationY = event.pageY;
+    $("#lineColControls").css({
+        "display":  "block",
+        "left" : locationX + "px",
+        "top" : locationY + 15 + "px"
+    });
+    $("#lineColControls").draggable();
 }
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?

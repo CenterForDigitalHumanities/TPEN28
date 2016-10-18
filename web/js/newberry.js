@@ -384,15 +384,8 @@ function loadTranscription(pid){ //This is the first thing called when coming in
             success: function(activeProject){
                 var url = "";
                 setTPENObjectData(activeProject);
-                if(tpen.user.isAdmin){
-                    $("#parsingBtn").show();
-                        var message = $('<span>This canvas has no lines. If you would like to create lines</span>'
-                            + '<span style="color: blue;" onclick="hideWorkspaceForParsing()">click here</span>.'
-                            + 'Otherwise, you can <span style="color: red;" onclick="$(\'#noLineWarning\').hide()">'
-                            + 'dismiss this message</span>.');
-                        $("#noLineConfirmation").empty();
-                        $("#noLineConfirmation").append(message);
-                }
+                var userToolsAvailable = activeProject.userTool;
+                activateUserTools(userToolsAvailable);
                 if (tpen.manifest.sequences[0] !== undefined
                     && tpen.manifest.sequences[0].canvases !== undefined
                     && tpen.manifest.sequences[0].canvases.length > 0)
@@ -560,15 +553,8 @@ function loadTranscription(pid){ //This is the first thing called when coming in
                 success: function(activeProject){
                     tpen.project.id = projectID; //this must be set or the canvas won't draw
                     setTPENObjectData(activeProject);
-                    if(tpen.user.isAdmin){
-                        $("#parsingBtn").show();
-                            var message = $('<span>This canvas has no lines. If you would like to create lines</span>'
-                                + '<span style="color: blue;" onclick="hideWorkspaceForParsing()">click here</span>.'
-                                + 'Otherwise, you can <span style="color: red;" onclick="$(\'#noLineWarning\').hide()">'
-                                + 'dismiss this message</span>.');
-                            $("#noLineConfirmation").empty();
-                            $("#noLineConfirmation").append(message);
-                    }
+                    var userToolsAvailable = activeProject.userTool;
+                    activateUserTools(userToolsAvailable);
                     if (tpen.manifest.sequences[0] !== undefined
                         && tpen.manifest.sequences[0].canvases !== undefined
                         && tpen.manifest.sequences[0].canvases.length > 0)
@@ -715,6 +701,39 @@ function loadTranscription(pid){ //This is the first thing called when coming in
     }
     else {
         throw new Error("The input was invalid.");
+    }
+}
+
+/*
+ * 
+ * @param {type} tools
+ * Looks at the array of user tools available passed in as project data and makes those options visible.
+ * 
+ */
+function activateUserTools(tools){
+    if(tpen.user.isAdmin || $.inArray("parsing", tools) > -1){
+        $("#parsingBtn").show();
+            var message = $('<span>This canvas has no lines. If you would like to create lines</span>'
+                + '<span style="color: blue;" onclick="hideWorkspaceForParsing()">click here</span>.'
+                + 'Otherwise, you can <span style="color: red;" onclick="$(\'#noLineWarning\').hide()">'
+                + 'dismiss this message</span>.');
+            $("#noLineConfirmation").empty();
+            $("#noLineConfirmation").append(message);
+    }
+    if($.inArray("linebreak", tools) > -1){
+        $(".splitTool[splitter='linebreak']").show();
+    }
+    if($.inArray("history", tools) > -1){
+        $(".splitTool[splitter='history']").show();
+    }
+    if($.inArray("preview", tools) > -1){
+        $(".splitTool[splitter='preview']").show();
+    }
+    if($.inArray("abbreviation", tools) > -1){
+        $(".splitTool[splitter='abbreviation']").show();
+    }
+    if($.inArray("compare", tools) > -1){
+        $(".splitTool[splitter='compare']").show();
     }
 }
 

@@ -536,6 +536,9 @@ body{
     min-width: 165px;
 }
 
+.splitTool{
+    display: none;
+}
 #parsingBtn{
     display: none;
 }

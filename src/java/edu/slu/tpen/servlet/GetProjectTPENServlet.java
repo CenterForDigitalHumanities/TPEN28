@@ -111,6 +111,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                             jsonMap.put("ls_fs", gson.toJson(folios));
 //                            System.out.println("folios json ========== " + gson.toJson(folios));
                             JSONObject manifest = new JSONObject();
+                            //TODO let public projects pass this check.  How do i detect if a project is public? 
                             if (new Group(proj.getGroupID()).isMember(uid)){
                                 manifest_obj_str = new JsonLDExporter(proj, new User(uid)).export();
                             }

@@ -458,14 +458,15 @@ function loadTranscription(pid){ //This is the first thing called when coming in
                     }
             },
             error: function(jqXHR, error, errorThrown) {
-//                if (jqXHR.status && jqXHR.status > 400){
-//                    alert(jqXHR.responseText);
-//                    
-//                }
-//                else {
-//                    alert("Something went wrong. Could not get the project. 1");
-//                }
-                $(".turnMsg").html("Could not load this project.  Refresh the page to try again or contact your T-PEN admin.");
+                if (jqXHR.status && jqXHR.status === 404){
+                   $(".turnMsg").html("Could not find this project.  Check the project ID");
+                   $(".transLoader").find("img").attr("src", "../TPEN28/images/missingImage.png");
+                }
+                else {
+                    $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T-PEN admin.");
+                    $(".transLoader").find("img").attr("src", "../TPEN28/images/BrokenBook01.jpg");
+                }
+                
                 //load Iframes after user check and project information data call
                 loadIframes();
             }
@@ -630,12 +631,14 @@ function loadTranscription(pid){ //This is the first thing called when coming in
                         }
                 },
                 error: function(jqXHR, error, errorThrown) {
-                    if (jqXHR.status && jqXHR.status > 400){
-                        alert(jqXHR.responseText);
-                    }
-                    else {
-                        alert("Something went wrong. Could not get the project. 1");
-                    }
+                    if (jqXHR.status && jqXHR.status === 404){
+                        $(".turnMsg").html("Could not find this project.  Check the project ID.  Refresh the page to try again or contact your T-PEN admin.");
+                        $(".transLoader").find("img").attr("src", "..TPEN28/images/missingImage.png");
+                     }
+                     else {
+                         $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T-PEN admin.");
+                         $(".transLoader").find("img").attr("src", "..TPEN28/images/BrokenBook01.jpg");
+                     }
                     //load Iframes after user check and project information data call
                     loadIframes();
                 }

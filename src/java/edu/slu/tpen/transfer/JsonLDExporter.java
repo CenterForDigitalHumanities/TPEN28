@@ -17,7 +17,6 @@ package edu.slu.tpen.transfer;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -105,7 +104,7 @@ public class JsonLDExporter {
        
       Integer msID = f.getMSID();
       String msID_str = msID.toString();
-      String canvasID = Folio.getRbTok("SERVERURL")+"MS"+msID_str+"/canvas/"+f.getFolioNumber();
+      String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
       JSONObject annotationList = new JSONObject();
       JSONArray resources_array = new JSONArray();
       annotationList.element("@type", "sc:AnnotationList");

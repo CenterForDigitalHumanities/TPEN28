@@ -90,7 +90,8 @@ public class CopyProjectAndAnnos extends HttpServlet {
                             String msID_str = msID.toString();
                             //This needs to be the same one the JSON Exporter creates and needs to be unique and unchangeable.
                             String canvasID = "";
-                            canvasID = Folio.getRbTok("SERVERURL")+"/MS"+msID_str+"/canvas/"+folio.getFolioNumber();
+                            // if you want to include the manuscript it is involved in, add this before canvas/.... "/MS"+msID_str+"
+                            canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+folio.getFolioNumber();
                             //String canvasID = Folio.getRbTok("SERVERURL") + templateProject.getProjectName() + "/canvas/" + URLEncoder.encode(folio.getPageName(), "UTF-8"); // for slu testing
                             annoLsQuery.element("on", canvasID);
                             annoLsQuery.element("proj", projectID);

@@ -349,7 +349,7 @@
                     var theURL = window.location.href;
                     if (theURL.indexOf("projectID=") > -1){
                         var projID = theURL.substring(theURL.indexOf("projectID=")+10);
-                        if(theURL.indexOf("parsing=true")){
+                        if(theURL.indexOf("parsing=true") > -1){
                             loadTranscription(projID, "parsing");
                         }
                         else{

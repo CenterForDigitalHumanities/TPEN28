@@ -90,7 +90,7 @@ public class CanvasServlet extends HttpServlet{
     private JSONObject buildPage(Folio f) throws SQLException, IOException {
       Integer msID = f.getMSID();
       String msID_str = msID.toString();
-      String canvasID = Folio.getRbTok("SERVERURL")+"MS"+msID_str+"/canvas/"+f.getFolioNumber();  
+      String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();  
       Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
       String[] otherContent;
       if (pageDim == null) {

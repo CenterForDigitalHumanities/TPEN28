@@ -81,10 +81,11 @@ public class GetProjectTPENServlet extends HttpServlet {
         HttpSession session = request.getSession();
         boolean isTPENAdmin = false;
         try {
-        	isTPENAdmin = (new User(uid)).isAdmin();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+            isTPENAdmin = (new User(uid)).isAdmin();
+        } 
+        catch (SQLException e) {
+                e.printStackTrace();
+        }
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), "UTF8"), true);
         String manifest_obj_str = "";
@@ -101,27 +102,24 @@ public class GetProjectTPENServlet extends HttpServlet {
                 Project proj = new Project(projID);
                 if (proj.getProjectID() > 0) {
                     Group group = new Group(proj.getGroupID());
+                    ProjectPermissions pms = new ProjectPermissions(proj.getProjectID());
+                    jsonMap.put("projper", gson.toJson(pms));
+//                    System.out.println("Parameter test to receive project data / manifest");
 //                    System.out.println("group Id ===== " + proj.getGroupID() + " is member " + group.isMember(uid));
-                    if (group.isMember(uid) || isTPENAdmin) {
+//                    System.out.println("this is a tpen admin? "+isTPENAdmin);
+//                    System.out.println("this is a public project? "+pms.getAllow_public_read_transcription());
+                    if (group.isMember(uid) || isTPENAdmin || pms.getAllow_public_read_transcription()) { //check for public project here
                         if (checkModified(request, proj)) {
+                            
                             jsonMap.put("project", gson.toJson(proj));
 //                            System.out.println("project json ====== " + gson.toJson(proj));
                             int projectID = proj.getProjectID();
                             Folio[] folios = proj.getFolios();
                             jsonMap.put("ls_fs", gson.toJson(folios));
 //                            System.out.println("folios json ========== " + gson.toJson(folios));
-                            JSONObject manifest = new JSONObject();
-                            //TODO let public projects pass this check.  How do i detect if a project is public? 
-                            if (new Group(proj.getGroupID()).isMember(uid)){
-                                manifest_obj_str = new JsonLDExporter(proj, new User(uid)).export();
-                            }
-                            else {
-                                //This user is noth authorized to receive this manifest.
-                                jo_error.element("error" , "Manifest Access Unauthorized");
-                                manifest_obj_str = jo_error.toString();
-                             }
+                            JSONObject manifest = new JSONObject();                            
+                            manifest_obj_str = new JsonLDExporter(proj, new User(uid)).export();
                            // }
-//
                             try{ //Try to parse the manifest string
                                 man_obj = JSONObject.fromObject(manifest_obj_str);
                                 manifest = man_obj;
@@ -161,8 +159,7 @@ public class GetProjectTPENServlet extends HttpServlet {
 //                            System.out.println("project leaders json ========= " + gson.toJson(leaders));
                             jsonMap.put("ls_leader", gson.toJson(leaders));
                             //get project permission
-                            ProjectPermissions pms = new ProjectPermissions(proj.getProjectID());
-                            jsonMap.put("projper", gson.toJson(pms));
+                            
 //                            System.out.println("project permission json ========= " + gson.toJson(pms));
                             //get project buttons
                             Hotkey hk = new Hotkey();

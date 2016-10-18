@@ -385,7 +385,8 @@ function loadTranscription(pid){ //This is the first thing called when coming in
                 var url = "";
                 setTPENObjectData(activeProject);
                 var userToolsAvailable = activeProject.userTool;
-                activateUserTools(userToolsAvailable);
+                var projectPermissions = JSON.parse(activeProject.projper);
+                activateUserTools(userToolsAvailable, projectPermissions);
                 if (tpen.manifest.sequences[0] !== undefined
                     && tpen.manifest.sequences[0].canvases !== undefined
                     && tpen.manifest.sequences[0].canvases.length > 0)
@@ -554,7 +555,8 @@ function loadTranscription(pid){ //This is the first thing called when coming in
                     tpen.project.id = projectID; //this must be set or the canvas won't draw
                     setTPENObjectData(activeProject);
                     var userToolsAvailable = activeProject.userTool;
-                    activateUserTools(userToolsAvailable);
+                    var projectPermissions = JSON.parse(activeProject.projper);
+                    activateUserTools(userToolsAvailable, projectPermissions);
                     if (tpen.manifest.sequences[0] !== undefined
                         && tpen.manifest.sequences[0].canvases !== undefined
                         && tpen.manifest.sequences[0].canvases.length > 0)
@@ -710,15 +712,15 @@ function loadTranscription(pid){ //This is the first thing called when coming in
  * Looks at the array of user tools available passed in as project data and makes those options visible.
  * 
  */
-function activateUserTools(tools){
-    if(tpen.user.isAdmin || $.inArray("parsing", tools) > -1){
+function activateUserTools(tools, permissions){
+    if(tpen.user.isAdmin || $.inArray("parsing", tools) > -1 || permissions.allow_public_modify || permissions.allow_public_modify_line_parsing){
         $("#parsingBtn").show();
-            var message = $('<span>This canvas has no lines. If you would like to create lines</span>'
-                + '<span style="color: blue;" onclick="hideWorkspaceForParsing()">click here</span>.'
-                + 'Otherwise, you can <span style="color: red;" onclick="$(\'#noLineWarning\').hide()">'
-                + 'dismiss this message</span>.');
-            $("#noLineConfirmation").empty();
-            $("#noLineConfirmation").append(message);
+        var message = $('<span>This canvas has no lines. If you would like to create lines</span>'
+            + '<span style="color: blue;" onclick="hideWorkspaceForParsing()">click here</span>.'
+            + 'Otherwise, you can <span style="color: red;" onclick="$(\'#noLineWarning\').hide()">'
+            + 'dismiss this message</span>.');
+        $("#noLineConfirmation").empty();
+        $("#noLineConfirmation").append(message);
     }
     if($.inArray("linebreak", tools) > -1){
         $(".splitTool[splitter='linebreak']").show();

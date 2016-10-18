@@ -459,7 +459,7 @@ function loadTranscription(pid){ //This is the first thing called when coming in
             },
             error: function(jqXHR, error, errorThrown) {
                 if (jqXHR.status && jqXHR.status === 404){
-                   $(".turnMsg").html("Could not find this project.  Check the project ID");
+                   $(".turnMsg").html("Could not find this project.  Check the project ID. Refresh the page to try again or contact your T-PEN admin.");
                    $(".transLoader").find("img").attr("src", "../TPEN28/images/missingImage.png");
                 }
                 else {

@@ -362,7 +362,7 @@ function setUserInfo(userData){
 /*
 * Load the transcription from the text in the text area.
 */
-function loadTranscription(pid){ //This is the first thing called when coming into transcription.html when it recognizes a projectID in the URL.
+function loadTranscription(pid, tool){ //This is the first thing called when coming into transcription.html when it recognizes a projectID in the URL.
     //Object validation here.
     var projectID = 0; 
     var userTranscription = $('#transcriptionText').val();
@@ -417,7 +417,7 @@ function loadTranscription(pid){ //This is the first thing called when coming in
                             this.otherContent = [];
                         }
                     });
-                    loadTranscriptionCanvas(transcriptionFolios[0], "");
+                    loadTranscriptionCanvas(transcriptionFolios[0], "", tool);
                     var projectTitle = tpen.manifest.label;
                     $("#trimTitle").text(projectTitle);
                     $("#trimTitle").attr("title", projectTitle);
@@ -505,7 +505,7 @@ function loadTranscription(pid){ //This is the first thing called when coming in
                     this.otherContent=[];
                 }
             });
-            loadTranscriptionCanvas(transcriptionFolios[0], "");
+            loadTranscriptionCanvas(transcriptionFolios[0], "", tool);
             var projectTitle = userTranscription.label;
             $("#trimTitle").html(projectTitle);
             $("#trimTitle").attr("title", projectTitle);
@@ -590,7 +590,7 @@ function loadTranscription(pid){ //This is the first thing called when coming in
                                 this.otherContent = [];
                             }
                         });
-                        loadTranscriptionCanvas(transcriptionFolios[0], "");
+                        loadTranscriptionCanvas(transcriptionFolios[0], "", tool);
                         var projectTitle = tpen.manifest.label;
                         $("#trimTitle").text(projectTitle);
                         $("#trimTitle").attr("title", projectTitle);
@@ -679,7 +679,7 @@ function loadTranscription(pid){ //This is the first thing called when coming in
                             console.warn("`otherContent` does not exist in this Manifest.");
                         }
                     });
-                    loadTranscriptionCanvas(transcriptionFolios[0], "");
+                    loadTranscriptionCanvas(transcriptionFolios[0], "", tool);
                     var projectTitle = projectData.label;
                     $("#trimTitle").html(projectTitle);
                     $("#trimTitle").attr("title", projectTitle); $('#transcriptionTemplate').css("display", "inline-block");
@@ -711,6 +711,15 @@ function loadTranscription(pid){ //This is the first thing called when coming in
     }
 }
 
+function activateTool(tool){
+    if(tool === "parsing"){
+        if(tpen.user.isAdmin){
+            $("#parsingBtn").click();
+            tpen.screen.liveTool = "parsing";
+        }
+    }
+}
+
 /*
  * 
  * @param {type} tools
@@ -720,6 +729,7 @@ function loadTranscription(pid){ //This is the first thing called when coming in
 function activateUserTools(tools, permissions){
     if(tpen.user.isAdmin || $.inArray("parsing", tools) > -1 || permissions.allow_public_modify || permissions.allow_public_modify_line_parsing){
         $("#parsingBtn").show();
+        tpen.user.isAdmin = true;
         var message = $('<span>This canvas has no lines. If you would like to create lines</span>'
             + '<span style="color: blue;" onclick="hideWorkspaceForParsing()">click here</span>.'
             + 'Otherwise, you can <span style="color: red;" onclick="$(\'#noLineWarning\').hide()">'
@@ -747,7 +757,7 @@ function activateUserTools(tools, permissions){
 /*
  * Load a canvas from the manifest to the transcription interface.
  */
-function loadTranscriptionCanvas(canvasObj, parsing){
+function loadTranscriptionCanvas(canvasObj, parsing, tool){
     var noLines = true;
     var canvasAnnoList = "";
     $("#imgTop, #imgBottom").css("height", "400px");
@@ -786,7 +796,7 @@ function loadTranscriptionCanvas(canvasObj, parsing){
             $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
             originalCanvasHeight2 = $("#imgTop img").height();
             originalCanvasWidth2 = $("#imgTop img").width();
-            drawLinesToCanvas(canvasObj, parsing);
+            drawLinesToCanvas(canvasObj, parsing, tool);
             $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
             $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
             $("#parseOptions").find(".tpenButton").removeAttr("disabled");
@@ -830,7 +840,7 @@ function loadTranscriptionCanvas(canvasObj, parsing){
  * @paran canvasObj  A canvas object to extract transcription lines from and draw to the interface.
  * @param parsing boolean if parsing is live tool
  */
-function drawLinesToCanvas(canvasObj, parsing){
+function drawLinesToCanvas(canvasObj, parsing, tool){
     var lines = [];
     var currentFolio = parseInt(tpen.screen.currentFolio);
     if (canvasObj.resources !== undefined
@@ -840,7 +850,7 @@ function drawLinesToCanvas(canvasObj, parsing){
                 lines.push(canvasObj.resources[i]);
             }
         }
-        linesToScreen(lines);
+        linesToScreen(lines, tool);
     }
     else {
         // we have the anno list for this canvas (potentially), so query for it.
@@ -863,7 +873,7 @@ function drawLinesToCanvas(canvasObj, parsing){
             if (annoList.length > 0){
                 // Scrub resolved lists that are already present.
                 tpen.screen.currentAnnoListID = annoList[0]; //There should always just be one that matches because of proj, default to first in array if more 
-                lines = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], true, parsing);
+                lines = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], true, parsing, tool);
 //                $.each(annoList, function(index){
 //                    if (typeof annoList[index] === "string"){
 //                        // annoList is most likely an array of @ids.
@@ -911,7 +921,7 @@ function drawLinesToCanvas(canvasObj, parsing){
 }
 
 /* Take line data, turn it into HTML elements and put them to the DOM */
-function linesToScreen(lines){
+function linesToScreen(lines, tool){
     $("#noLineWarning").hide();
     var letterIndex = 0;
     var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -1111,6 +1121,7 @@ function linesToScreen(lines){
     }
     if (update && $(".transcriptlet").eq(0) !== undefined){
         updatePresentation($(".transcriptlet").eq(0));
+        activateTool(tool);
     }
     // we want automatic updating for the lines these texareas correspond to.
     var typingTimer; //timer identifier
@@ -2697,11 +2708,11 @@ function columnUpdate(linesInColumn){
     });
     
 }
-    function drawLinesOnCanvas(lines, parsing){
+    function drawLinesOnCanvas(lines, parsing, tool){
         if (lines.length > 0){
             $("#transTemplateLoading").hide();
             $("#transcriptionTemplate").show();
-            linesToScreen(lines);
+            linesToScreen(lines, tool);
         }
         else { //list has no lines
             if (parsing !== "parsing") {
@@ -2718,14 +2729,14 @@ function columnUpdate(linesInColumn){
         }
     }
 
-    function getList(canvas, drawFlag, parsing){ //this could be the @id of the annoList or the canvas that we need to find the @id of the list for.
+    function getList(canvas, drawFlag, parsing, tool){ //this could be the @id of the annoList or the canvas that we need to find the @id of the list for.
         var lists = [];
         var annos = [];
         if(tpen.screen.dereferencedLists[tpen.screen.currentFolio]){
             annos = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
             tpen.screen.currentAnnoListID = tpen.screen.dereferencedLists[tpen.screen.currentFolio]["@id"];
             if(drawFlag){
-                drawLinesOnCanvas(annos, parsing);
+                drawLinesOnCanvas(annos, parsing, tool);
             }
             return annos;
         }
@@ -2754,7 +2765,7 @@ function columnUpdate(linesInColumn){
                             }
                         }
                         if(drawFlag){
-                            drawLinesOnCanvas(annos, parsing);
+                            drawLinesOnCanvas(annos, parsing, tool);
                         }
                         return annos;
                     }

@@ -349,7 +349,12 @@
                     var theURL = window.location.href;
                     if (theURL.indexOf("projectID=") > -1){
                         var projID = theURL.substring(theURL.indexOf("projectID=")+10);
-                        loadTranscription(projID);
+                        if(theURL.indexOf("parsing=true")){
+                            loadTranscription(projID, "parsing");
+                        }
+                        else{
+                            loadTranscription(projID, "");
+                        }
                     }
                     else {
                         $('#transcriptionTemplate').hide();
@@ -357,6 +362,7 @@
                         $(".instructions").show();
                         $(".hideme").show();
                     }
+                    
                 }
                 else {
                     tpen.user.UID = 0;

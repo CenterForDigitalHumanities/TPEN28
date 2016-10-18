@@ -458,12 +458,14 @@ function loadTranscription(pid){ //This is the first thing called when coming in
                     }
             },
             error: function(jqXHR, error, errorThrown) {
-                if (jqXHR.status && jqXHR.status > 400){
-                    alert(jqXHR.responseText);
-                }
-                else {
-                    alert("Something went wrong. Could not get the project. 1");
-                }
+//                if (jqXHR.status && jqXHR.status > 400){
+//                    alert(jqXHR.responseText);
+//                    
+//                }
+//                else {
+//                    alert("Something went wrong. Could not get the project. 1");
+//                }
+                $(".turnMsg").html("Could not load this project.  Refresh the page to try again or contact your T-PEN admin.");
                 //load Iframes after user check and project information data call
                 loadIframes();
             }

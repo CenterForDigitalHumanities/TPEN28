@@ -129,7 +129,7 @@
                 margin: 0 auto;
                 top: 5px;
                 background: rgba(105, 172, 201, .4);
-                width: 250px;
+                width: 275px;
             }
             #login form{
                 text-align: right;

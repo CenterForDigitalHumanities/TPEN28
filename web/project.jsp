@@ -146,6 +146,7 @@
             .projectTools,.userTools {font-weight: normal;width: auto;padding: 0;clear: left;}
             #customHeader {margin: 1em;background-color: rgba(255,255,255,.5);padding: .5em;display: block;color: gray;border:thin solid gray;overflow: auto;text-overflow:ellipsis;max-height: 300px;font-size: smaller;}
             #projectOrdering {position: fixed !important;width:50% !important;right:auto !important;} /* battling weird Chrome bug */ 
+            .metadataInfo{height: 235px;}
         </style>
         <%
             String projectAppend = "";
@@ -437,7 +438,8 @@
                                     }
                                 } else {
 %>
-                                    <p><span class="label">Title: </span><%out.print(m.getTitle());%><br />
+                                <p class="metadataInfo">
+                                    <span class="label">Title: </span><%out.print(m.getTitle());%><br />
                                     <span class="label">Subtitle: </span><%out.print(m.getSubtitle());%><br />
                                     <span class="label">MS&nbsp;Identifier: </span><%out.print(m.getMsIdentifier());%><br />
                                     <span class="label">MS&nbsp;Settlement: </span><%out.print(m.getMsSettlement());%><br />
@@ -451,7 +453,11 @@
                                             }
                                             out.print(leader[i].getFname() + " " + leader[i].getLname());
                                         }%><br />
-                                    <span class="label">Description: </span><%out.print(m.getDescription());%>
+                                    <span class="label">Subject: </span><%out.print(m.getSubject());%>
+                                    <span class="label">Author: </span><%out.print(m.getAuthor());%>
+                                    <span class="label">Date: </span><%out.print(m.getDate());%>
+                                    <span class="label">Location: </span><%out.print(m.getLocation());%>
+                                    <span class="label">Language: </span><%out.print(m.getLanguage());%>
                                 </p>
                                 <%if(permitMetadata || isMember){%>
                                 <p>To update any of this information:</p>

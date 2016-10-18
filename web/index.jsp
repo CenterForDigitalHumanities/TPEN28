@@ -733,15 +733,33 @@ $(window).load(function(){gapi.plusone.go();});
                 </div>
             </div>
         </div>
-                <script type="text/javascript">
-                    function createProject(msid){
-                        // generate and start a new project
-                    }
-if ( $.browser.msie ) {
-    $("html").addClass("IE");
-        document.write('<div id="IEflag" class="ui-state-error">T&#8209;PEN has been optimized in webkit and gecko (Chrome, Firefox, Safari, Camino, etc.). <br/><strong>Old versions of Internet Explorer and many mobile browsers are not supported</strong>. <br/>To take advantage of all the tools on T&#8209;PEN, use the latest version of a supported browser.<br/><input onclick="$(this).parent().slideUp();" class="ui-button tpenButton" value="Thanks, got it." /></div>');
-}
-                </script>
+    <%    //Attach arrays of AllCities and AllRepositories represented on T&#8209;PEN
+        if (thisUser != null) {
+    %>
+    <script type="text/javascript">
+        $(function(){
+            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === "ref") {
+                    sParameterName.shift(); // drop "ref"
+                    window.location.href = sParameterName.join("="); // put back "=" for ref URL
+                }
+            }
+        });
+    </script>
+    <%}%>
+    <script type="text/javascript">
+        if ( $.browser.msie ) {
+            $("html").addClass("IE");
+                document.write('<div id="IEflag" class="ui-state-error">T&#8209;PEN has been optimized in webkit and gecko (Chrome, Firefox, Safari, Camino, etc.). <br/><strong>Old versions of Internet Explorer and many mobile browsers are not supported</strong>. <br/>To take advantage of all the tools on T&#8209;PEN, use the latest version of a supported browser.<br/><input onclick="$(this).parent().slideUp();" class="ui-button tpenButton" value="Thanks, got it." /></div>');
+        }
+    </script>
 <%@include file="WEB-INF/includes/noscript.jspf" %>
     </body>
 </html>

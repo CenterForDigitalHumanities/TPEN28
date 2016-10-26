@@ -52,7 +52,6 @@ var tpen = {
     }
 };
 var dragHelper = "<div id='dragHelper'></div>";
-var adjustRatio = 0; // QUERY: not sure what this is -cubap
 
 /**
  * Redraw the screen for use after updating the current line, folio, or
@@ -78,7 +77,7 @@ function redraw() {
                 $(".pageTurnCover").fadeOut(1500);
             }, 800);
         }
-        else{
+        else {
             if (!canvas) {
                 canvas = tpen.manifest.sequences[0].canvases[0];
                 console.warn("Folio was not found in Manifest. Loading first page...");
@@ -138,10 +137,6 @@ function isJSON(str) {
     }
     return false;
 };
-
-function resetTranscription(){
-    window.location.reload();
-}
 
 /* Populate the split page for Text Preview.  These are the transcription lines' text. */
 function createPreviewPages(){
@@ -347,22 +342,12 @@ function setTPENObjectData(data){
     });   
 }
 
-function setProjectInfo(projectData){
-    
-}
-
-function setManifestInfo(manifestData){
-    
-}
-
-function setUserInfo(userData){
-    
-}
-
 /*
 * Load the transcription from the text in the text area.
+* This is the first thing called when coming into 
+* transcription.html when it recognizes a projectID in the URL.
 */
-function loadTranscription(pid, tool){ //This is the first thing called when coming into transcription.html when it recognizes a projectID in the URL.
+function loadTranscription(pid, tool){
     //Object validation here.
     var projectID = 0; 
     var userTranscription = $('#transcriptionText').val();
@@ -712,6 +697,7 @@ function loadTranscription(pid, tool){ //This is the first thing called when com
 }
 
 function activateTool(tool){
+	// TODO: Include other tools here.
     if(tool === "parsing"){
         if(tpen.user.isAdmin){
             $("#parsingBtn").click();
@@ -942,7 +928,6 @@ function linesToScreen(lines, tool){
     var ratio = 0;
     //should be the same as originalCanvasWidth2/originalCanvasHeight2
     ratio = theWidth / theHeight;
-    adjustRatio = ratio;
     for (var i = 0; i < lines.length; i++){
         var line = lines[i];
         var lastLine = {};

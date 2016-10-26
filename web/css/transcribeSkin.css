@@ -170,7 +170,6 @@ body{
     position: relative;
     display: inline-block;
     display: none;
-    overflow-y: auto;
 /*    margin-top:35px;*/
 }
 #transTemplateLoading{

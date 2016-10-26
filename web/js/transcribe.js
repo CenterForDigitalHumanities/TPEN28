@@ -1238,7 +1238,55 @@ function swapTranscriptlet() {
         $('#previousTranscriptlet').show();
     }
 }
-
+var Page = {
+    /** 
+     *  Returns converted number to CSS consumable string rounded to n decimals.
+     *  
+     *  @param num float unprocessed number representing an object dimension
+     *  @param n number of decimal places to include in returned string
+     *  @returns float in ##.## format (example shows n=2)
+     */
+    convertPercent: function(num,n){
+        return Math.round(num*Math.pow(10,(n+2)))/Math.pow(10,n);
+    },
+    /**
+     * Sloppy hack so .focus functions work in FireFox
+     * 
+     * @param elem element to focus on
+     */
+    focusOn: function(elem){
+        setTimeout("elem.focus()",0);
+    },
+    /**
+     * Window dimensions.
+     * 
+     * @return Integer width of visible page
+     */
+    width: function() {
+        return window.innerWidth !== null? window.innerWidth: document.body !== null? document.body.clientWidth:null;
+    },
+    /**
+     * Window dimensions.
+     * 
+     * @return Integer height of visible page
+     */
+    height: function() {
+        return window.innerHeight !== null? window.innerHeight: document.body !== null? document.body.clientHeight:null;
+    }
+};
+/**
+ * Keep workspace on the screen when displaying large lines.
+ * Tests for need and then adjusts. Runs on change to
+ * workspace size or line change.
+ */
+function maintainWorkspace: function(){
+    // keep top img within the set proportion of the screen
+    var imgTopHeight = $("#imgTop img").height();
+    if (imgTopHeight > Page.height()) {
+        imgTopHeight = Page.height();
+    }
+    this.adjustImgs();
+}
 /**
  * Aligns images and workspace using defined dimensions.
  *

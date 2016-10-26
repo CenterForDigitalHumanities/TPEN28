@@ -1376,43 +1376,6 @@ function previousTranscriptlet() {
     }
 }
 
-function scrub(thisText){
-    var workingText = $("<div/>").text(thisText).html();
-    var encodedText = [workingText];
-    if (workingText.indexOf("&gt;") > - 1){
-        var open = workingText.indexOf("&lt;");
-        var beginTags = new Array();
-        var endTags = new Array();
-        var i = 0;
-        while (open > - 1){
-            beginTags[i] = open;
-            var close = workingText.indexOf("&gt;", beginTags[i]);
-            if (close > - 1){
-                endTags[i] = (close + 4);
-            } else {
-                beginTags[0] = null;
-                break;
-            }
-            open = workingText.indexOf("&lt;", endTags[i]);
-            i++;
-        }
-        //use endTags because it might be 1 shorter than beginTags
-        var oeLen = endTags.length;
-        encodedText = [workingText.substring(0, beginTags[0])];
-        for (i = 0; i < oeLen; i++){
-            encodedText.push("<span class='previewTag'>",
-            workingText.substring(beginTags[i], endTags[i]),"</span>");
-            if (i !== oeLen - 1){
-                encodedText.push(workingText.substring(endTags[i], beginTags[i + 1]));
-            }
-        }
-        if (oeLen > 0){
-            encodedText.push(workingText.substring(endTags[oeLen - 1]));
-        }
-    }
-    return encodedText.join("");
-}
-
 /**
  *
  * Allows workspace to be moved up and down on the screen.
@@ -1584,6 +1547,22 @@ function magnify(img, event){
     $(".lineColIndicatorArea").hide();
     tpen.screen.liveTool = "image";
     mouseZoom(img, event);
+}
+
+function stopMagnify(){
+    tpen.screen.isMagnifying = false;
+    tpen.screen.zoomMultiplier = 2;
+    $(document).off("mousemove");
+    $("#zoomDiv").removeClass("ui-state-active");
+    $("#zoomDiv").hide();
+    $(".magnifyBtn").removeClass("ui-state-active");
+    $("#magnifyTools").fadeOut(800);
+    $(".lineColIndicatorArea").show();
+    $(".magnifyHelp").hide();
+    $("button[magnifyimg='full']").removeClass("selected");
+    $("button[magnifyimg='compare']").removeClass("selected");
+    $("button[magnifyimg='trans']").removeClass("selected");
+    restoreWorkspace();
 }
 
 /**
@@ -1794,7 +1773,7 @@ function makeOverlayDiv(thisLine, originalX, cnt){
 }
 
 /* Reset the interface to the full screen transcription view. */
-function fullPage(){;
+function fullPage(){
     if ($("#overlay").is(":visible")) {
         $("#overlay").click();
         return false;
@@ -3341,22 +3320,6 @@ function scrubFolios(){
 }
 
 
-
-function stopMagnify(){
-    tpen.screen.isMagnifying = false;
-    tpen.screen.zoomMultiplier = 2;
-    $(document).off("mousemove");
-    $("#zoomDiv").removeClass("ui-state-active");
-    $("#zoomDiv").hide();
-    $(".magnifyBtn").removeClass("ui-state-active");
-    $("#magnifyTools").fadeOut(800);
-    $(".lineColIndicatorArea").show();
-    $(".magnifyHelp").hide();
-    $("button[magnifyimg='full']").removeClass("selected");
-    $("button[magnifyimg='compare']").removeClass("selected");
-    $("button[magnifyimg='trans']").removeClass("selected");
-    restoreWorkspace();
-}
 
 /*
  * Load all included Iframes on the page.  This function should be strategically placed so that the Iframes load after user and project information

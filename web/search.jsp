@@ -91,7 +91,6 @@
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
         <script type="text/javascript" src="js/tpen.js"></script>
-<!--        <script type="text/javascript" src="js/transcription.js"></script>-->
         <style type="text/css">
             .resultImg {position:relative;height: 1000px;}
             .resultImgDiv {position:relative; overflow: hidden;box-shadow:-1px 1px 5px gray inset;}

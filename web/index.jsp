@@ -377,19 +377,6 @@ $(window).load(function(){gapi.plusone.go();});
                         <img alt="facebook"
                              src="images/sharing/facebook.png"/>
                     </a>
-                    <a id="shareGoogle" class="share" 
-                       href="https://plus.google.com/104676239440224157170"
-                       share-href="https://plus.google.com/share?url=http%3A%2F%2Fwww.t-pen.org&hl=en-US"
-                       target="_blank">
-                        <img alt="google+"
-                             src="images/sharing/google+.png"/>
-                    </a>
-                    <a id="shareTwitter" class="share" 
-                       href="https://twitter.com/intent/tweet?text=Well%20done%2C%20%23TPEN"
-                       target="_blank">
-                        <img alt="twitter"
-                             src="images/sharing/twitter.png"/>
-                    </a>
                     <a id="shareYoutube" class="share" 
                        href="http://www.youtube.com/user/tpentool"
                        target="_blank">

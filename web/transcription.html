@@ -313,8 +313,6 @@
             <span style="top:10px;" title="Toggle Lines' Indicator" class="linehdr">Line #s</span><input style="top:10px;" type="checkbox" onchange="toggleLineCol();" checked="checked">
             <button id="markerColors" onclick="markerColors();">Line Color</button>
         </div>
-    </body>
-</html>
 <script>
 
     //Must explicitly set new height and width for percentages values in the DOM to take effect.
@@ -1153,18 +1151,17 @@
 
     //Triggered when a user alters a line to either create a new one or destroy one.
     function lineChange(e,event){
-        //console.log("show parsing cover");
         $("#parsingCover").show();
         if(tpen.screen.isAddingLines){
-            //console.log("SPLIT LINE");
             splitLine(e,event);
         }
         else{
-            //mrege the line you clicked with the line below.  Delete the line below and grow this line by that lines height.
-            //console.log("Merge / Remove line")
+            //merge the line you clicked with the line below.  Delete the line below and grow this line by that lines height.
             removeLine(e);
         }
 
     }
 
 </script>
+    </body>
+</html>

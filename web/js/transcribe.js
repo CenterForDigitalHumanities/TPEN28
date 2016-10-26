@@ -1164,15 +1164,15 @@ function updatePresentation(transcriptlet) {
     tpen.screen.focusItem[1] = transcriptlet;
     if ((tpen.screen.focusItem[0] === null)
         || (tpen.screen.focusItem[0].attr("id") !== tpen.screen.focusItem[1].attr("id"))) {
-        this.adjustImgs(this.setPositions());
-        this.swapTranscriptlet();
+        adjustImgs(setPositions());
+        swapTranscriptlet();
         // show previous line transcription
         $('#captions').css({
             opacity: 1
         });
     }
     else {
-        this.adjustImgs(this.setPositions());
+        adjustImgs(setPositions());
         tpen.screen.focusItem[1].prevAll(".transcriptlet").addClass("transcriptletBefore").removeClass("transcriptletAfter");
         tpen.screen.focusItem[1].nextAll(".transcriptlet").addClass("transcriptletAfter").removeClass("transcriptletBefore");
     }
@@ -1285,7 +1285,7 @@ function maintainWorkspace(){
     if (imgTopHeight > Page.height()) {
         imgTopHeight = Page.height();
     }
-    this.adjustImgs();
+   adjustImgs(setPositions());
 }
 /**
  * Aligns images and workspace using defined dimensions.

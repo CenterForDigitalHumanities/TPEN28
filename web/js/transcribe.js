@@ -1279,7 +1279,7 @@ var Page = {
  * Tests for need and then adjusts. Runs on change to
  * workspace size or line change.
  */
-function maintainWorkspace: function(){
+function maintainWorkspace(){
     // keep top img within the set proportion of the screen
     var imgTopHeight = $("#imgTop img").height();
     if (imgTopHeight > Page.height()) {

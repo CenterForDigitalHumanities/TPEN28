@@ -1184,7 +1184,7 @@ function updatePresentation(transcriptlet) {
     tpen.screen.focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
 };
 
-/* Helper for position focus onto a specific transcriptlet */
+/* Helper for position focus onto a specific transcriptlet.  Makes sure workspace stays on screen. */
 function setPositions() {
     // Determine size of section above workspace
     var bottomImageHeight = $("#imgBottom img").height();
@@ -1197,35 +1197,50 @@ function setPositions() {
         var currentLineTop = parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
         var previousLineTop = 0.0;
         var previousLineHeight = 0.0;
+        var nextLineHeight = 0.0; //only used to gauge height of imgTop
+        var imgTopHeight = 0.0; //value for the height of imgTop
+        if(tpen.screen.focusItem[1].next().is('.transcriptlet')){
+            nextLineHeight = parseFloat(tpen.screen.focusItem[1].next().attr("lineHeight"));
+        }
         if(tpen.screen.focusItem[1].prev().is('.transcriptlet') && currentLineTop > parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"))){ 
             previousLineTop = parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"));
             previousLineHeight = parseFloat(tpen.screen.focusItem[1].prev().attr("lineHeight"));
         }
-        else{
+        else{ //there may not be a previous line so use the values of the line you are on
             previousLineTop = currentLineTop;
             previousLineHeight = currentLineHeight;
         }
-        var imgTopHeight = (previousLineHeight + currentLineHeight) + 1.5; // obscure behind workspace.
+        
+        //We may be able to do this a bit better. 
+        if(nextLineHeight > 0.0){
+            imgTopHeight = (nextLineHeight + currentLineHeight); // obscure behind workspace.
+        }
+        else{ //there may not be a next line so use the value of the previous line...
+            imgTopHeight = (previousLineHeight + currentLineHeight) + 1.5; // obscure behind workspace.  Do we need the 1.5?
+        }
         var topImgPositionPercent = ((previousLineTop - currentLineTop) * 100) / imgTopHeight;
-        var topImgPositionPx = (-(currentLineTop) * bottomImageHeight) / 100;
-        var bottomImgPositionPercent = - (currentLineTop + currentLineHeight);
-        var bottomImgPositionPx = - (currentLineTop + currentLineHeight) * bottomImageHeight / 100;
+        var topImgPositionPx = ((-currentLineTop * bottomImageHeight) / 100);
+        if(topImgPositionPx <= -12){
+            topImgPositionPx += 12;
+        }
+        var bottomImgPositionPercent = -(currentLineTop + currentLineHeight);
+        var bottomImgPositionPx = -((currentLineTop + currentLineHeight) * bottomImageHeight / 100);
+        if(bottomImgPositionPx <= -12){
+            bottomImgPositionPx += 12;
+        }
         var imgTopSize = (((imgTopHeight/100)*bottomImageHeight) / Page.height())*100;
         var percentageFixed = 0;
         //use this to make sure workspace stays on screen!
-        if (imgTopSize > 80){
-            var workspaceHeight = $("#transWorkspace").height();
+        if (imgTopSize > 80){ //if #imgTop is 80% of the screen size then we need to fix that so the workspace stays.  
+            var workspaceHeight = 170; //$("#transWorkspace").height();
             var origHeight = imgTopHeight;
             imgTopHeight = ((Page.height() - workspaceHeight - 80) / bottomImageHeight) *  100; //this needs to be a percentage
-            percentageFixed = (100-(origHeight - imgTopHeight))/100;
-            bottomImgPositionPercent *= percentageFixed;
-            bottomImgPositionPx *= percentageFixed;
-            topImgPositionPx *= percentageFixed;
+            percentageFixed = (100-(origHeight - imgTopHeight))/100; //what percentage of the original amount is left
+            bottomImgPositionPercent *= percentageFixed; //do the same percentage change to this value
+            bottomImgPositionPx *= percentageFixed; //and this one
+            topImgPositionPx *= percentageFixed; // and this one
 
         }
-        else{
-        }
-                
     }
     var positions = {
         imgTopHeight: imgTopHeight,
@@ -3456,36 +3471,36 @@ function toggleLineControls(event){
 }
 
 /* Allows users to slightly adjust a line within a column while within the transcription interface. */
-    function bumpLine(direction, activeLine){
-        //values are in pixel, not percentage.
-        var id = activeLine.attr("lineserverid");
-        if(direction === "left"){
-            var currentLineLeft = activeLine.css("left");
-            var currentLineLeftPerc = (parseFloat(currentLineLeft) / $("#imgTop").width()) * 100;
-            if (currentLineLeftPerc > .3){
-                currentLineLeftPerc -= .3;
-            }
-            else{ //no negative left value
-                currentLineLeftPerc = 0.0;
-            }
-           currentLineLeft = "%"+currentLineLeftPerc;
+function bumpLine(direction, activeLine){
+    //values are in pixel, not percentage.
+    var id = activeLine.attr("lineserverid");
+    if(direction === "left"){
+        var currentLineLeft = activeLine.css("left");
+        var currentLineLeftPerc = (parseFloat(currentLineLeft) / $("#imgTop").width()) * 100;
+        if (currentLineLeftPerc > .3){
+            currentLineLeftPerc -= .3;
         }
-        else if (direction === "right"){
-            var currentLineLeft = activeLine.css("left");
-            var currentLineLeftPerc = (parseFloat(currentLineLeft) / $("#imgTop").width()) * 100;
-            if (currentLineLeftPerc < 99.7){ //no left values greater than 100
-                currentLineLeftPerc += .3;
-            }
-            else{
-                currentLineLeftPerc = 100.0;
-            }
-           currentLineLeft = "%"+currentLineLeftPerc;
+        else{ //no negative left value
+            currentLineLeftPerc = 0.0;
         }
-        var currentLineLeftPX = parseFloat(currentLineLeftPerc/100) * $("#imgTop").width() + "px";
-        $(".transcriptlet[lineserverid='"+id+"']").attr("lineleft", currentLineLeftPerc);
-        activeLine.css("left", currentLineLeftPX);
-        //updateLine($(".transcriptlet[lineserverid='"+id+"']"), false, true);      
+       currentLineLeft = "%"+currentLineLeftPerc;
     }
+    else if (direction === "right"){
+        var currentLineLeft = activeLine.css("left");
+        var currentLineLeftPerc = (parseFloat(currentLineLeft) / $("#imgTop").width()) * 100;
+        if (currentLineLeftPerc < 99.7){ //no left values greater than 100
+            currentLineLeftPerc += .3;
+        }
+        else{
+            currentLineLeftPerc = 100.0;
+        }
+       currentLineLeft = "%"+currentLineLeftPerc;
+    }
+    var currentLineLeftPX = parseFloat(currentLineLeftPerc/100) * $("#imgTop").width() + "px";
+    $(".transcriptlet[lineserverid='"+id+"']").attr("lineleft", currentLineLeftPerc);
+    activeLine.css("left", currentLineLeftPX);
+    //updateLine($(".transcriptlet[lineserverid='"+id+"']"), false, true);      
+}
 
 
     //UI effects for when a user decides to edit a line within the preview split tool.

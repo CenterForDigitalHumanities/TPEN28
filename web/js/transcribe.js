@@ -319,6 +319,10 @@ function setTPENObjectData(data){
         tpen.manifest = JSON.parse(data.manifest);
     }
     
+    if(data.cuser){
+        tpen.user.UID = parseInt(data.cuser);
+    }
+    
     var count = 0;
     var length = tpen.project.leaders.length;
     $.each(tpen.project.leaders, function(){
@@ -334,7 +338,7 @@ function setTPENObjectData(data){
                 tpen.user.openID = this.openID;
             }
             tpen.user.isAdmin = true;
-            tpen.user.UID = parseInt(this.UID);
+            //tpen.user.UID = parseInt(this.UID);
         }
         else if(count == length){ //we did not find this user in the list of leaders.
             console.warn("Not an admin");
@@ -1191,17 +1195,37 @@ function setPositions() {
         var pairForBookmark = pairForBookmarkCol + pairForBookmarkLine;
         var currentLineHeight = parseFloat(tpen.screen.focusItem[1].attr("lineHeight"));
         var currentLineTop = parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
-        // top of column
-        var previousLine = (tpen.screen.focusItem[1].prev().is('.transcriptlet')
-            && (currentLineTop > parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"))))
-            ? parseFloat(tpen.screen.focusItem[1].prev().attr("lineHeight"))
-            : parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
-        // oversized for screen
-        var imgTopHeight = (previousLine + currentLineHeight) + 1.5; // obscure behind workspace.
-        var topImgPositionPercent = ((previousLine - currentLineTop) * 100) / imgTopHeight;
-        var topImgPositionPx = (previousLine - currentLineTop) * bottomImageHeight / 100;
+        var previousLineTop = 0.0;
+        var previousLineHeight = 0.0;
+        if(tpen.screen.focusItem[1].prev().is('.transcriptlet') && currentLineTop > parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"))){ 
+            previousLineTop = parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"));
+            previousLineHeight = parseFloat(tpen.screen.focusItem[1].prev().attr("lineHeight"));
+        }
+        else{
+            previousLineTop = currentLineTop;
+            previousLineHeight = currentLineHeight;
+        }
+        var imgTopHeight = (previousLineHeight + currentLineHeight) + 1.5; // obscure behind workspace.
+        var topImgPositionPercent = ((previousLineTop - currentLineTop) * 100) / imgTopHeight;
+        var topImgPositionPx = (-(currentLineTop) * bottomImageHeight) / 100;
         var bottomImgPositionPercent = - (currentLineTop + currentLineHeight);
         var bottomImgPositionPx = - (currentLineTop + currentLineHeight) * bottomImageHeight / 100;
+        var imgTopSize = (((imgTopHeight/100)*bottomImageHeight) / Page.height())*100;
+        var percentageFixed = 0;
+        //use this to make sure workspace stays on screen!
+        if (imgTopSize > 80){
+            var workspaceHeight = $("#transWorkspace").height();
+            var origHeight = imgTopHeight;
+            imgTopHeight = ((Page.height() - workspaceHeight - 80) / bottomImageHeight) *  100; //this needs to be a percentage
+            percentageFixed = (100-(origHeight - imgTopHeight))/100;
+            bottomImgPositionPercent *= percentageFixed;
+            bottomImgPositionPx *= percentageFixed;
+            topImgPositionPx *= percentageFixed;
+
+        }
+        else{
+        }
+                
     }
     var positions = {
         imgTopHeight: imgTopHeight,
@@ -1281,11 +1305,20 @@ var Page = {
  */
 function maintainWorkspace(){
     // keep top img within the set proportion of the screen
-    var imgTopHeight = $("#imgTop img").height();
+    var imgTopHeight = $("#imgTop").height();
+    console.log(" is"+imgTopHeight + " > "+Page.height() + "?");
+    
     if (imgTopHeight > Page.height()) {
+        console.log("yes");
         imgTopHeight = Page.height();
+        //Should I try to convert this to a percentage? 
+        $("#imgTop").css("height", imgTopHeight);
+       // adjustImgs(setPositions());
     }
-   adjustImgs(setPositions());
+    else{
+        console.log("no");
+    }
+    
 }
 /**
  * Aligns images and workspace using defined dimensions.
@@ -1341,7 +1374,7 @@ function adjustImgs(positions) {
 function loadTranscriptlet(lineid){
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if ($('#transcriptlet_' + lineid).length > 0){
-        if (tpen.user.UID){
+        if (tpen.user.UID || tpen.user.isAdmin){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, false);
             updatePresentation($('#transcriptlet_' + lineid));
@@ -1374,7 +1407,7 @@ function nextTranscriptlet() {
     var nextID = thisLine;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if ($('#transcriptlet_' + nextID).length > 0){
-        if (tpen.user.UID){
+        if (tpen.user.UID || tpen.user.isAdmin){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, false);
             updatePresentation($('#transcriptlet_' + nextID));
@@ -1405,7 +1438,7 @@ function previousTranscriptlet() {
     var prevID = parseFloat(tpen.screen.focusItem[1].attr('lineID')) - 1;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineServerID");
     if (prevID >= 0){
-        if (tpen.user.UID){
+        if (tpen.user.UID || tpen.user.isAdmin){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, false);
             updatePresentation($('#transcriptlet_' + prevID));

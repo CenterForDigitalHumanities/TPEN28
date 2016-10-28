@@ -733,7 +733,7 @@
             </div>
        <%}else{
             // No projectID passed
-            out.print("No project indicated");
+            out.print("No project indicated 2");
         }%>
      </body>
 </html>

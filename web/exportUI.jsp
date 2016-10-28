@@ -545,7 +545,7 @@ if (request.getParameter("projectID")!=null){
             <div id="formatting">
                 <h3>Export Options</h3>
                 <form action="exported.jsp" target="_blank" method="get" onsubmit="return validForm();">
-                  <input type="hidden" value="<%out.print(projectID);%>"
+                  <input type="hidden" value="<%out.print(projectID);%>">
                          <div class="format tpenButton">General Formatting</div>
                 <div id="formatExport" class="formatDiv">
                     <span class='label left'>Include:</span>
@@ -741,7 +741,7 @@ if (header.length()>0){
                 </div>
         <%}else{
             // No projectID passed
-            out.print("No project indicated");
+            out.print("No project indicated 1");
         }%>
                 </div>
         <a class="returnButton" href="project.jsp?projectID=<%out.print(request.getParameter("projectID"));%>" >Return to project page</a>

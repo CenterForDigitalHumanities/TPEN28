@@ -109,12 +109,15 @@ public class TagFilter {
    public String removeTagsAndContents(String[] tagsToExclude) {
       //this method does not use existing xml libraries because there is no presumption that the document is a well formed xml document
       //it can be a single page from a document, or just have some tags wrapping certain items that the user intends to style.
+       System.out.println("Remove "+ tagsToExclude.length +" tags.");
       if (tagsToExclude.length == 0) {
          return text;
       }
       String content = text;
+      
       for (int i = 0; i < tagsToExclude.length; i++) {
-         LOG.log(Level.INFO, "Removing {0}", tagsToExclude[i]);
+         //LOG.log(Level.INFO, "Removing {0}", tagsToExclude[i]);
+         System.out.println("Removing "+tagsToExclude[i]);
          if (tagsToExclude[i] != null && tagsToExclude[i].compareTo("") != 0) {
             String[] parts = text.split("<" + tagsToExclude[i] + " .*?>");
             content = "";
@@ -128,6 +131,7 @@ public class TagFilter {
             }
          }
       }
+      System.out.println("Made it out of tag filters");
       return content;
 
    }
@@ -138,6 +142,7 @@ public class TagFilter {
    public String stripTags(String[] tagsToExclude) {
       //this method does not use existing xml libraries because there is no presumption that the document is a well formed xml document
       //it can be a single page from a document, or just have some tags wrapping certain items that the user intends to style.
+       System.out.println("Gotta strip tags... ");
       if (tagsToExclude.length == 0) {
          return text;
       }
@@ -147,9 +152,8 @@ public class TagFilter {
          if (tagsToExclude[i] != null && tagsToExclude[i].compareTo("") != 0) {
             String[] parts = content.split("<" + tagsToExclude[i] + ">|<" + tagsToExclude[i] + " +.*?>");
 
-            //System.out.print("tag is "+ tagsToExclude[i]+"\n");
-            //for(int j=0;j<parts.length;j++)
-            // System.out.print("part "+j+" is: "+parts[j]+"\n");
+            System.out.print("tag to strip is "+ tagsToExclude[i]+"\n");
+            for(int j=0;j<parts.length;j++){System.out.print("part "+j+" is: "+parts[j]+"\n");}
             content = "";
             content += parts[0];
             for (int j = 1; j < parts.length; j++) {

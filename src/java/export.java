@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.lowagie.text.DocumentException;
 import edu.slu.util.ServletUtils;
+import java.util.Arrays;
 import textdisplay.Manuscript;
 import textdisplay.Metadata;
 import textdisplay.Project;
@@ -149,25 +150,41 @@ public class export extends HttpServlet {
       }
       TagFilter f = new TagFilter(text);
       String[] tagArray = getTags(req);
+      System.out.println("This should be my tag array...");
+      System.out.println(Arrays.toString(tagArray));
 
       // Note that XML styling only cares about style=none and style=remove; other styles have no impact.
       String[] tagArrayKeepContent = new String[tagArray.length];
+      System.out.println("Need to build an array to make sure we keep the content");
       for (int i = 0; i < tagArray.length; i++) {
          switch (req.getParameter(STYLE_PARAM_PREFIX + (i + 1))) {
             case "remove":
+                System.out.println("param prefix was remove.  Do nothing.");
                break;
             case "checked":
+                System.out.println("param prefix was checked so put this entry into the array to keep content: "+tagArray[i]);
                tagArrayKeepContent[i] = tagArray[i];
                break;
             default:
+                System.out.println("param prefix was weird.  Make this index blank in the tag array.");
                tagArray[i] = "";
                break;
          }
       }
-
       PrintWriter out = resp.getWriter();
+      System.out.println("Send the tagArray to removeTagsAndContents()");
+      System.out.println(Arrays.toString(tagArray));
       String result = f.removeTagsAndContents(tagArray);
+      System.out.println("now send the result of removeTagsAndContents() into tagFilter");
+      System.out.println(result);
       f = new TagFilter(result);
+      //System.out.println("here is your tagFilter");
+      //System.out.println(f.toString());
+      System.out.println("We got the tagFilter.  However, we need to pass tagArrayKeepContent into stripTags()");
+      System.out.println(Arrays.toString(tagArrayKeepContent));
+      System.out.println("what does that look like when we run strip tags?");
+      System.out.println(f.stripTags(tagArrayKeepContent));
+      System.out.println("Awesome.  Send that out.");
       out.append(f.stripTags(tagArrayKeepContent));
    }
 
@@ -232,11 +249,13 @@ public class export extends HttpServlet {
    }
 
    private String[] getTags(HttpServletRequest req) {
+       System.out.println("gotta get tags...");
       List<String> tagList = new ArrayList<>();
       String tag;
       int i = 1;
       while ((tag = req.getParameter(TAG_PARAM_PREFIX + i)) != null) {
          tagList.add(tag);
+         System.out.println("Got "+tag);
          i++;
       }
       return tagList.toArray(new String[0]);

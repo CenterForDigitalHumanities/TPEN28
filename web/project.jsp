@@ -631,7 +631,11 @@
                            <%}
                            if ((isMember || permitCopy) && !thisProject.containsUserUploadedManuscript()){
          %>
-                                <a id="copyProjectBtn" class="tpenButton" href="index.jsp?projectID=<%out.print("" + projectID);%>&makeCopy=true"><span class="ui-icon ui-icon-copy right"></span>Create a Copy</a>
+                                <a id="copyProjectBtn" class="tpenButton" onclick="copyProject(<%out.print(projectID);%>,false);"><span class="ui-icon ui-icon-copy right"></span>Create an Empty Copy</a>
+                                <p>Create a new project with the same set of images and buttons.  This copy will not include any transcription data, just project data.
+                                    Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p><br>
+                                
+                                <a id="copyProjectAndAnnosBtn" class="tpenButton" onclick="copyProject(<%out.print(projectID);%>,true);"><span class="ui-icon ui-icon-copy right"></span>Create a Copy</a>
                                 <p>Create a new project with the same set of images, transcriptions, and buttons. Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p>
                                <%}%>
                             </li>
@@ -882,7 +886,7 @@
                                         for (int i = tags.length - 1; i > -1; i--) {
                                             out.print("<span class='xmlDisclaimer'><label for='removeTag" + (i + 1) + "' title='Check this box to remove the tag and its contents'><input type='checkbox' name='removeTag" + (i + 1) + "' />Remove &lt;" + tags[i] + "&gt;</label></span>");
                                             out.print("<span class='xmlHide'><label>" + tags[i] + "");
-                                            out.print("<select name='style" + (i + 1) + "' >");
+                                            out.print("<select name='style" + (i + 1) + "' >"); //This variable is 
                                             out.print("<option value='none' selected>No Change</option>");
                                             out.print("<option value='italic' >Italic</option>");
                                             out.print("<option value='bold' >Bold</option>");
@@ -1388,6 +1392,18 @@ $("#samplePreview").hover(function(){
                                                 URL,'" title="',name,'"><span contenteditable="true">',name,'</span></label>'].join('');
                                             $(".projectTools").eq(0).before(newTool);
                                         $("#addingTools").fadeOut();
+                                    }
+                                    function copyProject(projID, transData){
+                                        var url = "copyProject";
+                                        var withAnnos = "WithAnnotations";
+                                        var params = {"projectID":projID};
+                                        if(transData){
+                                           url += withAnnos;
+                                        }
+                                        //Need to have a UI so the users knows a copy is taking place / completed / failed.
+                                        $.post(url, params, function(data){
+                                            
+                                        });
                                     }
                 </script>
     </body>

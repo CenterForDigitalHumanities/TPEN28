@@ -89,7 +89,6 @@
             #formatting {max-width:600px;min-width: 200px;width:33%;position: relative;float: left;}
             .optionPanel{position: relative;width: 100%;}
             #metadataPreview,#titlePage,#endNotes {display: none;}
-            .pagebreak {display:block !important;}
             .pagebreak:after{content: "(pagebreak)";position: absolute;width: 100%;color: gray;font-size: small;bottom:0;left:0;clear: both;text-align: right;}
             .exportPage a {display: none;background: black;font-weight: bold;color:white;position: absolute;top:0;right:0;padding: 3px;cursor: pointer;z-index: 10; border-bottom-left-radius: 8px;font-family: sans-serif;}
             .exportPage:hover a {display: block;}
@@ -147,6 +146,7 @@
             .editable:hover .editSpace:hover:after {
                 opacity:.2;
             }
+            .pagebreak {display:block;}
             /* Loader */
             #loader {
                 position: fixed;
@@ -228,7 +228,7 @@
             .editSpace:after{display: none;}
             .editSpace:hover, .exportPage:hover .editSpace{background: none;border-color: transparent;}
         }
-	</style>
+    </style>
         <script type="text/javascript">
             var Custom = {
                 // Values Initialization

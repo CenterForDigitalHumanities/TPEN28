@@ -385,7 +385,7 @@ if (request.getParameter("projectID")!=null){
             }
             function linebreakContinuous(){
                 //remove all linebreaking
-                $(".exportLine,.exportLinebreak,.exportPage,.exportText,.exportLineNumber,.exportFolioNumber,.exportFolioImage").css({"display":"inline","width":"auto","float":"none","clear":"none","border":"none"});
+                $(".exportLine,.exportLinebreak,.exportPage,.exportText,.exportLineNumber,.exportFolioNumber,.exportFolioImage").css({"display":"inline","width":"auto","float":"none","clear":"none","border":"none","box-shadow":"none","margin":0,"padding":0});
                 $("#formatExport").find("input").change();
                 if ($("#pagebreak").prop("checked")); //this will not happen
                 //TODO rejoin broken words

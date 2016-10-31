@@ -357,13 +357,7 @@ function loadTranscription(pid, tool){
     var userTranscription = $('#transcriptionText').val();
     var pageToLoad = getURLVariable("p");
     var canvasIndex = 0;
-    if(pageToLoad){
-        $.each(tpen.project.folios, function(i){
-            if(this == pageToLoad){
-                canvasIndex = i;
-            }
-        });
-    }
+    
     $("#transTemplateLoading").show();
     if (pid || $.isNumeric(userTranscription)){
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
@@ -389,6 +383,15 @@ function loadTranscription(pid, tool){
                     && tpen.manifest.sequences[0].canvases.length > 0)
                 {
                     transcriptionFolios = tpen.manifest.sequences[0].canvases;
+                    if(pageToLoad){
+                        $.each(tpen.project.folios, function(i){
+                            if(this.folioNumber === parseInt(pageToLoad)){
+                                canvasIndex = i;
+                                tpen.screen.currentFolio = i;
+                                return true;
+                            }
+                        });
+                    }
                     scrubFolios();
                     var count = 1;
                     $.each(transcriptionFolios, function(){
@@ -518,6 +521,7 @@ function loadTranscription(pid, tool){
         loadIframes();
     }
     else if (userTranscription.indexOf("http://") >= 0 || userTranscription.indexOf("https://") >= 0) {
+        //TODO: allow users to include the p variable and load a page?
         var localProject = false;
         if (userTranscription.indexOf("/TPEN28/project") > - 1 || userTranscription.indexOf("/TPEN28/manifest") > - 1){
 //            if (userTranscription.indexOf("t-pen.org") > - 1){
@@ -562,6 +566,14 @@ function loadTranscription(pid, tool){
                         && tpen.manifest.sequences[0].canvases.length > 0)
                     {
                         transcriptionFolios = tpen.manifest.sequences[0].canvases;
+                        //Could allow them to load a specific page with a local project URL.  
+//                        if(pageToLoad){
+//                            $.each(tpen.project.folios, function(i){
+//                                if(this == pageToLoad){
+//                                    canvasIndex = i;
+//                                }
+//                            });
+//                        }
                         scrubFolios();
                         var count = 1;
                         $.each(transcriptionFolios, function(){
@@ -3745,7 +3757,7 @@ function bumpLine(direction, activeLine){
 
     }
     
-    function getURLVariable(variable)
+function getURLVariable(variable)
 {
        var query = window.location.search.substring(1);
        var vars = query.split("&");

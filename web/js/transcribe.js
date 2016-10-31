@@ -355,7 +355,15 @@ function loadTranscription(pid, tool){
     //Object validation here.
     var projectID = 0; 
     var userTranscription = $('#transcriptionText').val();
-    var currentFolio = tpen.screen.currentFolio || 0;
+    var pageToLoad = getURLVariable("p");
+    var canvasIndex = 0;
+    if(pageToLoad){
+        $.each(tpen.project.folios, function(i){
+            if(this == pageToLoad){
+                canvasIndex = i;
+            }
+        });
+    }
     $("#transTemplateLoading").show();
     if (pid || $.isNumeric(userTranscription)){
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
@@ -406,7 +414,7 @@ function loadTranscription(pid, tool){
                             this.otherContent = [];
                         }
                     });
-                    loadTranscriptionCanvas(transcriptionFolios[0], "", tool);
+                    loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool);
                     var projectTitle = tpen.manifest.label;
                     $("#trimTitle").text(projectTitle);
                     $("#trimTitle").attr("title", projectTitle);
@@ -494,7 +502,7 @@ function loadTranscription(pid, tool){
                     this.otherContent=[];
                 }
             });
-            loadTranscriptionCanvas(transcriptionFolios[0], "", tool);
+            loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool);
             var projectTitle = userTranscription.label;
             $("#trimTitle").html(projectTitle);
             $("#trimTitle").attr("title", projectTitle);
@@ -579,7 +587,7 @@ function loadTranscription(pid, tool){
                                 this.otherContent = [];
                             }
                         });
-                        loadTranscriptionCanvas(transcriptionFolios[0], "", tool);
+                        loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool);
                         var projectTitle = tpen.manifest.label;
                         $("#trimTitle").text(projectTitle);
                         $("#trimTitle").attr("title", projectTitle);
@@ -668,7 +676,7 @@ function loadTranscription(pid, tool){
                             console.warn("`otherContent` does not exist in this Manifest.");
                         }
                     });
-                    loadTranscriptionCanvas(transcriptionFolios[0], "", tool);
+                    loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool);
                     var projectTitle = projectData.label;
                     $("#trimTitle").html(projectTitle);
                     $("#trimTitle").attr("title", projectTitle); $('#transcriptionTemplate').css("display", "inline-block");
@@ -2939,7 +2947,7 @@ function saveNewLine(lineBefore, newLine){
         projID = tpen.project.id;
     }
     else{
-        projID = theURL.substring(theURL.indexOf("projectID=") + 10);
+        projID = getURLVariable("projectID");
     }
     var beforeIndex = - 1;
     if (lineBefore !== undefined && lineBefore !== null){
@@ -3736,6 +3744,17 @@ function bumpLine(direction, activeLine){
         }
 
     }
+    
+    function getURLVariable(variable)
+{
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+}
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?
 if (!window.console) window.console = {};

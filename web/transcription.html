@@ -346,7 +346,7 @@
                     $("#trimCurrentUser").attr("title",user);
                     var theURL = window.location.href;
                     if (theURL.indexOf("projectID=") > -1){
-                        var projID = theURL.substring(theURL.indexOf("projectID=")+10);
+                        var projID = getURLVariable("projectID");
                         if(theURL.indexOf("parsing=true") > -1){
                             loadTranscription(projID, "parsing");
                         }

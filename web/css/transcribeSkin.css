@@ -267,28 +267,42 @@ body{
     z-index: 3;
     height: auto;
     padding: 7px;
-    min-width: 541px;
-    white-space: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
 }
-
+.flex-container{
+    display: flex;
+}
+.flex-bookend {
+    width: 108px;
+}
+.flex-wide{
+    display:flex;
+    flex-grow:8;
+}
+.flex-stretch{
+    flex-align: stretch;
+    justify-content: center;
+    align-items: stretch;
+}
 #captions {
-    min-height: 1em;
+    min-height: 2em;
     position: relative;
-    background-color: #E7E8E9;
     color: #002a5c;
-    width: 73.5%;
-    left: 113px;
-    position: relative;
-    border: 1px solid #002a5c;
-    padding-left: 7px;
-    padding-top: 7px;
-    padding-bottom: 7px;
     -webkit-transition: opacity .25s;
     -moz-transition: opacity .25s;
     -o-transition: opacity .25s;
     transition: opacity .25s;
+}
+#captionsText {
+    display: block;
+    font-family: "Junicode","Cambria","Georgia", serif;
+    font-size:16px;
+    text-overflow: ellipsis;
+    width:100%;
+    position:relative;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 /*
@@ -437,13 +451,12 @@ body{
     height: 0px;
 }
 #prevColLine, #currentColLine{
-    position: relative;
+    border-radius: 4px;
     height: 30px;
     width: 30px;
-    border: 3px outset rgba(0,42,92,.4);
     text-align: center;
     line-height: 30px;
-    display:block;
+    display:flex;
     cursor: default;
     color: #002a5c;
     font-weight: bold;
@@ -451,14 +464,10 @@ body{
 }
 
 #prevColLine{
-    background-color: #FFF;
-    right: -7px;
-    top: 34px;
+    background-color: transparent;
 }
 #currentColLine{
-    background-color: #BFBFBF;
-    right: -7px;
-    top: 46px;
+    background-color: rgba(0,0,0,.15);
 }
 #zoomDiv {
     display: none;

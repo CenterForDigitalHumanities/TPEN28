@@ -19,7 +19,7 @@ var tpen = {
         linebreakCharacterLimit:0
     },
     manifest: {
-        
+
     },
     screen:{
         focusItem:[null, null],
@@ -314,15 +314,15 @@ function setTPENObjectData(data){
             tpen.project.linebreakCharacterLimit = parseInt(data.project.linebreakCharacterLimit);
         }
     }
-    
+
     if(data.manifest){
         tpen.manifest = JSON.parse(data.manifest);
     }
-    
+
     if(data.cuser){
         tpen.user.UID = parseInt(data.cuser);
     }
-    
+
     var count = 0;
     var length = tpen.project.leaders.length;
     $.each(tpen.project.leaders, function(){
@@ -343,21 +343,21 @@ function setTPENObjectData(data){
         else if(count == length){ //we did not find this user in the list of leaders.
             console.warn("Not an admin");
         }
-    });   
+    });
 }
 
 /*
 * Load the transcription from the text in the text area.
-* This is the first thing called when coming into 
+* This is the first thing called when coming into
 * transcription.html when it recognizes a projectID in the URL.
 */
 function loadTranscription(pid, tool){
     //Object validation here.
-    var projectID = 0; 
+    var projectID = 0;
     var userTranscription = $('#transcriptionText').val();
     var pageToLoad = getURLVariable("p");
     var canvasIndex = 0;
-    
+
     $("#transTemplateLoading").show();
     if (pid || $.isNumeric(userTranscription)){
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
@@ -397,7 +397,7 @@ function loadTranscription(pid, tool){
                     $.each(transcriptionFolios, function(){
                         $("#pageJump").append("<option folioNum='" + count
                             + "' class='folioJump' val='" + this.label + "'>"
-                            + this.label + "</option>");
+                            + (tpen.screen.currentFolio===count && "‣") + this.label + "</option>"); // add page indicator
                         $("#compareJump").append("<option class='compareJump' folioNum='"
                             + count + "' val='" + this.label + "'>"
                             + this.label + "</option>");
@@ -466,12 +466,12 @@ function loadTranscription(pid, tool){
                     $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T-PEN admin.");
                     $(".transLoader").find("img").attr("src", "../TPEN28/images/BrokenBook01.jpg");
                 }
-                
+
                 //load Iframes after user check and project information data call
                 loadIframes();
             }
         });
-        
+
     }
     else if (isJSON(userTranscription)){
         tpen.manifest = userTranscription = JSON.parse(userTranscription);
@@ -537,13 +537,13 @@ function loadTranscription(pid, tool){
             else if(userTranscription.indexOf("/TPEN28/manifest") > - 1){
                 projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/manifest/') + 10).replace("/manifest.json", ""));
             }
-            
+
            // }
         }
         else {
             projectID = 0;
         }
-        
+
         if (localProject){
             //get project info first, get manifest out of it, populate
             var aBar = document.location.href;
@@ -566,7 +566,7 @@ function loadTranscription(pid, tool){
                         && tpen.manifest.sequences[0].canvases.length > 0)
                     {
                         transcriptionFolios = tpen.manifest.sequences[0].canvases;
-                        //Could allow them to load a specific page with a local project URL.  
+                        //Could allow them to load a specific page with a local project URL.
 //                        if(pageToLoad){
 //                            $.each(tpen.project.folios, function(i){
 //                                if(this == pageToLoad){
@@ -656,7 +656,7 @@ function loadTranscription(pid, tool){
         else {
         //it is not a local project, so just grab the url that was input and request the manifest.
         var url = userTranscription;
-        tpen.project.id = -1; //This means it is not a T-PEN projec5t, but rather a manifest from another source.  
+        tpen.project.id = -1; //This means it is not a T-PEN projec5t, but rather a manifest from another source.
         $.ajax({
             url: url,
             success: function(projectData){
@@ -731,10 +731,10 @@ function activateTool(tool){
 }
 
 /*
- * 
+ *
  * @param {type} tools
  * Looks at the array of user tools available passed in as project data and makes those options visible.
- * 
+ *
  */
 function activateUserTools(tools, permissions){
     if(tpen.user.isAdmin || $.inArray("parsing", tools) > -1 || permissions.allow_public_modify || permissions.allow_public_modify_line_parsing){
@@ -876,13 +876,13 @@ function drawLinesToCanvas(canvasObj, parsing, tool){
             if(!tpen.manifest.sequences[0].canvases[currentFolio].otherContent){
                 tpen.manifest.sequences[0].canvases[currentFolio].otherContent = new Array();
             }
-            //FIXME: The line below throws a JSON error sometimes, especially on first load.  
+            //FIXME: The line below throws a JSON error sometimes, especially on first load.
             var annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent = tpen.manifest.sequences[0].canvases[currentFolio].otherContent.concat(JSON.parse(annoList));
             var currentList = {};
-            
+
             if (annoList.length > 0){
                 // Scrub resolved lists that are already present.
-                tpen.screen.currentAnnoListID = annoList[0]; //There should always just be one that matches because of proj, default to first in array if more 
+                tpen.screen.currentAnnoListID = annoList[0]; //There should always just be one that matches because of proj, default to first in array if more
                 lines = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], true, parsing, tool);
 //                $.each(annoList, function(index){
 //                    if (typeof annoList[index] === "string"){
@@ -909,7 +909,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool){
 //                	return true;
 //                });
 
-                
+
             }
             else {
                 // couldnt get list.  one should always exist, even if empty.
@@ -1149,7 +1149,7 @@ function linesToScreen(lines, tool){
                     updateLine(lineToUpdate, false, false);
                 }, 2000);
             }
-            
+
     });
 }
 
@@ -1222,7 +1222,7 @@ function setPositions() {
         if(tpen.screen.focusItem[1].next().is('.transcriptlet')){
             nextLineHeight = parseFloat(tpen.screen.focusItem[1].next().attr("lineHeight"));
         }
-        if(tpen.screen.focusItem[1].prev().is('.transcriptlet') && currentLineTop > parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"))){ 
+        if(tpen.screen.focusItem[1].prev().is('.transcriptlet') && currentLineTop > parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"))){
             previousLineTop = parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"));
             previousLineHeight = parseFloat(tpen.screen.focusItem[1].prev().attr("lineHeight"));
         }
@@ -1230,8 +1230,8 @@ function setPositions() {
             previousLineTop = currentLineTop;
             previousLineHeight = currentLineHeight;
         }
-        
-        //We may be able to do this a bit better. 
+
+        //We may be able to do this a bit better.
         if(nextLineHeight > 0.0){
             imgTopHeight = (nextLineHeight + currentLineHeight); // obscure behind workspace.
         }
@@ -1251,7 +1251,7 @@ function setPositions() {
         var imgTopSize = (((imgTopHeight/100)*bottomImageHeight) / Page.height())*100;
         var percentageFixed = 0;
         //use this to make sure workspace stays on screen!
-        if (imgTopSize > 80){ //if #imgTop is 80% of the screen size then we need to fix that so the workspace stays.  
+        if (imgTopSize > 80){ //if #imgTop is 80% of the screen size then we need to fix that so the workspace stays.
             var workspaceHeight = 170; //$("#transWorkspace").height();
             var origHeight = imgTopHeight;
             imgTopHeight = ((Page.height() - workspaceHeight - 80) / bottomImageHeight) *  100; //this needs to be a percentage
@@ -1298,9 +1298,9 @@ function swapTranscriptlet() {
     }
 }
 var Page = {
-    /** 
+    /**
      *  Returns converted number to CSS consumable string rounded to n decimals.
-     *  
+     *
      *  @param num float unprocessed number representing an object dimension
      *  @param n number of decimal places to include in returned string
      *  @returns float in ##.## format (example shows n=2)
@@ -1310,7 +1310,7 @@ var Page = {
     },
     /**
      * Sloppy hack so .focus functions work in FireFox
-     * 
+     *
      * @param elem element to focus on
      */
     focusOn: function(elem){
@@ -1318,7 +1318,7 @@ var Page = {
     },
     /**
      * Window dimensions.
-     * 
+     *
      * @return Integer width of visible page
      */
     width: function() {
@@ -1326,7 +1326,7 @@ var Page = {
     },
     /**
      * Window dimensions.
-     * 
+     *
      * @return Integer height of visible page
      */
     height: function() {
@@ -1338,25 +1338,25 @@ var Page = {
  * Keep workspace on the screen when displaying large lines.
  * Tests for need and then adjusts. Runs on change to
  * workspace size or line change.
- * 
+ *
  * **deprecated.  @see setPositions()
  */
 function maintainWorkspace(){
     // keep top img within the set proportion of the screen
     var imgTopHeight = $("#imgTop").height();
     console.log(" is"+imgTopHeight + " > "+Page.height() + "?");
-    
+
     if (imgTopHeight > Page.height()) {
         console.log("yes");
         imgTopHeight = Page.height();
-        //Should I try to convert this to a percentage? 
+        //Should I try to convert this to a percentage?
         $("#imgTop").css("height", imgTopHeight);
        // adjustImgs(setPositions());
     }
     else{
         console.log("no");
     }
-    
+
 }
 /**
  * Aligns images and workspace using defined dimensions.
@@ -2172,8 +2172,8 @@ function removeColumn(column, destroy){
     lines.addClass("deletable");
     tpen.screen.nextColumnToRemove = column;
     removeColumnTranscriptlets(lines, false);
-    
-                        
+
+
 }
 
 function destroyPage(){
@@ -2789,7 +2789,7 @@ function columnUpdate(linesInColumn){
         //currentFolio = parseInt(currentFolio);
         //annoLists[currentFolio - 1] = currentAnnoListID;
     });
-    
+
 }
     function drawLinesOnCanvas(lines, parsing, tool){
         if (lines.length > 0){
@@ -2839,12 +2839,12 @@ function columnUpdate(linesInColumn){
                         tpen.screen.dereferencedLists[tpen.screen.currentFolio] = annoListData;
                         if (annoListData.resources) {
                             var resources = annoListData.resources;
-                            //Here is when we would set empty, but its best just to return the empty array.  Maybe get rid of "empty" check in this file. 
+                            //Here is when we would set empty, but its best just to return the empty array.  Maybe get rid of "empty" check in this file.
                             for(var l=0; l<resources.length; l++){
                                 var currentResource = resources[l];
                                 if(currentResource.on.startsWith(canvas['@id'])){
                                      annos.push(currentResource);
-                                 } 
+                                 }
                             }
                         }
                         if(drawFlag){
@@ -2855,7 +2855,7 @@ function columnUpdate(linesInColumn){
                 });
             }
         }
-        
+
     };
 
 /* Update line information for a particular line. */
@@ -2933,7 +2933,7 @@ function updateLine(line, cleanup, updateList){
                         });
                     }
                 }
-                
+
             }
             console.log("update line");
             $.post(url,payload,function(){
@@ -2982,7 +2982,7 @@ function saveNewLine(lineBefore, newLine){
     newLineLeft = Math.round(newLineLeft, 0);
     newLineWidth = Math.round(newLineWidth, 0);
     newLineHeight = Math.round(newLineHeight, 0);
-    
+
     if(lineBefore){
         oldLineTop = parseFloat(lineBefore.attr("linetop"));
         oldLineLeft = parseFloat(lineBefore.attr("lineleft"));
@@ -3302,7 +3302,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     }
     var currentFolio = parseInt(tpen.screen.currentFolio);
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
-    if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){ 
+    if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
         $.each(currentAnnoList, function(index){
             var lineIDToCheck = "";
             if (removeNextLine){
@@ -3323,7 +3323,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
                         $("#parsingCover").hide();
                     }
                     else {
-                        updateLine(toUpdate, false, false); //put $(#parsingCover).hide() in updateLine(), but may just need it here for this scenario. 
+                        updateLine(toUpdate, false, false); //put $(#parsingCover).hide() in updateLine(), but may just need it here for this scenario.
                     }
                 });
             }
@@ -3461,7 +3461,7 @@ function toggleImgTools(event){
         "display":  "block",
         "left" : locationX + "px",
         "top" : locationY + 15 + "px"
-    });  
+    });
     $("#imageTools").draggable();
 }
 
@@ -3519,7 +3519,7 @@ function bumpLine(direction, activeLine){
     var currentLineLeftPX = parseFloat(currentLineLeftPerc/100) * $("#imgTop").width() + "px";
     $(".transcriptlet[lineserverid='"+id+"']").attr("lineleft", currentLineLeftPerc);
     activeLine.css("left", currentLineLeftPX);
-    //updateLine($(".transcriptlet[lineserverid='"+id+"']"), false, true);      
+    //updateLine($(".transcriptlet[lineserverid='"+id+"']"), false, true);
 }
 
 
@@ -3756,7 +3756,7 @@ function bumpLine(direction, activeLine){
         }
 
     }
-    
+
 function getURLVariable(variable)
 {
        var query = window.location.search.substring(1);

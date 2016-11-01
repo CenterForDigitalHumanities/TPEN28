@@ -64,19 +64,24 @@
             <button style='margin-bottom: 3px;' class='nohover'>+</button><span>   or mouse wheel to zoom in</span><br>
             <button class='nohover'>-</button><span>   or mouse wheel to zoom out</span>
         </div>
-        <div class="topTrim">
-            <span class="trimSection">TITLE:<span id="trimTitle"></span></span>
-            <span class="trimSection">PAGE: <span id="trimPage"></span></span>
-            <span class="trimSection jump">
-                <i onclick="firstFolio();" title="First Folio"><img src='images/firstpage.png' ></i>
-                <i onclick="previousFolio();" title="Previous Folio"><img src='images/previouspage.png' ></i>
+        <div class="topTrim navigation">
+            <span class="trimSection"><span id="trimTitle"></span>
+            </span>
+            <span class="trimSection"><span id="trimPage"></span>
                 <select id="pageJump">
                     <option id="activePage" folioNum="0">Jump to Page</option>
                 </select>
-                <i onclick="nextFolio();" title="Next Folio"><img src='images/nextpage.png' ></i>
-                <i onclick="lastFolio();" title="Last Folio"><img src='images/endpage.png' ></i>
             </span>
-            <span class="trimSection">USER: <span id="trimCurrentUser"></span></span>
+            <span class="trimSection">Transcribing as <span id="trimCurrentUser"></span></span>
+            <div style="position:absolute;right:0;top:0;z-index: 1;">
+                <span class="trimSection">
+                    <a class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="left fa fa-home"></span>T-PEN Home</a>
+                <a class="exitPage wBtn ui-state-default ui-button" title="My Projects" href="project.jsp">My&nbsp;Projects</a>
+            </span>
+                <span class="trimSection">
+                    <a id="helpContact" href="admin.jsp#aboutTab" target="_blank" class="wBtn ui-state-default ui-button">Contact <span class="fa fa-comment"></span></a>
+                </span>
+            </div>
         </div>
 
         <div class="instructions">
@@ -141,7 +146,7 @@
                      </select>
                 </div>
 <!--                <div class="bottomButtons" style="width: 201px; top:-4px;">
-                    
+
                 </div>-->
                 <div class="bottomButtons">
                      <button id="activeImageTool" onclick="toggleImgTools(event);" >Image Tools</button> <!--  -->
@@ -150,7 +155,7 @@
                      <button id="parsingBtn" title="Correct Page Parsing" >Correct Parsing</button> <!--Page event on the listener for this class in js.-->
                      <!--<button id="linebreakBtn">Linebreak</button>-->
                      <button id="lineControlBtn" onclick="toggleLineControls(event);" title="View Line Controls" >Line Controls</button>
-                    
+
                 </div>
 
               </div>
@@ -281,17 +286,6 @@
                             </div>
         <div id="zoomDiv" class="ui-corner-all"></div>
         <div id="ruler1"></div><div id="ruler2"></div>
-        <div id="siteNavigation" class="left right navigation">
-            <span class="right">
-                <!--CURRENT USER-->
-                <span id="helpBtns">
-                    <a id="helpMe" class="wBtn ui-state-default ui-button listBegin">Help<span class="fa fa-help right"></span></a>
-                    <a id="helpContact" href="admin.jsp#aboutTab" target="_blank" class="wBtn ui-state-default ui-button listEnd">Contact<span class="fa fa-comment right"></span></a>
-                </span>
-            </span>
-            <a class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="left fa fa-home"></span>T-PEN Home</a>
-            <a class="exitPage wBtn ui-state-default ui-button listEnd" title="My Projects" href="project.jsp">My&nbsp;Projects</a>
-        </div>
         <div id="imageTools" style="width: 201px;">
             <div class="popupTitle" > Image Controls </div>
             <div class="closeBtn" onclick="$('#imageTools').hide();$('#imageTools').draggable('destroy')"> X </div>
@@ -360,7 +354,7 @@
                         $(".instructions").show();
                         $(".hideme").show();
                     }
-                    
+
                 }
                 else {
                     tpen.user.UID = 0;
@@ -538,10 +532,10 @@
                     $("#imgTop, #imgBottom").unbind("mousedown");
                     $("#imgTop, #imgBottom").unbind("mouseup");
                     var lineForEditing = $(".transcriptlet[lineserverid='" + $(".activeLine").attr("lineserverid") + "']");
-                    updateLine(lineForEditing, false, true); //update the active line in case it was bumped.  
+                    updateLine(lineForEditing, false, true); //update the active line in case it was bumped.
                 }
                 else{
-                    
+
                 }
             });
 
@@ -924,7 +918,7 @@
         var currentLineLeftPX = parseFloat(currentLineLeftPerc/100) * $("#imgTop").width() + "px";
         $(".transcriptlet[lineserverid='"+id+"']").attr("lineleft", currentLineLeftPerc);
         activeLine.css("left", currentLineLeftPX);
-        //updateLine($(".transcriptlet[lineserverid='"+id+"']"), false, true);      
+        //updateLine($(".transcriptlet[lineserverid='"+id+"']"), false, true);
     }
 
 

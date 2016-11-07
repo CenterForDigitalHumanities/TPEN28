@@ -830,6 +830,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 alert("No image for this canvas or it could not be resolved.  Not drawing lines.");
                 $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
                 $("#parsingBtn").attr("disabled", "disabled");
+                $("#transTemplateLoading").hide();
             })
             .attr("src", "images/missingImage.png");
         })

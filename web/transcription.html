@@ -138,12 +138,13 @@
                         </div>
                     </div>
                     <div class="bottomButtons">
-                        <select id="charactersPopin" class="specialCharacters"  title="Special Characters" >
+                        
+<!--                        <select id="charactersPopin" class="specialCharacters"  title="Special Characters" >
                             <option id="activeCharacters" >Characters</option>
                         </select>
                         <select id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
                             <option id="activeTags">XML Tags</option>
-                        </select>
+                        </select>-->
                         <!-- add the tools to this area -->
                         <select id="splitScreenTools" >
                             <option style="display:block;" splitter='default' class="splitTool" >Tools Available</option>
@@ -158,6 +159,8 @@
 
                                     </div>-->
                     <div class="bottomButtons">
+                        <button id="toggleChars" title="Move Transcription Image" onclick="toggleSpecialChars();">Characters</button>
+                        <button id="toggleXML" title="Move Transcription Image" onclick="toggleXMLTags();">XML Tags</button>
                         <button id="activeImageTool" onclick="toggleImgTools(event);" >Image Tools</button> <!--  -->
                         <button class="magnifyBtn" magnifyImg="trans" title="Magnify Transcription Image" >Magnify</button> <!--Page event on the listener for this class in js.-->
                         <button id="moveImage" title="Move Transcription Image" onclick="startMoveImg();">Move Img</button>
@@ -297,7 +300,7 @@
         <div id="ruler1"></div><div id="ruler2"></div>
         <div id="imageTools" style="width: 201px;">
             <div class="popupTitle" > Image Controls </div>
-            <div class="closeBtn" onclick="$('#imageTools').hide();$('#imageTools').draggable('destroy')"> X </div>
+            <div class="closeBtn" onclick="$('#imageTools').hide();$('#imageTools').draggable('destroy');"> X </div>
                <div class="toolWrap">
                     <button style="margin-right: 18px; margin-top: 15px;" class="imgTool" which="grayscale" onclick="toggleFilter('grayscale');">Grayscale</button>
                     <button style="margin-bottom: 10px;" class="imgTool" which="invert" onclick="toggleFilter('invert');">Invert</button>
@@ -315,6 +318,18 @@
             <span style="top:14px;" title="Toggle Entire Lines" class="linehdr">Lines</span><input style="top:14px;" title="Toggle Lines" type="checkbox" onchange="toggleLineMarkers();" checked="checked"><br>
             <span style="top:10px;" title="Toggle Lines' Indicator" class="linehdr">Line #s</span><input style="top:10px;" type="checkbox" onchange="toggleLineCol();" checked="checked">
             <button id="markerColors" onclick="markerColors();">Line Color</button>
+        </div>
+        <div id="specialCharsFloat">
+            <div class="closeBtn" onclick="$('#specialCharsFloat').hide(); $('#specialCharsFloat').draggable('destroy');"> X </div>
+            <select id="charactersPopin" class="specialCharacters"  title="Special Characters" >
+                <option id="activeCharacters" >Characters</option>
+            </select>
+        </div>
+        <div id="xmlTagFloat">
+            <div class="closeBtn" onclick="$('#xmlTagFloat').hide(); $('#xmltagFloat').draggable('destroy');"> X </div>
+            <select id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
+                <option id="activeTags">XML Tags</option>
+            </select>
         </div>
 <script>
 

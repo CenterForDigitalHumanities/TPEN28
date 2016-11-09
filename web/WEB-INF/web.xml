@@ -215,6 +215,10 @@
         <servlet-name>SaveNewProjectXML</servlet-name>
         <servlet-class>edu.slu.tpen.servlet.SaveNewProjectXML</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FolioReport</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.FolioReporL</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>imageResize</servlet-name>
         <url-pattern>/imageResize</url-pattern>
@@ -374,6 +378,10 @@
     <servlet-mapping>
         <servlet-name>CanvasServlet</servlet-name>
         <url-pattern>/canvas/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FolioReport</servlet-name>
+        <url-pattern>/folioReport</url-pattern>
     </servlet-mapping>
     <!-- tpen webservices for newberry starts -->
     <servlet>

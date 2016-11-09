@@ -1434,6 +1434,37 @@ public class Folio {
       }
       return result;
    }
+   
+   public static String getBadFolioReport() throws SQLException{
+       String responseString = "";
+       String strUrl = "";
+       int folioID = 0;
+       try (Connection j = DatabaseWrapper.getConnection()) {
+           try (PreparedStatement stmt2 = j.prepareStatement("select folioID, uri from folios LIMIT 20")) {
+            ResultSet rs = stmt2.executeQuery();
+            if (rs.next()) {
+               strUrl = rs.getString("uri");
+               folioID = rs.getInt("pageNumber");
+                try {
+                    URL url = new URL(strUrl);
+                    HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+                    urlConn.connect();
+                    if(urlConn.getResponseCode() >= 400){
+                        responseString += "Folio "+folioID+" is OK. \n";
+                    }
+                    else{
+                        responseString += "Folio "+folioID+" does not resolve.  URI: "+strUrl;
+                    }
+                }
+                 catch (IOException e) {
+                    System.err.println("Error creating HTTP connection");
+                    responseString += "Folio "+folioID+" does not resolve.  URI: "+strUrl;
+                }
+            }
+         }
+       }
+       return responseString;       
+   }
 
    private static final Logger LOG = Logger.getLogger(Folio.class.getName());
 

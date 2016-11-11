@@ -1780,11 +1780,11 @@ function hideWorkspaceForParsing(){
     originalCanvasHeight = $("#transcriptionCanvas").height();
     originalCanvasWidth = $("#transcriptionCanvas").width();
     imgTopOriginalTop = $("#imgTop img").css("top");
-    var pageJumpIcons = $("#pageJump").parent().children("i");
-    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
-    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
-    pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
-    pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
+//    var pageJumpIcons = $("#pageJump").parent().children("i");
+//    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
+//    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
+//    pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
+//    pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
     $("#prevCanvas").attr("onclick", "");
     $("#nextCanvas").attr("onclick", "");
     $("#imgTop").addClass("fixingParsing");

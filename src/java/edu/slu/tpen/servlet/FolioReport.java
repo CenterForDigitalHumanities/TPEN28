@@ -8,6 +8,11 @@ package edu.slu.tpen.servlet;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,6 +21,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import textdisplay.DatabaseWrapper;
 import textdisplay.Folio;
 
 /**
@@ -33,27 +39,42 @@ public class FolioReport extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * 
+     * This will use Folio.java and wait for the whole report to be generated before writing to the file.  Even if you try to write out line by line,
+     * it waits for the servlet to finish and writes the whole file at once.
+     * There are roughly 1.5 million entries to do a header request for to check, so it takes around 8 days to run.  
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-         //PrintWriter out = new PrintWriter(new    
-         //FileOutputStream("c:/example/filedata.txt",true));  
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-             response.setContentType("text/html;charset=UTF-8");
-           
-            /* TODO output your page here. You may use following sample code. */
-            out.println("Below is a report of the folios whose URL's are broken: \n");
-            try {
-                String foliosToReturn = Folio.getBadFolioReport();
-                out.println(foliosToReturn + "\n");
-            } catch (SQLException ex) {
-                Logger.getLogger(FolioReport.class.getName()).log(Level.SEVERE, null, ex);
-                out.println("Bad SQL");
-            }
-            out.println("Enjoy the list.  Hopefully it is short.");
+        response.setContentType("text/plain;charset=UTF-8");
+        try{
+            PrintWriter clearer = new PrintWriter("/home/hanyan/sql/folioOutput.txt");
+            clearer.close();
         }
+        catch (Exception e){
+            System.out.println("File not yet created...");
+        }
+        PrintWriter out = new PrintWriter(new    
+        FileOutputStream("/home/hanyan/sql/folioOutput.txt",true));  
+        String newline = "\n";
+
+        //try (PrintWriter out = response.getWriter()) {
+        //out.println("Below is a report of the folios whose URL's are broken: "+newline);
+        System.out.println("Processing folio report request...");
+        try {
+            String foliosToReturn = Folio.getBadFolioReport();
+            System.out.println("Writing to text file...");
+            out.println(foliosToReturn + newline);
+        } catch (SQLException ex) {
+            Logger.getLogger(FolioReport.class.getName()).log(Level.SEVERE, null, ex);
+            out.println(ex + newline);
+        }
+        System.out.println("File created!");
+        //out.println("End of the listt.  Hopefully it is short.");
+        out.flush();
+        out.close();
+        //}
     }
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -91,7 +112,7 @@ public class FolioReport extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Generate a report of bad folios.";
     }// </editor-fold>
 
 }

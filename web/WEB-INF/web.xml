@@ -217,7 +217,7 @@
     </servlet>
     <servlet>
         <servlet-name>FolioReport</servlet-name>
-        <servlet-class>edu.slu.tpen.servlet.FolioReporL</servlet-class>
+        <servlet-class>edu.slu.tpen.servlet.FolioReport</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>imageResize</servlet-name>

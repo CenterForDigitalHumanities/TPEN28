@@ -159,8 +159,8 @@
 
                                     </div>-->
                     <div class="bottomButtons">
-                        <button id="toggleChars" title="Move Transcription Image" onclick="toggleSpecialChars();">Characters</button>
-                        <button id="toggleXML" title="Move Transcription Image" onclick="toggleXMLTags();">XML Tags</button>
+                        <button id="toggleChars" title="Move Transcription Image" onclick="toggleSpecialChars(event);">Characters</button>
+                        <button id="toggleXML" title="Move Transcription Image" onclick="toggleXMLTags(event);">XML Tags</button>
                         <button id="activeImageTool" onclick="toggleImgTools(event);" >Image Tools</button> <!--  -->
                         <button class="magnifyBtn" magnifyImg="trans" title="Magnify Transcription Image" >Magnify</button> <!--Page event on the listener for this class in js.-->
                         <button id="moveImage" title="Move Transcription Image" onclick="startMoveImg();">Move Img</button>
@@ -546,7 +546,25 @@
                     else $("#nextLine").click();
                 }
             }
+            else if(event.which === 17){ //ctrl
+                if(event.which >= 49 && event.which <= 57){ //insert a special char
+                    //find the index in the special chars field and insert it.
+                    var index = event.which - 49;
+                    //This will insert a null if you do not make sure the index exists.
+                    if($("option.character").length >= index){
+                        document.getElementById("charactersPopin").selectedIndex = index;
+                        $("#charactersPopin").change(); //populating to the text field fires in onchange to this element, we have to register the change. 
+                    }
+                    
+                }
+                if(event.which === 36){ //HOME key.  Jump to first line.
+                    if($("div[pair='A1']").length){
+                        $("div[pair='A1']").click();
+                    }
+                }
+            }
             else {
+                
             }
             })
             .keyup(function(event){;

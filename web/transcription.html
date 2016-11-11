@@ -483,6 +483,9 @@
         });
 
         $(document).keydown(function(event){
+            var ctrlDown = false,
+            ctrlKey = 17,
+            cmdKey = 91;
             if(tpen.screen.isMagnifying){
                 //back out
                 if ((event.which === 109) || (event.which === 189) || (event.which === 173) ){ //173  = - in firefox
@@ -518,6 +521,12 @@
                    event.preventDefault();
                    bumpLine("right", lineForEditing);
                }
+               else if(event.which === 38){ //up.  Go to prev line
+                   previousTranscriptlet();
+               }
+               else if(event.which === 40){ //down. Go to next line.
+                   nextTranscriptlet();
+               }
             }
             else if (event.which === 27){
                 //Esc during any active tool means stop the tool.  In this case, our only worry is moving the image around.  We may add others later.
@@ -542,22 +551,27 @@
                 var inForm = $(document.activeElement).is('input,textarea') && !$(document.activeElement).parent().is('.transcriptlet');
                 if(event.which === 9 && !inForm){
                     event.preventDefault();
+                    event.stopPropagation();
                     if(event.shiftKey) $("#prevLine").click();
                     else $("#nextLine").click();
                 }
             }
-            else if(event.which === 17){ //ctrl
-                if(event.which >= 49 && event.which <= 57){ //insert a special char
+            else if (event.ctrlKey || event.keyCode == ctrlKey || event.keyCode == cmdKey) { //ctrl
+                //This is also how you select a new tab in the browser.  
+                if(event.ctrlKey && (event.which >= 49 && event.which <= 57)){ //insert a special char
+                    event.preventDefault();
+                    event.stopPropagation();
                     //find the index in the special chars field and insert it.
-                    var index = event.which - 49;
+                    var index = event.which - 48;
                     //This will insert a null if you do not make sure the index exists.
-                    if($("option.character").length >= index){
+                    if(index > 0 && ($("option.character").length >= index)){
                         document.getElementById("charactersPopin").selectedIndex = index;
                         $("#charactersPopin").change(); //populating to the text field fires in onchange to this element, we have to register the change. 
-                    }
-                    
+                    }                 
                 }
-                if(event.which === 36){ //HOME key.  Jump to first line.
+                else if(event.ctrlKey && event.which === 36){ //HOME key.  Jump to first line.
+                    event.preventDefault();
+                    event.stopPropagation();
                     if($("div[pair='A1']").length){
                         $("div[pair='A1']").click();
                     }

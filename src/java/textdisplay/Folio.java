@@ -44,6 +44,7 @@ import static edu.slu.util.ImageUtils.*;
 import edu.slu.util.NetUtils;
 import imageLines.ImageCache;
 import imageLines.ImageHelpers;
+import java.text.DecimalFormat;
 
 /**
  * This class represents a single image. The image can have Line parsing associated with it, and is
@@ -1433,6 +1434,59 @@ public class Folio {
          result.add(new Line(left, left + rs.getInt("width"), rs.getInt("top"), rs.getInt("bottom")));
       }
       return result;
+   }
+    
+   public static String getBadFolioReport() throws SQLException{
+       String responseString = "";
+       String strUrl = "";
+       int folioID = 0;
+       String newline = "\n";
+       DecimalFormat df = new DecimalFormat("#.#");
+        
+       try (Connection j = DatabaseWrapper.getConnection()) {
+           try (PreparedStatement stmt2 = j.prepareStatement("select pageNumber, uri from folios")) { //LIMIT 100
+            ResultSet rs = stmt2.executeQuery();
+            System.out.println("Generating report...");
+            int count = 0;
+            int rowcount = 0;
+            if (rs.last()) {
+              rowcount = rs.getRow();
+              rs.beforeFirst(); 
+              System.out.println(rowcount + " entries found.  Generating report...");
+            }
+            while (rs.next() && count < 100) { //&&count < 100
+                count += 1;
+                float percentage = (float)count*100/rowcount;
+                String percent = df.format(percentage) + "%";
+                if(count % 10 == 0){
+                    System.out.println("Folio Report is "+percent+" complete. "+count+"/"+rowcount +" folios checked.");
+                }
+                if(count == rowcount){
+                    System.out.println("Folio Report is 100% complete");
+                }
+                strUrl = rs.getString("uri");
+                folioID = rs.getInt("pageNumber");
+                try {
+                    URL url = new URL(strUrl);
+                    HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+                    urlConn.connect();
+                    if(urlConn.getResponseCode() == HttpURLConnection.HTTP_OK){
+                        //responseString += "Folio "+folioID+" is OK.  URI:  "+strUrl+newline;
+                    }
+                    else{
+                        responseString += "Folio "+folioID+", Code:"+urlConn.getResponseCode()+",  URI: "+strUrl+newline;
+                    }
+                }
+                 catch (IOException e) {
+                    //System.err.println("Error creating HTTP connection");                
+
+                    responseString += "Folio "+folioID+", Code: HTTP_err,  URI: "+strUrl+newline;
+                }
+            }
+         }
+       }
+       System.out.println("Report Generated!");
+       return responseString;       
    }
 
    private static final Logger LOG = Logger.getLogger(Folio.class.getName());

@@ -138,12 +138,13 @@
                         </div>
                     </div>
                     <div class="bottomButtons">
-                        <select id="charactersPopin" class="specialCharacters"  title="Special Characters" >
+                        
+<!--                        <select id="charactersPopin" class="specialCharacters"  title="Special Characters" >
                             <option id="activeCharacters" >Characters</option>
                         </select>
                         <select id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
                             <option id="activeTags">XML Tags</option>
-                        </select>
+                        </select>-->
                         <!-- add the tools to this area -->
                         <select id="splitScreenTools" >
                             <option style="display:block;" splitter='default' class="splitTool" >Tools Available</option>
@@ -158,6 +159,8 @@
 
                                     </div>-->
                     <div class="bottomButtons">
+                        <button id="toggleChars" title="Move Transcription Image" onclick="toggleSpecialChars(event);">Characters</button>
+                        <button id="toggleXML" title="Move Transcription Image" onclick="toggleXMLTags(event);">XML Tags</button>
                         <button id="activeImageTool" onclick="toggleImgTools(event);" >Image Tools</button> <!--  -->
                         <button class="magnifyBtn" magnifyImg="trans" title="Magnify Transcription Image" >Magnify</button> <!--Page event on the listener for this class in js.-->
                         <button id="moveImage" title="Move Transcription Image" onclick="startMoveImg();">Move Img</button>
@@ -297,7 +300,7 @@
         <div id="ruler1"></div><div id="ruler2"></div>
         <div id="imageTools" style="width: 201px;">
             <div class="popupTitle" > Image Controls </div>
-            <div class="closeBtn" onclick="$('#imageTools').hide();$('#imageTools').draggable('destroy')"> X </div>
+            <div class="closeBtn" onclick="$('#imageTools').hide();$('#imageTools').draggable('destroy');"> X </div>
                <div class="toolWrap">
                     <button style="margin-right: 18px; margin-top: 15px;" class="imgTool" which="grayscale" onclick="toggleFilter('grayscale');">Grayscale</button>
                     <button style="margin-bottom: 10px;" class="imgTool" which="invert" onclick="toggleFilter('invert');">Invert</button>
@@ -315,6 +318,18 @@
             <span style="top:14px;" title="Toggle Entire Lines" class="linehdr">Lines</span><input style="top:14px;" title="Toggle Lines" type="checkbox" onchange="toggleLineMarkers();" checked="checked"><br>
             <span style="top:10px;" title="Toggle Lines' Indicator" class="linehdr">Line #s</span><input style="top:10px;" type="checkbox" onchange="toggleLineCol();" checked="checked">
             <button id="markerColors" onclick="markerColors();">Line Color</button>
+        </div>
+        <div id="specialCharsFloat">
+            <div class="closeBtn" onclick="$('#specialCharsFloat').hide(); $('#specialCharsFloat').draggable('destroy');"> X </div>
+            <select id="charactersPopin" class="specialCharacters"  title="Special Characters" >
+                <option id="activeCharacters" >Characters</option>
+            </select>
+        </div>
+        <div id="xmlTagFloat">
+            <div class="closeBtn" onclick="$('#xmlTagFloat').hide(); $('#xmltagFloat').draggable('destroy');"> X </div>
+            <select id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
+                <option id="activeTags">XML Tags</option>
+            </select>
         </div>
 <script>
 
@@ -468,6 +483,9 @@
         });
 
         $(document).keydown(function(event){
+            var ctrlDown = false,
+            ctrlKey = 17,
+            cmdKey = 91;
             if(tpen.screen.isMagnifying){
                 //back out
                 if ((event.which === 109) || (event.which === 189) || (event.which === 173) ){ //173  = - in firefox
@@ -503,6 +521,12 @@
                    event.preventDefault();
                    bumpLine("right", lineForEditing);
                }
+               else if(event.which === 38){ //up.  Go to prev line
+                   previousTranscriptlet();
+               }
+               else if(event.which === 40){ //down. Go to next line.
+                   nextTranscriptlet();
+               }
             }
             else if (event.which === 27){
                 //Esc during any active tool means stop the tool.  In this case, our only worry is moving the image around.  We may add others later.
@@ -527,11 +551,34 @@
                 var inForm = $(document.activeElement).is('input,textarea') && !$(document.activeElement).parent().is('.transcriptlet');
                 if(event.which === 9 && !inForm){
                     event.preventDefault();
+                    event.stopPropagation();
                     if(event.shiftKey) $("#prevLine").click();
                     else $("#nextLine").click();
                 }
             }
+            else if (event.ctrlKey || event.keyCode == ctrlKey || event.keyCode == cmdKey) { //ctrl
+                //This is also how you select a new tab in the browser.  
+                if(event.ctrlKey && (event.which >= 49 && event.which <= 57)){ //insert a special char
+                    event.preventDefault();
+                    event.stopPropagation();
+                    //find the index in the special chars field and insert it.
+                    var index = event.which - 48;
+                    //This will insert a null if you do not make sure the index exists.
+                    if(index > 0 && ($("option.character").length >= index)){
+                        document.getElementById("charactersPopin").selectedIndex = index;
+                        $("#charactersPopin").change(); //populating to the text field fires in onchange to this element, we have to register the change. 
+                    }                 
+                }
+                else if(event.ctrlKey && event.which === 36){ //HOME key.  Jump to first line.
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if($("div[pair='A1']").length){
+                        $("div[pair='A1']").click();
+                    }
+                }
+            }
             else {
+                
             }
             })
             .keyup(function(event){;

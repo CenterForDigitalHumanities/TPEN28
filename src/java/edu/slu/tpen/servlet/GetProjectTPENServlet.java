@@ -102,7 +102,9 @@ public class GetProjectTPENServlet extends HttpServlet {
                 Project proj = new Project(projID);
                 if (proj.getProjectID() > 0) {
                     Group group = new Group(proj.getGroupID());
+                    System.out.println("1");
                     ProjectPermissions pms = new ProjectPermissions(proj.getProjectID());
+                    System.out.println("2");
                     jsonMap.put("projper", gson.toJson(pms));
 //                    System.out.println("Parameter test to receive project data / manifest");
 //                    System.out.println("group Id ===== " + proj.getGroupID() + " is member " + group.isMember(uid));
@@ -112,13 +114,16 @@ public class GetProjectTPENServlet extends HttpServlet {
                         if (checkModified(request, proj)) {
                             
                             jsonMap.put("project", gson.toJson(proj));
+                            System.out.println("3");
 //                            System.out.println("project json ====== " + gson.toJson(proj));
                             int projectID = proj.getProjectID();
                             Folio[] folios = proj.getFolios();
                             jsonMap.put("ls_fs", gson.toJson(folios));
+                            System.out.println("4");
 //                            System.out.println("folios json ========== " + gson.toJson(folios));
                             JSONObject manifest = new JSONObject();                            
                             manifest_obj_str = new JsonLDExporter(proj, new User(uid)).export();
+                            System.out.println("5");
                            // }
                             try{ //Try to parse the manifest string
                                 man_obj = JSONObject.fromObject(manifest_obj_str);
@@ -129,16 +134,20 @@ public class GetProjectTPENServlet extends HttpServlet {
                                 manifest = jo_error;
                             }
                             jsonMap.put("manifest", manifest.toString());
+                            System.out.println("6");
                             //get project header
                             String header = proj.getHeader();
                             jsonMap.put("ph", header);
+                            System.out.println("7");
 //                            System.out.println("header json ======= " + gson.toJson(header));
                             //get group members
                             User[] users = group.getMembers();
                             jsonMap.put("ls_u", gson.toJson(users));
+                            System.out.println("8");
 //                            System.out.println("users json ========= " + gson.toJson(users));
                             //get group leader
                             User[] leaders = group.getLeader();
+                            System.out.println("10");
                             // if current user is admin AND not in leaders, add them to leaders array
                             boolean isLeader = false;
                             for (User u: leaders) {
@@ -158,6 +167,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                             }
 //                            System.out.println("project leaders json ========= " + gson.toJson(leaders));
                             jsonMap.put("ls_leader", gson.toJson(leaders));
+                            System.out.println("11");
                             //get project permission
                             
 //                            System.out.println("project permission json ========= " + gson.toJson(pms));
@@ -165,24 +175,29 @@ public class GetProjectTPENServlet extends HttpServlet {
                             Hotkey hk = new Hotkey();
                             List<Hotkey> ls_hk = hk.getProjectHotkeyByProjectID(projectID, uid);
                             jsonMap.put("ls_hk", gson.toJson(ls_hk));
+                            System.out.println("12");
 //                            System.out.println("hotkey json ======= " + gson.toJson(ls_hk));
                             //get project tools
                             UserTool[] projectTools = UserTool.getUserTools(projectID);
                             jsonMap.put("projectTool", gson.toJson(projectTools));
+                            System.out.println("13");
                             jsonMap.put("cuser", uid + "");
 //                            System.out.println("usertools json ========= " + gson.toJson(projectTools));
                             //get user tools
                             Tool.tools[] userTools = Tool.getTools(uid);
                             jsonMap.put("userTool", gson.toJson(userTools));
+                            System.out.println("14");
                             //get project metadata
                             Metadata metadata = new Metadata(proj.getProjectID());
                             jsonMap.put("metadata", gson.toJson(metadata));
+                            System.out.println("15");
                             
                             String allProjectButtons = TagButton.getAllProjectButtons(projID);
                             jsonMap.put("xml", allProjectButtons);
+                            System.out.println("16");
                             //get special characters
                             jsonMap.put("projectButtons", hk.javascriptToAddProjectButtonsRawData(projectID));
-                            
+                            System.out.println("17");
                             response.setStatus(HttpServletResponse.SC_OK);
                             out.println(JSONObject.fromObject(jsonMap));
                         } else {

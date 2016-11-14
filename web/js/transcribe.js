@@ -830,6 +830,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 alert("No image for this canvas or it could not be resolved.  Not drawing lines.");
                 $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
                 $("#parsingBtn").attr("disabled", "disabled");
+                $("#transTemplateLoading").hide();
             })
             .attr("src", "images/missingImage.png");
         })
@@ -1779,11 +1780,11 @@ function hideWorkspaceForParsing(){
     originalCanvasHeight = $("#transcriptionCanvas").height();
     originalCanvasWidth = $("#transcriptionCanvas").width();
     imgTopOriginalTop = $("#imgTop img").css("top");
-    var pageJumpIcons = $("#pageJump").parent().children("i");
-    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
-    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
-    pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
-    pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
+//    var pageJumpIcons = $("#pageJump").parent().children("i");
+//    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
+//    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
+//    pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
+//    pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
     $("#prevCanvas").attr("onclick", "");
     $("#nextCanvas").attr("onclick", "");
     $("#imgTop").addClass("fixingParsing");
@@ -3465,6 +3466,39 @@ function toggleImgTools(event){
     $("#imageTools").draggable();
 }
 
+function toggleLineControls(event){
+    var locationX = event.pageX;
+    var locationY = event.pageY;
+    $("#lineColControls").css({
+        "display":  "block",
+        "left" : locationX + "px",
+        "top" : locationY + 15 + "px"
+    });
+    $("#lineColControls").draggable();
+}
+
+function toggleXMLTags(event){
+    var locationX = event.pageX;
+    var locationY = event.pageY;
+    $("#xmlTagFloat").css({
+        "display":  "block",
+        "left" : locationX + "px",
+        "top" : locationY + 15 + "px"
+    });
+    $("#xmlTagFloat").draggable();
+}
+
+function toggleSpecialChars(event){
+    var locationX = event.pageX;
+    var locationY = event.pageY;
+    $("#specialCharsFloat").css({
+        "display":  "block",
+        "left" : locationX + "px",
+        "top" : locationY + 15 + "px"
+    });
+    $("#specialCharsFloat").draggable();
+}
+
 /* Control the hiding and showing of the image tools in the transcription interface. Depricated
 function toggleImgTools(){
     if ($("#imageTools").attr("class") !== undefined && $("#imageTools").attr("class").indexOf("activeTools") > - 1){
@@ -3479,16 +3513,7 @@ function toggleImgTools(){
     }
 }
 */
-function toggleLineControls(event){
-    var locationX = event.pageX;
-    var locationY = event.pageY;
-    $("#lineColControls").css({
-        "display":  "block",
-        "left" : locationX + "px",
-        "top" : locationY + 15 + "px"
-    });
-    $("#lineColControls").draggable();
-}
+
 
 /* Allows users to slightly adjust a line within a column while within the transcription interface. */
 function bumpLine(direction, activeLine){

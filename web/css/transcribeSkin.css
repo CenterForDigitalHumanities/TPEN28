@@ -193,6 +193,8 @@ body{
     position:relative;
     visibility:visible;
     width:auto;
+    top:19px;
+    /*      z-index:3;*/
 }
 
 .transcriptletBefore {
@@ -287,6 +289,7 @@ body{
     -moz-transition: opacity .25s;
     -o-transition: opacity .25s;
     transition: opacity .25s;
+    top: -6px;
 }
 #captionsText {
     display: block;
@@ -403,6 +406,9 @@ body{
     z-index: 3;
     visibility: visible;
 }
+#pageLabel{
+    top: -18px !important;
+}
 #pageLabel, #lineLabel, #lineCtrlLabel, #magnifyHlpLabel{
     margin: 0 auto;
     color: #002a5c;
@@ -450,6 +456,7 @@ body{
     color: #002a5c;
     font-weight: bold;
     font-size: 11pt;
+    display: none; /* We may still want these, but they are wildly out of position right now. */
 }
 
 #prevColLine{
@@ -475,6 +482,7 @@ body{
     background-repeat:no-repeat;
     z-index: 4;
 }
+
 #pageLabel1{
     left: 35%;
     position: absolute;
@@ -1080,6 +1088,9 @@ button.imgTool{
     position: relative;
     top: 3px;
 }
+#prevCanvas, #nextCanvas{
+    top: -15px !important;
+}
 #nextCanvas, #nextLine{
     position: relative;
     top: 3px;
@@ -1305,7 +1316,6 @@ a.navigation:hover .ui-icon {
 a.navigation {
     border-color: white;
 }
-
 .topTrim a {
     border:none;
     background: none;
@@ -1317,4 +1327,18 @@ a.navigation {
     background-color: white;
     background-color: rgba(255,255,255,.5);
     color: #a64129;
+}
+#xmlTagFloat, #specialCharsFloat{
+    z-index: 3;
+    position: absolute;
+    border: 2px solid black;
+    height: auto !important;
+    padding: 7px;
+    background-color: white;
+    width: 130px;
+    height: 40px;
+    display: none;
+}
+#xmlTagFloat .closeBtn, #specialCharsFloat .closeBtn{
+    background-color: white;
 }

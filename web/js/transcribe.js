@@ -15,6 +15,7 @@ var tpen = {
         projectName: "",
         groupID:0,
         linebreakSymbol:"",
+        remainingText:"",
         projectImageBounding:"",
         linebreakCharacterLimit:0
     },
@@ -323,6 +324,10 @@ function setTPENObjectData(data){
 
     if(data.cuser){
         tpen.user.UID = parseInt(data.cuser);
+    }
+    
+    if(data.remainingText){
+        tpen.project.remainingText = data.remainingText;
     }
 
     var count = 0;

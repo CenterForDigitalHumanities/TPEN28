@@ -56,7 +56,6 @@ public class Project {
    int projectID;
    String projectName;
    String linebreakSymbol = "-";
-   String remainingText = "";
    private imageBounding projectImageBounding;
 
    /**
@@ -406,7 +405,6 @@ public class Project {
          ResultSet rs = qry.executeQuery();
          if (rs.next()) {
             projectName = rs.getString("name");
-            remainingText = this.getLinebreakText(); //A bit of a hack for getProjectTPENServlet
             groupID = rs.getInt("grp");
             this.projectID = projectID;
             this.linebreakCharacterLimit = rs.getInt("linebreakCharacterLimit");
@@ -902,10 +900,11 @@ public class Project {
    /**
     * Retrieve Project.linebreakCharacterLimit characters of from the uploaded text file
     */
-   private String getLinebreakText() throws SQLException {
+   public String getLinebreakText() throws SQLException {
       String query = "select remainingText  from linebreakingtext where projectID=?";
       Connection j = null;
       PreparedStatement ps = null;
+      System.out.println("Get linebreaking text for "+projectID+"!");
       try {
          j = DatabaseWrapper.getConnection();
          ps = j.prepareStatement(query);
@@ -916,8 +915,11 @@ public class Project {
             if (toret.length() > this.linebreakCharacterLimit) {
                return ESAPI.encoder().encodeForHTML(toret.substring(0, this.linebreakCharacterLimit));
             }
+            System.out.println("Found linebreaking text!");
+            System.out.println(toret);
             return toret;
          } else {
+             System.out.println("No linebreaking text found");
             return "";
          }
       } finally {

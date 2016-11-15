@@ -140,6 +140,10 @@ public class GetProjectTPENServlet extends HttpServlet {
                             String header = proj.getHeader();
                             jsonMap.put("ph", header);
                             System.out.println("7");
+                            
+                            String linebreakRemainingText = proj.getLinebreakText();
+                            jsonMap.put("remainingText", linebreakRemainingText);
+                             System.out.println("LB");
                             //                            System.out.println("header json ======= " + gson.toJson(header));
                             //get group members
                             User[] users = group.getMembers();

@@ -1686,6 +1686,62 @@ function stopMagnify(){
 }
 
 /**
+     * Zooms in on the bounded area for a closer look.
+     *
+     * @param zoomOut: boolean to zoom in or out, prefer to use isZoomed
+     */
+    function zoomBookmark(zoomOut){
+        var topImg = $("#imgTop img");
+        var btmImg = $("#imgBottom img");
+        var imgSrc = topImg.attr("src");
+        if (imgSrc.indexOf("quality") === -1) {
+            imgSrc += "&quality=100";
+            topImg.add(btmImg).attr("src",imgSrc);
+        }
+        var WRAPWIDTH = $("#transcriptionCanvas").width();
+        var availableRoom = new Array (Page.height()-workspaceHeight(),WRAPWIDTH);
+        var bookmark = $('.activeLine');
+        var limitIndex = (bookmark.width()/bookmark.height() > availableRoom[1]/availableRoom[0]) ? 1 : 0;
+        var zoomRatio = (limitIndex === 1) ? availableRoom[1]/bookmark.width() : availableRoom[0]/bookmark.height();
+        var imgDims = new Array (topImg.height(),topImg.width(),parseInt(topImg.css("left")),parseInt(topImg.css("top"))-bookmark.position().top);
+        if (!zoomOut){
+            //zoom in
+            $("#bookmark").hide();
+            tpen.screen.zoomMemory = [parseInt(topImg.css("top")),parseInt(btmImg.css("top"))];
+            $("#imgTop").css({
+                "height"    : bookmark.height() * zoomRatio + 32
+            });
+            topImg.css({
+                "width"     : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%",
+                "left"      : -bookmark.position().left * zoomRatio,
+                "top"       : imgDims[3] * zoomRatio
+            });
+            btmImg.css({
+                "left"      : -bookmark.position().left * zoomRatio,
+                "top"       : (imgDims[3]-bookmark.height()) * zoomRatio,
+                "width"     : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%"
+            });
+            tpen.screen.isZoomed = true;
+        } else {
+            //zoom out
+            topImg.css({
+                "width"     : "100%",
+                "left"      : 0,
+                "top"       : tpen.screen.zoomMemory[0]
+            });
+            btmImg.css({
+                "width"     : "100%",
+                "left"      : 0,
+                "top"       : tpen.screen.zoomMemory[1]
+            });
+            $("#imgTop").css({
+                "height"    : imgTopHeight
+            });
+            tpen.screen.isZoomed = false;
+        }
+    }
+
+/**
 * Creates a zoom on the image beneath the mouse.
 *
 * @param $img jQuery img element to zoom on

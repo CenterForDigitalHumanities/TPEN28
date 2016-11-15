@@ -2737,7 +2737,7 @@ function updateLinesInColumn(column){
     batchLineUpdate(linesToUpdate);
 }
 
-/* Bulk update for lines in a column. */
+/* Bulk update for lines in a column.  Also updates annotation list those lines are in with the new anno data. */
 function batchLineUpdate(linesInColumn){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var currentAnnoListID = tpen.screen.currentAnnoListID;
@@ -2785,6 +2785,7 @@ function batchLineUpdate(linesInColumn){
         });
     });
     //Now that all the resources are edited, update the list.
+    tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
     var url = "updateAnnoList";
     var paramObj = {
         "@id":currentAnnoListID,
@@ -2925,7 +2926,7 @@ function updateLine(line, cleanup, updateList){
     else if (currentAnnoListID){
         if(currentLineServerID.startsWith("http")){
             //var url = "http://165.134.241.141/annotationstore/anno/updateAnnotation.action"; //This gets a 403 Forbidden....
-            var url = "http://165.134.241.141/TPEN28/updateAnnoList";
+            var url = "updateAnnoList";
             var payload = { // Just send what we expect to update
                     content : JSON.stringify({
                     "@id" : dbLine['@id'],			// URI to find it in the repo
@@ -2941,6 +2942,7 @@ function updateLine(line, cleanup, updateList){
                         currentAnnoList[i].on = dbLine.on;
                     }
                     if(i===currentAnnoList.length -1){
+                        tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
                         var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
                         var params1 = {"content":JSON.stringify(paramObj1)};
                         $.post(url1, params1, function(data){
@@ -2950,6 +2952,7 @@ function updateLine(line, cleanup, updateList){
 
             }
             console.log("update line");
+            
             $.post(url,payload,function(){
             	line.attr("hasError",null);
                 $("#parsingCover").hide();
@@ -3058,6 +3061,7 @@ function saveNewLine(lineBefore, newLine){
                 }
                 currentFolio = parseInt(currentFolio);
                 //Write back to db to update list
+                tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
                 var url1 = "updateAnnoList";
                 var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
                 var params1 = {"content":JSON.stringify(paramObj1)};
@@ -3097,6 +3101,7 @@ function saveNewLine(lineBefore, newLine){
                     currentFolio = parseInt(currentFolio);
                     tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent.push(newAnnoListCopy);
                     var url3 = "updateAnnoList";
+                    tpen.screen.dereferencedLists[tpen.screen.currentFolio] = {};
                     var paramObj3 = {"@id":newAnnoListCopy["@id"], "resources": [dbLine]};
                     var params3 = {"content":JSON.stringify(paramObj3)};
                     $.post(url3, params3, function(data){
@@ -3815,16 +3820,9 @@ var Data = {
     /* Save all lines on the canvas */
     saveTranscription:function(){
         var linesAsJSONArray = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
-        var url = "bulkUpdateAnnos";
-        var params = {"content":JSON.stringigy(linesAsJSONArray)};
-        $.post(url, params, function(data){
-
-        })
+        batchLineUpdate(linesAsJSONArray);
     }
 }
-
-
-
 
 
 var Linebreak = {

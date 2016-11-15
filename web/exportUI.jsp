@@ -545,7 +545,7 @@ if (request.getParameter("projectID")!=null){
             <div id="formatting">
                 <h3>Export Options</h3>
                 <form action="exported.jsp" target="_blank" method="get" onsubmit="return validForm();">
-                  <input type="hidden" value="<%out.print(projectID);%>">
+                  <input type="hidden" value="<%out.print(projectID);%>" name="projectID">
                          <div class="format tpenButton">General Formatting</div>
                 <div id="formatExport" class="formatDiv">
                     <span class='label left'>Include:</span>
@@ -628,7 +628,7 @@ if (request.getParameter("projectID")!=null){
                     <label id="linebreakContinuous" title="Remove all linebreaks" for="inline"><input id="inline" type="radio" name="linebreak" value="inline" />Continuous text</label><br />
                     <label id="exportHyphenation" class="" title="Use hyphenation to join words broken across lines" for="exportWordbreak"><input id="exportWordbreak" name="exportWordbreak" type="text" placeholder="/-/" value="<%//out.print(p.getWordbreakString);%>" /> custom word break string</label><br />
                     <label id="exportLinebreak" class="" title="Use this string with linebreaking" for="exportLinebreakString"><input id="exportLinebreakString" name="exportLinebreakString" type="text" placeholder="&lsaquo;lb /&rsaquo;" value="<%//out.print(p.getLinebreakString);%>" /> custom line break string</label><br />
-                    <label id="exportUseLinebreakString" class="" for="useLinebreakingString" title="Use this string in exported document"><input id="useLinebreakingString" type="checkbox" />Use linebreak string in exported document</label>
+                    <label id="exportUseLinebreakString" class="" for="useLinebreakingString" title="Use this string in exported document"><input id="useLinebreakingString" name="useLinebreakingString" type="checkbox" />Use linebreak string in exported document</label>
                 </div>
                 <input class="tpenButton ui-button clear left" type="submit" value="Build File">
             </form>

@@ -2732,13 +2732,12 @@ function updateLinesInColumn(column){
     if (startLineID !== endLineID){ //push the last line, so long as it was also not the first line
         linesToUpdate.push($(".parsing[lineserverid='" + endLineID + "']")); //push last line
     }
-    columnUpdate(linesToUpdate);
+    batchLineUpdate(linesToUpdate);
 }
 
 /* Bulk update for lines in a column. */
-function columnUpdate(linesInColumn){
+function batchLineUpdate(linesInColumn){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
-    var currentFolio = parseInt(tpen.screen.currentFolio);
     var currentAnnoListID = tpen.screen.currentAnnoListID;
     var currentAnnoListResources = [];
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
@@ -2787,15 +2786,23 @@ function columnUpdate(linesInColumn){
     var url = "updateAnnoList";
     var paramObj = {
         "@id":currentAnnoListID,
-        "resources": currentAnnoListResources
+        "resources": currentAnnoList
     };
-    var params = {"content":JSON.stringify(paramObj)};
-    $.post(url, params, function(data){
-        //currentFolio = parseInt(currentFolio);
-        //annoLists[currentFolio - 1] = currentAnnoListID;
+    var url2 = "bulkUpdateAnnotations";
+    var paramObj2 = {"annos":currentAnnoList};
+    var params2 = {"content":JSON.stringify(paramObj2)};
+    
+    $.post(url2, params2, function(data){ //update individual annotations
+        var params = {"content":JSON.stringify(paramObj)};
+        $.post(url, params, function(data2){ //update annotation list
+
+        });
     });
+    
 
 }
+
+    
     function drawLinesOnCanvas(lines, parsing, tool){
         if (lines.length > 0){
             $("#transTemplateLoading").hide();

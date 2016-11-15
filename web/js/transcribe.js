@@ -3829,6 +3829,9 @@ var Data = {
     // }
     };
 }
+var tpen.screen.linebreakString = "<br>";
+var tpen.screen.brokenText = [""];
+
 var Linebreak = {
     /**
      * Inserts uploaded linebreaking text into the active textarea.
@@ -3848,7 +3851,7 @@ var Linebreak = {
         //Load all text into the focused on line and clear it from all others
         var cfrm = confirm("This will insert the text at the current location and clear all the following lines for linebreaking.\n\nOkay to continue?");
         if (cfrm){
-            tpen.screen.focusItem[1].find(".theText").val($("<div/>").html(leftovers).text()).focus()
+            tpen.screen.focusItem[1].find(".theText").val($("<div/>").html(tpen.project.remainingText).text()).focus()
             .parent().addClass("isUnsaved")
             .nextAll(".transcriptlet").addClass("isUnsaved")
                 .find(".theText").html("");
@@ -3862,20 +3865,28 @@ var Linebreak = {
      * Used within T&#8209;PEN linebreaking tool.
     */
     useLinebreakText: function(){
-        if(!isMember && !permitModify)return false;
+        var isMember = (function(uid){
+            for(var i=0;i<tpen.project.user_list.length;i++){
+                if(tpen.project.user_list[i].UID==uid){
+                    return true;
+                }
+            }
+            return false;
+        })(tpen.user.UID);
+        if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
         var cfrm = confirm("This will insert the text at the current location and replace all the following lines automatically.\n\nOkay to continue?");
         if (cfrm){
             $("#linebreakStringBtn").click();
-            var bTlength = brokenText.length;
+            var bTlength = tpen.screen.brokenText.length;
             var thoseFollowing = focusItem[1].nextAll(".transcriptlet").find(".theText");
             focusItem[1].find('.theText').add(thoseFollowing).each(function(index){
                 if(index < bTlength){
-                    if (index < bTlength-1 ) brokenText[index] += linebreakString;
-                    $(this).val(unescape(brokenText[index])).parent(".transcriptlet").addClass("isUnsaved");
+                    if (index < bTlength-1 ) tpen.screen.brokenText[index] += tpen.screen.linebreakString;
+                    $(this).val(unescape(tpen.screen.brokenText[index])).parent(".transcriptlet").addClass("isUnsaved");
                     Preview.updateLine(this);
                     if (index == thoseFollowing.length) {
-                        leftovers = brokenText.slice(index+1).join(linebreakString);
-                        $("#lbText").text(unescape(leftovers));
+                        tpen.project.remainingText = tpen.screen.brokenText.slice(index+1).join(tpen.screen.linebreakString);
+                        $("#lbText").text(unescape(tpen.project.remainingText));
                     }
                 }
             });
@@ -3888,7 +3899,15 @@ var Linebreak = {
      * @see Data.saveTranscription()
      */
     saveWholePage: function(){
-        if(!isMember && !permitModify && !permitNotes)return false;
+        var isMember = (function(uid){
+            for(var i=0;i<tpen.project.user_list.length;i++){
+                if(tpen.project.user_list[i].UID==uid){
+                    return true;
+                }
+            }
+            return false;
+        })(tpen.user.UID);
+        if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
         $(".transcriptlet").addClass(".isUnsaved");
         Data.saveTranscription();
     },
@@ -3899,7 +3918,15 @@ var Linebreak = {
      * @param leftovers text to record
      */
     saveLeftovers: function(leftovers){
-        if(!isMember && !permitModify)return false;
+        var isMember = (function(uid){
+            for(var i=0;i<tpen.project.user_list.length;i++){
+                if(tpen.project.user_list[i].UID==uid){
+                    return true;
+                }
+            }
+            return false;
+        })(tpen.user.UID);
+        if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
         $('#savedChanges').html('Saving . . .').stop(true,true).css({
             "opacity" : 0,
             "top"     : "35%"
@@ -3908,7 +3935,7 @@ var Linebreak = {
             "top"     : "0%"
         },1000,"easeOutCirc");
         $.post("updateRemainingText", {
-            transcriptionleftovers  : unescape(leftovers),
+            transcriptionleftovers  : unescape(tpen.project.remainingText),
             projectID               : projectID
         }, function(data){
             if(data=="success!"){
@@ -3930,7 +3957,15 @@ var Linebreak = {
      * @return false to prevent Interaction.keyhandler() from propogating
      */
     moveTextToNextBox: function() {
-        if(!isMember && !permitModify)return false;
+        var isMember = (function(uid){
+            for(var i=0;i<tpen.project.user_list.length;i++){
+                if(tpen.project.user_list[i].UID==uid){
+                    return true;
+                }
+            }
+            return false;
+        })(tpen.user.UID);
+        if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
         var myfield = focusItem[1].find(".theText")[0];
         focusItem[1].addClass("isUnsaved");
         //IE support
@@ -3946,10 +3981,10 @@ var Linebreak = {
             // if this is the last line, ask before proceeding
                 var cfrm = confirm("You are on the last line of the page. T-PEN can save the remaining text in the linebreaking tool for later insertion. \n\nConfirm?");
                 if (cfrm) {
-                    leftovers = myfield.value.substring(startPos);
-                    $("#lbText").text(leftovers);
+                    tpen.project.remainingText = myfield.value.substring(startPos);
+                    $("#lbText").text(tpen.project.remainingText);
                     myfield.value=myfield.value.substring(0, startPos);
-                    Linebreak.saveLeftovers(escape(leftovers));
+                    Linebreak.saveLeftovers(escape(tpen.project.remainingText));
                 } else {
                     return false;
                 }

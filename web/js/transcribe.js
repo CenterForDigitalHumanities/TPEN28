@@ -1097,7 +1097,7 @@ function linesToScreen(lines, tool){
         var newAnno = $('<div id="transcriptlet_' + counter + '" col="' + col
             + '" colLineNum="' + colCounter + '" lineID="' + counter
             + '" lineserverid="' + lineID + '" class="transcriptlet" data-answer="'
-            + thisContent + '"><textarea placeholder="' + thisPlaceholder + '">'
+            + thisContent + '"><textarea class="theText" placeholder="' + thisPlaceholder + '">'
             + thisContent + '</textarea></div>');
         // 1000 is promised, 10 goes to %
         var left = parseFloat(XYWHarray[0]) / (10 * ratio);
@@ -3796,6 +3796,146 @@ function getURLVariable(variable)
        }
        return(false);
 }
+
+var Linebreak = {
+    /**
+     * Inserts uploaded linebreaking text into the active textarea.
+     * Clears all textareas following location of inserted text.
+     * Used within T&#8209;PEN linebreaking tool.
+     */
+    useText: function(){
+        var isMember = (function(uid){
+            for(var i=0;i<tpen.project.user_list.length;i++){
+                if(tpen.project.user_list[i].UID==uid){
+                    return true;
+                }
+            }
+            return false;
+        })(tpen.user.UID);
+        if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
+        //Load all text into the focused on line and clear it from all others
+        var cfrm = confirm("This will insert the text at the current location and clear all the following lines for linebreaking.\n\nOkay to continue?");
+        if (cfrm){
+            focusItem[1].find(".theText").val($("<div/>").html(leftovers).text()).focus()
+            .parent().addClass("isUnsaved")
+            .nextAll(".transcriptlet").addClass("isUnsaved")
+                .find(".theText").html("");
+            Data.saveTranscription();
+            Preview.updateLine(focusItem[1].find(".theText")[0]);
+        }
+    },
+    /**
+     * Inserts uploaded linebreaking text beginning in the active textarea.
+     * Automatically breaks at each occurance of linebreakString.
+     * Used within T&#8209;PEN linebreaking tool.
+    */
+    useLinebreakText: function(){
+        if(!isMember && !permitModify)return false;
+        var cfrm = confirm("This will insert the text at the current location and replace all the following lines automatically.\n\nOkay to continue?");
+        if (cfrm){
+            $("#linebreakStringBtn").click();
+            var bTlength = brokenText.length;
+            var thoseFollowing = focusItem[1].nextAll(".transcriptlet").find(".theText");
+            focusItem[1].find('.theText').add(thoseFollowing).each(function(index){
+                if(index < bTlength){
+                    if (index < bTlength-1 ) brokenText[index] += linebreakString;
+                    $(this).val(unescape(brokenText[index])).parent(".transcriptlet").addClass("isUnsaved");
+                    Preview.updateLine(this);
+                    if (index == thoseFollowing.length) {
+                        leftovers = brokenText.slice(index+1).join(linebreakString);
+                        $("#lbText").text(unescape(leftovers));
+                    }
+                }
+            });
+            Data.saveTranscription();
+        }
+    },
+    /**
+     * Saves all textarea values on the entire page.
+     *
+     * @see Data.saveTranscription()
+     */
+    saveWholePage: function(){
+        if(!isMember && !permitModify && !permitNotes)return false;
+        $(".transcriptlet").addClass(".isUnsaved");
+        Data.saveTranscription();
+    },
+    /**
+     * Records remaining linebreaking text for later use.
+     * POSTs to updateRemainingText servlet.
+     *
+     * @param leftovers text to record
+     */
+    saveLeftovers: function(leftovers){
+        if(!isMember && !permitModify)return false;
+        $('#savedChanges').html('Saving . . .').stop(true,true).css({
+            "opacity" : 0,
+            "top"     : "35%"
+        }).show().animate({
+            "opacity" : 1,
+            "top"     : "0%"
+        },1000,"easeOutCirc");
+        $.post("updateRemainingText", {
+            transcriptionleftovers  : unescape(leftovers),
+            projectID               : projectID
+        }, function(data){
+            if(data=="success!"){
+                $('#savedChanges')
+                .html('<span class="left ui-icon ui-icon-check"></span>Linebreak text updated.')
+                .delay(3000)
+                .fadeOut(1500);
+            } else {
+                //successful POST, but not an appropriate response
+                $('#savedChanges').html('<span class="left ui-icon ui-icon-alert"></span>Failed to save linebreak text.');
+                alert("There was a problem saving your linebreaking progress, please check your work before continuing.");
+            }
+        }, 'html');
+    },
+    /**
+     * Moves all text after the cursor to the following transcription textarea.
+     * Asks to save value as linebreak remaining text if on the last line.
+     *
+     * @return false to prevent Interaction.keyhandler() from propogating
+     */
+    moveTextToNextBox: function() {
+        if(!isMember && !permitModify)return false;
+        var myfield = focusItem[1].find(".theText")[0];
+        focusItem[1].addClass("isUnsaved");
+        //IE support
+        if (document.selection) {
+            //FIXME this is not actual IE support
+            myfield.focus();
+            sel = document.selection.createRange();
+        }
+        //MOZILLA/NETSCAPE support
+        else if (myfield.selectionStart || myfield.selectionStart == '0') {
+            var startPos = myfield.selectionStart;
+            if(focusItem[1].find(".nextLine").hasClass("ui-state-error") && myfield.value.substring(startPos).length > 0) {
+            // if this is the last line, ask before proceeding
+                var cfrm = confirm("You are on the last line of the page. T-PEN can save the remaining text in the linebreaking tool for later insertion. \n\nConfirm?");
+                if (cfrm) {
+                    leftovers = myfield.value.substring(startPos);
+                    $("#lbText").text(leftovers);
+                    myfield.value=myfield.value.substring(0, startPos);
+                    Linebreak.saveLeftovers(escape(leftovers));
+                } else {
+                    return false;
+                }
+            } else {
+                //prevent saving from changing focus until after values are changed
+                var nextfield = focusItem[1].next(".transcriptlet").find(".theText")[0];
+                nextfield.value = myfield.value.substring(startPos)+nextfield.value;
+                Preview.updateLine(nextfield);
+                myfield.value = myfield.value.substring(0, startPos);
+                Preview.updateLine(myfield);
+                $(nextfield).parent(".transcriptlet").addClass("isUnsaved");
+                focusItem[1].find(".nextLine").click();
+            }
+        }
+        Data.saveTranscription();
+        return false;
+    }
+};
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?
 if (!window.console) window.console = {};

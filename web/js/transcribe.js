@@ -3796,7 +3796,39 @@ function getURLVariable(variable)
        }
        return(false);
 }
-
+var Preview= {
+    updateLine:function(){
+        // TODO: update the preview line when the text is changed in the main transcription area.
+    }
+}
+var Data = {
+    saveTranscription : function(){
+        alert("Failed to save. Ticketed issue.");
+    //     TODO: where is saving done? Should look something like this?
+    //     /**
+    //  * Records the values of the current and immediately previous transcriptions.
+    //  * Checks for changes with isUnsaved before executing.
+    //  */
+    // saveTranscription: function(){
+    //     if(isUnsaved()) {
+    //         var saveLine;
+    //         var saveText;
+    //         var saveNotes;
+    //         $(".isUnsaved").each(function(){
+    //             saveLine = $(this).attr("data-lineid");
+    //             saveText = $(this).find(".theText").val();
+    //             saveNotes = $(this).find(".notes").val();
+    //             Data.saveLine(saveText, saveNotes, saveLine, folio);
+    //         });
+    //     } else {
+    //         $("#saveReport")
+    //             .stop(true,true).animate({"color":"red"}, 400)
+    //             .prepend("<div class='noChange'>No changes made</div>")//+", "+Data.dateFormat(date.getDate())+" "+month[date.getMonth()]+" "+date.getFullYear())
+    //             .animate({"color":"#618797"}, 1600,function(){$("#saveReport").find(".noChange").remove();});
+    //     }
+    // }
+    };
+}
 var Linebreak = {
     /**
      * Inserts uploaded linebreaking text into the active textarea.
@@ -3816,7 +3848,7 @@ var Linebreak = {
         //Load all text into the focused on line and clear it from all others
         var cfrm = confirm("This will insert the text at the current location and clear all the following lines for linebreaking.\n\nOkay to continue?");
         if (cfrm){
-            focusItem[1].find(".theText").val($("<div/>").html(leftovers).text()).focus()
+            tpen.screen.focusItem[1].find(".theText").val($("<div/>").html(leftovers).text()).focus()
             .parent().addClass("isUnsaved")
             .nextAll(".transcriptlet").addClass("isUnsaved")
                 .find(".theText").html("");

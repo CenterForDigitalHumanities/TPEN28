@@ -190,11 +190,7 @@ body{
 
 .transcriptlet {
     display:block;
-    /*      left:0;
-          margin:0 12.5%;*/
-    /*      opacity:1;*/
     position:relative;
-    /*      top:0;*/
     visibility:visible;
     width:auto;
     top:19px;
@@ -276,7 +272,7 @@ body{
 .flex-bookend {
     width: 108px;
 }
-.flex-wide{
+.flex-wide, .flex-wide div {
     display:flex;
     flex-grow:8;
 }
@@ -405,15 +401,10 @@ body{
     padding-left:20px;
 }
 #transcriptletArea{
-    display: inline-block;
     opacity: 1;
     position: relative;
     z-index: 3;
-    height: 55px;
     visibility: visible;
-    width: 73.5%;
-    top: -35px;
-
 }
 #pageLabel{
     top: -18px !important;
@@ -1092,18 +1083,6 @@ button.imgTool{
     width: 100%;
     background-color: rgba(1,51,90,.5);
 }
-
-#lineControls{
-    width: 104px;
-    height: 67px;
-    background-color: #BFBFBF;
-    position: relative;
-    display: inline-block;
-    left: 8px;
-    top: -16px;
-    text-align: center;
-    border: 2px outset rgba(0,42,92,.4);
-}
 #prevCanvas, #prevLine{
     margin-right: 3px;
     position: relative;
@@ -1116,16 +1095,10 @@ button.imgTool{
     position: relative;
     top: 3px;
 }
-#pageControls{
-    position: relative;
-    width:104px;
-    height:67px;
-    background-color: #BFBFBF;
-    display: inline-block;
+#pageControls,#lineControls{
+    background-color: rgba(0,0,0,.3);
     text-align:center;
-    top:-16px;
-    left:3px;
-    border: 2px outset rgba(0,42,92,.4);
+    border-radius: 4px;
 }
 /* changing margin here moves all buttons across bottom of transcription workspace. */
 .linehdr{
@@ -1343,7 +1316,6 @@ a.navigation:hover .ui-icon {
 a.navigation {
     border-color: white;
 }
-
 .topTrim a {
     border:none;
     background: none;
@@ -1355,4 +1327,18 @@ a.navigation {
     background-color: white;
     background-color: rgba(255,255,255,.5);
     color: #a64129;
+}
+#xmlTagFloat, #specialCharsFloat{
+    z-index: 3;
+    position: absolute;
+    border: 2px solid black;
+    height: auto !important;
+    padding: 7px;
+    background-color: white;
+    width: 130px;
+    height: 40px;
+    display: none;
+}
+#xmlTagFloat .closeBtn, #specialCharsFloat .closeBtn{
+    background-color: white;
 }

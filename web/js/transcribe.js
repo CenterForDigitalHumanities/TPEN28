@@ -1639,14 +1639,16 @@ function hideWorkspaceToSeeImage(){
 
 function magnify(img, event){
     //For separating out different imgs on which to zoom.
-    //Right now it is just the transcription canvas.
+    var container = ""; // #id of limit 
     if (img === "trans"){
         img = $("#transcriptionTemplate");
+        container = "transcriptionCanvas";
         $("#magnifyTools").fadeIn(800);
         $("button[magnifyimg='trans']").addClass("selected");
     }
     else if (img === "compare"){
         img = $("#compareSplit");
+        container = "compareSplit";
         $("#magnifyTools").fadeIn(800).css({
             "left":$("#compareSplit").css("left"),
             "top" : "100px"
@@ -1655,6 +1657,7 @@ function magnify(img, event){
     }
     else if (img === "full"){
         img = $("#fullPageSplitCanvas");
+        container = "fullPageSplit";
         $("#magnifyTools").fadeIn(800).css({
             "left":$("#fullPageSplit").css("left"),
             "top" : "100px"
@@ -1666,7 +1669,7 @@ function magnify(img, event){
     hideWorkspaceToSeeImage();
     $(".lineColIndicatorArea").hide();
     tpen.screen.liveTool = "image";
-    mouseZoom(img, event);
+    mouseZoom(img,container, event);
 }
 
 function stopMagnify(){
@@ -1691,8 +1694,9 @@ function stopMagnify(){
 * @param $img jQuery img element to zoom on
 * @param event Event
 */
-function mouseZoom($img, event){
+function mouseZoom($img,container, event){
     tpen.screen.isMagnifying = true;
+    var contain = container || document;
     var imgURL = $img.find("img:first").attr("src");
     var page = $("#transcriptionTemplate");
     //collect information about the img
@@ -1710,7 +1714,7 @@ function mouseZoom($img, event){
         "background-size"     : imgDims[2] * tpen.screen.zoomMultiplier + "px",
         "background-image"    : "url('" + imgURL + "')"
     });
-    $(document).on({
+    $(contain).on({
         mousemove: function(event){
             if (tpen.screen.liveTool !== "image" && tpen.screen.liveTool !== "compare") {
                 $(document).off("mousemove");

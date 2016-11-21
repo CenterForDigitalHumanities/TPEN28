@@ -193,7 +193,7 @@ body{
     position:relative;
     visibility:visible;
     width:auto;
-    top:19px;
+    /*top:19px;*/
     /*      z-index:3;*/
 }
 
@@ -382,7 +382,7 @@ body{
     position: relative;
     width: auto;
     height: auto;
-    top: -5px;
+    top: 3px;
     display: inline-block;
 }
 

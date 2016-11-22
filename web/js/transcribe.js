@@ -50,7 +50,7 @@ var tpen = {
         fname: "",
         lname: "",
         openID : 0,
-        authorizedManuscriptIDs: []
+        authorizedManuscripts: []
     }
 };
 var dragHelper = "<div id='dragHelper'></div>";
@@ -843,6 +843,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 $("#parsingBtn").removeAttr("disabled");
             }
             else{
+                //TODO give a popup with the choice to accept agreement or go back to TPEN home.  Look in transcription.jsp for this.  
                 alert("You have to accept the agreement to view this image.");
             }
             

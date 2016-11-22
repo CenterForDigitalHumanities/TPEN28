@@ -115,7 +115,6 @@ public class GetProjectTPENServlet extends HttpServlet {
 //                            System.out.println("project json ====== " + gson.toJson(proj));
                             int projectID = proj.getProjectID();
                             Folio[] folios = proj.getFolios();
-                            User[] authorized_users;
                             JSONArray folios_array = JSONArray.fromObject(gson.toJson(folios));
                             JSONObject folio_obj = null;
                             for(int x=0; x<folios.length; x++){

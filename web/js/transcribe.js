@@ -774,13 +774,15 @@ function checkManuscriptPermissions(id){
     var permitted = false;
     var manID = -1;
     for(var i=0; i<tpen.project.folios.length; i++){
-        manID = tpen.project.folios[i].manuscript;
-        for(var j=0; j< tpen.user.authorizedManuscripts.length; j++){
-            if(parseInt(tpen.user.authorizedManuscripts[j].manID) === manID){
-                if(tpen.user.authorizedManuscripts[j].auth === "true"){
-                    permitted = true;
+        if(id == tpen.project.folios[i].folioNumber){
+            manID = tpen.project.folios[i].manuscript;
+            for(var j=0; j< tpen.user.authorizedManuscripts.length; j++){
+                if(parseInt(tpen.user.authorizedManuscripts[j].manID) === manID){
+                    if(tpen.user.authorizedManuscripts[j].auth === "true"){
+                        permitted = true;
+                    }
+                    break;
                 }
-                break;
             }
         }
     }

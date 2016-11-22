@@ -325,7 +325,7 @@ function setTPENObjectData(data){
     if(data.cuser){
         tpen.user.UID = parseInt(data.cuser);
     }
-    
+
     if(data.remainingText){
         tpen.project.remainingText = data.remainingText;
     }
@@ -1646,7 +1646,7 @@ function hideWorkspaceToSeeImage(){
 
 function magnify(img, event){
     //For separating out different imgs on which to zoom.
-    var container = ""; // #id of limit 
+    var container = ""; // #id of limit
     if (img === "trans"){
         img = $("#transcriptionTemplate");
         container = "transcriptionCanvas";
@@ -2001,121 +2001,22 @@ function splitPage(event, tool) {
             });
         }
     });
-    $("#fullScreenBtn").fadeIn(250);
+    $("#fullScreenBtn")
+        .fadeIn(250);
     //show/manipulate whichever split tool is activated.
-    switch (tool){
-        case "calligraphy":
-            $("#calligraphySplit").css({
-            "display": "inline-table"
+    //This is a user added iframe tool.  tool is toolID= attribute of the tool div to show.
+    var splitScreen = $("#" + tool + "Split") || $('div[toolName="' + tool + '"]');
+    splitScreen.css("display", "block");
+    $(".split:visible")
+        .find('img')
+        .css({
+            'max-height': window.innherHeight + 350 + "px",
+            'max-width': $(".split:visible")
+                .width() + "px"
         });
-            break;
-        case "scripts":
-            $("#scriptsSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "frenchdocs":
-            $("#documentsSplit").css({
-                "display": "inline-table",
-            });
-            break;
-        case "conservation":
-            $("#conservationSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "conventions":
-            $("#conventionsSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "teachers":
-            $("#teachersSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "groupwork":
-            $("#groupSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "glossary":
-            $("#glossarySplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "fInstitutions":
-            $("#fInstitutionsSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "other":
-            $("#otherSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "essay":
-            $("#essaySplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "partialTrans":
-            $("#partialTransSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "abbreviations":
-            $("#abbrevSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "dictionary":
-            $("#dictionarySplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "preview":
-            forceOrderPreview();
-            break;
-        case "history":
-            $("#historySplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "fullPage":
-            $("#fullPageSplit").css({
-                "display": "block"
-            });
-            break;
-        case "compare":
-            $("#compareSplit").css({
-                "display": "block"
-            });
-            //When comparing, you need to be able to see the whole image, so I restrict it to window height.
-            //To allow it to continue to grow, comment out the code below.
-            $(".compareImage").css({
-                "max-height":window.innerHeight + "px",
-                "max-width":$("#compareSplit").width() + "px"
-            });
-            populateCompareSplit(1);
-            break;
-        case "facing":
-            $("#facingSplit").css("display", "block");
-            break;
-        case "maps":
-            $("#mapsSplit").css("display", "inline-table");
-            break;
-        case "start":
-            $("#startSplit").css("display", "inline-table");
-            default:
-            //This is a user added iframe tool.  tool is toolID= attribute of the tool div to show.
-            $('div[toolName="' + tool + '"]').css("display", "inline-table");
-    }
-    $(".split:visible").find('img').css({
-        'max-height': window.innherHeight + 350 + "px",
-        'max-width' : $(".split:visible").width() + "px"
-    });
-    var pageJumpIcons = $("#pageJump").parent().children("i");
+    var pageJumpIcons = $("#pageJump")
+        .parent()
+        .children("i");
     pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
     pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
     pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
@@ -2799,18 +2700,18 @@ function batchLineUpdate(linesInColumn){
     var url2 = "bulkUpdateAnnotations";
     var paramObj2 = {"annos":currentAnnoList};
     var params2 = {"content":JSON.stringify(paramObj2)};
-    
+
     $.post(url2, params2, function(data){ //update individual annotations
         var params = {"content":JSON.stringify(paramObj)};
         $.post(url, params, function(data2){ //update annotation list
 
         });
     });
-    
+
 
 }
 
-    
+
     function drawLinesOnCanvas(lines, parsing, tool){
         if (lines.length > 0){
             $("#transTemplateLoading").hide();
@@ -2957,7 +2858,7 @@ function updateLine(line, cleanup, updateList){
 
             }
             console.log("update line");
-            
+
             $.post(url,payload,function(){
             	line.attr("hasError",null);
                 $("#parsingCover").hide();

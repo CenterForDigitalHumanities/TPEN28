@@ -41,14 +41,16 @@ var tpen = {
         currentAnnoListID: 0,
         nextColumnToRemove: null,
         dereferencedLists : [],
-        parsing: false
+        parsing: false,
+        currentManuscriptID: -1
     },
     user: {
         isAdmin: false,
         UID: 0,
         fname: "",
         lname: "",
-        openID : 0
+        openID : 0,
+        authorizedManuscriptIDs: []
     }
 };
 var dragHelper = "<div id='dragHelper'></div>";
@@ -322,7 +324,11 @@ function setTPENObjectData(data){
     if(data.cuser){
         tpen.user.UID = parseInt(data.cuser);
     }
-
+    
+    if(data.user_mans_auth){
+        tpen.user.authorizedManuscripts = JSON.parse(data.user_mans_auth);
+    }
+    
     var count = 0;
     var length = tpen.project.leaders.length;
     $.each(tpen.project.leaders, function(){
@@ -764,12 +770,33 @@ function activateUserTools(tools, permissions){
     }
 }
 
+function checkManuscriptPermissions(id){
+    var permitted = false;
+    var manID = -1;
+    for(var i=0; i<tpen.project.folios.length; i++){
+        manID = tpen.project.folios[i].manuscript;
+        for(var j=0; j< tpen.user.authorizedManuscripts.length; j++){
+            if(parseInt(tpen.user.authorizedManuscripts[j].manID) === manID){
+                if(tpen.user.authorizedManuscripts[j].auth === "true"){
+                    permitted = true;
+                }
+                break;
+            }
+        }
+    }
+    return permitted;
+}
+
 /*
  * Load a canvas from the manifest to the transcription interface.
  */
 function loadTranscriptionCanvas(canvasObj, parsing, tool){
     var noLines = true;
     var canvasAnnoList = "";
+    var canvasURI = canvasObj["@id"];
+    var lastslashindex = canvasURI.lastIndexOf('/');
+    var folioID= canvasURI.substring(lastslashindex  + 1).replace(".png","");
+    var permissionForImage = checkManuscriptPermissions(folioID);
     $("#imgTop, #imgBottom").css("height", "400px");
     $("#imgTop img, #imgBottom img").css("height", "400px");
     $("#imgTop img, #imgBottom img").css("width", "auto");
@@ -802,15 +829,21 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
             $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
             $("#imgTop img, #imgBottom img").css("width", "100%");
             $("#imgBottom").css("height", "inherit");
-            $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
-            $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
-            originalCanvasHeight2 = $("#imgTop img").height();
-            originalCanvasWidth2 = $("#imgTop img").width();
-            drawLinesToCanvas(canvasObj, parsing, tool);
-            $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
-            $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
-            $("#parseOptions").find(".tpenButton").removeAttr("disabled");
-            $("#parsingBtn").removeAttr("disabled");
+            if(permissionForImage){
+                $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
+                $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
+                originalCanvasHeight2 = $("#imgTop img").height();
+                originalCanvasWidth2 = $("#imgTop img").width();
+                drawLinesToCanvas(canvasObj, parsing, tool);
+                $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
+                $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
+                $("#parseOptions").find(".tpenButton").removeAttr("disabled");
+                $("#parsingBtn").removeAttr("disabled");
+            }
+            else{
+                alert("You have to accept the agreement to view this image.");
+            }
+            
         })
         .on("error", function(){
             var image2 = new Image();

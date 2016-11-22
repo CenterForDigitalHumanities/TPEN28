@@ -51,13 +51,8 @@ import com.google.gson.Gson;
 
 import edu.slu.tpen.transfer.JsonImporter;
 import edu.slu.tpen.transfer.JsonLDExporter;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import net.sf.json.JSON;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 
 /**
@@ -78,6 +73,7 @@ public class GetProjectTPENServlet extends HttpServlet {
    @Override
    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int uid = getUID(request, response);
+        
         HttpSession session = request.getSession();
         boolean isTPENAdmin = false;
         try {
@@ -93,6 +89,8 @@ public class GetProjectTPENServlet extends HttpServlet {
         Map<String, String> jsonMap = new HashMap();
         JSONObject jo_error = new JSONObject();
         JSONObject man_obj = new JSONObject();
+        JSONArray mans_and_restrictions = new JSONArray();
+        ArrayList manuscripts_in_project = new ArrayList();
         jo_error.element("error", "No Manifest URL");
         if (uid >= 0) {
 //            System.out.println("UID ================= "+uid);
@@ -112,14 +110,44 @@ public class GetProjectTPENServlet extends HttpServlet {
 //                    System.out.println("this is a public project? "+pms.getAllow_public_read_transcription());
                     if (group.isMember(uid) || isTPENAdmin || pms.getAllow_public_read_transcription()) { //check for public project here
                         if (checkModified(request, proj)) {
-                            
                             jsonMap.put("project", gson.toJson(proj));
                             System.out.println("3");
 //                            System.out.println("project json ====== " + gson.toJson(proj));
                             int projectID = proj.getProjectID();
                             Folio[] folios = proj.getFolios();
-                            jsonMap.put("ls_fs", gson.toJson(folios));
+                            User[] authorized_users;
+                            JSONArray folios_array = JSONArray.fromObject(gson.toJson(folios));
+                            JSONObject folio_obj = null;
+                            for(int x=0; x<folios.length; x++){
+                                Integer folioNum = folios[x].getFolioNumber();
+                                Manuscript forThisFolio = new Manuscript(folioNum);
+                                int manID = forThisFolio.getID();
+                                folio_obj = folios_array.getJSONObject(x);
+                                folio_obj.element("manuscript", manID);
+                                folios_array.set(x, folio_obj);
+                                JSONObject for_the_array = new JSONObject();
+                                for_the_array.element("manID", Integer.toString(manID));
+                                for_the_array.element("auth", "false");
+                                if(!manuscripts_in_project.contains(manID)){
+                                    //Then this manuscript is accounted for.
+                                    manuscripts_in_project.add(manID);
+                                    User currentUser = new User(uid);
+                                    System.out.println("Is the current user authorized?");
+                                    System.out.println(forThisFolio.isAuthorized(currentUser));
+                                    if(forThisFolio.isAuthorized(currentUser)){
+                                        for_the_array.element("auth", "true");
+                                        System.out.println("23.2");
+                                    }
+                                    mans_and_restrictions.add(for_the_array);
+                                } 
+                            }
+                            
+                            jsonMap.put("ls_fs", folios_array.toString());
                             System.out.println("4");
+                            jsonMap.put("mans_in_project", manuscripts_in_project.toString());
+                            System.out.println("20");
+                            jsonMap.put("user_mans_auth",mans_and_restrictions.toString());
+                            System.out.println("21");
 //                            System.out.println("folios json ========== " + gson.toJson(folios));
                             JSONObject manifest = new JSONObject();                            
                             manifest_obj_str = new JsonLDExporter(proj, new User(uid)).export();

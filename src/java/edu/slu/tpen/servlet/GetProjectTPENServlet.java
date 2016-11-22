@@ -88,7 +88,7 @@ public class GetProjectTPENServlet extends HttpServlet {
         Gson gson = new Gson();
         Map<String, String> jsonMap = new HashMap();
         JSONObject jo_error = new JSONObject();
-        JSONObject man_obj = new JSONObject();
+        JSONObject man_obj = null;
         JSONArray mans_and_restrictions = new JSONArray();
         ArrayList manuscripts_in_project = new ArrayList();
         jo_error.element("error", "No Manifest URL");
@@ -120,7 +120,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                             for(int x=0; x<folios.length; x++){
                                 Integer folioNum = folios[x].getFolioNumber();
                                 Manuscript forThisFolio = new Manuscript(folioNum);
-                                int manID = forThisFolio.getID();
+                                int manID = forThisFolio.getID();                                
                                 folio_obj = folios_array.getJSONObject(x);
                                 folio_obj.element("manuscript", manID);
                                 folios_array.set(x, folio_obj);
@@ -133,9 +133,15 @@ public class GetProjectTPENServlet extends HttpServlet {
                                     User currentUser = new User(uid);
                                     System.out.println("Is the current user authorized?");
                                     System.out.println(forThisFolio.isAuthorized(currentUser));
-                                    if(forThisFolio.isAuthorized(currentUser)){
+                                    if(forThisFolio.isRestricted()){
+                                        if(forThisFolio.isAuthorized(currentUser)){
+                                            for_the_array.element("auth", "true");
+                                            System.out.println("23.2");
+                                        }
+                                    }
+                                    else{
                                         for_the_array.element("auth", "true");
-                                        System.out.println("23.2");
+                                        System.out.println("23.3");
                                     }
                                     mans_and_restrictions.add(for_the_array);
                                 } 

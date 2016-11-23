@@ -275,9 +275,9 @@
                                       </div>-->
                </div>
                    <script type="text/javascript">
-                       var leftovers = tpen.project.leftovers;
+                       var leftovers = tpen.project.remainingText;
                        // get from StringEscapeUtils.escapeJavaScript(thisProject.getLinebreakText())
-                       if(leftovers){
+                       if(leftovers && leftovers.length){
                            $("#lbText").html(unescape(leftovers));
                            $("#linebreakNoTextContainer").hide();
                        } else {
@@ -286,18 +286,18 @@
                        }
                        var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
                    +"&projectID="+tpen.project.id;
-               $("#uploadText").attr("href",uploadLocation);
+           $("#uploadText").add("#newText").attr("href",uploadLocation);
                    </script>
                <div id="linebreakOptions">
-                   <span id="useText" class="tpenButton" title="Insert this text at the current line">Insert Text Here</span>
-                   <span onclick="document.location.href=uploadLocation;" id="newText" class="tpenButton" title="Upload a new file to linebreak">Upload New File</span>
+                   <button type="button" id="useText" onclick="Linebreak.useText()" class="tpenButton" title="Insert this text at the current line">Insert Text Here</button>
+                   <a id="newText" class="tpenButton" title="Upload a new file to linebreak">Upload New File</a>
                    <span id="linebreakStringBtn" class="tpenButton" title="Attempt linebreaking using this string">Preview Automatic Linebreaks
     <!--                   TODO replace value with stored value once it is stored-->
                        <input name="linebreakString" id="linebreakString" type="text" placeholder="<lb />" value="" />
                    </span>
-                   <span id="useLinebreakText" class="tpenButton" title="Automatically linebreak this page">Use Automatic Linebreaking
+                   <button type="button" id="useLinebreakText" onclick="Linebreak.useLinebreakText()" class="tpenButton" title="Automatically linebreak this page">Use Automatic Linebreaking
                        <span id="linesDetected"></span>
-                   </span>
+                   </button>
                </div>
                    <ol class="pull-left">
                        <li>Navigate to a line to start;</li>

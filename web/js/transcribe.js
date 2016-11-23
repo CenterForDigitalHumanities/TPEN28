@@ -316,10 +316,17 @@ function setTPENObjectData(data){
         if(data.project.linebreakCharacterLimit){
             tpen.project.linebreakCharacterLimit = parseInt(data.project.linebreakCharacterLimit);
         }
+
+    if(data.remainingText){
+        tpen.project.remainingText = data.remainingText;
+    }
         // update the uploadLocation for linebreaking tool
         var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio || 0].folioNumber
             +"&projectID="+tpen.project.id;
-        $("#uploadText").attr("href",uploadLocation);
+        $("#uploadText").add("#newText").attr("href",uploadLocation);
+        $("#lbText").html(unescape(tpen.project.remainingText));
+        $("#linebreakTextContainer").show();
+        $("#linebreakNoTextContainer").hide();
     }
 
     if(data.manifest){
@@ -328,10 +335,6 @@ function setTPENObjectData(data){
 
     if(data.cuser){
         tpen.user.UID = parseInt(data.cuser);
-    }
-
-    if(data.remainingText){
-        tpen.project.remainingText = data.remainingText;
     }
 
     var count = 0;

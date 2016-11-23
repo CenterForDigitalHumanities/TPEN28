@@ -514,9 +514,13 @@ body{
 .actions .startHide{
     color: #002a5c;
 }
+.block {
+    width: 100%;
+    margin: 2px 0;
+}
 .tpenButton{
     font-weight: bold;
-    color:white;
+    color:white !important;
     border-radius: 4px;
     padding-bottom: 4px;
     padding-left: 6px;

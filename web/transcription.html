@@ -289,13 +289,13 @@
            $("#uploadText").add("#newText").attr("href",uploadLocation);
                    </script>
                <div id="linebreakOptions">
-                   <button type="button" id="useText" onclick="Linebreak.useText()" class="tpenButton" title="Insert this text at the current line">Insert Text Here</button>
-                   <a id="newText" class="tpenButton" title="Upload a new file to linebreak">Upload New File</a>
-                   <span id="linebreakStringBtn" class="tpenButton" title="Attempt linebreaking using this string">Preview Automatic Linebreaks
-    <!--                   TODO replace value with stored value once it is stored-->
+                   <button type="button" id="useText" onclick="Linebreak.useText()" class="tpenButton block" title="Insert this text at the current line">Insert Text Here</button>
+                   <a id="newText" class="tpenButton block" title="Upload a new file to linebreak">Upload New File</a>
+                   <span id="linebreakStringBtn" class="tpenButton block" title="Attempt linebreaking using this string">Preview Automatic Linebreaks
+                       <!--                   TODO replace value with stored value once it is stored-->
                        <input name="linebreakString" id="linebreakString" type="text" placeholder="<lb />" value="" />
                    </span>
-                   <button type="button" id="useLinebreakText" onclick="Linebreak.useLinebreakText()" class="tpenButton" title="Automatically linebreak this page">Use Automatic Linebreaking
+                   <button type="button" id="useLinebreakText" onclick="Linebreak.useLinebreakText()" class="tpenButton block" title="Automatically linebreak this page">Use Automatic Linebreaking
                        <span id="linesDetected"></span>
                    </button>
                </div>

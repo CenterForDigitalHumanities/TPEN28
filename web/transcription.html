@@ -138,7 +138,7 @@
                         </div>
                     </div>
                     <div class="bottomButtons">
-                        
+
 <!--                        <select id="charactersPopin" class="specialCharacters"  title="Special Characters" >
                             <option id="activeCharacters" >Characters</option>
                         </select>
@@ -331,7 +331,29 @@
                 <option id="activeTags">XML Tags</option>
             </select>
         </div>
-<script>
+
+        <div id="requestAccessContainer" style="display: none;">
+            <div id="requestAccess" class="ui-widget ui-corner-all ui-widget-content">
+                <h2 class="ui-widget-header ui-corner-all ui-state-error">Restricted Access</h2>
+                <div class="ui-state-error-text" style="text-align: center;"><span style="display: inline-block;" class="ui-icon ui-icon-alert"></span><%out.print(thisUser.getFname());%>, you do not have permission to view this manuscript!</div>
+                <br />
+                <form action="requestAccess.jsp" method="POST">
+                    <%
+                    String controllerHint = thisMS.getControllingUser().getUname();
+                    controllerHint = controllerHint.substring(controllerHint.indexOf('@'));
+                    %>
+                    <p>Request access for <%out.print(thisUser.getFname()+" "+thisUser.getLname()+" ("+thisUser.getUname()+") from the TPEN user ("+controllerHint+")");%> who controls access to this document.
+                        <textarea name="reason" placeholder="Add any additional request details."></textarea>
+                        <input type="hidden" name="ms" value="<%out.print(thisMS.getID());%>">
+                        <input type="hidden" name="projectID" value="<%out.print(projectID);%>">
+                        <input class="ui-button tpenButton clear right" type="submit" name="submitted" value="Send Request"/>
+                    </p>
+                </form>
+                <a class="returnButton" href="index.jsp">Return Home</a>
+            </div>
+            <div id="trexHead"></div>
+        </div>
+        <script>
 
     //Must explicitly set new height and width for percentages values in the DOM to take effect.
     window.onresize = function(event) {
@@ -557,7 +579,7 @@
                 }
             }
             else if (event.ctrlKey || event.keyCode == ctrlKey || event.keyCode == cmdKey) { //ctrl
-                //This is also how you select a new tab in the browser.  
+                //This is also how you select a new tab in the browser.
                 if(event.ctrlKey && (event.which >= 49 && event.which <= 57)){ //insert a special char
                     event.preventDefault();
                     event.stopPropagation();
@@ -566,8 +588,8 @@
                     //This will insert a null if you do not make sure the index exists.
                     if(index > 0 && ($("option.character").length >= index)){
                         document.getElementById("charactersPopin").selectedIndex = index;
-                        $("#charactersPopin").change(); //populating to the text field fires in onchange to this element, we have to register the change. 
-                    }                 
+                        $("#charactersPopin").change(); //populating to the text field fires in onchange to this element, we have to register the change.
+                    }
                 }
                 else if(event.ctrlKey && event.which === 36){ //HOME key.  Jump to first line.
                     event.preventDefault();
@@ -578,7 +600,7 @@
                 }
             }
             else {
-                
+
             }
             })
             .keyup(function(event){;

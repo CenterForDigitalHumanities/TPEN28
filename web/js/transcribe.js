@@ -324,11 +324,11 @@ function setTPENObjectData(data){
     if(data.cuser){
         tpen.user.UID = parseInt(data.cuser);
     }
-    
+
     if(data.user_mans_auth){
         tpen.user.authorizedManuscripts = JSON.parse(data.user_mans_auth);
     }
-    
+
     var count = 0;
     var length = tpen.project.leaders.length;
     $.each(tpen.project.leaders, function(){
@@ -843,10 +843,9 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 $("#parsingBtn").removeAttr("disabled");
             }
             else{
-                //TODO give a popup with the choice to accept agreement or go back to TPEN home.  Look in transcription.jsp for this.  
-                alert("You have to accept the agreement to view this image.");
+                $('#requestAccessContainer').show();
             }
-            
+
         })
         .on("error", function(){
             var image2 = new Image();
@@ -1675,7 +1674,7 @@ function hideWorkspaceToSeeImage(){
 
 function magnify(img, event){
     //For separating out different imgs on which to zoom.
-    var container = ""; // #id of limit 
+    var container = ""; // #id of limit
     if (img === "trans"){
         img = $("#transcriptionTemplate");
         container = "transcriptionCanvas";

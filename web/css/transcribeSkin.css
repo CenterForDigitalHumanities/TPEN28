@@ -514,6 +514,17 @@ body{
 .actions .startHide{
     color: #002a5c;
 }
+#trexHead {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    background: rgba(0,0,0,.7) url(../images/trexhead.png) right center no-repeat fixed;
+    background-size: 100%;
+    z-index: 39;
+}
 .tpenButton{
     font-weight: bold;
     color:white;

@@ -120,13 +120,19 @@ public class GetProjectTPENServlet extends HttpServlet {
                             for(int x=0; x<folios.length; x++){
                                 Integer folioNum = folios[x].getFolioNumber();
                                 Manuscript forThisFolio = new Manuscript(folioNum);
-                                int manID = forThisFolio.getID();                                
+                                int manID = forThisFolio.getID(); 
+                                User controller = forThisFolio.getControllingUser();
+                                String controllerName = "public project";
+                                if(null != controller){
+                                    controllerName = controller.getUname();
+                                }
                                 folio_obj = folios_array.getJSONObject(x);
                                 folio_obj.element("manuscript", manID);
                                 folios_array.set(x, folio_obj);
                                 JSONObject for_the_array = new JSONObject();
                                 for_the_array.element("manID", Integer.toString(manID));
                                 for_the_array.element("auth", "false");
+                                for_the_array.element("controller", controllerName);
                                 if(!manuscripts_in_project.contains(manID)){
                                     //Then this manuscript is accounted for.
                                     manuscripts_in_project.add(manID);

@@ -1353,3 +1353,7 @@ a.navigation {
 #xmlTagFloat .closeBtn, #specialCharsFloat .closeBtn{
     background-color: white;
 }
+
+.manController{
+    text-decoration: underline;
+}

@@ -770,16 +770,28 @@ function activateUserTools(tools, permissions){
     }
 }
 
+/*
+ * Checks the TPEN object for the manuscript permissions from a specific folio.  If this user has not accepted the
+ * agreement, then they will see a pop up requiring them to request access. 
+ * @param {type} id
+ * @returns {Boolean}
+ * */
 function checkManuscriptPermissions(id){
     var permitted = false;
     var manID = -1;
     for(var i=0; i<tpen.project.folios.length; i++){
         if(id == tpen.project.folios[i].folioNumber){
             manID = tpen.project.folios[i].manuscript;
+            tpen.screen.currentManuscriptID = manID;
+            $("input[name='ms']").val(manID);
+            $("input[name='projectID']").val(tpen.project.id);
             for(var j=0; j< tpen.user.authorizedManuscripts.length; j++){
                 if(parseInt(tpen.user.authorizedManuscripts[j].manID) === manID){
                     if(tpen.user.authorizedManuscripts[j].auth === "true"){
                         permitted = true;
+                    }
+                    if(tpen.user.authorizedManuscripts[j].controller){
+                        $(".manController").attr("title", "The controlling user is "+tpen.user.authorizedManuscripts[j].controller);
                     }
                     break;
                 }
@@ -844,6 +856,27 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
             }
             else{
                 $('#requestAccessContainer').show();
+                
+                //handle the background
+                var image2 = new Image();
+                $(image2)
+                .on("load", function(){
+                    $("#noLineWarning").hide();
+                    $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
+                    $("#imgTop img, #imgBottom img").css("width", "100%");
+                    $('.transcriptionImage').attr('src', "images/missingImage.png");
+                    $("#fullPageImg").attr("src", "images/missingImage.png");
+                    $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
+                    $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
+                    $("#imgTop").css("height", "0%");
+                    $("#imgBottom img").css("top", "0px");
+                    $("#imgBottom").css("height", "inherit");
+                    $("#parsingButton").attr("disabled", "disabled");
+                    $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
+                    $("#parsingBtn").attr("disabled", "disabled");
+                    $("#transTemplateLoading").hide();
+                })
+                .attr("src", "images/missingImage.png");
             }
 
         })

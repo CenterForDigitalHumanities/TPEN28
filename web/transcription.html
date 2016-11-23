@@ -340,12 +340,12 @@
                 <form action="requestAccess.jsp" method="POST">
                     <!--    TODO: Include controller hint for user name of controller
                             TODO: Include MS and projectIDs here.-->
-                    <p>Request access for from the TPEN user who controls access to this document.
-                        <textarea name="reason" placeholder="Add any additional request details."></textarea>
-                        <input type="hidden" name="ms" value="<%out.print(thisMS.getID());%>">
-                        <input type="hidden" name="projectID" value="<%out.print(projectID);%>">
-                        <input class="ui-button tpenButton clear right" type="submit" name="submitted" value="Send Request"/>
-                    </p>
+                    <p title="">Request access for from the <span class="manController" title="">TPEN user who controls access</span> to this document.</P
+                    <textarea name="reason" placeholder="Add any additional request details."></textarea>
+                    <input type="hidden" name="ms" value="">
+                    <input type="hidden" name="projectID" value="">
+                    <input class="ui-button tpenButton clear right" type="submit" name="submitted" value="Send Request"/>
+                    
                 </form>
                 <a class="returnButton" href="index.jsp">Return Home</a>
             </div>

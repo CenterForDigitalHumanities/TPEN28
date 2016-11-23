@@ -595,7 +595,8 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             else if (event.which === 13){ //enter
                 if (event.shiftKey || event.altKey) return true;
                 event.preventDefault();
-                return Linebreak.moveTextToNextBox();
+                Linebreak.moveTextToNextBox();
+                return nextTranscriptlet();
             }
             else if (event.which === 9){ // tab
             //TAB hijack to keep behavior as expected

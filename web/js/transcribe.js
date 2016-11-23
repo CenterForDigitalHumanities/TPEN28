@@ -316,6 +316,10 @@ function setTPENObjectData(data){
         if(data.project.linebreakCharacterLimit){
             tpen.project.linebreakCharacterLimit = parseInt(data.project.linebreakCharacterLimit);
         }
+        // update the uploadLocation for linebreaking tool
+        var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio || 0].folioNumber
+            +"&projectID="+tpen.project.id;
+        $("#uploadText").attr("href",uploadLocation);
     }
 
     if(data.manifest){

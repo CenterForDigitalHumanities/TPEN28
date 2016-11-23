@@ -1150,7 +1150,7 @@ body{
     height: 100%;
     height: 100vh;
 }
-button{
+button, #uploadText{
     /*    font-family: 'Open Sans','Helvetica Neue',sans-serif;*/
     font-weight: bold;
     color:white;

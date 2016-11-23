@@ -284,11 +284,7 @@
                            $("#linebreakTextContainer").hide();
                            $("#linebreakNoTextContainer").show();
                        }
-                       if(!tpen.project.id){
-                           var q = document.location.search;
-                           tpen.project.id = parseInt(q.substring(q.indexOf("projectID")+10));
-                       }
-                       var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio]
+                       var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
                    +"&projectID="+tpen.project.id;
                $("#uploadText").attr("href",uploadLocation);
                    </script>

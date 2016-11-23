@@ -75,8 +75,8 @@
             <span class="trimSection">Transcribing as <span id="trimCurrentUser"></span></span>
             <div style="position:absolute;right:0;top:0;z-index: 1;">
                 <span class="trimSection">
-                    <a class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="left fa fa-home"></span>T-PEN Home</a>
-                <a class="exitPage wBtn ui-state-default ui-button" title="My Projects" href="project.jsp">My&nbsp;Projects</a>
+                    <a class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="pull-left fa fa-home"></span>T-PEN Home</a>
+                    <a class="exitPage wBtn ui-state-default ui-button" title="My Projects" href="project.jsp">My&nbsp;Projects</a>
             </span>
                 <span class="trimSection">
                     <a id="helpContact" href="admin.jsp#aboutTab" target="_blank" class="wBtn ui-state-default ui-button">Contact <span class="fa fa-comment"></span></a>
@@ -138,7 +138,7 @@
                         </div>
                     </div>
                     <div class="bottomButtons">
-                        
+
 <!--                        <select id="charactersPopin" class="specialCharacters"  title="Special Characters" >
                             <option id="activeCharacters" >Characters</option>
                         </select>
@@ -209,7 +209,7 @@
                                     </div>
                                     <div class="startHide" id="clearColumnsInst">
                                         <p class="">Click to clear the page, removing all transcription information.</p>
-                                        <span class="destroyPage" class="tpenButton ui-state-error" title="Destroy all columns on this page"><span class="left fa fa-circle-o"></span>Destroy All Data</span>
+                                        <span class="destroyPage" class="tpenButton ui-state-error" title="Destroy all columns on this page"><span class="pull-left fa fa-circle-o"></span>Destroy All Data</span>
                                         <p class="small"><span class="ui-state-error-text"><span class="inline fa fa-alert"></span>This is a destructive process and cannot be undone.</span><br />
                                          </p>
                                     </div>
@@ -269,30 +269,41 @@
            <div>
                This project has text stored for linebreaking:
                <div id="linebreakText">
-                   <span id="lbText"></span>
-                   <div id='charLimit' class='ui-corner-all ui-state-error-text small clear'>More characters stored than shown here
-                    <!-- If thisProject.getLinebreakCharacterLimit() is available in the project object, this can be more specific -->
-                   </div>
+                   <span id="lbText"> no text stored </span>
+                   <!--                   <div id='charLimit' class='ui-corner-all ui-state-error-text small clear'>More characters stored than shown here
+                                        If thisProject.getLinebreakCharacterLimit() is available in the project object, this can be more specific
+                                      </div>-->
                </div>
                    <script type="text/javascript">
                        var leftovers = tpen.project.leftovers;
                        // get from StringEscapeUtils.escapeJavaScript(thisProject.getLinebreakText())
-                       $("#lbText").html(unescape(leftovers));
-                       var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currenFolio]
-                       +"&projectID="+tpen.project.id;
+                       if(leftovers){
+                           $("#lbText").html(unescape(leftovers));
+                           $("#linebreakNoTextContainer").hide();
+                       } else {
+                           $("#linebreakTextContainer").hide();
+                           $("#linebreakNoTextContainer").show();
+                       }
+                       if(!tpen.project.id){
+                           var q = document.location.search;
+                           tpen.project.id = parseInt(q.substring(q.indexOf("projectID")+10));
+                       }
+                       var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio]
+                   +"&projectID="+tpen.project.id;
+               $("#uploadText").attr("href",uploadLocation);
                    </script>
                <div id="linebreakOptions">
                    <span id="useText" class="tpenButton" title="Insert this text at the current line">Insert Text Here</span>
-                   <span onclick="document.location.href=uploadLocation;" id="newText" class="tpenButton" title="Upload a new file to linebreak">Upload New File</span>                       
+                   <span onclick="document.location.href=uploadLocation;" id="newText" class="tpenButton" title="Upload a new file to linebreak">Upload New File</span>
                    <span id="linebreakStringBtn" class="tpenButton" title="Attempt linebreaking using this string">Preview Automatic Linebreaks
     <!--                   TODO replace value with stored value once it is stored-->
                        <input name="linebreakString" id="linebreakString" type="text" placeholder="<lb />" value="" />
-                   </span>                       
+                   </span>
                    <span id="useLinebreakText" class="tpenButton" title="Automatically linebreak this page">Use Automatic Linebreaking
                        <span id="linesDetected"></span>
-                   </span>                       
+                   </span>
                </div>
-                   <ol class="left">
+                   <ol class="pull-left">
                        <li>Navigate to a line to start;</li>
                        <li><span class="loud">Insert Text</span> as a block; or</li>
                        <li>Enter a linebreak string to attempt automatic linebreaking; and</li>
@@ -303,8 +314,8 @@
        </div>
        <div id="linebreakNoTextContainer">
 <!-- no text saved -->
-    Begin by <a href=uploadLocation>uploading some text</a> to linebreak
-               </div>
+Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to linebreak
+       </div>
 
 
 
@@ -602,7 +613,7 @@
                 }
             }
             else if (event.ctrlKey || event.keyCode == ctrlKey || event.keyCode == cmdKey) { //ctrl
-                //This is also how you select a new tab in the browser.  
+                //This is also how you select a new tab in the browser.
                 if(event.ctrlKey && (event.which >= 49 && event.which <= 57)){ //insert a special char
                     event.preventDefault();
                     event.stopPropagation();
@@ -611,8 +622,8 @@
                     //This will insert a null if you do not make sure the index exists.
                     if(index > 0 && ($("option.character").length >= index)){
                         document.getElementById("charactersPopin").selectedIndex = index;
-                        $("#charactersPopin").change(); //populating to the text field fires in onchange to this element, we have to register the change. 
-                    }                 
+                        $("#charactersPopin").change(); //populating to the text field fires in onchange to this element, we have to register the change.
+                    }
                 }
                 else if(event.ctrlKey && event.which === 36){ //HOME key.  Jump to first line.
                     event.preventDefault();
@@ -623,7 +634,7 @@
                 }
             }
             else {
-                
+
             }
             })
             .keyup(function(event){;
@@ -819,7 +830,7 @@
                             var columnSet = $(".parsingColumn");
                             columnSet.addClass("parsingColumnSelected");
                             var columnText = (columnSet.size() === 1) ? "Destroy This Column" : "Destroy "+columnSet.size()+" Columns";
-                            $(".destroyPage").html('<span class="left fa fa-circle"></span>'+columnText+'')
+                            $(".destroyPage").html('<span class="pull-left fa fa-circle"></span>'+columnText+'')
                             .bind('click', function(){destroyPage();})
                     }
                 }
@@ -917,7 +928,7 @@
 
 
         $(".accordion").children("span")
-        .append("<span class='fa fa-triangle-right left'></span>")
+        .append("<span class='fa fa-triangle-right pull-left'></span>")
         .click(function(event){
         $("#imgTop").unbind("mousemove");
         $("#imgTop").unbind("mousedown");
@@ -946,7 +957,7 @@
                 //load the adjustment tool and then show the reparsing instructions
                 $(".parsingColumn").removeClass("parsingColumnSelected");
                 var columnSet = $(".parsingColumn");
-                $("#reparseColumn").html('<span class="left fa fa-refresh"></span>Submit '+columnSet.size()+' for Reparsing');
+                $("#reparseColumn").html('<span class="pull-left fa fa-refresh"></span>Submit '+columnSet.size()+' for Reparsing');
                 $("#reparseColumn").bind('click', function(){
                     reparseColumns();
                 });

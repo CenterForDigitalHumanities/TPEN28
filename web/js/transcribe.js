@@ -3872,8 +3872,8 @@ var Linebreak = {
             return false;
         })(tpen.user.UID);
         if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
-        var myfield = focusItem[1].find(".theText")[0];
-        focusItem[1].addClass("isUnsaved");
+        var myfield = tpen.screen.focusItem[1].find(".theText")[0];
+        tpen.screen.focusItem[1].addClass("isUnsaved");
         //IE support
         if (document.selection) {
             //FIXME this is not actual IE support
@@ -3883,7 +3883,7 @@ var Linebreak = {
         //MOZILLA/NETSCAPE support
         else if (myfield.selectionStart || myfield.selectionStart == '0') {
             var startPos = myfield.selectionStart;
-            if(focusItem[1].find(".nextLine").hasClass("ui-state-error") && myfield.value.substring(startPos).length > 0) {
+            if(tpen.screen.focusItem[1].find(".nextLine").hasClass("ui-state-error") && myfield.value.substring(startPos).length > 0) {
             // if this is the last line, ask before proceeding
                 var cfrm = confirm("You are on the last line of the page. T-PEN can save the remaining text in the linebreaking tool for later insertion. \n\nConfirm?");
                 if (cfrm) {
@@ -3896,13 +3896,13 @@ var Linebreak = {
                 }
             } else {
                 //prevent saving from changing focus until after values are changed
-                var nextfield = focusItem[1].next(".transcriptlet").find(".theText")[0];
+                var nextfield = tpen.screen.focusItem[1].next(".transcriptlet").find(".theText")[0];
                 nextfield.value = myfield.value.substring(startPos)+nextfield.value;
                 Preview.updateLine(nextfield);
                 myfield.value = myfield.value.substring(0, startPos);
                 Preview.updateLine(myfield);
                 $(nextfield).parent(".transcriptlet").addClass("isUnsaved");
-                focusItem[1].find(".nextLine").click();
+                tpen.screen.focusItem[1].find(".nextLine").click();
             }
         }
         Data.saveTranscription();

@@ -593,10 +593,9 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 $(".transcriptlet").children("textarea").removeClass("imageMove").removeAttr("disabled");
             }
             else if (event.which === 13){ //enter
-                var activeTranscriptlet = $(".transcriptlet:visible");
-                if(activeTranscriptlet.find('textarea').is(":focus")){
-                    nextTranscriptlet();
-                }
+                if (event.shiftKey || event.altKey) return true;
+                event.preventDefault();
+                return Linebreak.moveTextToNextBox();
             }
             else if (event.which === 9){ // tab
             //TAB hijack to keep behavior as expected

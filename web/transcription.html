@@ -335,14 +335,12 @@
         <div id="requestAccessContainer" style="display: none;">
             <div id="requestAccess" class="ui-widget ui-corner-all ui-widget-content">
                 <h2 class="ui-widget-header ui-corner-all ui-state-error">Restricted Access</h2>
-                <div class="ui-state-error-text" style="text-align: center;"><span style="display: inline-block;" class="ui-icon ui-icon-alert"></span><%out.print(thisUser.getFname());%>, you do not have permission to view this manuscript!</div>
+                <div class="ui-state-error-text" style="text-align: center;"><span style="display: inline-block;" class="ui-icon ui-icon-alert"></span>You do not have permission to view this manuscript!</div>
                 <br />
                 <form action="requestAccess.jsp" method="POST">
-                    <%
-                    String controllerHint = thisMS.getControllingUser().getUname();
-                    controllerHint = controllerHint.substring(controllerHint.indexOf('@'));
-                    %>
-                    <p>Request access for <%out.print(thisUser.getFname()+" "+thisUser.getLname()+" ("+thisUser.getUname()+") from the TPEN user ("+controllerHint+")");%> who controls access to this document.
+                    <!--    TODO: Include controller hint for user name of controller
+                            TODO: Include MS and projectIDs here.-->
+                    <p>Request access for from the TPEN user who controls access to this document.
                         <textarea name="reason" placeholder="Add any additional request details."></textarea>
                         <input type="hidden" name="ms" value="<%out.print(thisMS.getID());%>">
                         <input type="hidden" name="projectID" value="<%out.print(projectID);%>">

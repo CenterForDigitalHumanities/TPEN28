@@ -41,14 +41,16 @@ var tpen = {
         currentAnnoListID: 0,
         nextColumnToRemove: null,
         dereferencedLists : [],
-        parsing: false
+        parsing: false,
+        currentManuscriptID: -1
     },
     user: {
         isAdmin: false,
         UID: 0,
         fname: "",
         lname: "",
-        openID : 0
+        openID : 0,
+        authorizedManuscripts: []
     }
 };
 var dragHelper = "<div id='dragHelper'></div>";
@@ -321,6 +323,10 @@ function setTPENObjectData(data){
 
     if(data.cuser){
         tpen.user.UID = parseInt(data.cuser);
+    }
+
+    if(data.user_mans_auth){
+        tpen.user.authorizedManuscripts = JSON.parse(data.user_mans_auth);
     }
 
     var count = 0;
@@ -765,11 +771,46 @@ function activateUserTools(tools, permissions){
 }
 
 /*
+ * Checks the TPEN object for the manuscript permissions from a specific folio.  If this user has not accepted the
+ * agreement, then they will see a pop up requiring them to request access. 
+ * @param {type} id
+ * @returns {Boolean}
+ * */
+function checkManuscriptPermissions(id){
+    var permitted = false;
+    var manID = -1;
+    for(var i=0; i<tpen.project.folios.length; i++){
+        if(id == tpen.project.folios[i].folioNumber){
+            manID = tpen.project.folios[i].manuscript;
+            tpen.screen.currentManuscriptID = manID;
+            $("input[name='ms']").val(manID);
+            $("input[name='projectID']").val(tpen.project.id);
+            for(var j=0; j< tpen.user.authorizedManuscripts.length; j++){
+                if(parseInt(tpen.user.authorizedManuscripts[j].manID) === manID){
+                    if(tpen.user.authorizedManuscripts[j].auth === "true"){
+                        permitted = true;
+                    }
+                    if(tpen.user.authorizedManuscripts[j].controller){
+                        $(".manController").attr("title", "The controlling user is "+tpen.user.authorizedManuscripts[j].controller);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    return permitted;
+}
+
+/*
  * Load a canvas from the manifest to the transcription interface.
  */
 function loadTranscriptionCanvas(canvasObj, parsing, tool){
     var noLines = true;
     var canvasAnnoList = "";
+    var canvasURI = canvasObj["@id"];
+    var lastslashindex = canvasURI.lastIndexOf('/');
+    var folioID= canvasURI.substring(lastslashindex  + 1).replace(".png","");
+    var permissionForImage = checkManuscriptPermissions(folioID);
     $("#imgTop, #imgBottom").css("height", "400px");
     $("#imgTop img, #imgBottom img").css("height", "400px");
     $("#imgTop img, #imgBottom img").css("width", "auto");
@@ -802,15 +843,42 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
             $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
             $("#imgTop img, #imgBottom img").css("width", "100%");
             $("#imgBottom").css("height", "inherit");
-            $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
-            $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
-            originalCanvasHeight2 = $("#imgTop img").height();
-            originalCanvasWidth2 = $("#imgTop img").width();
-            drawLinesToCanvas(canvasObj, parsing, tool);
-            $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
-            $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
-            $("#parseOptions").find(".tpenButton").removeAttr("disabled");
-            $("#parsingBtn").removeAttr("disabled");
+            if(permissionForImage){
+                $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
+                $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
+                originalCanvasHeight2 = $("#imgTop img").height();
+                originalCanvasWidth2 = $("#imgTop img").width();
+                drawLinesToCanvas(canvasObj, parsing, tool);
+                $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
+                $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
+                $("#parseOptions").find(".tpenButton").removeAttr("disabled");
+                $("#parsingBtn").removeAttr("disabled");
+            }
+            else{
+                $('#requestAccessContainer').show();
+                
+                //handle the background
+                var image2 = new Image();
+                $(image2)
+                .on("load", function(){
+                    $("#noLineWarning").hide();
+                    $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
+                    $("#imgTop img, #imgBottom img").css("width", "100%");
+                    $('.transcriptionImage').attr('src', "images/missingImage.png");
+                    $("#fullPageImg").attr("src", "images/missingImage.png");
+                    $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
+                    $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
+                    $("#imgTop").css("height", "0%");
+                    $("#imgBottom img").css("top", "0px");
+                    $("#imgBottom").css("height", "inherit");
+                    $("#parsingButton").attr("disabled", "disabled");
+                    $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
+                    $("#parsingBtn").attr("disabled", "disabled");
+                    $("#transTemplateLoading").hide();
+                })
+                .attr("src", "images/missingImage.png");
+            }
+
         })
         .on("error", function(){
             var image2 = new Image();
@@ -1639,7 +1707,7 @@ function hideWorkspaceToSeeImage(){
 
 function magnify(img, event){
     //For separating out different imgs on which to zoom.
-    var container = ""; // #id of limit 
+    var container = ""; // #id of limit
     if (img === "trans"){
         img = $("#transcriptionTemplate");
         container = "transcriptionCanvas";

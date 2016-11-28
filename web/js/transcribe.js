@@ -380,6 +380,11 @@ function loadTranscription(pid, tool){
             type:"GET",
             success: function(activeProject){
                 var url = "";
+                if(!activeProject.manifest) {                
+                    $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                    $(".transLoader").find("img").attr("src", "../TPEN28/images/BrokenBook01.jpg");
+                    return false;
+                }
                 setTPENObjectData(activeProject);
                 var userToolsAvailable = activeProject.userTool;
                 var projectPermissions = JSON.parse(activeProject.projper);
@@ -1770,7 +1775,8 @@ function stopMagnify(){
             topImg.add(btmImg).attr("src",imgSrc);
         }
         var WRAPWIDTH = $("#transcriptionCanvas").width();
-        var availableRoom = new Array (Page.height()-workspaceHeight(),WRAPWIDTH);
+        var workspaceHeight = $("#transWorkspace").height();
+        var availableRoom = new Array (Page.height()-workspaceHeight,WRAPWIDTH);
         var bookmark = $('.activeLine');
         var limitIndex = (bookmark.width()/bookmark.height() > availableRoom[1]/availableRoom[0]) ? 1 : 0;
         var zoomRatio = (limitIndex === 1) ? availableRoom[1]/bookmark.width() : availableRoom[0]/bookmark.height();
@@ -2040,6 +2046,7 @@ function fullPage(){
     $("#transcriptionTemplate").css("height", "auto");
     $("#transcriptionTemplate").css("display", "inline-block");
     $('.lineColIndicatorArea').show();
+    $("#help").css({"left":"100%"}).fadeOut(1000);
     $("#fullScreenBtn").fadeOut(250);
     tpen.screen.isZoomed = false;
     $(".split").hide();
@@ -3919,6 +3926,210 @@ function getURLVariable(variable)
                if(pair[0] == variable){return pair[1];}
        }
        return(false);
+}
+
+var Help = {
+    /**
+     *  Shows the help interface.
+     */
+    revealHelp: function(){
+        var workspaceHeight = $("#transWorkspace").height();
+        var imgTopHeight = $("#imgTop").height() + workspaceHeight + 52;
+        //Screen.maintainWorkspace();
+        $(".helpPanel").height(imgTopHeight-32);
+        $(".helpPanel").css("width", "20%");
+        $("#helpPanels").width('500%');
+        $("#help").show().css({
+            "left":"0px",
+            "top":"32px",
+            "width":"100%",
+            "height" : imgTopHeight+"px"
+        });
+        $(".helpContents").eq(0).click();
+        $("#bookmark").hide();
+        $("#closeHelp").show();
+        console.log("The help is revealed");
+    },
+    /**
+     *  Adjusts the position of the help panels to reveal the selected section.
+     */
+    select  : function(contentSelect){
+          $(contentSelect).addClass("helpActive").siblings().removeClass("helpActive");
+          $("#helpPanels").css("margin-left",-$("#help").width()*contentSelect.index()+"px");
+    },
+    /**
+     *  Shows specific page element through overlay and zooms in. If the element
+     *  is not displayed on screen, an alternative message is shown.
+     *  
+     *  @param refIndex int index of help button clicked
+     */
+    lightUp: function(refIndex){
+        switch (refIndex){
+            case 0  :   //Previous Line
+                this.highlight(tpen.screen.focusItem[1].find(".previousLine"));
+                break;
+            case 1  :   //Next Line
+                this.highlight(tpen.screen.focusItem[1].find(".nextLine"));
+                break;
+            case 2  :   //Line Indicator
+                this.highlight(tpen.screen.focusItem[1].find(".counter"));
+                break;
+            case 3  :   //View Full Page
+            case 7  :
+                this.highlight($("#imageBtn"));
+                break;
+            case 4  :   //Preview Tool
+            case 15 :
+                this.highlight($("#previewBtn"));
+                break;
+            case 5  :   //Special Characters
+                this.highlight($("#charactersPopin"));
+                break;
+            case 6  :   //XML Tags
+                this.highlight($("#xmlTagPopin"));
+                break;
+            case 8  :   //Magnify Tool
+                this.highlight($("#magnify1"));
+                break;
+            case 9  :   //History
+                this.highlight($("#historyBtn"));
+                break;
+            case 10 :   //Abbreviations
+                this.highlight($("#abbrevBtn"));
+                break;
+            case 11 :   //Compare Pages
+                this.highlight($("#compareBtn"));
+                break;
+            case 12 :   //Magnify Tool
+                this.highlight($("#magnify2"));
+                break;
+            case 13 :   //Linebreaking
+                this.highlight($("#linebreakBtn"));
+                break;
+            case 14 :   //Correct Parsing
+                this.highlight($("#parsingBtn"));
+                break;
+            case 16 :   //Location Flag
+            case 17 :
+                this.highlight($("#location"));
+                break;
+            case 18 :   //Previous Page
+                this.highlight($("#prevPage"));
+                break;
+            case 19 :   //Next Page
+                this.highlight($("#nextPage"));
+                break;
+            default :
+                console.log("No element located for "+refIndex);
+        }
+    },
+    /**
+     *  Redraws the element on top of the overlay.
+     *  
+     *  @param $element jQuery object to redraw
+     */
+    highlight: function($element){
+        if ($element.length == 0) $element = $("<div/>");
+        var look = $element.clone().attr('id','highlight');
+        var position = $element.offset();
+        $("#overlay").show().after(look);
+        if ((position == null) || (position.top < 1)){
+            position = {left:(Page.width()-260)/2,top:(Page.height()-46)/2};
+            look.prepend("<div id='offscreen' class='ui-corner-all ui-state-error'>This element is not currently displayed.</div>")
+            .css({
+                "left"  : position.left,
+                "top"   : position.top
+            }).delay(2000).show("fade",0,function(){
+                $(this).remove();
+                $("#overlay").hide("fade",2000);
+            });
+        } else {
+            $("#highlight").css({
+                "box-shadow":"0 0 5px 3px whitesmoke",
+                "left"  : position.left,
+                "top"   : position.top
+            }).show("scale",{
+                percent:150,
+                direction:'both',
+                easing:"easeOutExpo"},
+            2000,function(){
+                $(this).remove();
+                $("#overlay").hide("fade",1000);
+            });
+        }
+    },
+    /**
+     *  Help function to call up video, if available.
+     *  
+     *  @param refIndex int index of help button clicked
+     */
+    video: function(refIndex){
+        var vidLink ='';
+        switch (refIndex){
+            case 0  :   //Previous Line
+            case 1  :   //Next Line
+                vidLink = 'http://www.youtube.com/embed/gcDOP5XfiwM';
+                break;
+            case 2  :   //Line Indicator
+                vidLink = 'http://www.youtube.com/embed/rIfF9ksffnU';
+                break;
+            case 3  :   //View Full Page
+            case 7  :
+                vidLink = 'http://www.youtube.com/embed/6X-KlLpF6RQ';
+                break;
+            case 4  :   //Preview Tool
+            case 15 :
+                vidLink = 'http://www.youtube.com/embed/dxS-BF3PJ_0';
+                break;
+            case 5  :   //Special Characters
+                vidLink = 'http://www.youtube.com/embed/EJL_GRA-grA';
+                break;
+            case 6  :   //XML Tags
+                vidLink = '';
+                break;
+            case 8  :   //Magnify Tool
+                vidLink = '';
+                break;
+            case 9  :   //History
+                vidLink = '';
+                break;
+            case 10 :   //Abbreviations
+                vidLink = '';
+                break;
+            case 11 :   //Compare Pages
+                vidLink = '';
+                break;
+            case 12 :   //Magnify Tool
+                vidLink = '';
+                break;
+            case 13 :   //Linebreaking
+                vidLink = '';
+                break;
+            case 14 :   //Correct Parsing
+                vidLink = '';
+                break;
+            case 16 :   //Location Flag
+                vidLink = 'http://www.youtube.com/embed/8D3drB9MTA8';
+                break;
+            case 17 :   //Jump to Page
+                vidLink = 'http://www.youtube.com/embed/mv_W_3N_Sbo';
+                break;
+            case 18 :   //Previous Page
+                vidLink = '';
+                break;
+            case 19 :   //Next Page
+                vidLink = '';
+                break;
+            default :
+                console.log("No element located for "+refIndex);
+        }
+        var videoview = $("<iframe id=videoView class=popover allowfullscreen src="+vidLink+" />");
+        if (vidLink.length>0){
+            $('#overlay').show().after(videoview);
+        } else {
+            $(".video[ref='"+refIndex+"']").addClass('ui-state-disabled').text('unavailable');
+        }
+    }
 }
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?

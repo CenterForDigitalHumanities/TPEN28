@@ -821,6 +821,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
     $("#imgTop img, #imgBottom img").css("width", "auto");
     $("#prevColLine").html("**");
     $("#currentColLine").html("**");
+    $("#captionsColLine").html("**");
     $('.transcriptionImage').attr('src', "images/loading2.gif"); //background loader if there is a hang time waiting for image
     $('.lineColIndicator').remove();
     $(".transcriptlet").remove();
@@ -1247,15 +1248,18 @@ function updatePresentation(transcriptlet) {
             var prevLineCol = transcriptletBefore.attr("col");
             var prevLineText = transcriptletBefore.attr("data-answer");
             $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum);
+            $("#captionsColLine").html(prevLineCol + "" + currentTranscriptletNum+":");
             $("#captionsText").html((prevLineText.length && prevLineText) || "This line is not transcribed.");
         }
         else { //this is a problem
             $("#prevColLine").html("**");
+            $("#captionsColLine").html("**");
             $("#captionsText").html("You are on the first line.");
         }
     }
     else { //there is no previous line
         $("#prevColLine").html("**");
+        $("#captionsColLine").html("**");            
         $("#captionsText").html("ERROR.  NUMBERS ARE OFF");
     }
     tpen.screen.focusItem[0] = tpen.screen.focusItem[1];
@@ -1685,7 +1689,7 @@ function restoreWorkspace(){
     $("#imgTop img").css({"height":"auto", "width":"100%"});
     updatePresentation(tpen.screen.focusItem[1]);
     $(".hideMe").show();
-    $(".showMe").hide();
+    $(".showMe2").hide();
     var pageJumpIcons = $("#pageJump").parent().find("i");
     pageJumpIcons[0].setAttribute('onclick', 'firstFolio();');
     pageJumpIcons[1].setAttribute('onclick', 'previousFolio();');
@@ -1707,7 +1711,7 @@ function hideWorkspaceToSeeImage(){
         "top": "0%"
     });
     $(".hideMe").hide();
-    $(".showMe").show();
+    $(".showMe2").show();
 }
 
 function magnify(img, event){
@@ -2057,10 +2061,7 @@ function fullPage(){
     var adjustedHeightForFullscreen = (originalCanvasHeight2 / originalCanvasWidth2) * screenWidth;
     $("#transcriptionCanvas").css("height", adjustedHeightForFullscreen + "px");
     $(".lineColIndicatorArea").css("height", adjustedHeightForFullscreen + "px");
-    $("#imgTop").hover(function(){
-        var color = tpen.screen.colorThisTime.replace(".4", "1");
-        $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + color);
-    }, function(){
+    $("#imgTop, #imgBottom").hover(function(){
         $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + tpen.screen.colorThisTime);
     });
     $.each($(".lineColOnLine"), function(){
@@ -3968,61 +3969,47 @@ var Help = {
         console.log("Help.lightUp.  case "+refIndex);
         switch (refIndex){
             case 0  :   //Previous Line
-                this.highlight(tpen.screen.focusItem[1].find(".previousLine"));
+                this.highlight($("#prevLine"));
                 break;
             case 1  :   //Next Line
-                this.highlight(tpen.screen.focusItem[1].find(".nextLine"));
+                this.highlight($("#nextLine"));
                 break;
             case 2  :   //Line Indicator
-                this.highlight(tpen.screen.focusItem[1].find(".counter"));
+                this.highlight($("#colLineWrapper"));
                 break;
-            case 3  :   //View Full Page
-            case 7  :
-                this.highlight($("#imageBtn"));
+            case 3  :   //Special Characters
+                this.highlight($("#toggleChars"));
                 break;
-            case 4  :   //Preview Tool
-            case 15 :
-                this.highlight($("#previewBtn"));
+            case 4  :   //XML Tags
+                this.highlight($("#toggleXML"));
                 break;
-            case 5  :   //Special Characters
-                this.highlight($("#charactersPopin"));
-                break;
-            case 6  :   //XML Tags
-                this.highlight($("#xmlTagPopin"));
-                break;
-            case 8  :   //Magnify Tool
+            case 6:
+            case 8:
                 this.highlight($("#magnify1"));
                 break;
-            case 9  :   //History
-                this.highlight($("#historyBtn"));
-                break;
-            case 10 :   //Abbreviations
-                this.highlight($("#abbrevBtn"));
-                break;
-            case 11 :   //Compare Pages
-                this.highlight($("#compareBtn"));
-                break;
-            case 12 :   //Magnify Tool
-                this.highlight($("#magnify2"));
-                break;
-            case 13 :   //Linebreaking
-                this.highlight($("#linebreakBtn"));
-                break;
-            case 14 :   //Correct Parsing
+            case 10:
                 this.highlight($("#parsingBtn"));
                 break;
-            case 16 :   //Location Flag
-            case 17 :
-                this.highlight($("#location"));
+            case 5  :   
+            case 7  :
+            case 9  :                 
+            case 11 :   
+                this.highlight($("#splitScreenTools"));
                 break;
-            case 18 :   //Previous Page
-                this.highlight($("#prevPage"));
+            case 12 :   //Location Flag. 
+                this.highlight($("#trimPage")); //This is the jump to page
                 break;
-            case 19 :   //Next Page
-                this.highlight($("#nextPage"));
+            case 13 : //Page Jump widget
+                this.highlight($("#pageJump")); //This is the jump to page
+                break;
+            case 14 : //Previous Page button
+                this.highlight($("#prevCanvas"));
+                break;    
+            case 15 : //Next Page button
+                this.highlight($("#nextCanvas"));
                 break;
             default :
-                console.log("No element located for "+refIndex);
+                console.warn("No element located for "+refIndex);
         }
     },
     /**
@@ -4031,12 +4018,16 @@ var Help = {
      *  @param $element jQuery object to redraw
      */
     highlight: function($element){
-        console.log("Help.highlight");
+        console.log("Help.highlight ");
+        console.log($element);
         if ($element.length == 0) $element = $("<div/>");
         var look = $element.clone().attr('id','highlight');
         var position = $element.offset();
+        console.log("The clone");
+        console.log(look);
         $("#overlay").show().after(look);
         if ((position == null) || (position.top < 1)){
+            console.log("off screen");
             position = {left:(Page.width()-260)/2,top:(Page.height()-46)/2};
             look.prepend("<div id='offscreen' class='ui-corner-all ui-state-error'>This element is not currently displayed.</div>")
             .css({
@@ -4047,18 +4038,20 @@ var Help = {
                 $("#overlay").hide("fade",2000);
             });
         } else {
+            console.log("We can hightlight it");
+            console.log(position);
             $("#highlight").css({
                 "box-shadow":"0 0 5px 3px whitesmoke",
                 "left"  : position.left,
-                "top"   : position.top
+                "top"   : position.top,
+                "z-index" : 10
             }).show("scale",{
                 percent:150,
                 direction:'both',
-                easing:"easeOutExpo"},
-            2000,function(){
-                $(this).remove();
-                $("#overlay").hide("fade",1000);
-            });
+                easing:"easeOutExpo"},1000);
+            
+            $("#overlay").hide("fade",2000);
+            setTimeout(function(){ $("#highlight").remove(); }, 1500);
         }
     },
     /**

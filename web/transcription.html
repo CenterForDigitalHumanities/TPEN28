@@ -118,8 +118,9 @@
                 <div id="transWorkspace">
                     <div title="Slide Workspace" class="workspaceHandle slideHandleLeft"><i class="fa fa-bars"></i><i class="fa fa-arrows-v"></i></div><div title="Slide Workspace" class="workspaceHandle slideHandleRight"><i class="fa fa-arrows-v"></i><i class="fa fa-bars"></i></div>
                     <div class="flex-container flex-stretch">
-                        <div id="captions" class="flex-wide"><div id="captionsText"></div>
-
+                        <div id="captions" class="flex-wide">
+                            <div id="captionsColLine"></div>
+                            <div id="captionsText"></div>
                         </div>
                     </div>
                     <div class="flex-container flex-stretch">
@@ -129,13 +130,13 @@
                             <button id="nextCanvas" title="Next Page" onclick="nextFolio();">next</button>
                         </div>
                         <div id="transcriptletArea" class="flex-wide"></div>
-                        <div id="lineControls" class="flex-bookend">
-                            <div id="lineLabel">Line</div>
-                            <button id="prevLine" title="Previous Line" onclick="previousTranscriptlet();">prev</button><button id="nextLine" title="Next Line" onclick="nextTranscriptlet();">next</button>
-                        </div>
                         <div id="colLineWrapper" class="flex-stretch">
                             <div title="Current Line" id="currentColLine"></div>
                             <div title="Previous Line" id="prevColLine"></div>
+                        </div>
+                        <div id="lineControls" class="flex-bookend">
+                            <div id="lineLabel">Line</div>
+                            <button id="prevLine" title="Previous Line" onclick="previousTranscriptlet();">prev</button><button id="nextLine" title="Next Line" onclick="nextTranscriptlet();">next</button>
                         </div>
                     </div>
                     <div class="bottomButtons">
@@ -163,7 +164,7 @@
                         <button id="toggleChars" title="Move Transcription Image" onclick="toggleSpecialChars(event);">Characters</button>
                         <button id="toggleXML" title="Move Transcription Image" onclick="toggleXMLTags(event);">XML Tags</button>
                         <button id="activeImageTool" onclick="toggleImgTools(event);" >Image Tools</button> <!--  -->
-                        <button class="magnifyBtn" magnifyImg="trans" title="Magnify Transcription Image" >Magnify</button> <!--Page event on the listener for this class in js.-->
+                        <button id="magnify1" class="magnifyBtn" magnifyImg="trans" title="Magnify Transcription Image" >Magnify</button> <!--Page event on the listener for this class in js.-->
                         <button id="moveImage" title="Move Transcription Image" onclick="startMoveImg();">Move Img</button>
                         <button id="parsingBtn" title="Correct Page Parsing" >Correct Parsing</button> <!--Page event on the listener for this class in js.-->
                         <!--<button id="linebreakBtn">Linebreak</button>-->
@@ -271,7 +272,7 @@
                         <option folioNum="0">Compare To</option>
                     </select>
                     <button class="fullScreenTrans">Full Screen Transcription</button>
-                    <button class="showMe" onclick="restoreWorkspace();">Show Workspace</button>
+                    <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
                     <button class="magnifyBtn" magnifyImg="compare" >Magnify</button>
                 </div>
@@ -281,7 +282,7 @@
             <div id="previewSplit" class="split">
                 <div class="toolLinks">
                     <button class="fullScreenTrans">Full Screen Transcription</button>
-                    <button class="showMe" onclick="restoreWorkspace();">Show Workspace</button>
+                    <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
                 </div>
                 <div id="previewDiv">
@@ -291,7 +292,7 @@
             <div id="fullPageSplit" class="split">
                 <div class="toolLinks">
                     <button class="fullScreenTrans">Full Screen Transcription</button>
-                    <button class="showMe" onclick="restoreWorkspace();">Show Workspace</button>
+                    <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
                     <button class="magnifyBtn" style="position: relative;" magnifyImg="full" >Magnify</button>
                 </div>
@@ -353,110 +354,128 @@
             <div id="trexHead"></div>
         </div>
         <div id="help">
-                <div id="closeHelp" class="ui-icon-closethick ui-icon"></div>
-                        <div id="helpPanels">
-                            <div class="helpPanel" title="Page Navigation">
-                                <h2>Page Navigation</h2>
-                                <ul class="helpColumn">
-                                    <li>Move through the page with the <span class="showMe">Previous Line</span> and <span class="showMe">Next Line</span> buttons to move from line to line.</li>
-                                    <li>The <span class="showMe">Line Indicator</span> identifies the current column and line based on the T&#8209;PEN <span ref="glossParsing" class="glossary">image parsing</span>.</li>
-                                    <li>Click on any line to jump to it.  <!--You can do this through the <span class="showMe">View Full Page</span> or <span class="showMe">Preview</span> tools. --></li>
-                                </ul>
-                            </div>
-                            <div class="helpPanel" title="Transcription Tools">
-                                <h2>Transcription Tools</h2>
-                                <dl class="helpColumn">
-                                    <dt>Custom Text Entry</dt>
-                                    <dd>Expand the <span class="showMe">Characters</span> or <span class="showMe">XML Tags</span> list to reveal buttons to insert your custom tags or <span ref="glossSpecialCharacters" class="glossary">special characters</span> into the <span ref="glossTranscriptionArea" class="glossary">transcription area</span>.</dd>
-                                    <dt class="showMe">View Full Page</dt>
-                                    <dd>Show the whole page image. Mouseover the image to highlight individual lines. Click to navigate directly to that line. Use the available <span class="showMe">magnify tool</span> to take a closer look.</dd>
-                                    <dt class="showMe">History</dt>
-                                    <dd>Lists the previous saved versions of the <span ref="glossParsing" class="glossary">line parsing</span> and <span ref="glossTranscription" class="glossary">transcription text</span>. Mouseover the history entries to reveal options to revert to a previous version.</dd>
-                                    <dt class="showMe">Abbreviations</dt>
-                                    <dd>Browse A. Capelli's <cite>lexicon abbreviarum</cite> Latin and Italian abbreviations.</dd>
-                                    <dt class="showMe">Compare Pages</dt>
-                                    <dd>View other pages from this project. Use the available <span class="showMe">magnify tool</span> to take a closer look.</dd>
-                                    <dt class="showMe">Linebreak</dt>
-                                    <dd>Upload a file for manual or automatic linebreaking.</dd>
-                                    <dt class="showMe">Correct Parsing</dt>
-                                    <dd>View and adjust the <span ref="glossParsing" class="glossary">line parsing</span> on this page.</dd>
-                                    <dt class="showMe">Preview</dt>
-                                    <dd>Reveal the <span ref="glossTranscription" class="glossary">transcription text</span> on the previous, current, and following pages. Make changes to text on other pages within the tool.</dd>
-                                </dl>
-                            </div>
-                            <div class="helpPanel" title="Manuscript Navigation">
-                                <h2>Manuscript Navigation</h2>
-                                <ul class="helpColumn">
-                                    <li>The <span class="showMe">Location Flag</span> shows the shelfmark of the current page.</li>
-                                    <li>Use the <span class="showMe">Jump to page</span> menu to select any page in the current project.</li>
-                                    <li>The <span class="showMe">Previous Page</span> and <span class="showMe">Next Page</span> buttons step through the project one page at a time.</li>
-                                </ul>
-                            </div>
-                            <div class="helpPanel" title="Keyboard Shortcuts">
-                                <h2>Keyboard Shortcuts</h2>
-                                Support for most browsers includes the following simple shortcuts:
-                                    <dl class="helpColumn">
-                                        <dt>CTRL + 1-9:</dt>
-                                            <dd>Insert the corresponding special character at the cursor location.</dd>
-                                        <dt>CTRL + HOME:</dt>
-                                            <dd>Quickly jump to the first line of the current page.</dd>
-                                        <dt>TAB:</dt>
-                                            <dd>Move forward through lines of transcription. Reverse with SHIFT + TAB.</dd>
-                                        <dt>ALT + arrows:</dt>
-                                            <dd>Move up and down through lines of transcription with the keyboard arrow keys.</dd>
-                                        <dt>ESC:</dt>
-                                            <dd>Close any open tool and return to fullscreen transcription.</dd>
-                                        <dt>ALT:</dt>
-                                            <dd>Hold to adjust the interface. Slide the main workspace up and down to see more of the manuscript;<br/>move the manuscript image freely behind the main workspace; or<br/>resize the bookmark bounding box to precisely bound an odd or skewed line.</dd>
-                                        <dt>CTRL:</dt>
-                                            <dd>Hold to get a better view of the important parts of your manuscript. The bookmark bounding box, location flag, and bug report form will all fade out and let you see the manuscript or tool behind it.</dd>
-                                        <dt>F1:</dt>
-                                            <dd>On the transcription screen, pulls up the application help.</dd>
-                                        <dt>F11:</dt>
-                                            <dd>Toggle fullscreen, eliminating browser and desktop toolbars.</dd>
-                                        <dt>ALT + CTRL:</dt>
-                                            <dd>Hold both to use the peek-zoom, which scales the bounded area to fit your screen and increases the quality of the image, if possible.</dd>
-                                        <dt>+ or - while magnifying:</dt>
-                                            <dd>Each keystroke will adjust the magnification of the tool by .4x to fine tune the image result.</dd>
-                                    </dl>
-                            </div>
-                            <div class="helpPanel" title="Glossary">
-                                <h2>Glossary</h2>
-                                Commonly used terms in this application
-                                <dl class="helpColumn">
-                                        <dt id="glossPage">Page</dt>
-                                            <dd>A single image and supporting interface. Some source images may contain partial or multiple folios.</dd>
-                                        <dt id="glossProject">Project</dt>
-                                            <dd>Collection of images designated for a specific group of users. Defaults to all images within a selected manuscript, but may be altered.</dd>
-                                        <dt id="glossManuscript">Manuscript</dt>
-                                            <dd>Collection of images on a repository. Often, but not necessarily exemplary of the artifact document.</dd>
-                                        <dt id="glossGroup">Group</dt>
-                                            <dd>Collection of users associated with a single project. Group membership is controlled by a Group Leader.</dd>
-                                        <dt id="glossUser">User</dt>
-                                            <dd>Entity intended to represent the human connected to a T&#8209;PEN account. Users login with the e-mail address associated with the T&#8209;PEN account and are displayed to others by a first initial and last name.</dd>
-                                        <dt id="glossTranscription">Transcription</dt>
-                                            <dd>Usually referring to the textual data associated with an image region. Transcription metadata include specific location, date of creation, and associated image data.</dd>
-                                        <dt id="glossTranscriptionArea">Transcription Area</dt>
-                                            <dd>Refers to the white textarea region where the user enters transcription text.</dd>
-                                        <dt id="glossParsing">Parsing</dt>
-                                            <dd>Describes the automatic or manual process of logically splitting a page into rectangular regions to designate individual lines for transcribing. Changes to parsing are saved in the history of a transcription.</dd>
-                                        <dt id="glossHistory">History</dt>
-                                            <dd>Previous versions of transcriptions. Changes made to textual and parsing data are recorded.</dd>
-                                        <dt id="glossSpecialCharacters">Special Characters</dt>
-                                            <dd>Custom-coded buttons that automatically enter a unicode character (typically one not included on the user's keyboard) into the transcription area.</dd>
-                                        <dt id="glossButtons">Buttons</dt>
-                                            <dd>Typically refers to XML Tag objects customized on the Button Management page. May also refer to Special Character objects in the same location. "Buttons" may also used in the generic sense to refer to a graphically distinct, clickable region which invokes an expected action.</dd>
-                                    </dl>
-                            </div>
+            <div id="closeHelp" class="ui-icon-closethick ui-icon"></div>
+                    <div id="helpPanels">
+                        <div class="helpPanel" title="Page Navigation">
+                            <h2>Page Navigation</h2>
+                            <ul class="helpColumn">
+                                <li>Move through the page with the <span class="showMe">Previous Line</span> and <span class="showMe">Next Line</span> buttons to move from line to line.</li>
+                                <li>The <span class="showMe">Line Indicator</span> identifies the current column and line as well as the previous column and line based 
+                                    on the T&#8209;PEN <span ref="glossParsing" class="glossary">image parsing</span>.  Each drawn line also shows its column and line combination.
+                                </li>
+                                <li>Click on any line to jump to it.  <!--You can do this through the <span class="showMe">View Full Page</span> or <span class="showMe">Preview</span> tools. --></li>
+                            </ul>
                         </div>
-                        <div id="helpContents">
-                            <span class="helpContents helpActive" title="Page Navigation"></span>
-                            <span class="helpContents" title="Transcription Tools"></span>
-                            <span class="helpContents" title="Manuscript Navigation"></span>
-                            <span class="helpContents" title="Keyboard Shortcuts"></span>
-                            <span class="helpContents" title="Glossary"></span>
+                        <div class="helpPanel" title="Transcription Tools">
+                            <h2>Transcription Tools</h2>
+                            <dl class="helpColumn">
+                                <dt>Custom Text Entry</dt>
+                                <dd>Expand the <span class="showMe">Characters</span> or <span class="showMe">XML Tags</span> list to reveal buttons to insert your custom tags or <span ref="glossSpecialCharacters" class="glossary">special characters</span> into the <span ref="glossTranscriptionArea" class="glossary">transcription area</span>.</dd>
+                                <dt class="showMe">View Full Page</dt>
+                                <dd>Show the whole page image. Mouseover the image to highlight individual lines. Click to navigate directly to that line. Use the available <span class="showMe">magnify tool</span> to take a closer look.</dd>
+<!--                                    
+                                <dt class="showMe">History</dt>
+                                <dd>Lists the previous saved versions of the <span ref="glossParsing" class="glossary">line parsing</span> and <span ref="glossTranscription" class="glossary">transcription text</span>. Mouseover the history entries to reveal options to revert to a previous version.</dd>
+                                <dt class="showMe">Abbreviations</dt>
+                                <dd>Browse A. Capelli's <cite>lexicon abbreviarum</cite> Latin and Italian abbreviations.</dd>-->
+
+                                <dt class="showMe">Compare Pages</dt>
+                                <dd>View other pages from this project. Use the available <span class="showMe">magnify tool</span> to take a closer look.</dd>
+                                <dt class="showMe">Linebreak</dt>
+                                <dd>Upload a file for manual or automatic linebreaking.</dd>
+                                <dt class="showMe">Correct Parsing</dt>
+                                <dd>View and adjust the <span ref="glossParsing" class="glossary">line parsing</span> on this page.</dd>
+                                <dt class="showMe">Preview</dt>
+                                <dd>Reveal the <span ref="glossTranscription" class="glossary">transcription text</span> on the previous, current, and following pages. Make changes to text on other pages within the tool.</dd>
+                            </dl>
+                        </div>
+                        <div class="helpPanel" title="Manuscript Navigation">
+                            <h2>Manuscript Navigation</h2>
+                            <ul class="helpColumn">
+                                <li>The <span class="showMe">Location Flag</span> shows the shelfmark of the current page.</li>
+                                <li>Use the <span class="showMe">Jump to page</span> menu to select any page in the current project.</li>
+                                <li>The <span class="showMe">Previous Page</span> and <span class="showMe">Next Page</span> buttons step through the project one page at a time.</li>
+                            </ul>
+                        </div>
+                        <div class="helpPanel" title="Keyboard Shortcuts">
+                            <h2>Keyboard Shortcuts</h2>
+                            Support for most browsers includes the following simple shortcuts:
+                                <dl class="helpColumn">
+                                    <dt>CTRL + 1-9:</dt>
+                                        <dd>Insert the corresponding special character at the cursor location.</dd>
+                                    <dt>CTRL + HOME:</dt>
+                                        <dd>Quickly jump to the first line of the current page.</dd>
+                                    <dt>TAB:</dt>
+                                        <dd>Move forward through lines of transcription. Reverse with SHIFT + TAB.</dd>
+                                    <dt>ALT + up/down arrows:</dt>
+                                        <dd>Move up and down through lines of transcription with the keyboard arrow keys.</dd>
+                                    <dt>ALT + left/right arrows:</dt>
+                                        <dd>Bump the active transcription line in the direction the arrow was pushed. *Warning: may create new columns.</dd>
+                                    <dt>ESC:</dt>
+                                        <dd>Close any open tool and return to fullscreen transcription.</dd>
+
+<!--                                        <dt>ALT:</dt>
+                                        <dd>Hold to adjust the interface. Slide the main workspace up and down to see more of the manuscript;<br/>move the manuscript image freely behind the main workspace; or<br/>resize the bookmark bounding box to precisely bound an odd or skewed line.</dd>-->
+
+<!--                                    <dt>CTRL:</dt>
+                                        <dd>Hold to get a better view of the important parts of your manuscript. The bookmark bounding box, location flag, and bug report form will all fade out and let you see the manuscript or tool behind it.</dd>-->
+                                    
+                                    <dt>F1:</dt>
+                                        <dd>On the transcription screen, pulls up the application help.</dd>
+                                    <dt>F11:</dt>
+                                        <dd>Toggle fullscreen, eliminating browser and desktop toolbars.</dd>
+<!--                                        <dt>ALT + CTRL:</dt>
+                                        <dd>Hold both to use the peek-zoom, which scales the bounded area to fit your screen and increases the quality of the image, if possible.</dd>-->
+
+                                    <dt>+ or - while magnifying:</dt>
+                                        <dd>Each keystroke will adjust the magnification of the tool by .4x to fine tune the image result.</dd>
+                                </dl>
+                        </div>
+                        <div class="helpPanel" title="Glossary">
+                            <h2>Glossary</h2>
+                            Commonly used terms in this application
+                            <dl class="helpColumn">
+                                    <dt id="glossPage">Page</dt>
+                                        <dd>A single image and supporting interface. Some source images may contain partial or multiple folios.</dd>
+                                    <dt id="glossProject">Project</dt>
+                                        <dd>Collection of images designated for a specific group of users. Defaults to all images within a selected manuscript, but may be altered.</dd>
+                                    <dt id="glossManuscript">Manuscript</dt>
+                                        <dd>Collection of images on a repository. Often, but not necessarily exemplary of the artifact document.</dd>
+                                    <dt id="glossGroup">Group</dt>
+                                        <dd>Collection of users associated with a single project. Group membership is controlled by a Group Leader.</dd>
+                                    <dt id="glossUser">User</dt>
+                                        <dd>Entity intended to represent the human connected to a T&#8209;PEN account. Users login with the e-mail address associated with the T&#8209;PEN account and are displayed to others by a first initial and last name.</dd>
+                                    <dt id="glossTranscription">Transcription</dt>
+                                        <dd>Usually referring to the textual data associated with an image region. Transcription metadata include specific location, date of creation, and associated image data.</dd>
+                                    <dt id="glossTranscriptionArea">Transcription Area</dt>
+                                        <dd>Refers to the white textarea region where the user enters transcription text.</dd>
+                                    <dt id="glossParsing">Parsing</dt>
+                                        <dd>Describes the automatic or manual process of logically splitting a page into rectangular regions to designate individual lines for transcribing. Changes to parsing are saved in the history of a transcription.</dd>
+                                    <dt id="glossHistory">History</dt>
+                                        <dd>Previous versions of transcriptions. Changes made to textual and parsing data are recorded.</dd>
+                                    <dt id="glossSpecialCharacters">Special Characters</dt>
+                                        <dd>Custom-coded buttons that automatically enter a unicode character (typically one not included on the user's keyboard) into the transcription area.</dd>
+                                    <dt id="glossButtons">Buttons</dt>
+                                        <dd>Typically refers to XML Tag objects customized on the Button Management page. May also refer to Special Character objects in the same location. "Buttons" may also used in the generic sense to refer to a graphically distinct, clickable region which invokes an expected action.</dd>
+                                </dl>
                         </div>
                     </div>
+                    <div id="helpContents">
+                        <span class="helpContents helpActive" title="Page Navigation"></span>
+                        <span class="helpContents" title="Transcription Tools"></span>
+                        <span class="helpContents" title="Manuscript Navigation"></span>
+                        <span class="helpContents" title="Keyboard Shortcuts"></span>
+                        <span class="helpContents" title="Glossary"></span>
+                    </div>
+                </div>
+                <div id="overlay" class="ui-widget-overlay">
+                    <div id="overlayNote">Click the page to return</div>
+                </div>
+                <div id="location" class="ui-widget-content ui-corner-tr">
+                <!--<select class="clear left" onchange="Interaction.navigateTo(this);">
+                    <option SELECTED>Jump to page</option>
+                </select>-->
+                </div>
         <script>
 
     //Must explicitly set new height and width for percentages values in the DOM to take effect.

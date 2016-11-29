@@ -295,14 +295,16 @@ body{
     margin-left: 109px;
 }
 #captionsText {
-    display: block;
+    display: inline-block;
     font-family: "Junicode","Cambria","Georgia", serif;
-    font-size:16px;
+    font-size: 16px;
     text-overflow: ellipsis;
-    width:100%;
-    position:relative;
+    width: 100%;
+    position: relative;
     white-space: nowrap;
+    top: 3px;
     overflow: hidden;
+    
 }
 
 /*
@@ -452,7 +454,7 @@ body{
 #colLineWrapper{
     display: inline-block;
     position: relative;
-    margin-left:3px;
+    margin:0px 3px;
 }
 #prevColLine, #currentColLine{
     border-radius: 4px;
@@ -467,7 +469,19 @@ body{
     position: relative;
     display: block; /* We may still want these, but they are wildly out of position right now. */
 }
-
+#captionsColLine{
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    text-align: center;
+    line-height: 30px;
+    cursor: default;
+    color: #002a5c;
+    font-weight: bold;
+    font-size: 11pt;
+    position: relative;
+    color:wheat;
+}
 #prevColLine{
     background-color: wheat;
 }
@@ -567,7 +581,7 @@ body{
 }
 
 .splitTool{
-    display: none;
+    display: block;
 }
 #parsingBtn{
     display: none;
@@ -590,6 +604,28 @@ body{
 }
 
 /*#parsingSplit {max-width:600px; min-width: 350px;position: relative; z-index: 9;}*/
+#overlay{
+    display: none;
+    z-index: 10;
+}
+#location {
+    bottom: 0;
+    left: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-right: none;
+    border-top: none;
+    position: fixed;
+    z-index: 10;
+    padding: 0 5px 3px;
+    display: none;
+}
+#highlight {
+    position:absolute;
+    z-index: 10;
+    overflow: visible;
+}
+.ui-widget-overlay{}
 #parsingSplit{background-color: white;}
 #parsingDiv, #linebreakDiv {height:100%; padding: 4px;overflow: auto;width:auto;}
 #parseOptions > span, #linebreakOptions > span, #columnOptions > span, #allColumnOptions > span, .destroyPage, #reparseColumn {width:100%;height:38px;float:left;padding-top:8px;z-index: 2;}
@@ -733,7 +769,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 .historyRevert {margin: 0 4px;}
 .previewText:focus,.previewNotes:focus {box-shadow:0 0 5px #A64129 !important;}
 .isUnsaved textarea {box-shadow: 0 0 10px #A64129;}
-#help {z-index: 40;position: absolute;display: none;left:100%;overflow: hidden;width: 100%; color: rgba(40,40,40,1);-webkit-transition:left 2s;-moz-transition:left 2s;transition:left 2s;font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
+#help {z-index: 10;position: absolute;display: none;left:100%;overflow: hidden;width: 100%; color: rgba(40,40,40,1);-webkit-transition:left 2s;-moz-transition:left 2s;transition:left 2s;font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
        -webkit-box-sizing:border-box;
        -moz-box-sizing: border-box;
        -ms-box-sizing: border-box;
@@ -772,7 +808,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     white-space: nowrap;
     font-family:monospace;
     font-size:14px;
-    top:-3px;
+    top:-6px;
 }
 .helpContents:nth-child(2):hover:after{
     left:119px
@@ -1094,6 +1130,13 @@ button.imgTool{
     position: relative;
     /*display: none;*/
     display: inline-block;
+    border: dotted 1px transparent;
+    border-bottom: dotted 1px orangered;
+    cursor: default;
+    
+}
+.showMe:hover{
+    border: 1px solid orangered;
 }
 .hideme{
     position: relative;
@@ -1115,6 +1158,9 @@ button.imgTool{
 #nextCanvas, #nextLine{
     position: relative;
     top: 6px;
+}
+#pageControls{
+    margin-right: 2px;
 }
 #pageControls,#lineControls{
     background-color: rgba(0,0,0,.3);

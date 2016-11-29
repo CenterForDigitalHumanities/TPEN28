@@ -3934,16 +3934,16 @@ var Help = {
      */
     revealHelp: function(){
         var workspaceHeight = $("#transWorkspace").height();
-        var imgTopHeight = $("#imgTop").height() + workspaceHeight + 52;
+        var imgTopHeight = $("#imgTop").height() + workspaceHeight;
         //Screen.maintainWorkspace();
-        $(".helpPanel").height(imgTopHeight-32);
+        $(".helpPanel").height(imgTopHeight);
         $(".helpPanel").css("width", "20%");
-        $("#helpPanels").width('500%');
+        $("#helpPanels").width('500%').height(imgTopHeight);
         $("#help").show().css({
             "left":"0px",
             "top":"32px",
             "width":"100%",
-            "height" : imgTopHeight+"px"
+            
         });
         $(".helpContents").eq(0).click();
         $("#bookmark").hide();
@@ -3954,6 +3954,7 @@ var Help = {
      *  Adjusts the position of the help panels to reveal the selected section.
      */
     select  : function(contentSelect){
+        console.log("Help.select");
           $(contentSelect).addClass("helpActive").siblings().removeClass("helpActive");
           $("#helpPanels").css("margin-left",-$("#help").width()*contentSelect.index()+"px");
     },
@@ -3964,6 +3965,7 @@ var Help = {
      *  @param refIndex int index of help button clicked
      */
     lightUp: function(refIndex){
+        console.log("Help.lightUp.  case "+refIndex);
         switch (refIndex){
             case 0  :   //Previous Line
                 this.highlight(tpen.screen.focusItem[1].find(".previousLine"));
@@ -4029,6 +4031,7 @@ var Help = {
      *  @param $element jQuery object to redraw
      */
     highlight: function($element){
+        console.log("Help.highlight");
         if ($element.length == 0) $element = $("<div/>");
         var look = $element.clone().attr('id','highlight');
         var position = $element.offset();
@@ -4064,6 +4067,7 @@ var Help = {
      *  @param refIndex int index of help button clicked
      */
     video: function(refIndex){
+        console.log("Help.video");
         var vidLink ='';
         switch (refIndex){
             case 0  :   //Previous Line

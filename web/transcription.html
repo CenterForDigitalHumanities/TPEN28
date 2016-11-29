@@ -117,24 +117,25 @@
                 </div>
                 <div id="transWorkspace">
                     <div title="Slide Workspace" class="workspaceHandle slideHandleLeft"><i class="fa fa-bars"></i><i class="fa fa-arrows-v"></i></div><div title="Slide Workspace" class="workspaceHandle slideHandleRight"><i class="fa fa-arrows-v"></i><i class="fa fa-bars"></i></div>
-                    <div class="flex-container">
-                        <div class="flex-bookend"></div>
+                    <div class="flex-container flex-stretch">
                         <div id="captions" class="flex-wide"><div id="captionsText"></div>
 
                         </div>
-                        <div title="Previous Line" id="prevColLine"></div>
-                        <div class="flex-bookend"></div>
                     </div>
                     <div class="flex-container flex-stretch">
                         <div id="pageControls" class="flex-bookend">
-                        <div id="lineCol"><div title="Current Line" id="currentColLine"></div></div>
                             <div id="pageLabel">Page</div>
-                            <button id="prevCanvas" onclick="previousFolio();" title="Previous Page">prev</button><button id="nextCanvas" title="Next Page" onclick="nextFolio();">next</button>
+                            <button id="prevCanvas" onclick="previousFolio();" title="Previous Page">prev</button>
+                            <button id="nextCanvas" title="Next Page" onclick="nextFolio();">next</button>
                         </div>
                         <div id="transcriptletArea" class="flex-wide"></div>
                         <div id="lineControls" class="flex-bookend">
                             <div id="lineLabel">Line</div>
                             <button id="prevLine" title="Previous Line" onclick="previousTranscriptlet();">prev</button><button id="nextLine" title="Next Line" onclick="nextTranscriptlet();">next</button>
+                        </div>
+                        <div id="colLineWrapper" class="flex-stretch">
+                            <div title="Current Line" id="currentColLine"></div>
+                            <div title="Previous Line" id="prevColLine"></div>
                         </div>
                     </div>
                     <div class="bottomButtons">

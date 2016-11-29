@@ -265,6 +265,8 @@ body{
     padding: 7px;
     overflow-x: auto;
     overflow-y: hidden;
+    min-width: 770px;
+    white-space: nowrap;
 }
 .flex-container{
     display: flex;
@@ -290,6 +292,7 @@ body{
     -o-transition: opacity .25s;
     transition: opacity .25s;
     top: -6px;
+    margin-left: 109px;
 }
 #captionsText {
     display: block;
@@ -407,7 +410,8 @@ body{
     visibility: visible;
 }
 #pageLabel{
-    top: -18px !important;
+    top: 3px !important;
+    position: relative;
 }
 #pageLabel, #lineLabel, #lineCtrlLabel, #magnifyHlpLabel{
     margin: 0 auto;
@@ -445,22 +449,27 @@ body{
     width: auto;
     height: 0px;
 }
+#colLineWrapper{
+    display: inline-block;
+    position: relative;
+    margin-left:3px;
+}
 #prevColLine, #currentColLine{
     border-radius: 4px;
     height: 30px;
     width: 30px;
     text-align: center;
     line-height: 30px;
-    display:flex;
     cursor: default;
     color: #002a5c;
     font-weight: bold;
     font-size: 11pt;
-    display: none; /* We may still want these, but they are wildly out of position right now. */
+    position: relative;
+    display: block; /* We may still want these, but they are wildly out of position right now. */
 }
 
 #prevColLine{
-    background-color: transparent;
+    background-color: wheat;
 }
 #currentColLine{
     background-color: rgba(0,0,0,.15);
@@ -1084,7 +1093,7 @@ button.imgTool{
 .showMe{
     position: relative;
     /*display: none;*/
-    display: block;
+    display: inline-block;
 }
 .hideme{
     position: relative;
@@ -1098,14 +1107,14 @@ button.imgTool{
 #prevCanvas, #prevLine{
     margin-right: 3px;
     position: relative;
-    top: 3px;
+    top: 6px;
 }
-#prevCanvas, #nextCanvas{
+/*#prevCanvas, #nextCanvas{
     top: -15px !important;
-}
+}*/
 #nextCanvas, #nextLine{
     position: relative;
-    top: 3px;
+    top: 6px;
 }
 #pageControls,#lineControls{
     background-color: rgba(0,0,0,.3);

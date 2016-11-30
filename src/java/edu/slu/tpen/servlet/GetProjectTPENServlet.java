@@ -104,6 +104,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                     ProjectPermissions pms = new ProjectPermissions(proj.getProjectID());
                     System.out.println("2");
                     jsonMap.put("projper", gson.toJson(pms));
+                    
 //                    System.out.println("Parameter test to receive project data / manifest");
 //                    System.out.println("group Id ===== " + proj.getGroupID() + " is member " + group.isMember(uid));
 //                    System.out.println("this is a tpen admin? "+isTPENAdmin);
@@ -178,7 +179,11 @@ public class GetProjectTPENServlet extends HttpServlet {
                             String header = proj.getHeader();
                             jsonMap.put("ph", header);
                             System.out.println("7");
-//                            System.out.println("header json ======= " + gson.toJson(header));
+                            
+                            String linebreakRemainingText = proj.getLinebreakText();
+                            jsonMap.put("remainingText", linebreakRemainingText);
+                             System.out.println("LB");
+                            //                            System.out.println("header json ======= " + gson.toJson(header));
                             //get group members
                             User[] users = group.getMembers();
                             jsonMap.put("ls_u", gson.toJson(users));

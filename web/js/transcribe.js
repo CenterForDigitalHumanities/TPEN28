@@ -15,6 +15,7 @@ var tpen = {
         projectName: "",
         groupID:0,
         linebreakSymbol:"",
+        remainingText:"",
         projectImageBounding:"",
         linebreakCharacterLimit:0
     },
@@ -42,6 +43,8 @@ var tpen = {
         nextColumnToRemove: null,
         dereferencedLists : [],
         parsing: false,
+        linebreakString : "<br>",
+        brokenText : [""],
         currentManuscriptID: -1
     },
     user: {
@@ -315,6 +318,17 @@ function setTPENObjectData(data){
         if(data.project.linebreakCharacterLimit){
             tpen.project.linebreakCharacterLimit = parseInt(data.project.linebreakCharacterLimit);
         }
+
+    if(data.remainingText){
+        tpen.project.remainingText = data.remainingText;
+    }
+        // update the uploadLocation for linebreaking tool
+        var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio || 0].folioNumber
+            +"&projectID="+tpen.project.id;
+        $("#uploadText").add("#newText").attr("href",uploadLocation);
+        $("#lbText").html(unescape(tpen.project.remainingText));
+        $("#linebreakTextContainer").show();
+        $("#linebreakNoTextContainer").hide();
     }
 
     if(data.manifest){
@@ -380,7 +394,7 @@ function loadTranscription(pid, tool){
             type:"GET",
             success: function(activeProject){
                 var url = "";
-                if(!activeProject.manifest) {                
+                if(!activeProject.manifest) {
                     $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                     $(".transLoader").find("img").attr("src", "../TPEN28/images/BrokenBook01.jpg");
                     return false;
@@ -777,7 +791,7 @@ function activateUserTools(tools, permissions){
 
 /*
  * Checks the TPEN object for the manuscript permissions from a specific folio.  If this user has not accepted the
- * agreement, then they will see a pop up requiring them to request access. 
+ * agreement, then they will see a pop up requiring them to request access.
  * @param {type} id
  * @returns {Boolean}
  * */
@@ -862,7 +876,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
             }
             else{
                 $('#requestAccessContainer').show();
-                
+
                 //handle the background
                 var image2 = new Image();
                 $(image2)
@@ -1171,7 +1185,7 @@ function linesToScreen(lines, tool){
         var newAnno = $('<div id="transcriptlet_' + counter + '" col="' + col
             + '" colLineNum="' + colCounter + '" lineID="' + counter
             + '" lineserverid="' + lineID + '" class="transcriptlet" data-answer="'
-            + thisContent + '"><textarea placeholder="' + thisPlaceholder + '">'
+            + thisContent + '"><textarea class="theText" placeholder="' + thisPlaceholder + '">'
             + thisContent + '</textarea></div>');
         // 1000 is promised, 10 goes to %
         var left = parseFloat(XYWHarray[0]) / (10 * ratio);
@@ -1259,7 +1273,7 @@ function updatePresentation(transcriptlet) {
     }
     else { //there is no previous line
         $("#prevColLine").html("**");
-        $("#captionsColLine").html("**");            
+        $("#captionsColLine").html("**");
         $("#captionsText").html("ERROR.  NUMBERS ARE OFF");
     }
     tpen.screen.focusItem[0] = tpen.screen.focusItem[1];
@@ -2126,121 +2140,22 @@ function splitPage(event, tool) {
             });
         }
     });
-    $("#fullScreenBtn").fadeIn(250);
+    $("#fullScreenBtn")
+        .fadeIn(250);
     //show/manipulate whichever split tool is activated.
-    switch (tool){
-        case "calligraphy":
-            $("#calligraphySplit").css({
-            "display": "inline-table"
+    //This is a user added iframe tool.  tool is toolID= attribute of the tool div to show.
+    var splitScreen = $("#" + tool + "Split") || $('div[toolName="' + tool + '"]');
+    splitScreen.css("display", "block");
+    $(".split:visible")
+        .find('img')
+        .css({
+            'max-height': window.innherHeight + 350 + "px",
+            'max-width': $(".split:visible")
+                .width() + "px"
         });
-            break;
-        case "scripts":
-            $("#scriptsSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "frenchdocs":
-            $("#documentsSplit").css({
-                "display": "inline-table",
-            });
-            break;
-        case "conservation":
-            $("#conservationSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "conventions":
-            $("#conventionsSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "teachers":
-            $("#teachersSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "groupwork":
-            $("#groupSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "glossary":
-            $("#glossarySplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "fInstitutions":
-            $("#fInstitutionsSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "other":
-            $("#otherSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "essay":
-            $("#essaySplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "partialTrans":
-            $("#partialTransSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "abbreviations":
-            $("#abbrevSplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "dictionary":
-            $("#dictionarySplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "preview":
-            forceOrderPreview();
-            break;
-        case "history":
-            $("#historySplit").css({
-                "display": "inline-table"
-            });
-            break;
-        case "fullPage":
-            $("#fullPageSplit").css({
-                "display": "block"
-            });
-            break;
-        case "compare":
-            $("#compareSplit").css({
-                "display": "block"
-            });
-            //When comparing, you need to be able to see the whole image, so I restrict it to window height.
-            //To allow it to continue to grow, comment out the code below.
-            $(".compareImage").css({
-                "max-height":window.innerHeight + "px",
-                "max-width":$("#compareSplit").width() + "px"
-            });
-            populateCompareSplit(1);
-            break;
-        case "facing":
-            $("#facingSplit").css("display", "block");
-            break;
-        case "maps":
-            $("#mapsSplit").css("display", "inline-table");
-            break;
-        case "start":
-            $("#startSplit").css("display", "inline-table");
-            default:
-            //This is a user added iframe tool.  tool is toolID= attribute of the tool div to show.
-            $('div[toolName="' + tool + '"]').css("display", "inline-table");
-    }
-    $(".split:visible").find('img').css({
-        'max-height': window.innherHeight + 350 + "px",
-        'max-width' : $(".split:visible").width() + "px"
-    });
-    var pageJumpIcons = $("#pageJump").parent().children("i");
+    var pageJumpIcons = $("#pageJump")
+        .parent()
+        .children("i");
     pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
     pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
     pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
@@ -2864,13 +2779,12 @@ function updateLinesInColumn(column){
     if (startLineID !== endLineID){ //push the last line, so long as it was also not the first line
         linesToUpdate.push($(".parsing[lineserverid='" + endLineID + "']")); //push last line
     }
-    columnUpdate(linesToUpdate);
+    batchLineUpdate(linesToUpdate);
 }
 
-/* Bulk update for lines in a column. */
-function columnUpdate(linesInColumn){
+/* Bulk update for lines in a column.  Also updates annotation list those lines are in with the new anno data. */
+function batchLineUpdate(linesInColumn){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
-    var currentFolio = parseInt(tpen.screen.currentFolio);
     var currentAnnoListID = tpen.screen.currentAnnoListID;
     var currentAnnoListResources = [];
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
@@ -2916,18 +2830,27 @@ function columnUpdate(linesInColumn){
         });
     });
     //Now that all the resources are edited, update the list.
+    tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
     var url = "updateAnnoList";
     var paramObj = {
         "@id":currentAnnoListID,
-        "resources": currentAnnoListResources
+        "resources": currentAnnoList
     };
-    var params = {"content":JSON.stringify(paramObj)};
-    $.post(url, params, function(data){
-        //currentFolio = parseInt(currentFolio);
-        //annoLists[currentFolio - 1] = currentAnnoListID;
+    var url2 = "bulkUpdateAnnos";
+    var paramObj2 = {"annos":currentAnnoList};
+    var params2 = {"content":JSON.stringify(paramObj2)};
+
+    $.post(url2, params2, function(data){ //update individual annotations
+        var params = {"content":JSON.stringify(paramObj)};
+        $.post(url, params, function(data2){ //update annotation list
+
+        });
     });
 
+
 }
+
+
     function drawLinesOnCanvas(lines, parsing, tool){
         if (lines.length > 0){
             $("#transTemplateLoading").hide();
@@ -3048,7 +2971,7 @@ function updateLine(line, cleanup, updateList){
     else if (currentAnnoListID){
         if(currentLineServerID.startsWith("http")){
             //var url = "http://165.134.241.141/annotationstore/anno/updateAnnotation.action"; //This gets a 403 Forbidden....
-            var url = "http://165.134.241.141/TPEN28/updateAnnoList";
+            var url = "updateAnnoList";
             var payload = { // Just send what we expect to update
                     content : JSON.stringify({
                     "@id" : dbLine['@id'],			// URI to find it in the repo
@@ -3064,6 +2987,7 @@ function updateLine(line, cleanup, updateList){
                         currentAnnoList[i].on = dbLine.on;
                     }
                     if(i===currentAnnoList.length -1){
+                        tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
                         var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
                         var params1 = {"content":JSON.stringify(paramObj1)};
                         $.post(url1, params1, function(data){
@@ -3073,6 +2997,7 @@ function updateLine(line, cleanup, updateList){
 
             }
             console.log("update line");
+
             $.post(url,payload,function(){
             	line.attr("hasError",null);
                 $("#parsingCover").hide();
@@ -3181,6 +3106,7 @@ function saveNewLine(lineBefore, newLine){
                 }
                 currentFolio = parseInt(currentFolio);
                 //Write back to db to update list
+                tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
                 var url1 = "updateAnnoList";
                 var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
                 var params1 = {"content":JSON.stringify(paramObj1)};
@@ -3220,6 +3146,7 @@ function saveNewLine(lineBefore, newLine){
                     currentFolio = parseInt(currentFolio);
                     tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent.push(newAnnoListCopy);
                     var url3 = "updateAnnoList";
+                    tpen.screen.dereferencedLists[tpen.screen.currentFolio] = {};
                     var paramObj3 = {"@id":newAnnoListCopy["@id"], "resources": [dbLine]};
                     var params3 = {"content":JSON.stringify(paramObj3)};
                     $.post(url3, params3, function(data){
@@ -3928,6 +3855,211 @@ function getURLVariable(variable)
        }
        return(false);
 }
+var Preview= {
+    updateLine:function(){
+        // TODO: update the preview line when the text is changed in the main transcription area.
+    }
+}
+
+var Data = {
+    /* Save all lines on the canvas */
+    saveTranscription:function(){
+        var linesAsJSONArray = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+        batchLineUpdate(linesAsJSONArray);
+    }
+}
+
+
+var Linebreak = {
+    /**
+     * Inserts uploaded linebreaking text into the active textarea.
+     * Clears all textareas following location of inserted text.
+     * Used within T&#8209;PEN linebreaking tool.
+     */
+    useText: function(){
+        var isMember = (function(uid){
+            for(var i=0;i<tpen.project.user_list.length;i++){
+                if(tpen.project.user_list[i].UID==uid){
+                    return true;
+                }
+            }
+            return false;
+        })(tpen.user.UID);
+        if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
+        //Load all text into the focused on line and clear it from all others
+        var cfrm = confirm("This will insert the text at the current location and clear all the following lines for linebreaking.\n\nOkay to continue?");
+        if (cfrm){
+            tpen.screen.focusItem[1].find(".theText").val($("<div/>").html(tpen.project.remainingText).text()).focus()
+            .parent().addClass("isUnsaved")
+            .nextAll(".transcriptlet").addClass("isUnsaved")
+                .find(".theText").html("");
+            Data.saveTranscription();
+            Preview.updateLine(tpen.screen.focusItem[1].find(".theText")[0]);
+        }
+    },
+    /**
+     * Inserts uploaded linebreaking text beginning in the active textarea.
+     * Automatically breaks at each occurance of linebreakString.
+     * Used within T&#8209;PEN linebreaking tool.
+    */
+    useLinebreakText: function(){
+        var isMember = (function(uid){
+            for(var i=0;i<tpen.project.user_list.length;i++){
+                if(tpen.project.user_list[i].UID==uid){
+                    return true;
+                }
+            }
+            return false;
+        })(tpen.user.UID);
+        if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
+        var cfrm = confirm("This will insert the text at the current location and replace all the following lines automatically.\n\nOkay to continue?");
+        if (cfrm){
+            var bTlength = tpen.screen.brokenText.length;
+            var thoseFollowing = tpen.screen.focusItem[1].nextAll(".transcriptlet").find(".theText");
+            tpen.screen.focusItem[1].find('.theText').add(thoseFollowing).each(function(index){
+                if(index < bTlength){
+                    if (index < bTlength-1 ) tpen.screen.brokenText[index] += tpen.screen.linebreakString;
+                    $(this).val(unescape(tpen.screen.brokenText[index])).parent(".transcriptlet").addClass("isUnsaved");
+                    Preview.updateLine(this);
+                    if (index == thoseFollowing.length) {
+                        tpen.project.remainingText = tpen.screen.brokenText.slice(index+1).join(tpen.screen.linebreakString);
+                        $("#lbText").text(unescape(tpen.project.remainingText));
+                    }
+                }
+            });
+            Data.saveTranscription();
+        }
+    },
+    /**
+     * Saves all textarea values on the entire page.
+     *
+     * @see Data.saveTranscription()
+     */
+    saveWholePage: function(){
+        var isMember = (function(uid){
+            for(var i=0;i<tpen.project.user_list.length;i++){
+                if(tpen.project.user_list[i].UID==uid){
+                    return true;
+                }
+            }
+            return false;
+        })(tpen.user.UID);
+        if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
+        $(".transcriptlet").addClass(".isUnsaved");
+        Data.saveTranscription();
+    },
+    /**
+     * Records remaining linebreaking text for later use.
+     * POSTs to updateRemainingText servlet.
+     *
+     * @param leftovers text to record
+     */
+    saveLeftovers: function(leftovers){
+        var isMember = (function(uid){
+            for(var i=0;i<tpen.project.user_list.length;i++){
+                if(tpen.project.user_list[i].UID==uid){
+                    return true;
+                }
+            }
+            return false;
+        })(tpen.user.UID);
+        if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
+        $('#savedChanges').html('Saving . . .').stop(true,true).css({
+            "opacity" : 0,
+            "top"     : "35%"
+        }).show().animate({
+            "opacity" : 1,
+            "top"     : "0%"
+        },1000,"easeOutCirc");
+        $.post("updateRemainingText", {
+            transcriptionleftovers  : unescape(tpen.project.remainingText),
+            projectID               : tpen.project.ID
+        }, function(data){
+            if(data=="success!"){
+                $('#savedChanges')
+                .html('<span class="left ui-icon ui-icon-check"></span>Linebreak text updated.')
+                .delay(3000)
+                .fadeOut(1500);
+            } else {
+                //successful POST, but not an appropriate response
+                $('#savedChanges').html('<span class="left ui-icon ui-icon-alert"></span>Failed to save linebreak text.');
+                alert("There was a problem saving your linebreaking progress, please check your work before continuing.");
+            }
+        }, 'html');
+    },
+    /**
+     * Moves all text after the cursor to the following transcription textarea.
+     * Asks to save value as linebreak remaining text if on the last line.
+     *
+     * @return false to prevent Interaction.keyhandler() from propogating
+     */
+    moveTextToNextBox: function() {
+        var isMember = (function(uid){
+            for(var i=0;i<tpen.project.user_list.length;i++){
+                if(tpen.project.user_list[i].UID==uid){
+                    return true;
+                }
+            }
+            return false;
+        })(tpen.user.UID);
+        if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
+        var myfield = tpen.screen.focusItem[1].find(".theText")[0];
+        tpen.screen.focusItem[1].addClass("isUnsaved");
+        //IE support
+        if (document.selection) {
+            //FIXME this is not actual IE support
+            myfield.focus();
+            sel = document.selection.createRange();
+        }
+        //MOZILLA/NETSCAPE support
+        else if (myfield.selectionStart || myfield.selectionStart == '0') {
+            var startPos = myfield.selectionStart;
+            if(tpen.screen.focusItem[1].next().size() && myfield.value.substring(startPos).length > 0) {
+            // if this is the last line, ask before proceeding
+                var cfrm = confirm("You are on the last line of the page. T-PEN can save the remaining text in the linebreaking tool for later insertion. \n\nConfirm?");
+                if (cfrm) {
+                    tpen.project.remainingText = myfield.value.substring(startPos);
+                    $("#lbText").text(tpen.project.remainingText);
+                    myfield.value=myfield.value.substring(0, startPos);
+                    Linebreak.saveLeftovers(escape(tpen.project.remainingText));
+                } else {
+                    return false;
+                }
+            } else {
+                //prevent saving from changing focus until after values are changed
+                var nextfield = tpen.screen.focusItem[1].next(".transcriptlet").find(".theText")[0];
+                nextfield.value = myfield.value.substring(startPos)+nextfield.value;
+                Preview.updateLine(nextfield);
+                myfield.value = myfield.value.substring(0, startPos);
+                Preview.updateLine(myfield);
+                $(nextfield).parent(".transcriptlet").addClass("isUnsaved");
+                tpen.screen.focusItem[1].find(".nextLine").click();
+            }
+        }
+        Data.saveTranscription();
+        return false;
+    }
+};
+
+    $("#linebreakStringBtn").click(function(event){
+        if(event.target != this){return true;}
+        if ($("#linebreakString").val().length > 0) {
+            $("#useLinebreakText").fadeIn();
+            tpen.screen.linebreakString = $("#linebreakString").val();
+            tpen.screen.brokenText = $("<div/>").html(tpen.project.remainingText).text().split(tpen.screen.linebreakString);
+            var btLength = tpen.screen.brokenText.length;
+            $("#lbText").html(function(index,html){
+                return html.split(unescape(tpen.screen.linebreakString)).join(decodeURI(tpen.screen.linebreakString)+"<br/>");
+            });
+        } else {
+            alert("Please enter a string for linebreaking first.");
+        }
+        if (btLength > 1){
+            $("#linesDetected").html("("+(btLength)+" lines detected)");
+        } else {
+            alert("Linebreak string was not found.");
+        }
+    });
 
 var Help = {
     /**
@@ -3944,7 +4076,7 @@ var Help = {
             "left":"0px",
             "top":"32px",
             "width":"100%",
-            
+
         });
         $(".helpContents").eq(0).click();
         $("#bookmark").hide();
@@ -3962,7 +4094,7 @@ var Help = {
     /**
      *  Shows specific page element through overlay and zooms in. If the element
      *  is not displayed on screen, an alternative message is shown.
-     *  
+     *
      *  @param refIndex int index of help button clicked
      */
     lightUp: function(refIndex){
@@ -3990,13 +4122,13 @@ var Help = {
             case 10:
                 this.highlight($("#parsingBtn"));
                 break;
-            case 5  :   
+            case 5  :
             case 7  :
-            case 9  :                 
-            case 11 :   
+            case 9  :
+            case 11 :
                 this.highlight($("#splitScreenTools"));
                 break;
-            case 12 :   //Location Flag. 
+            case 12 :   //Location Flag.
                 this.highlight($("#trimPage")); //This is the jump to page
                 break;
             case 13 : //Page Jump widget
@@ -4004,7 +4136,7 @@ var Help = {
                 break;
             case 14 : //Previous Page button
                 this.highlight($("#prevCanvas"));
-                break;    
+                break;
             case 15 : //Next Page button
                 this.highlight($("#nextCanvas"));
                 break;
@@ -4014,7 +4146,7 @@ var Help = {
     },
     /**
      *  Redraws the element on top of the overlay.
-     *  
+     *
      *  @param $element jQuery object to redraw
      */
     highlight: function($element){
@@ -4049,14 +4181,14 @@ var Help = {
                 percent:150,
                 direction:'both',
                 easing:"easeOutExpo"},1000);
-            
+
             $("#overlay").hide("fade",2000);
             setTimeout(function(){ $("#highlight").remove(); }, 1500);
         }
     },
     /**
      *  Help function to call up video, if available.
-     *  
+     *
      *  @param refIndex int index of help button clicked
      */
     video: function(refIndex){

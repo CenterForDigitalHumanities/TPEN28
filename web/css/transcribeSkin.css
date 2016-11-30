@@ -265,8 +265,6 @@ body{
     padding: 7px;
     overflow-x: auto;
     overflow-y: hidden;
-    min-width: 770px;
-    white-space: nowrap;
 }
 .flex-container{
     display: flex;
@@ -304,7 +302,7 @@ body{
     white-space: nowrap;
     top: 3px;
     overflow: hidden;
-    
+
 }
 
 /*
@@ -537,6 +535,10 @@ body{
 .actions .startHide{
     color: #002a5c;
 }
+.block {
+    width: 100%;
+    margin: 2px 0;
+}
 #trexHead {
     position: fixed;
     left: 0;
@@ -550,7 +552,7 @@ body{
 }
 .tpenButton{
     font-weight: bold;
-    color:white;
+    color:white !important;
     border-radius: 4px;
     padding-bottom: 4px;
     padding-left: 6px;
@@ -640,7 +642,6 @@ body{
     box-shadow:-1px 1px 2px black;}*/
 label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 #linebreakText {clear:left;width:auto;max-height:120px;height:40%;overflow: auto;background: white fixed repeat; border: 2px inset #FFDB7F;margin-bottom:4px;position:relative;}
-#linebreakSplit {width: 350px;}
 #linebreakString{max-width: 4em;width:auto;}
 .linebreaking {display: block;clear: both;}
 #newColumnCount{position: fixed;text-align: center;left:0;top:0;font-size: 18px;width: 80px;padding:10px;opacity:.7;z-index: 4;}
@@ -729,7 +730,6 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
     box-shadow:-1px 1px 2px black;}*/
 label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 #linebreakText {clear:left;width:auto;max-height:120px;height:40%;overflow: auto;background: white fixed repeat; border: 2px inset #FFDB7F;margin-bottom:4px;position:relative;}
-#linebreakSplit {width: 350px;}
 #linebreakString{max-width: 4em;width:auto;}
 .linebreaking {display: block;clear: both;}
 #newColumnCount{position: fixed;text-align: center;left:0;top:0;font-size: 18px;width: 80px;padding:10px;opacity:.7;z-index: 4;}
@@ -1133,7 +1133,7 @@ button.imgTool{
     border: dotted 1px transparent;
     border-bottom: dotted 1px orangered;
     cursor: default;
-    
+
 }
 .showMe:hover{
     border: 1px solid orangered;
@@ -1222,7 +1222,7 @@ body{
     height: 100%;
     height: 100vh;
 }
-button{
+button, #uploadText{
     /*    font-family: 'Open Sans','Helvetica Neue',sans-serif;*/
     font-weight: bold;
     color:white;

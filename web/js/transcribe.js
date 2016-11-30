@@ -44,8 +44,7 @@ var tpen = {
         dereferencedLists : [],
         parsing: false,
         linebreakString : "<br>",
-        brokenText : [""]
-        parsing: false,
+        brokenText : [""],
         currentManuscriptID: -1
     },
     user: {
@@ -395,7 +394,7 @@ function loadTranscription(pid, tool){
             type:"GET",
             success: function(activeProject){
                 var url = "";
-                if(!activeProject.manifest) {                
+                if(!activeProject.manifest) {
                     $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                     $(".transLoader").find("img").attr("src", "../TPEN28/images/BrokenBook01.jpg");
                     return false;
@@ -792,7 +791,7 @@ function activateUserTools(tools, permissions){
 
 /*
  * Checks the TPEN object for the manuscript permissions from a specific folio.  If this user has not accepted the
- * agreement, then they will see a pop up requiring them to request access. 
+ * agreement, then they will see a pop up requiring them to request access.
  * @param {type} id
  * @returns {Boolean}
  * */
@@ -877,7 +876,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
             }
             else{
                 $('#requestAccessContainer').show();
-                
+
                 //handle the background
                 var image2 = new Image();
                 $(image2)
@@ -1274,7 +1273,7 @@ function updatePresentation(transcriptlet) {
     }
     else { //there is no previous line
         $("#prevColLine").html("**");
-        $("#captionsColLine").html("**");            
+        $("#captionsColLine").html("**");
         $("#captionsText").html("ERROR.  NUMBERS ARE OFF");
     }
     tpen.screen.focusItem[0] = tpen.screen.focusItem[1];
@@ -4058,7 +4057,7 @@ var Help = {
             "left":"0px",
             "top":"32px",
             "width":"100%",
-            
+
         });
         $(".helpContents").eq(0).click();
         $("#bookmark").hide();
@@ -4076,7 +4075,7 @@ var Help = {
     /**
      *  Shows specific page element through overlay and zooms in. If the element
      *  is not displayed on screen, an alternative message is shown.
-     *  
+     *
      *  @param refIndex int index of help button clicked
      */
     lightUp: function(refIndex){
@@ -4104,13 +4103,13 @@ var Help = {
             case 10:
                 this.highlight($("#parsingBtn"));
                 break;
-            case 5  :   
+            case 5  :
             case 7  :
-            case 9  :                 
-            case 11 :   
+            case 9  :
+            case 11 :
                 this.highlight($("#splitScreenTools"));
                 break;
-            case 12 :   //Location Flag. 
+            case 12 :   //Location Flag.
                 this.highlight($("#trimPage")); //This is the jump to page
                 break;
             case 13 : //Page Jump widget
@@ -4118,7 +4117,7 @@ var Help = {
                 break;
             case 14 : //Previous Page button
                 this.highlight($("#prevCanvas"));
-                break;    
+                break;
             case 15 : //Next Page button
                 this.highlight($("#nextCanvas"));
                 break;
@@ -4128,7 +4127,7 @@ var Help = {
     },
     /**
      *  Redraws the element on top of the overlay.
-     *  
+     *
      *  @param $element jQuery object to redraw
      */
     highlight: function($element){
@@ -4163,14 +4162,14 @@ var Help = {
                 percent:150,
                 direction:'both',
                 easing:"easeOutExpo"},1000);
-            
+
             $("#overlay").hide("fade",2000);
             setTimeout(function(){ $("#highlight").remove(); }, 1500);
         }
     },
     /**
      *  Help function to call up video, if available.
-     *  
+     *
      *  @param refIndex int index of help button clicked
      */
     video: function(refIndex){

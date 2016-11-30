@@ -4066,6 +4066,8 @@ var Help = {
      *  Shows the help interface.
      */
     revealHelp: function(){
+        $("#closeHelp:visible").click() // close if open
+
         var workspaceHeight = $("#transWorkspace").height();
         var imgTopHeight = $("#imgTop").height() + workspaceHeight;
         //Screen.maintainWorkspace();

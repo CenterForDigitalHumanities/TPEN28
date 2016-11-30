@@ -2836,7 +2836,7 @@ function batchLineUpdate(linesInColumn){
         "@id":currentAnnoListID,
         "resources": currentAnnoList
     };
-    var url2 = "bulkUpdateAnnotations";
+    var url2 = "bulkUpdateAnnos";
     var paramObj2 = {"annos":currentAnnoList};
     var params2 = {"content":JSON.stringify(paramObj2)};
 
@@ -3894,7 +3894,7 @@ var Linebreak = {
             .nextAll(".transcriptlet").addClass("isUnsaved")
                 .find(".theText").html("");
             Data.saveTranscription();
-            Preview.updateLine(focusItem[1].find(".theText")[0]);
+            Preview.updateLine(tpen.screen.focusItem[1].find(".theText")[0]);
         }
     },
     /**
@@ -3914,10 +3914,9 @@ var Linebreak = {
         if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
         var cfrm = confirm("This will insert the text at the current location and replace all the following lines automatically.\n\nOkay to continue?");
         if (cfrm){
-            $("#linebreakStringBtn").click();
             var bTlength = tpen.screen.brokenText.length;
-            var thoseFollowing = focusItem[1].nextAll(".transcriptlet").find(".theText");
-            focusItem[1].find('.theText').add(thoseFollowing).each(function(index){
+            var thoseFollowing = tpen.screen.focusItem[1].nextAll(".transcriptlet").find(".theText");
+            tpen.screen.focusItem[1].find('.theText').add(thoseFollowing).each(function(index){
                 if(index < bTlength){
                     if (index < bTlength-1 ) tpen.screen.brokenText[index] += tpen.screen.linebreakString;
                     $(this).val(unescape(tpen.screen.brokenText[index])).parent(".transcriptlet").addClass("isUnsaved");
@@ -3974,7 +3973,7 @@ var Linebreak = {
         },1000,"easeOutCirc");
         $.post("updateRemainingText", {
             transcriptionleftovers  : unescape(tpen.project.remainingText),
-            projectID               : projectID
+            projectID               : tpen.project.ID
         }, function(data){
             if(data=="success!"){
                 $('#savedChanges')
@@ -4015,7 +4014,7 @@ var Linebreak = {
         //MOZILLA/NETSCAPE support
         else if (myfield.selectionStart || myfield.selectionStart == '0') {
             var startPos = myfield.selectionStart;
-            if(tpen.screen.focusItem[1].find(".nextLine").hasClass("ui-state-error") && myfield.value.substring(startPos).length > 0) {
+            if(tpen.screen.focusItem[1].next().size() && myfield.value.substring(startPos).length > 0) {
             // if this is the last line, ask before proceeding
                 var cfrm = confirm("You are on the last line of the page. T-PEN can save the remaining text in the linebreaking tool for later insertion. \n\nConfirm?");
                 if (cfrm) {
@@ -4041,6 +4040,26 @@ var Linebreak = {
         return false;
     }
 };
+
+    $("#linebreakStringBtn").click(function(event){
+        if(event.target != this){return true;}
+        if ($("#linebreakString").val().length > 0) {
+            $("#useLinebreakText").fadeIn();
+            tpen.screen.linebreakString = $("#linebreakString").val();
+            tpen.screen.brokenText = $("<div/>").html(tpen.project.remainingText).text().split(tpen.screen.linebreakString);
+            var btLength = tpen.screen.brokenText.length;
+            $("#lbText").html(function(index,html){
+                return html.split(unescape(tpen.screen.linebreakString)).join(decodeURI(tpen.screen.linebreakString)+"<br/>");
+            });
+        } else {
+            alert("Please enter a string for linebreaking first.");
+        }
+        if (btLength > 1){
+            $("#linesDetected").html("("+(btLength)+" lines detected)");
+        } else {
+            alert("Linebreak string was not found.");
+        }
+    });
 
 var Help = {
     /**

@@ -265,8 +265,6 @@ body{
     padding: 7px;
     overflow-x: auto;
     overflow-y: hidden;
-    min-width: 770px;
-    white-space: nowrap;
 }
 .flex-container{
     display: flex;
@@ -304,7 +302,7 @@ body{
     white-space: nowrap;
     top: 3px;
     overflow: hidden;
-    
+
 }
 
 /*
@@ -1135,7 +1133,7 @@ button.imgTool{
     border: dotted 1px transparent;
     border-bottom: dotted 1px orangered;
     cursor: default;
-    
+
 }
 .showMe:hover{
     border: 1px solid orangered;

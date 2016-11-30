@@ -5,11 +5,6 @@
         <title>T-PEN Transcription</title>
         <link type="text/css" href="css/custom-theme/jQuery.css" rel="Stylesheet" />
         <link type="text/css" href="css/transcribeSkin.css" rel="Stylesheet" />
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
-        <script type="text/javascript" src="js/transcribe.js"></script>
-        <script src="https://use.fontawesome.com/4ae676603d.js"></script>
-    </head>
     <style>
         p{
             padding: 0px 10px;
@@ -53,6 +48,7 @@
 
 
     </style>
+    </head>
     <body>
         <div class="pageTurnCover">
             <div class="turnMsg">Please wait while we load the page...</div>
@@ -276,30 +272,16 @@
                                         If thisProject.getLinebreakCharacterLimit() is available in the project object, this can be more specific
                                       </div>-->
                </div>
-                   <script type="text/javascript">
-                       var leftovers = tpen.project.remainingText;
-                       // get from StringEscapeUtils.escapeJavaScript(thisProject.getLinebreakText())
-                       if(leftovers && leftovers.length){
-                           $("#lbText").html(unescape(leftovers));
-                           $("#linebreakNoTextContainer").hide();
-                       } else {
-                           $("#linebreakTextContainer").hide();
-                           $("#linebreakNoTextContainer").show();
-                       }
-                       var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
-                   +"&projectID="+tpen.project.id;
-           $("#uploadText").add("#newText").attr("href",uploadLocation);
-                   </script>
                <div id="linebreakOptions">
-                   <button type="button" id="useText" onclick="Linebreak.useText()" class="tpenButton block" title="Insert this text at the current line">Insert Text Here</button>
+                   <div id="useText" onclick="Linebreak.useText()" class="tpenButton block" title="Insert this text at the current line">Insert Text Here</div>
                    <a id="newText" class="tpenButton block" title="Upload a new file to linebreak">Upload New File</a>
-                   <span id="linebreakStringBtn" class="tpenButton block" title="Attempt linebreaking using this string">Preview Automatic Linebreaks
+                   <div id="linebreakStringBtn" class="tpenButton block" title="Attempt linebreaking using this string">Preview Automatic Linebreaks
                        <!--                   TODO replace value with stored value once it is stored-->
                        <input name="linebreakString" id="linebreakString" type="text" placeholder="<lb />" value="" />
-                   </span>
-                   <button type="button" id="useLinebreakText" onclick="Linebreak.useLinebreakText()" class="tpenButton block" title="Automatically linebreak this page">Use Automatic Linebreaking
+                   </div>
+                   <div id="useLinebreakText" onclick="Linebreak.useLinebreakText()" class="tpenButton block" style="display:none;" title="Automatically linebreak this page">Use Automatic Linebreaking
                        <span id="linesDetected"></span>
-                   </button>
+                   </div>
                </div>
                    <ol class="pull-left">
                        <li>Navigate to a line to start;</li>
@@ -399,7 +381,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     <input type="hidden" name="ms" value="">
                     <input type="hidden" name="projectID" value="">
                     <input class="ui-button tpenButton clear right" type="submit" name="submitted" value="Send Request"/>
-                    
+
                 </form>
                 <a class="returnButton" href="index.jsp">Return Home</a>
             </div>
@@ -412,7 +394,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                             <h2>Page Navigation</h2>
                             <ul class="helpColumn">
                                 <li>Move through the page with the <span class="showMe">Previous Line</span> and <span class="showMe">Next Line</span> buttons to move from line to line.</li>
-                                <li>The <span class="showMe">Line Indicator</span> identifies the current column and line as well as the previous column and line based 
+                                <li>The <span class="showMe">Line Indicator</span> identifies the current column and line as well as the previous column and line based
                                     on the T&#8209;PEN <span ref="glossParsing" class="glossary">image parsing</span>.  Each drawn line also shows its column and line combination.
                                 </li>
                                 <li>Click on any line to jump to it.  <!--You can do this through the <span class="showMe">View Full Page</span> or <span class="showMe">Preview</span> tools. --></li>
@@ -425,7 +407,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                                 <dd>Expand the <span class="showMe">Characters</span> or <span class="showMe">XML Tags</span> list to reveal buttons to insert your custom tags or <span ref="glossSpecialCharacters" class="glossary">special characters</span> into the <span ref="glossTranscriptionArea" class="glossary">transcription area</span>.</dd>
                                 <dt class="showMe">View Full Page</dt>
                                 <dd>Show the whole page image. Mouseover the image to highlight individual lines. Click to navigate directly to that line. Use the available <span class="showMe">magnify tool</span> to take a closer look.</dd>
-<!--                                    
+<!--
                                 <dt class="showMe">History</dt>
                                 <dd>Lists the previous saved versions of the <span ref="glossParsing" class="glossary">line parsing</span> and <span ref="glossTranscription" class="glossary">transcription text</span>. Mouseover the history entries to reveal options to revert to a previous version.</dd>
                                 <dt class="showMe">Abbreviations</dt>
@@ -471,7 +453,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
 <!--                                    <dt>CTRL:</dt>
                                         <dd>Hold to get a better view of the important parts of your manuscript. The bookmark bounding box, location flag, and bug report form will all fade out and let you see the manuscript or tool behind it.</dd>-->
-                                    
+
                                     <dt>F1:</dt>
                                         <dd>On the transcription screen, pulls up the application help.</dd>
                                     <dt>F11:</dt>
@@ -528,7 +510,27 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     <option SELECTED>Jump to page</option>
                 </select>-->
                 </div>
-        <script>
+
+                <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
+                <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
+                <script type="text/javascript" src="js/transcribe.js"></script>
+                <script src="https://use.fontawesome.com/4ae676603d.js"></script>
+                <script type="text/javascript">
+                    var leftovers = tpen.project.remainingText;
+                    // get from StringEscapeUtils.escapeJavaScript(thisProject.getLinebreakText())
+                    if(leftovers && leftovers.length){
+                        $("#lbText").html(unescape(leftovers));
+                        $("#linebreakNoTextContainer").hide();
+                    } else {
+                        $("#linebreakTextContainer").hide();
+                        $("#linebreakNoTextContainer").show();
+                    }
+                    var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
+                +"&projectID="+tpen.project.id;
+        $("#uploadText").add("#newText").attr("href",uploadLocation);
+                </script>
+
+                <script>
 
     //Must explicitly set new height and width for percentages values in the DOM to take effect.
     window.onresize = function(event) {
@@ -632,7 +634,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
         $(".fullScreenTrans").click(function(){
             fullPage();
         });
-        
+
         $("#closeHelp").click(function(){
             //fullPage();
             $("#help").css({"left":"100%"}).fadeOut(1000);
@@ -711,7 +713,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             else if (event.which == 112) { //F1 for help
                 event.preventDefault();
                 console.log("F1 for help");
-                Help.revealHelp(); 
+                Help.revealHelp();
                 console.log("reveal the help");
                 //$("#helpMe").click();
             }
@@ -1153,7 +1155,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             }
             scrollToCurrentPage();
         });
-        
+
         $(".helpContents").click(function(){
           Help.select($(this));
         });
@@ -1164,7 +1166,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
           var content = "<span class='ui-state-default ui-corner-all lightUp' ref='"+index+"'>Show on Screen</span><span class='ui-state-default ui-corner-all video' ref='"+index+"'>Video Help</span>";
           tip.addClass("helpDetail ui-corner-all").html(content);
           return tip;
-          });    
+          });
   }).hover(function(){
           var thisWidth = $(this).width()+10;
           var tipWidth = 200;

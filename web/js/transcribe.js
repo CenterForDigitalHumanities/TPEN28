@@ -1844,13 +1844,14 @@ function stopMagnify(){
 */
 function mouseZoom($img,container, event){
     tpen.screen.isMagnifying = true;
-    var contain = container || document;
+    var contain = $("#"+container).position();
     var imgURL = $img.find("img:first").attr("src");
     var page = $("#transcriptionTemplate");
     //collect information about the img
     var imgDims = new Array($img.offset().left, $img.offset().top, $img.width(), $img.height());
     //build the zoomed div
     var zoomSize = (page.height() / 3 < 120) ? 120 : page.height() / 3;
+    if(zoomSize > 400) zoomSize = 400;
     var zoomPos = new Array(event.pageX, event.pageY);
     $("#zoomDiv").css({
         "box-shadow"    : "2px 2px 5px black,15px 15px " + zoomSize / 3 + "px rgba(230,255,255,.8) inset,-15px -15px " + zoomSize / 3 + "px rgba(0,0,15,.4) inset",
@@ -1862,13 +1863,19 @@ function mouseZoom($img,container, event){
         "background-size"     : imgDims[2] * tpen.screen.zoomMultiplier + "px",
         "background-image"    : "url('" + imgURL + "')"
     });
-    $(contain).on({
+    $(document).on({
         mousemove: function(event){
             if (tpen.screen.liveTool !== "image" && tpen.screen.liveTool !== "compare") {
                 $(document).off("mousemove");
                 $("#zoomDiv").hide();
             }
             var mouseAt = new Array(event.pageX, event.pageY);
+            if ( mouseAt[0] < contain.left
+                || mouseAt[0] > contain.left+$("#"+container).width()
+                || mouseAt[1] < contain.top
+                || mouseAt[1] > contain.top+$("#"+container).height()){
+                return false; // drop out, you've left containment
+            }
             var zoomPos = new Array(mouseAt[0] - zoomSize / 2, mouseAt[1] - zoomSize / 2);
             var imgPos = new Array((imgDims[0] - mouseAt[0]) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3, (imgDims[1] - mouseAt[1]) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3); //3px border adjustment
             $("#zoomDiv").css({

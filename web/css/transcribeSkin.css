@@ -265,6 +265,8 @@ body{
     padding: 7px;
     overflow-x: auto;
     overflow-y: hidden;
+    min-width: 770px;
+    white-space: nowrap;
 }
 .flex-container{
     display: flex;
@@ -290,16 +292,19 @@ body{
     -o-transition: opacity .25s;
     transition: opacity .25s;
     top: -6px;
+    margin-left: 109px;
 }
 #captionsText {
-    display: block;
+    display: inline-block;
     font-family: "Junicode","Cambria","Georgia", serif;
-    font-size:16px;
+    font-size: 16px;
     text-overflow: ellipsis;
-    width:100%;
-    position:relative;
+    width: 100%;
+    position: relative;
     white-space: nowrap;
+    top: 3px;
     overflow: hidden;
+    
 }
 
 /*
@@ -407,7 +412,8 @@ body{
     visibility: visible;
 }
 #pageLabel{
-    top: -18px !important;
+    top: 3px !important;
+    position: relative;
 }
 #pageLabel, #lineLabel, #lineCtrlLabel, #magnifyHlpLabel{
     margin: 0 auto;
@@ -445,22 +451,39 @@ body{
     width: auto;
     height: 0px;
 }
+#colLineWrapper{
+    display: inline-block;
+    position: relative;
+    margin:0px 3px;
+}
 #prevColLine, #currentColLine{
     border-radius: 4px;
     height: 30px;
     width: 30px;
     text-align: center;
     line-height: 30px;
-    display:flex;
     cursor: default;
     color: #002a5c;
     font-weight: bold;
     font-size: 11pt;
-    display: none; /* We may still want these, but they are wildly out of position right now. */
+    position: relative;
+    display: block; /* We may still want these, but they are wildly out of position right now. */
 }
-
+#captionsColLine{
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    text-align: center;
+    line-height: 30px;
+    cursor: default;
+    color: #002a5c;
+    font-weight: bold;
+    font-size: 11pt;
+    position: relative;
+    color:wheat;
+}
 #prevColLine{
-    background-color: transparent;
+    background-color: wheat;
 }
 #currentColLine{
     background-color: rgba(0,0,0,.15);
@@ -518,6 +541,17 @@ body{
     width: 100%;
     margin: 2px 0;
 }
+#trexHead {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    background: rgba(0,0,0,.7) url(../images/trexhead.png) right center no-repeat fixed;
+    background-size: 100%;
+    z-index: 39;
+}
 .tpenButton{
     font-weight: bold;
     color:white !important;
@@ -550,6 +584,9 @@ body{
     min-width: 165px;
 }
 
+.splitTool{
+    display: block;
+}
 #parsingBtn{
     display: none;
 }
@@ -571,6 +608,28 @@ body{
 }
 
 /*#parsingSplit {max-width:600px; min-width: 350px;position: relative; z-index: 9;}*/
+#overlay{
+    display: none;
+    z-index: 10;
+}
+#location {
+    bottom: 0;
+    left: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-right: none;
+    border-top: none;
+    position: fixed;
+    z-index: 10;
+    padding: 0 5px 3px;
+    display: none;
+}
+#highlight {
+    position:absolute;
+    z-index: 10;
+    overflow: visible;
+}
+.ui-widget-overlay{}
 #parsingSplit{background-color: white;}
 #parsingDiv, #linebreakDiv {height:100%; padding: 4px;overflow: auto;width:auto;}
 #parseOptions > span, #linebreakOptions > span, #columnOptions > span, #allColumnOptions > span, .destroyPage, #reparseColumn {width:100%;height:38px;float:left;padding-top:8px;z-index: 2;}
@@ -712,7 +771,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 .historyRevert {margin: 0 4px;}
 .previewText:focus,.previewNotes:focus {box-shadow:0 0 5px #A64129 !important;}
 .isUnsaved textarea {box-shadow: 0 0 10px #A64129;}
-#help {z-index: 40;position: absolute;display: none;left:100%;overflow: hidden;width: 100%; color: rgba(40,40,40,1);-webkit-transition:left 2s;-moz-transition:left 2s;transition:left 2s;font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
+#help {z-index: 10;position: absolute;display: none;left:100%;overflow: hidden;width: 100%; color: rgba(40,40,40,1);-webkit-transition:left 2s;-moz-transition:left 2s;transition:left 2s;font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;
        -webkit-box-sizing:border-box;
        -moz-box-sizing: border-box;
        -ms-box-sizing: border-box;
@@ -739,8 +798,8 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
                background: linear-gradient(top,  rgba(76,76,76,1) 0%,rgba(89,89,89,1) 12%,rgba(102,102,102,1) 25%,rgba(71,71,71,1) 39%,rgba(44,44,44,1) 50%,rgba(0,0,0,1) 51%,rgba(17,17,17,1) 60%,rgba(43,43,43,1) 76%,rgba(28,28,28,1) 91%,rgba(19,19,19,1) 100%); /* W3C */
                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', endColorstr='#131313',GradientType=0 ); /* IE6-9 */
 }
-.helpContents {background: aliceblue;display: inline-block;height: 12px;width:12px;margin: 0 6px;border-radius:50%;}
-.helpContents:hover {box-shadow:0 0 4px orangered inset;}
+.helpContents {background: aliceblue;display: inline-block;height: 12px;width:12px;margin: 0 6px;border-radius:50%; position:relative;}
+.helpContents:hover {box-shadow:0 0 4px orangered inset; top:5px;}
 .helpActive {box-shadow:0 0 6px 2px orangered inset !important;}
 .helpContents:hover:after{
     content: attr(title);
@@ -751,7 +810,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     white-space: nowrap;
     font-family:monospace;
     font-size:14px;
-    top:-3px;
+    top:-6px;
 }
 .helpContents:nth-child(2):hover:after{
     left:119px
@@ -1071,7 +1130,15 @@ button.imgTool{
 }
 .showMe{
     position: relative;
-    display: none;
+    /*display: none;*/
+    display: inline-block;
+    border: dotted 1px transparent;
+    border-bottom: dotted 1px orangered;
+    cursor: default;
+    
+}
+.showMe:hover{
+    border: 1px solid orangered;
 }
 .hideme{
     position: relative;
@@ -1085,14 +1152,17 @@ button.imgTool{
 #prevCanvas, #prevLine{
     margin-right: 3px;
     position: relative;
-    top: 3px;
+    top: 6px;
 }
-#prevCanvas, #nextCanvas{
+/*#prevCanvas, #nextCanvas{
     top: -15px !important;
-}
+}*/
 #nextCanvas, #nextLine{
     position: relative;
-    top: 3px;
+    top: 6px;
+}
+#pageControls{
+    margin-right: 2px;
 }
 #pageControls,#lineControls{
     background-color: rgba(0,0,0,.3);
@@ -1341,3 +1411,9 @@ a.navigation {
 #xmlTagFloat .closeBtn, #specialCharsFloat .closeBtn{
     background-color: white;
 }
+
+.manController{
+    text-decoration: underline;
+}
+
+/* Help area in transcription.html */

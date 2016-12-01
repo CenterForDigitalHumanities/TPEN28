@@ -1292,7 +1292,8 @@ function updatePresentation(transcriptlet) {
         tpen.screen.focusItem[1].nextAll(".transcriptlet").addClass("transcriptletAfter").removeClass("transcriptletBefore");
     }
     // prevent textareas from going invisible and not moving out of the workspace
-    tpen.screen.focusItem[1].removeClass("transcriptletBefore transcriptletAfter");
+    tpen.screen.focusItem[1].removeClass("transcriptletBefore transcriptletAfter")
+        .find('.theText')[0].focus();
 };
 
 /* Helper for position focus onto a specific transcriptlet.  Makes sure workspace stays on screen. */
@@ -2062,7 +2063,7 @@ function fullPage(){
     $("#splitScreenTools").removeAttr("disabled");
     $("#splitScreenTools").find('option:eq(0)').prop("selected", true);
     $("#transcriptionCanvas").css("width", "100%");
-    $("#transcriptionCanvas").css("height", "auto"); //Need a real height here, it can't be auto.  It needs to be the height of the image.  
+    $("#transcriptionCanvas").css("height", "auto"); //Need a real height here, it can't be auto.  It needs to be the height of the image.
     $("#transcriptionTemplate").css("width", "100%");
     $("#transcriptionTemplate").css("max-width", "100%");
     $("#transcriptionTemplate").css("height", "auto");

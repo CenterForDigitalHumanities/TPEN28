@@ -4015,7 +4015,7 @@ var Linebreak = {
         //MOZILLA/NETSCAPE support
         else if (myfield.selectionStart || myfield.selectionStart == '0') {
             var startPos = myfield.selectionStart;
-            if(tpen.screen.focusItem[1].next().size() && myfield.value.substring(startPos).length > 0) {
+            if(!tpen.screen.focusItem[1].next().size() && myfield.value.substring(startPos).length > 0) {
             // if this is the last line, ask before proceeding
                 var cfrm = confirm("You are on the last line of the page. T-PEN can save the remaining text in the linebreaking tool for later insertion. \n\nConfirm?");
                 if (cfrm) {

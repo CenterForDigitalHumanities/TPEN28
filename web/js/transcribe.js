@@ -422,7 +422,7 @@ function loadTranscription(pid, tool){
                     $.each(transcriptionFolios, function(){
                         $("#pageJump").append("<option folioNum='" + count
                             + "' class='folioJump' val='" + this.label + "'>"
-                            + (tpen.screen.currentFolio===count && "‣") + this.label + "</option>"); // add page indicator
+                            + this.label + "</option>"); // add page indicator... (tpen.screen.currentFolio===count && "‣") is false
                         $("#compareJump").append("<option class='compareJump' folioNum='"
                             + count + "' val='" + this.label + "'>"
                             + this.label + "</option>");
@@ -866,6 +866,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
             if(permissionForImage){
                 $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
                 $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
+                populateCompareSplit(tpen.screen.currentFolio);
                 originalCanvasHeight2 = $("#imgTop img").height();
                 originalCanvasWidth2 = $("#imgTop img").width();
                 drawLinesToCanvas(canvasObj, parsing, tool);
@@ -1694,39 +1695,7 @@ function moveImg(event){
     });
 }
 
-function restoreWorkspace(){
-    $("#imgBottom").show();
-    $("#imgTop").show();
-    $("#imgTop").removeClass("fixingParsing");
-    $("#transWorkspace").show();
-    $("#imgTop").css("width", "100%");
-    $("#imgTop img").css({"height":"auto", "width":"100%"});
-    updatePresentation(tpen.screen.focusItem[1]);
-    $(".hideMe").show();
-    $(".showMe2").hide();
-    var pageJumpIcons = $("#pageJump").parent().find("i");
-    pageJumpIcons[0].setAttribute('onclick', 'firstFolio();');
-    pageJumpIcons[1].setAttribute('onclick', 'previousFolio();');
-    pageJumpIcons[2].setAttribute('onclick', 'nextFolio();');
-    pageJumpIcons[3].setAttribute('onclick', 'lastFolio();');
-    $("#prevCanvas").attr("onclick", "previousFolio();");
-    $("#nextCanvas").attr("onclick", "nextFolio();");
-    $("#pageJump").removeAttr("disabled");
-}
 
-function hideWorkspaceToSeeImage(){
-    $("#transWorkspace").hide();
-    $("#imgTop").hide();
-    $("#imgBottom img").css({
-        "top" :"0%",
-        "left":"0%"
-    });
-    $("#imgBottom .lineColIndicatorArea").css({
-        "top": "0%"
-    });
-    $(".hideMe").hide();
-    $(".showMe2").show();
-}
 
 function magnify(img, event){
     //For separating out different imgs on which to zoom.
@@ -2051,6 +2020,40 @@ function makeOverlayDiv(thisLine, originalX, cnt){
     return lineOverlay;
 }
 
+function restoreWorkspace(){
+    $("#imgBottom").show();
+    $("#imgTop").show();
+    $("#imgTop").removeClass("fixingParsing");
+    $("#transWorkspace").show();
+    $("#imgTop").css("width", "100%");
+    $("#imgTop img").css({"height":"auto", "width":"100%"});
+    updatePresentation(tpen.screen.focusItem[1]);
+    $(".hideMe").show();
+    $(".showMe2").hide();
+//    var pageJumpIcons = $("#pageJump").parent().find("i");
+//    pageJumpIcons[0].setAttribute('onclick', 'firstFolio();');
+//    pageJumpIcons[1].setAttribute('onclick', 'previousFolio();');
+//    pageJumpIcons[2].setAttribute('onclick', 'nextFolio();');
+//    pageJumpIcons[3].setAttribute('onclick', 'lastFolio();');
+    $("#prevCanvas").attr("onclick", "previousFolio();");
+    $("#nextCanvas").attr("onclick", "nextFolio();");
+    $("#pageJump").removeAttr("disabled");
+}
+
+function hideWorkspaceToSeeImage(){
+    $("#transWorkspace").hide();
+    $("#imgTop").hide();
+    $("#imgBottom img").css({
+        "top" :"0%",
+        "left":"0%"
+    });
+    $("#imgBottom .lineColIndicatorArea").css({
+        "top": "0%"
+    });
+    $(".hideMe").hide();
+    $(".showMe2").show();
+}
+
 /* Reset the interface to the full screen transcription view. */
 function fullPage(){
     if ($("#overlay").is(":visible")) {
@@ -2065,7 +2068,7 @@ function fullPage(){
     $("#splitScreenTools").removeAttr("disabled");
     $("#splitScreenTools").find('option:eq(0)').prop("selected", true);
     $("#transcriptionCanvas").css("width", "100%");
-    $("#transcriptionCanvas").css("height", "auto");
+    $("#transcriptionCanvas").css("height", "auto"); //Need a real height here, it can't be auto.  It needs to be the height of the image.  
     $("#transcriptionTemplate").css("width", "100%");
     $("#transcriptionTemplate").css("max-width", "100%");
     $("#transcriptionTemplate").css("height", "auto");
@@ -2080,6 +2083,7 @@ function fullPage(){
     $("#splitScreenTools").show();
     var screenWidth = $(window).width();
     var adjustedHeightForFullscreen = (originalCanvasHeight2 / originalCanvasWidth2) * screenWidth;
+    console.log("Canavs should get the height "+adjustedHeightForFullscreen);
     $("#transcriptionCanvas").css("height", adjustedHeightForFullscreen + "px");
     $(".lineColIndicatorArea").css("height", adjustedHeightForFullscreen + "px");
     $("#imgTop, #imgBottom").hover(function(){
@@ -2163,10 +2167,10 @@ function splitPage(event, tool) {
     var pageJumpIcons = $("#pageJump")
         .parent()
         .children("i");
-    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
-    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
-    pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
-    pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
+//    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
+//    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
+//    pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
+//    pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
     $("#prevCanvas").attr("onclick", "");
     $("#nextCanvas").attr("onclick", "");
 }
@@ -2188,8 +2192,8 @@ function forceOrderPreview(){
 }
 
 function populateCompareSplit(folioIndex){
-    var canvasIndex = folioIndex - 1;
-    var compareSrc = tpen.manifest.sequences[0].canvases[canvasIndex].images[0].resource["@id"];
+    var compareSrc = tpen.manifest.sequences[0].canvases[folioIndex].images[0].resource["@id"];
+    console.log("populate compare split with "+compareSrc);
     var currentCompareSrc = $(".compareImage").attr("src");
     if (currentCompareSrc !== compareSrc) $(".compareImage").attr("src", compareSrc);
 }

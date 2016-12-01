@@ -420,7 +420,6 @@
                                 %>
                                 <h3>Add to Project</h3>
                                 <a id="addManuscript" class="tpenButton" href="#"><span class="ui-icon ui-icon-plus right"></span>Find Manuscript to Add</a>
-                                <div id="uploadImagesDiv"></div>
                                 <%}%>
                             </li>
                             <li class="left ui-widget-content ui-corner-tr ui-corner-bl tall">
@@ -1156,7 +1155,6 @@ if(request.getParameter("publicOptions")!=null && UID == thisGroup.getLeader()[0
                         </p>
                     </div>
                 </div>
-        <%@include file="WEB-INF/includes/privateUpload.jspf" %>
         <%@include file="WEB-INF/includes/projectTitle.jspf" %>
                 <script type="text/javascript">
                                 $(function() {

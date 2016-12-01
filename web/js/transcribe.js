@@ -4066,8 +4066,11 @@ var Help = {
      *  Shows the help interface.
      */
     revealHelp: function(){
-        $("#closeHelp:visible").click() // close if open
-
+        if($("#closeHelp").is(":visible")){
+            $("#closeHelp:visible").click(); // close if open
+            return false;
+        }
+        
         var workspaceHeight = $("#transWorkspace").height();
         var imgTopHeight = $("#imgTop").height() + workspaceHeight;
         //Screen.maintainWorkspace();
@@ -4077,8 +4080,7 @@ var Help = {
         $("#help").show().css({
             "left":"0px",
             "top":"32px",
-            "width":"100%",
-
+            "width":"100%"
         });
         $(".helpContents").eq(0).click();
         $("#bookmark").hide();

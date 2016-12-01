@@ -432,7 +432,7 @@ function loadTranscription(pid, tool){
                     scrubFolios();
                     $.each(transcriptionFolios, function(count){
                         var label = (tpen.screen.currentFolio===count) ?
-                        "‣" + this.label : "&nbsp;&nbsp;" + this.label;
+                        "‣" + this.label : "&nbsp;" + this.label;
                         var opt = $("<option folioNum='" + count
                             + "' val='" + this.label + "'>"
                             + label + "</option>");
@@ -847,7 +847,6 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
     $("#imgTop img, #imgBottom img").css("width", "auto");
     $("#prevColLine").html("**");
     $("#currentColLine").html("**");
-    $("#captionsColLine").html("**");
     $('.transcriptionImage').attr('src', "images/loading2.gif"); //background loader if there is a hang time waiting for image
     $('.lineColIndicator').remove();
     $(".transcriptlet").remove();
@@ -1199,7 +1198,8 @@ function linesToScreen(lines, tool){
             + '" colLineNum="' + colCounter + '" lineID="' + counter
             + '" lineserverid="' + lineID + '" class="transcriptlet" data-answer="'
             + thisContent + '"><textarea class="theText" placeholder="' + thisPlaceholder + '">'
-            + thisContent + '</textarea></div>');
+            + thisContent + '</textarea><textarea class="notes" placeholder="Line notes">'
+            + line._tpen_note||'' + '</textarea></div>');
         // 1000 is promised, 10 goes to %
         var left = parseFloat(XYWHarray[0]) / (10 * ratio);
         var top = parseFloat(XYWHarray[1]) / 10;
@@ -1274,19 +1274,16 @@ function updatePresentation(transcriptlet) {
             else{ }
             var prevLineCol = transcriptletBefore.attr("col");
             var prevLineText = transcriptletBefore.attr("data-answer");
-            $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum);
-            $("#captionsColLine").html(prevLineCol + "" + currentTranscriptletNum+":");
+            $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","");
             $("#captionsText").html((prevLineText.length && prevLineText) || "This line is not transcribed.");
         }
         else { //this is a problem
-            $("#prevColLine").html("**");
-            $("#captionsColLine").html("**");
+            $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
             $("#captionsText").html("You are on the first line.");
         }
     }
     else { //there is no previous line
-        $("#prevColLine").html("**");
-        $("#captionsColLine").html("**");
+        $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
         $("#captionsText").html("ERROR.  NUMBERS ARE OFF");
     }
     tpen.screen.focusItem[0] = tpen.screen.focusItem[1];
@@ -1966,6 +1963,7 @@ function hideWorkspaceForParsing(){
             var splitWidth = window.innerWidth - (width + 35) + "px";
             $(".split img").css("max-width", splitWidth);
             $(".split:visible").css("width", splitWidth);
+            tpen.screen.textSize();
         },
         stop: function(event, ui){
             //$(".lineColIndicator .lineColOnLine").css("line-height", $(this).height()+"px");
@@ -4267,7 +4265,25 @@ var Help = {
             $(".video[ref='"+refIndex+"']").addClass('ui-state-disabled').text('unavailable');
         }
     }
-}
+};
+
+    /**
+     * Adjusts font-size in transcription and notes fields based on size of screen.
+     * Minimum is 13px and maximum is 18px.
+     *
+     */
+    tpen.screen.textSize= function () {
+        var textSize = Math.floor(tpen.screen.focusItem[1].find(".theText").width() / 60),
+            resize = (textSize > 18) ? 18 : textSize,
+            wrapperWidth = $('#transWorkspace').width();
+        resize = (resize < 13) ? 13 : resize;
+        $(".theText,.notes,#previous span,#helpPanels ul").css("font-size",resize+"px");
+//        if (wrapperWidth < 550) {
+//            Interaction.shrinkButtons();
+//        } else {
+//            Interaction.expandButtons();
+//        }
+    };
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?
 if (!window.console) window.console = {};

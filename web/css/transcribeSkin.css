@@ -212,21 +212,17 @@ body{
 }
 
 #transWorkspace textarea {
-    left: 0px;
     max-height: 12em;
     min-height: 60px;
     position: relative;
     width: 100%;
     z-index: 5;
-    -webkit-box-shadow: 4px 4px 4px 2px #DDD inset;
-    -moz-box-shadow: 4px 4px 4px 2px #DDD inset;
-    box-shadow: 4px 4px 4px 2px #DDD inset;
     overflow: auto;
     border: 1px solid #000;
     resize: vertical;
-    margin: 0px auto;
-    padding-top:7px;
-    padding-left:7px;
+}
+.notes {
+    display: none;
 }
 
 #imgTop,#imgBottom{
@@ -270,7 +266,8 @@ body{
     display: flex;
 }
 .flex-bookend {
-    width: 108px;
+    width: 4em;
+    text-align: center;
 }
 .flex-wide, .flex-wide div {
     display:flex;
@@ -289,8 +286,6 @@ body{
     -moz-transition: opacity .25s;
     -o-transition: opacity .25s;
     transition: opacity .25s;
-    top: -6px;
-    margin-left: 109px;
 }
 #captionsText {
     display: inline-block;
@@ -438,11 +433,14 @@ body{
     width: auto;
     height: 0px;
 }
-#colLineWrapper{
-    display: inline-block;
-    position: relative;
-    margin:0px 3px;
+#toggleNotes{
+    border-radius: 4px;
+    height: 30px;
+    width: 30px;
+    text-align: center;
+    line-height: 30px;
 }
+
 #prevColLine, #currentColLine{
     border-radius: 4px;
     height: 30px;
@@ -1248,7 +1246,7 @@ p{
     border:1px solid white;
     font-size:.8em;
     color:white;
-    transition: box-shadow 2s;
+    transition: box-shadow .5s;
 }
 .lineColIndicatorArea{
     position: absolute;

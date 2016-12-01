@@ -406,7 +406,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                                 <dt>Custom Text Entry</dt>
                                 <dd>Expand the <span class="showMe">Characters</span> or <span class="showMe">XML Tags</span> list to reveal buttons to insert your custom tags or <span ref="glossSpecialCharacters" class="glossary">special characters</span> into the <span ref="glossTranscriptionArea" class="glossary">transcription area</span>.</dd>
                                 <dt class="showMe">View Full Page</dt>
-                                <dd>Show the whole page image. Mouseover the image to highlight individual lines. Click to navigate directly to that line. Use the available <span class="showMe">magnify tool</span> to take a closer look.</dd>
+                                <dd>Show the whole image. Click within the full view image to navigate directly to that line in the transcription area. Use the available <span class="showMe">magnify tool</span> to take a closer look.</dd>
 <!--
                                 <dt class="showMe">History</dt>
                                 <dd>Lists the previous saved versions of the <span ref="glossParsing" class="glossary">line parsing</span> and <span ref="glossTranscription" class="glossary">transcription text</span>. Mouseover the history entries to reveal options to revert to a previous version.</dd>
@@ -445,6 +445,8 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                                         <dd>Move up and down through lines of transcription with the keyboard arrow keys.</dd>
                                     <dt>ALT + left/right arrows:</dt>
                                         <dd>Bump the active transcription line in the direction the arrow was pushed. *Warning: may create new columns.</dd>
+                                    <dt>While holding ALT:</dt>
+                                        <dd>Resize the active line by clicking and dragging the left or right edge.</dd>
                                     <dt>ESC:</dt>
                                         <dd>Close any open tool and return to fullscreen transcription.</dd>
 
@@ -665,12 +667,26 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             }
         });
 
-        $("#imgTop").hover(function(){
-            var color = tpen.screen.colorThisTime.replace(".4", "1");
-            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+color);
-        }, function(){
-            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+tpen.screen.colorThisTime);
-        });
+        var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
+        $("#imgTop").hover(
+            function(){
+                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+            },
+            function(){
+                var lineColor2 = lineColor.replace(".9", ".4");
+                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+            }
+        );
+
+        $("#imgBottom").hover(
+            function(){
+                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+            },
+            function(){
+                var lineColor2 = lineColor.replace(".9", ".4");
+                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+            }
+        );
 
         document.addEventListener("mousewheel", function(e){
             if(tpen.screen.isMagnifying){

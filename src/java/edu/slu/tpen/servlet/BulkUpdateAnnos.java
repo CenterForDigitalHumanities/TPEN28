@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  *
@@ -32,14 +33,15 @@ public class BulkUpdateAnnos extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        if (request.getParameter("annos") == null) {
-            response.sendError(response.SC_BAD_REQUEST);
+        String content = request.getParameter("content");
+        JSONObject content_obj = JSONObject.fromObject(content);
+        JSONArray annotations = content_obj.getJSONArray("annos");
+        if (annotations.isEmpty()) {
+            response.sendError(response.SC_NO_CONTENT);
             response.setHeader("Access-Control-Allow-Origin", "*");
             return;
         }
-        String annos = request.getParameter("annos");
-        JSONArray annos_array = JSONArray.fromObject(annos);
-        JSONArray updatedAnnos = Canvas.bulkUpdateTranscriptlets(annos_array);
+        JSONArray updatedAnnos = Canvas.bulkUpdateTranscriptlets(annotations);
         try (PrintWriter out = response.getWriter()) {
             out.println(updatedAnnos);
         }

@@ -173,11 +173,9 @@ function makePreviewPage(thisList, pageLabel, currentPage, i, j, l){
     $.get(thisList,function(data){
         if(data.proj == tpen.project.id){
             var linesForThisProject = data.resources;
-            console.log("found the right one");
             populatePreview(linesForThisProject, pageLabel, currentPage, i);
         }
         else if(j == l){ //we did not find the proper annotation list, send this off to create an empty page
-            console.log("Did not find lines for this project");
             populatePreview(linesForThisProject, pageLabel, currentPage, i);
         }
     });
@@ -1437,17 +1435,13 @@ var Page = {
 function maintainWorkspace(){
     // keep top img within the set proportion of the screen
     var imgTopHeight = $("#imgTop").height();
-    console.log(" is"+imgTopHeight + " > "+Page.height() + "?");
-
     if (imgTopHeight > Page.height()) {
-        console.log("yes");
         imgTopHeight = Page.height();
         //Should I try to convert this to a percentage?
         $("#imgTop").css("height", imgTopHeight);
        // adjustImgs(setPositions());
     }
     else{
-        console.log("no");
     }
 
 }
@@ -2083,7 +2077,6 @@ function fullPage(){
     $("#splitScreenTools").show();
     var screenWidth = $(window).width();
     var adjustedHeightForFullscreen = (originalCanvasHeight2 / originalCanvasWidth2) * screenWidth;
-    console.log("Canavs should get the height "+adjustedHeightForFullscreen);
     $("#transcriptionCanvas").css("height", adjustedHeightForFullscreen + "px");
     $(".lineColIndicatorArea").css("height", adjustedHeightForFullscreen + "px");
     $("#imgTop, #imgBottom").hover(function(){
@@ -2193,7 +2186,6 @@ function forceOrderPreview(){
 
 function populateCompareSplit(folioIndex){
     var compareSrc = tpen.manifest.sequences[0].canvases[folioIndex].images[0].resource["@id"];
-    console.log("populate compare split with "+compareSrc);
     var currentCompareSrc = $(".compareImage").attr("src");
     if (currentCompareSrc !== compareSrc) $(".compareImage").attr("src", compareSrc);
 }
@@ -2931,7 +2923,6 @@ function batchLineUpdate(linesInColumn){
 
 /* Update line information for a particular line. */
 function updateLine(line, cleanup, updateList){
-    console.log("update line function");
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
@@ -2992,7 +2983,6 @@ function updateLine(line, cleanup, updateList){
             };
             if(updateList){
                 var url1 = "updateAnnoList";
-                console.log("update list");
                 for(var i=0  ;i < currentAnnoList.length; i++){
                     if(currentAnnoList[i]["@id"] === dbLine['@id']){
                         currentAnnoList[i].on = dbLine.on;
@@ -3007,7 +2997,6 @@ function updateLine(line, cleanup, updateList){
                 }
 
             }
-            console.log("update line");
 
             $.post(url,payload,function(){
             	line.attr("hasError",null);
@@ -4094,13 +4083,11 @@ var Help = {
         $(".helpContents").eq(0).click();
         $("#bookmark").hide();
         $("#closeHelp").show();
-        console.log("The help is revealed");
     },
     /**
      *  Adjusts the position of the help panels to reveal the selected section.
      */
     select  : function(contentSelect){
-        console.log("Help.select");
           $(contentSelect).addClass("helpActive").siblings().removeClass("helpActive");
           $("#helpPanels").css("margin-left",-$("#help").width()*contentSelect.index()+"px");
     },
@@ -4111,7 +4098,6 @@ var Help = {
      *  @param refIndex int index of help button clicked
      */
     lightUp: function(refIndex){
-        console.log("Help.lightUp.  case "+refIndex);
         switch (refIndex){
             case 0  :   //Previous Line
                 this.highlight($("#prevLine"));
@@ -4163,16 +4149,11 @@ var Help = {
      *  @param $element jQuery object to redraw
      */
     highlight: function($element){
-        console.log("Help.highlight ");
-        console.log($element);
         if ($element.length == 0) $element = $("<div/>");
         var look = $element.clone().attr('id','highlight');
         var position = $element.offset();
-        console.log("The clone");
-        console.log(look);
         $("#overlay").show().after(look);
         if ((position == null) || (position.top < 1)){
-            console.log("off screen");
             position = {left:(Page.width()-260)/2,top:(Page.height()-46)/2};
             look.prepend("<div id='offscreen' class='ui-corner-all ui-state-error'>This element is not currently displayed.</div>")
             .css({
@@ -4183,8 +4164,6 @@ var Help = {
                 $("#overlay").hide("fade",2000);
             });
         } else {
-            console.log("We can hightlight it");
-            console.log(position);
             $("#highlight").css({
                 "box-shadow":"0 0 5px 3px whitesmoke",
                 "left"  : position.left,
@@ -4205,7 +4184,6 @@ var Help = {
      *  @param refIndex int index of help button clicked
      */
     video: function(refIndex){
-        console.log("Help.video");
         var vidLink ='';
         switch (refIndex){
             case 0  :   //Previous Line

@@ -639,7 +639,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             //fullPage();
             $("#help").css({"left":"100%"}).fadeOut(1000);
         });
-        $("#helpMe").click(function(){Help.revealHelp; console.log("reveal the help");});
+        $("#helpMe").click(function(){Help.revealHelp;});
 
         $("#charactersPopin").on("change", function(event){
             var val = $("#charactersPopin").val();
@@ -712,9 +712,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             }
             else if (event.which == 112) { //F1 for help
                 event.preventDefault();
-                console.log("F1 for help");
                 Help.revealHelp();
-                console.log("reveal the help");
                 //$("#helpMe").click();
             }
             else if (event.which == 18 || event.altKey){

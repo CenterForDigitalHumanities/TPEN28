@@ -1489,7 +1489,7 @@ function adjustImgs(positions) {
     lineToMakeActive.addClass("activeLine");
     // use the active line color to give the active line a little background color
     // to make it stand out if the box shadow is not enough.
-    var activeLineColor = tpen.screen.colorThisTime.replace(".4", ".2");
+    var activeLineColor = tpen.screen.colorThisTime.replace("1", ".2");
     $('.activeLine').css({
         'box-shadow': '0px 0px 15px 8px ' + tpen.screen.colorThisTime
     });
@@ -2079,9 +2079,27 @@ function fullPage(){
     var adjustedHeightForFullscreen = (originalCanvasHeight2 / originalCanvasWidth2) * screenWidth;
     $("#transcriptionCanvas").css("height", adjustedHeightForFullscreen + "px");
     $(".lineColIndicatorArea").css("height", adjustedHeightForFullscreen + "px");
-    $("#imgTop, #imgBottom").hover(function(){
-        $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + tpen.screen.colorThisTime);
-    });
+    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
+    $("#imgTop").hover(
+       function(){
+            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+        },
+        function(){
+            var lineColor2 = lineColor.replace(".9", ".4");
+            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+        }
+    );
+        
+    $("#imgBottom").hover(
+        function(){
+            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+        },
+        function(){
+            var lineColor2 = lineColor.replace(".9", ".4");
+            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+        }
+    );
+
     $.each($(".lineColOnLine"), function(){
         $(this).css("line-height", $(this).height() + "px");
     });
@@ -2737,7 +2755,7 @@ function markerColors(){
     tpen.screen.colorList.splice(tpen.screen.colorList.indexOf(tpen.screen.colorThisTime), 1);
     var oneToChange = tpen.screen.colorThisTime.lastIndexOf(")") - 2;
     var borderColor = tpen.screen.colorThisTime.substr(0, oneToChange) + '.2' + tpen.screen.colorThisTime.substr(oneToChange + 1);
-    var lineColor = tpen.screen.colorThisTime.replace(".4", "1"); //make this color opacity 100
+    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9"); //make this color opacity 100
     $('.lineColIndicator').css('border', '1px solid ' + lineColor);
     $('.lineColOnLine').css({'border-left':'1px solid ' + borderColor, 'color':lineColor});
     $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + tpen.screen.colorThisTime); //keep this color opacity .4 until imgTop is hovered.

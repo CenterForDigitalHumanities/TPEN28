@@ -122,30 +122,37 @@
                     <div title="Slide Workspace" class="workspaceHandle slideHandleLeft"><i class="fa fa-bars"></i><i class="fa fa-arrows-v"></i></div><div title="Slide Workspace" class="workspaceHandle slideHandleRight"><i class="fa fa-arrows-v"></i><i class="fa fa-bars"></i></div>
                     <div class="flex-container flex-stretch">
                         <div class="flex-bookend"></div>
-                        <div id="captions" class="flex-wide">
-                            <div id="captionsText"></div>
-                        </div>
                         <div class="flex-stretch">
                             <div title="Previous Line" id="prevColLine"></div>
+                        </div>
+                        <div id="captions" class="flex-wide">
+                            <div id="captionsText"></div>
                         </div>
                         <div class="flex-bookend"></div>
                     </div>
                     <div class="flex-container flex-stretch">
                         <div class="flex-bookend">
-                            <button id="prevLine" title="Previous Line" onclick="previousTranscriptlet();">prev</button>
+                            <button id="prevLine" title="Previous Line" onclick="previousTranscriptlet();">
+                                <i class="fa fa-chevron-left fa-2x"></i><br>
+                                Previous Line
+                            </button>
                         </div>
-                        <div id="transcriptletArea" class="flex-wide"></div>
                         <div class="flex-stretch">
                             <div title="Current Line" id="currentColLine"></div>
                             <button id='toggleNotes' role="button" onclick="$('.notes').fadeToggle('slow')" title='Toggle Notes'>
                                 <i class="fa fa-comment"></i>
                             </button>
                         </div>
+                        <div id="transcriptletArea" class="flex-wide"></div>
                         <div class="flex-bookend">
-                            <button id="nextLine" title="Next Line" onclick="nextTranscriptlet();">next</button>
+                            <button id="nextLine" title="Next Line" onclick="nextTranscriptlet();">
+                                <i class="fa fa-chevron-right fa-2x"></i><br>
+                                Next Line
+                            </button>
                         </div>
                     </div>
-                    <div class="bottomButtons">
+                    <div class="flex-container flex-stretch">
+                        <div class="bottomButtons">
 
 <!--                        <select id="charactersPopin" class="specialCharacters"  title="Special Characters" >
                             <option id="activeCharacters" >Characters</option>
@@ -173,11 +180,24 @@
                         <button id="magnify1" class="magnifyBtn" magnifyImg="trans" title="Magnify Transcription Image" >Magnify</button> <!--Page event on the listener for this class in js.-->
                         <button id="moveImage" title="Move Transcription Image" onclick="startMoveImg();">Move Img</button>
                         <button id="parsingBtn" title="Correct Page Parsing" >Correct Parsing</button> <!--Page event on the listener for this class in js.-->
-                        <!--<button id="linebreakBtn">Linebreak</button>-->
                         <button id="lineControlBtn" onclick="toggleLineControls(event);" title="View Line Controls" >Line Controls</button>
 
                     </div>
-
+                    </div>
+                    <div id="specialCharsFloat" class="flex-container flex-stretch">
+                        <div class="closeBtn" onclick="$('#specialCharsFloat').hide();">
+                            <i class="fa fa-close"></i>
+                        </div>
+                        <div id="charactersPopin" class="specialCharacters"  title="Special Characters" >
+                        </div>
+                    </div>
+                    <div id="xmlTagFloat" class="flex-container flex-stretch">
+                        <div class="closeBtn" onclick="$('#xmlTagFloat').hide();">
+                            <i class="fa fa-close"></i>
+                        </div>
+                        <div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
+                        </div>
+                    </div>
                 </div>
                 <div id="imgBottom">
                 <img class="transcriptionImage" />
@@ -364,18 +384,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             <span style="top:14px;" title="Toggle Entire Lines" class="linehdr">Lines</span><input style="top:14px;" title="Toggle Lines" type="checkbox" onchange="toggleLineMarkers();" checked="checked"><br>
             <span style="top:10px;" title="Toggle Lines' Indicator" class="linehdr">Line #s</span><input style="top:10px;" type="checkbox" onchange="toggleLineCol();" checked="checked">
             <button id="markerColors" onclick="markerColors();">Line Color</button>
-        </div>
-        <div id="specialCharsFloat">
-            <div class="closeBtn" onclick="$('#specialCharsFloat').hide(); $('#specialCharsFloat').draggable('destroy');"> X </div>
-            <select id="charactersPopin" class="specialCharacters"  title="Special Characters" >
-                <option id="activeCharacters" >Characters</option>
-            </select>
-        </div>
-        <div id="xmlTagFloat">
-            <div class="closeBtn" onclick="$('#xmlTagFloat').hide(); $('#xmltagFloat').draggable('destroy');"> X </div>
-            <select id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
-                <option id="activeTags">XML Tags</option>
-            </select>
         </div>
 
         <div id="requestAccessContainer" style="display: none;">
@@ -651,17 +659,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             $("#help").css({"left":"100%"}).fadeOut(1000);
         });
         $("#helpMe").click(function(){Help.revealHelp;});
-
-        $("#charactersPopin").on("change", function(event){
-            var val = $("#charactersPopin").val();
-            addchar(val, "");
-        });
-
-        $("#xmlTagPopin").on("change", function(event){
-            var val = $("#xmlTagPopin").val();
-            insterTag(val, "");
-        });
-
         $(".magnifyBtn").click(function(event){
             if ($(this).hasClass("ui-state-active")){
                 $('#zoomDiv').hide();

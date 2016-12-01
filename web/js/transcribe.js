@@ -256,7 +256,7 @@ function populateSpecialCharacters(specialCharacters){
         else {
             var keyVal = thisChar.key;
             var position2 = parseInt(thisChar.position);
-            var newCharacter = "<option class='character'>&#" + keyVal + ";</option>";
+            var newCharacter = "<button role='button' class='character' onclick='addchar(\"&#" + keyVal + "\")'>&#" + keyVal + ";</button>";
             if (position2 - 1 >= 0 && (position2 - 1) < specialCharacters.length) {
                 speCharactersInOrder[position2 - 1] = newCharacter;
             }
@@ -276,7 +276,7 @@ function populateXML(){
     for (var tagIndex = 0; tagIndex < xmlTags.length; tagIndex++){
         var newTagBtn = "";
         if(xmlTags[tagIndex].tag && xmlTags[tagIndex].tag!== "" && xmlTags[tagIndex].tag !== " "){
-            newTagBtn = "<option class='xmlTag'>"+xmlTags[tagIndex].tag+"</option>";
+            newTagBtn = "<button role='button' onclick='insertTag(\""+xmlTags[tagIndex].tag+"\")' class='xmlTag'>"+xmlTags[tagIndex].tag+"</button>";
             var button = $(newTagBtn);
             $(".xmlTags").append(button);
         }
@@ -3556,23 +3556,13 @@ function toggleLineControls(event){
 function toggleXMLTags(event){
     var locationX = event.pageX;
     var locationY = event.pageY;
-    $("#xmlTagFloat").css({
-        "display":  "block",
-        "left" : locationX + "px",
-        "top" : locationY + 15 + "px"
-    });
-    $("#xmlTagFloat").draggable();
+    $("#xmlTagFloat").toggle();
 }
 
 function toggleSpecialChars(event){
     var locationX = event.pageX;
     var locationY = event.pageY;
-    $("#specialCharsFloat").css({
-        "display":  "block",
-        "left" : locationX + "px",
-        "top" : locationY + 15 + "px"
-    });
-    $("#specialCharsFloat").draggable();
+    $("#specialCharsFloat").toggle();
 }
 
 /* Control the hiding and showing of the image tools in the transcription interface. Depricated
@@ -4273,9 +4263,9 @@ var Help = {
      *
      */
     tpen.screen.textSize= function () {
-        var textSize = Math.floor(tpen.screen.focusItem[1].find(".theText").width() / 60),
+           var wrapperWidth = $('#transcriptionCanvas').width();
+        var textSize = Math.floor(wrapperWidth / 60),
             resize = (textSize > 18) ? 18 : textSize,
-            wrapperWidth = $('#transWorkspace').width();
         resize = (resize < 13) ? 13 : resize;
         $(".theText,.notes,#previous span,#helpPanels ul").css("font-size",resize+"px");
 //        if (wrapperWidth < 550) {

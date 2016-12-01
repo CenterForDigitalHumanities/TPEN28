@@ -173,11 +173,9 @@ function makePreviewPage(thisList, pageLabel, currentPage, i, j, l){
     $.get(thisList,function(data){
         if(data.proj == tpen.project.id){
             var linesForThisProject = data.resources;
-            console.log("found the right one");
             populatePreview(linesForThisProject, pageLabel, currentPage, i);
         }
         else if(j == l){ //we did not find the proper annotation list, send this off to create an empty page
-            console.log("Did not find lines for this project");
             populatePreview(linesForThisProject, pageLabel, currentPage, i);
         }
     });
@@ -422,7 +420,7 @@ function loadTranscription(pid, tool){
                     $.each(transcriptionFolios, function(){
                         $("#pageJump").append("<option folioNum='" + count
                             + "' class='folioJump' val='" + this.label + "'>"
-                            + (tpen.screen.currentFolio===count && "‣") + this.label + "</option>"); // add page indicator
+                            + this.label + "</option>"); // add page indicator... (tpen.screen.currentFolio===count && "‣") is false
                         $("#compareJump").append("<option class='compareJump' folioNum='"
                             + count + "' val='" + this.label + "'>"
                             + this.label + "</option>");
@@ -866,6 +864,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
             if(permissionForImage){
                 $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
                 $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
+                populateCompareSplit(tpen.screen.currentFolio);
                 originalCanvasHeight2 = $("#imgTop img").height();
                 originalCanvasWidth2 = $("#imgTop img").width();
                 drawLinesToCanvas(canvasObj, parsing, tool);
@@ -1436,17 +1435,13 @@ var Page = {
 function maintainWorkspace(){
     // keep top img within the set proportion of the screen
     var imgTopHeight = $("#imgTop").height();
-    console.log(" is"+imgTopHeight + " > "+Page.height() + "?");
-
     if (imgTopHeight > Page.height()) {
-        console.log("yes");
         imgTopHeight = Page.height();
         //Should I try to convert this to a percentage?
         $("#imgTop").css("height", imgTopHeight);
        // adjustImgs(setPositions());
     }
     else{
-        console.log("no");
     }
 
 }
@@ -1694,39 +1689,7 @@ function moveImg(event){
     });
 }
 
-function restoreWorkspace(){
-    $("#imgBottom").show();
-    $("#imgTop").show();
-    $("#imgTop").removeClass("fixingParsing");
-    $("#transWorkspace").show();
-    $("#imgTop").css("width", "100%");
-    $("#imgTop img").css({"height":"auto", "width":"100%"});
-    updatePresentation(tpen.screen.focusItem[1]);
-    $(".hideMe").show();
-    $(".showMe2").hide();
-    var pageJumpIcons = $("#pageJump").parent().find("i");
-    pageJumpIcons[0].setAttribute('onclick', 'firstFolio();');
-    pageJumpIcons[1].setAttribute('onclick', 'previousFolio();');
-    pageJumpIcons[2].setAttribute('onclick', 'nextFolio();');
-    pageJumpIcons[3].setAttribute('onclick', 'lastFolio();');
-    $("#prevCanvas").attr("onclick", "previousFolio();");
-    $("#nextCanvas").attr("onclick", "nextFolio();");
-    $("#pageJump").removeAttr("disabled");
-}
 
-function hideWorkspaceToSeeImage(){
-    $("#transWorkspace").hide();
-    $("#imgTop").hide();
-    $("#imgBottom img").css({
-        "top" :"0%",
-        "left":"0%"
-    });
-    $("#imgBottom .lineColIndicatorArea").css({
-        "top": "0%"
-    });
-    $(".hideMe").hide();
-    $(".showMe2").show();
-}
 
 function magnify(img, event){
     //For separating out different imgs on which to zoom.
@@ -2051,6 +2014,40 @@ function makeOverlayDiv(thisLine, originalX, cnt){
     return lineOverlay;
 }
 
+function restoreWorkspace(){
+    $("#imgBottom").show();
+    $("#imgTop").show();
+    $("#imgTop").removeClass("fixingParsing");
+    $("#transWorkspace").show();
+    $("#imgTop").css("width", "100%");
+    $("#imgTop img").css({"height":"auto", "width":"100%"});
+    updatePresentation(tpen.screen.focusItem[1]);
+    $(".hideMe").show();
+    $(".showMe2").hide();
+//    var pageJumpIcons = $("#pageJump").parent().find("i");
+//    pageJumpIcons[0].setAttribute('onclick', 'firstFolio();');
+//    pageJumpIcons[1].setAttribute('onclick', 'previousFolio();');
+//    pageJumpIcons[2].setAttribute('onclick', 'nextFolio();');
+//    pageJumpIcons[3].setAttribute('onclick', 'lastFolio();');
+    $("#prevCanvas").attr("onclick", "previousFolio();");
+    $("#nextCanvas").attr("onclick", "nextFolio();");
+    $("#pageJump").removeAttr("disabled");
+}
+
+function hideWorkspaceToSeeImage(){
+    $("#transWorkspace").hide();
+    $("#imgTop").hide();
+    $("#imgBottom img").css({
+        "top" :"0%",
+        "left":"0%"
+    });
+    $("#imgBottom .lineColIndicatorArea").css({
+        "top": "0%"
+    });
+    $(".hideMe").hide();
+    $(".showMe2").show();
+}
+
 /* Reset the interface to the full screen transcription view. */
 function fullPage(){
     if ($("#overlay").is(":visible")) {
@@ -2065,7 +2062,7 @@ function fullPage(){
     $("#splitScreenTools").removeAttr("disabled");
     $("#splitScreenTools").find('option:eq(0)').prop("selected", true);
     $("#transcriptionCanvas").css("width", "100%");
-    $("#transcriptionCanvas").css("height", "auto");
+    $("#transcriptionCanvas").css("height", "auto"); //Need a real height here, it can't be auto.  It needs to be the height of the image.  
     $("#transcriptionTemplate").css("width", "100%");
     $("#transcriptionTemplate").css("max-width", "100%");
     $("#transcriptionTemplate").css("height", "auto");
@@ -2163,10 +2160,10 @@ function splitPage(event, tool) {
     var pageJumpIcons = $("#pageJump")
         .parent()
         .children("i");
-    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
-    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
-    pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
-    pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
+//    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
+//    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
+//    pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
+//    pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
     $("#prevCanvas").attr("onclick", "");
     $("#nextCanvas").attr("onclick", "");
 }
@@ -2188,8 +2185,7 @@ function forceOrderPreview(){
 }
 
 function populateCompareSplit(folioIndex){
-    var canvasIndex = folioIndex - 1;
-    var compareSrc = tpen.manifest.sequences[0].canvases[canvasIndex].images[0].resource["@id"];
+    var compareSrc = tpen.manifest.sequences[0].canvases[folioIndex].images[0].resource["@id"];
     var currentCompareSrc = $(".compareImage").attr("src");
     if (currentCompareSrc !== compareSrc) $(".compareImage").attr("src", compareSrc);
 }
@@ -2927,7 +2923,6 @@ function batchLineUpdate(linesInColumn){
 
 /* Update line information for a particular line. */
 function updateLine(line, cleanup, updateList){
-    console.log("update line function");
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
@@ -2988,7 +2983,6 @@ function updateLine(line, cleanup, updateList){
             };
             if(updateList){
                 var url1 = "updateAnnoList";
-                console.log("update list");
                 for(var i=0  ;i < currentAnnoList.length; i++){
                     if(currentAnnoList[i]["@id"] === dbLine['@id']){
                         currentAnnoList[i].on = dbLine.on;
@@ -3003,7 +2997,6 @@ function updateLine(line, cleanup, updateList){
                 }
 
             }
-            console.log("update line");
 
             $.post(url,payload,function(){
             	line.attr("hasError",null);
@@ -4090,13 +4083,11 @@ var Help = {
         $(".helpContents").eq(0).click();
         $("#bookmark").hide();
         $("#closeHelp").show();
-        console.log("The help is revealed");
     },
     /**
      *  Adjusts the position of the help panels to reveal the selected section.
      */
     select  : function(contentSelect){
-        console.log("Help.select");
           $(contentSelect).addClass("helpActive").siblings().removeClass("helpActive");
           $("#helpPanels").css("margin-left",-$("#help").width()*contentSelect.index()+"px");
     },
@@ -4107,7 +4098,6 @@ var Help = {
      *  @param refIndex int index of help button clicked
      */
     lightUp: function(refIndex){
-        console.log("Help.lightUp.  case "+refIndex);
         switch (refIndex){
             case 0  :   //Previous Line
                 this.highlight($("#prevLine"));
@@ -4159,16 +4149,11 @@ var Help = {
      *  @param $element jQuery object to redraw
      */
     highlight: function($element){
-        console.log("Help.highlight ");
-        console.log($element);
         if ($element.length == 0) $element = $("<div/>");
         var look = $element.clone().attr('id','highlight');
         var position = $element.offset();
-        console.log("The clone");
-        console.log(look);
         $("#overlay").show().after(look);
         if ((position == null) || (position.top < 1)){
-            console.log("off screen");
             position = {left:(Page.width()-260)/2,top:(Page.height()-46)/2};
             look.prepend("<div id='offscreen' class='ui-corner-all ui-state-error'>This element is not currently displayed.</div>")
             .css({
@@ -4179,8 +4164,6 @@ var Help = {
                 $("#overlay").hide("fade",2000);
             });
         } else {
-            console.log("We can hightlight it");
-            console.log(position);
             $("#highlight").css({
                 "box-shadow":"0 0 5px 3px whitesmoke",
                 "left"  : position.left,
@@ -4201,7 +4184,6 @@ var Help = {
      *  @param refIndex int index of help button clicked
      */
     video: function(refIndex){
-        console.log("Help.video");
         var vidLink ='';
         switch (refIndex){
             case 0  :   //Previous Line

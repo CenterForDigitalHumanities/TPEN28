@@ -982,6 +982,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     height:100%;
     overflow: hidden;
     float: right;
+    background-color: rgba(1,51,90,.5);
 }
 /*#activeImageTool{
     padding: 4px 6px;
@@ -1144,6 +1145,7 @@ button.imgTool{
     position: relative;
     width: 100%;
     background-color: rgba(1,51,90,.5);
+    padding: 5px 0px;
 }
 #prevCanvas, #prevLine{
     margin-right: 3px;
@@ -1282,7 +1284,7 @@ p{
     border: none !important;
 }
 #fullPageSplitCanvas{
-    height:auto;
+    height:100%;
     position:relative;
     display: block;
     width:auto;
@@ -1410,6 +1412,14 @@ a.navigation {
 
 .manController{
     text-decoration: underline;
+}
+
+.compareImage, #fullPageImg{
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    position: absolute;
+    max-height: 98%;
 }
 
 /* Help area in transcription.html */

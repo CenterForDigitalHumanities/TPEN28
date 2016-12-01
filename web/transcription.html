@@ -63,15 +63,22 @@
         <div class="topTrim navigation">
             <span class="trimSection"><span id="trimTitle"></span>
             </span>
-            <span class="trimSection"><span id="trimPage"></span>
+            <span class="trimSection">
+                <a class="exitPage" id="prevCanvas" onclick="previousFolio();" title="Previous Page">
+                    <i class="fa fa-caret-left fa-2x"></i>
+                </a>
+                <span id="trimPage"></span>
                 <select id="pageJump">
                     <option id="activePage" folioNum="0">Jump to Page</option>
                 </select>
+                <a class="exitPage" id="nextCanvas" title="Next Page" onclick="nextFolio();">
+                    <i class="fa fa-caret-right fa-2x"></i>
+                </a>
             </span>
             <span class="trimSection">Transcribing as <span id="trimCurrentUser"></span></span>
             <div style="position:absolute;right:0;top:0;z-index: 1;">
                 <span class="trimSection">
-                    <a class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="pull-left fa fa-home"></span>T-PEN Home</a>
+                    <a class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="fa fa-home"></span>T-PEN Home</a>
                     <a class="exitPage wBtn ui-state-default ui-button" title="My Projects" href="project.jsp">My&nbsp;Projects</a>
             </span>
                 <span class="trimSection">

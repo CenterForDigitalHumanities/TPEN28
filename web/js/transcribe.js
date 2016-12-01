@@ -92,6 +92,20 @@ function redraw() {
     } else {
     // failed to draw, no Canvas selected
     }
+    scrubNav();
+}
+
+function scrubNav(){
+    if(tpen.screen.currentFolio === 0){
+        $("#prevCanvas").css("visibility","hidden");
+    } else {
+        $("#prevCanvas").css("visibility","");
+    }
+    if (tpen.screen.currentFolio >= tpen.manifest.sequences[0].canvases.length - 1) {
+        $("#nextCanvas").css("visibility","hidden");
+    } else {
+        $("#nextCanvas").css("visibility","");
+    }
 }
 
 /* Load the interface to the first page of the manifest. */
@@ -416,15 +430,14 @@ function loadTranscription(pid, tool){
                         });
                     }
                     scrubFolios();
-                    var count = 1;
-                    $.each(transcriptionFolios, function(){
-                        $("#pageJump").append("<option folioNum='" + count
-                            + "' class='folioJump' val='" + this.label + "'>"
-                            + this.label + "</option>"); // add page indicator... (tpen.screen.currentFolio===count && "‣") is false
-                        $("#compareJump").append("<option class='compareJump' folioNum='"
-                            + count + "' val='" + this.label + "'>"
-                            + this.label + "</option>");
-                        count++;
+                    $.each(transcriptionFolios, function(count){
+                        var label = (tpen.screen.currentFolio===count) ?
+                        "‣" + this.label : "&nbsp;&nbsp;" + this.label;
+                        var opt = $("<option folioNum='" + count
+                            + "' val='" + this.label + "'>"
+                            + label + "</option>");
+                        $("#pageJump").append(opt.clone().addClass("folioJump")); // add page indicator... (tpen.screen.currentFolio===count && "‣") is false
+                        $("#compareJump").append(opt.addClass("compareJump"));
                         if (this.otherContent){
                             if (this.otherContent.length > 0){
                                 // all's well
@@ -741,6 +754,7 @@ function loadTranscription(pid, tool){
     else {
         throw new Error("The input was invalid.");
     }
+    scrubNav();
 }
 
 function activateTool(tool){
@@ -4071,7 +4085,7 @@ var Help = {
             $("#closeHelp:visible").click(); // close if open
             return false;
         }
-        
+
         var workspaceHeight = $("#transWorkspace").height();
         var imgTopHeight = $("#imgTop").height() + workspaceHeight;
         //Screen.maintainWorkspace();

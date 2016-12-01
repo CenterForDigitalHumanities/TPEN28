@@ -429,15 +429,6 @@ body{
     margin-bottom: 2px;
     cursor: move;
 }
-#prevPage, #nextPage{
-    font-size: 30pt;
-    border: 1px solid black;
-    cursor: pointer;
-    position: relative;
-}
-#prevPage{
-    margin-right:60px;
-}
 #lineCol{
     position: relative;
     display: inline-block;
@@ -1024,7 +1015,6 @@ button.imgTool{
     background-color: transparent !important;
 }
 #activeCharacters, #activeTags{
-    /*background-color: rgb(209,72,54);*/
     background-color: white;
     cursor: default;
     padding: 4px 6px;
@@ -1037,7 +1027,6 @@ button.imgTool{
 .splitTool,  .magnifyTool, .folioJump, .compareJump{
     cursor: pointer;
     color: black;
-    /*    background-color: #D14836;*/
     background-color: white;
     padding: 4px 0px;
 }
@@ -1125,6 +1114,11 @@ button.imgTool{
 .trimSection span{
     margin-left:5px;
 }
+.trimSection .fa-2x {
+    margin-top: -0.5em;
+    top: 0.25em;
+    position: relative;
+}
 .showMe{
     position: relative;
     /*display: none;*/
@@ -1147,15 +1141,12 @@ button.imgTool{
     background-color: rgba(1,51,90,.5);
     padding: 5px 0px;
 }
-#prevCanvas, #prevLine{
+#prevLine{
     margin-right: 3px;
     position: relative;
     top: 6px;
 }
-/*#prevCanvas, #nextCanvas{
-    top: -15px !important;
-}*/
-#nextCanvas, #nextLine{
+#nextLine{
     position: relative;
     top: 6px;
 }

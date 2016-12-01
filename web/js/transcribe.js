@@ -202,6 +202,7 @@ function populatePreview(lines, pageLabel, currentPage, order){
         + pageLabel + '</span><br>No Lines</div>');
     }
     var num = 0;
+    //TODO: specificially find the xml tags and wrap them in a <span class='xmlPreview'> so that the UI can make a button to toggle the highlight on and off. 
     for (var j = 0; j < lines.length; j++){
         num++;
         var col = letters[letterIndex];
@@ -211,7 +212,11 @@ function populatePreview(lines, pageLabel, currentPage, order){
         var currentLineX = currentLineXYWH[0];
         var line = lines[j];
         var lineID = line["@id"];
-        var lineText = line.resource["cnt:chars"];
+        var rawLineText = line.resource["cnt:chars"];
+        rawLineText = $("<div/>").text(rawLineText).html();
+        var lineText = highlightTags(rawLineText);
+//        console.log("Did the tags highlight?");
+//        console.log(lineText);
         if (j >= 1){
             var lastLine = lines[j - 1].on;
             var lastLineXYWH = lastLine.slice(lastLine.indexOf("#xywh=") + 6);
@@ -231,6 +236,48 @@ function populatePreview(lines, pageLabel, currentPage, order){
         previewPage.append(previewLine);
     }
     $("#previewDiv").append(previewPage);
+}
+
+/*
+ * Takes a line of transcription text and wraps the xml tags in a <span> element.  Returns the new string with the span elements.
+ * This is to enable toggling highlight on XML tags on and off in the preview split page area.
+ * @param {type} transLineText
+ * @returns {undefined}
+ */
+function highlightTags(workingText){
+    var encodedText = [workingText];
+    if (workingText.indexOf("&gt;")>-1){
+        var open = workingText.indexOf("&lt;");
+        var beginTags = new Array();
+        var endTags = new Array();
+        var i = 0;
+        while (open > -1){
+            beginTags[i] = open;
+            var close = workingText.indexOf("&gt;",beginTags[i]);
+            if (close > -1){
+                endTags[i] = (close+4);
+            } 
+            else {
+                beginTags[0] = null;
+                break;
+            }
+            open = workingText.indexOf("&lt;",endTags[i]);
+            i++;
+        }
+        //use endTags because it might be 1 shorter than beginTags
+        var oeLen = endTags.length; 
+        encodedText = [workingText.substring(0, beginTags[0])];
+        for (i=0;i<oeLen;i++){
+            encodedText.push("<span class='previewTag'>",
+            workingText.substring(beginTags[i], endTags[i]),
+            "</span>");
+            if (i!=oeLen-1){
+                encodedText.push(workingText.substring(endTags[i], beginTags[i+1]));
+            }
+        }
+        if(oeLen>0)encodedText.push(workingText.substring(endTags[oeLen-1]));
+    }
+    return encodedText.join("");
 }
 
 function populateSpecialCharacters(specialCharacters){
@@ -1234,7 +1281,22 @@ function linesToScreen(lines, tool){
             if(e.which !== 18){
                 typingTimer = setTimeout(function(){
                     console.log("timer update");
-                    updateLine(lineToUpdate, false, false);
+                    var currentFolio = tpen.screen.currentFolio;
+                    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+                    var idToCheckFor = lineToUpdate.attr("lineserverid");
+                    var newText = lineToUpdate.find(".theText").val();
+                    if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
+                    // if it IIIF, we need to update the list
+                        $.each(currentAnnoList, function(index, data){
+                            if(data["@id"] == idToCheckFor){
+                                currentAnnoList[index].resource["cnt:chars"] = newText;
+                                tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
+                                updateLine(lineToUpdate, false, true);
+                                return false;
+                            }
+
+                        });                                                
+                    }
                 }, 2000);
             }
 
@@ -1502,7 +1564,7 @@ function loadTranscriptlet(lineid){
     if ($('#transcriptlet_' + lineid).length > 0){
         if (tpen.user.UID || tpen.user.isAdmin){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
-            updateLine(lineToUpdate, false, false);
+            updateLine(lineToUpdate, false, true);
             updatePresentation($('#transcriptlet_' + lineid));
         }
         else {
@@ -1535,7 +1597,7 @@ function nextTranscriptlet() {
     if ($('#transcriptlet_' + nextID).length > 0){
         if (tpen.user.UID || tpen.user.isAdmin){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
-            updateLine(lineToUpdate, false, false);
+            updateLine(lineToUpdate, false, true);
             updatePresentation($('#transcriptlet_' + nextID));
         }
         else {

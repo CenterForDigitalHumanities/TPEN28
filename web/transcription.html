@@ -1050,7 +1050,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                               var thisLineID = thisLine.attr("lineserverid");
                               var thisLineW = parseFloat(thisLine.attr("linewidth")) * (newW / originalW);
                               thisLine.attr("linewidth", thisLineW);
-                              updateLine(thisLine, false, false);
+                              updateLine(thisLine, false, true);
                               $("#progress").html("Line Saved").delay(3000).fadeOut(1000);
                               $("#lineResizing").delay(3000).fadeOut(1000);
                             }

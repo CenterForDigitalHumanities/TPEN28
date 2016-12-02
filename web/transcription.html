@@ -151,48 +151,32 @@
                             </button>
                         </div>
                     </div>
-                    <div class="flex-container flex-stretch">
-                        <div class="bottomButtons">
-
-<!--                        <select id="charactersPopin" class="specialCharacters"  title="Special Characters" >
-                            <option id="activeCharacters" >Characters</option>
-                        </select>
-                        <select id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
-                            <option id="activeTags">XML Tags</option>
-                        </select>-->
-                        <!-- add the tools to this area -->
+                    <div class="flex-container flex-stretch buttons">
                         <select id="splitScreenTools" >
-                            <option style="display:block;" splitter='default' class="splitTool" >Tools Available</option>
-                            <option splitter='preview' class="splitTool" >Text Preview</option>
-                            <option splitter='fullPage' class="splitTool"  >View Full Page</option>
-                            <option splitter='compare' class="splitTool" >Compare Page</option>
-                            <option splitter='linebreak' class="splitTool" >Linebreaking</option>
-                            <option splitter='abbreviation' class="splitTool"  >Capelli Abbreviation</option>
+                            <option selected>Tools Available</option>
                         </select>
+                        <button id="canvasControls" title="Page Adjustments" onclick="splitPage(event,'controls');">
+                            <i class="fa fa-file-image-o"></i>
+                            Page Controls</button>
+                        <button id="magnify1" class="magnifyBtn" magnifyImg="trans" title="Magnify Transcription Image" >
+                            <i class="fa fa-search-plus"></i>
+                            Magnify</button> <!--Page event on the listener for this class in js.-->
+                        <button id="toggleChars" title="Move Transcription Image" onclick="toggleSpecialChars(event);">
+                            <i class="fa fa-keyboard-o"></i>
+                            Characters</button>
+                        <button id="toggleXML" title="Move Transcription Image" onclick="toggleXMLTags(event);">
+                            <i class="fa fa-code"></i>
+                            XML Tags</button>
                     </div>
-                    <!--                <div class="bottomButtons" style="width: 201px; top:-4px;">
-
-                                    </div>-->
-                    <div class="bottomButtons">
-                        <button id="toggleChars" title="Move Transcription Image" onclick="toggleSpecialChars(event);">Characters</button>
-                        <button id="toggleXML" title="Move Transcription Image" onclick="toggleXMLTags(event);">XML Tags</button>
-                        <button id="activeImageTool" onclick="toggleImgTools(event);" >Image Tools</button> <!--  -->
-                        <button id="magnify1" class="magnifyBtn" magnifyImg="trans" title="Magnify Transcription Image" >Magnify</button> <!--Page event on the listener for this class in js.-->
-                        <button id="moveImage" title="Move Transcription Image" onclick="startMoveImg();">Move Img</button>
-                        <button id="parsingBtn" title="Correct Page Parsing" >Correct Parsing</button> <!--Page event on the listener for this class in js.-->
-                        <button id="lineControlBtn" onclick="toggleLineControls(event);" title="View Line Controls" >Line Controls</button>
-
-                    </div>
-                    </div>
-                    <div id="specialCharsFloat" class="flex-container flex-stretch">
-                        <div class="closeBtn" onclick="$('#specialCharsFloat').hide();">
+                    <div id="specialCharsFloat" class="flex-container flex-stretch specialCharactered">
+                        <div class="closeBtn" onclick="$('#toggleChars').click();">
                             <i class="fa fa-close"></i>
                         </div>
                         <div id="charactersPopin" class="specialCharacters"  title="Special Characters" >
                         </div>
                     </div>
-                    <div id="xmlTagFloat" class="flex-container flex-stretch">
-                        <div class="closeBtn" onclick="$('#xmlTagFloat').hide();">
+                    <div id="xmlTagFloat" class="flex-container flex-stretch xmlTagged">
+                        <div class="closeBtn" onclick="$('#toggleXML').click();">
                             <i class="fa fa-close"></i>
                         </div>
                         <div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
@@ -343,6 +327,40 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
                 <img class="compareImage" folioNum="1"></img>
             </div>
+<div id='controlsSplit' class='split' style="width:200px;max-width:200px;">
+    <button class="fullScreenTrans">Full Screen Transcription</button>
+    <div style="padding:15px;">
+        <h3> Image Controls </h3>
+        <button which="grayscale" onclick="toggleFilter('grayscale');">Grayscale</button>
+        <button which="invert" onclick="toggleFilter('invert');">Invert</button>
+        <div id="imageToolSliders" class="imgTool">
+            Brightness
+            <div id="brightnessSlider"></div>
+            Contrast
+            <div id="contrastSlider"></div>
+        </div>
+    </div>
+    <button id="moveImage" title="Move Transcription Image" class="block" onclick="startMoveImg();">
+        <i class="fa fa-hand-paper-o"></i>
+        Move Img</button>
+    <p>
+        Click to adjust the position of the main image.
+    </p>
+    <button id="parsingBtn" title="Correct Page Parsing" class='block'>
+        <i class="fa fa-barcode fa-rotate-90"></i>
+        Correct Parsing</button>
+    <p>
+        Click to draw or adjust the lines on page.
+    </p>
+
+    <div id="lineColControls">
+                        <h3 title="Control Drawn Line Settings" id="lineCtrlLabel">Line Control</h3>
+                        <span title="Toggle Entire Lines">Lines</span><input title="Toggle Lines" type="checkbox" onchange="toggleLineMarkers();" checked="checked"><br>
+                        <span title="Toggle Lines' Indicator">Line #s</span><input type="checkbox" onchange="toggleLineCol();" checked="checked">
+                        <button id="markerColors" onclick="markerColors();">Line Color</button>
+                    </div>
+
+</div>
             <div id="previewSplit" class="split">
                 <div class="toolLinks">
                     <button class="fullScreenTrans">Full Screen Transcription</button>
@@ -364,27 +382,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             </div>
         <div id="zoomDiv" class="ui-corner-all"></div>
         <div id="ruler1"></div><div id="ruler2"></div>
-        <div id="imageTools" style="width: 201px;">
-            <div class="popupTitle" > Image Controls </div>
-            <div class="closeBtn" onclick="$('#imageTools').hide();$('#imageTools').draggable('destroy');"> X </div>
-               <div class="toolWrap">
-                    <button style="margin-right: 18px; margin-top: 15px;" class="imgTool" which="grayscale" onclick="toggleFilter('grayscale');">Grayscale</button>
-                    <button style="margin-bottom: 10px;" class="imgTool" which="invert" onclick="toggleFilter('invert');">Invert</button>
-                    <div id="imageToolSliders" class="imgTool">
-                        Brightness
-                        <div id="brightnessSlider"></div>
-                        Contrast
-                        <div id="contrastSlider"></div>
-                    </div>
-               </div>
-        </div>
-        <div  id="lineColControls">
-            <div class="closeBtn" onclick="$('#lineColControls').hide(); $('#lineColControls').draggable('destroy');"> X </div>
-            <div title="Control Drawn Line Settings" id="lineCtrlLabel">Line Control</div>
-            <span style="top:14px;" title="Toggle Entire Lines" class="linehdr">Lines</span><input style="top:14px;" title="Toggle Lines" type="checkbox" onchange="toggleLineMarkers();" checked="checked"><br>
-            <span style="top:10px;" title="Toggle Lines' Indicator" class="linehdr">Line #s</span><input style="top:10px;" type="checkbox" onchange="toggleLineCol();" checked="checked">
-            <button id="markerColors" onclick="markerColors();">Line Color</button>
-        </div>
 
         <div id="requestAccessContainer" style="display: none;">
             <div id="requestAccess" class="ui-widget ui-corner-all ui-widget-content">
@@ -822,7 +819,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 $("#parsingBtn").css("box-shadow", "");
             });
 
-            $(".workspaceHandle").mousedown(function(event){moveWorkspace(event);})
+           $(".workspaceHandle").mousedown(function(event){moveWorkspace(event);})
             .css("cursor","n-resize");
 
             $(".parsingToolButtons").children("span").click(function(event){

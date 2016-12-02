@@ -256,7 +256,7 @@ function populateSpecialCharacters(specialCharacters){
         else {
             var keyVal = thisChar.key;
             var position2 = parseInt(thisChar.position);
-            var newCharacter = "<button role='button' class='character' onclick='addchar(\"&#" + keyVal + "\")'>&#" + keyVal + ";</button>";
+            var newCharacter = "<div class='character lookLikeButtons' onclick='addchar(\"&#" + keyVal + "\")'>&#" + keyVal + ";</div>";
             if (position2 - 1 >= 0 && (position2 - 1) < specialCharacters.length) {
                 speCharactersInOrder[position2 - 1] = newCharacter;
             }
@@ -272,11 +272,10 @@ function populateSpecialCharacters(specialCharacters){
 function populateXML(){
     var xmlTags = tpen.project.xml;
     var tagsInOrder = [];
-    //TODO make sure this respects xmlTags.position order
     for (var tagIndex = 0; tagIndex < xmlTags.length; tagIndex++){
         var newTagBtn = "";
         if(xmlTags[tagIndex].tag && xmlTags[tagIndex].tag!== "" && xmlTags[tagIndex].tag !== " "){
-            newTagBtn = "<button role='button' onclick='insertTag(\""+xmlTags[tagIndex].tag+"\")' class='xmlTag'>"+xmlTags[tagIndex].tag+"</button>";
+            newTagBtn = "<div onclick='insertTag(\""+xmlTags[tagIndex].tag+"\")' class='xmlTag lookLikeButtons'>"+xmlTags[tagIndex].tag+"</div>";
             var button = $(newTagBtn);
             $(".xmlTags").append(button);
         }
@@ -885,6 +884,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
                 $("#parseOptions").find(".tpenButton").removeAttr("disabled");
                 $("#parsingBtn").removeAttr("disabled");
+                tpen.screen.textSize();
             }
             else{
                 $('#requestAccessContainer').show();
@@ -2130,6 +2130,7 @@ function splitPage(event, tool) {
     $("#imgTop img").css("top", newImgTopTop + "px");
     $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
     $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
+
     $("#transcriptionTemplate").resizable({
         disabled:false,
         minWidth: window.innerWidth / 2,
@@ -2170,15 +2171,9 @@ function splitPage(event, tool) {
             'max-width': $(".split:visible")
                 .width() + "px"
         });
-    var pageJumpIcons = $("#pageJump")
-        .parent()
-        .children("i");
-//    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
-//    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
-//    pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
-//    pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
-    $("#prevCanvas").attr("onclick", "");
-    $("#nextCanvas").attr("onclick", "");
+        if(tool==="controls"){
+            $("#transcriptionCanvas").css("width", Page.width()-200 + "px");
+        }
 }
 
 function forceOrderPreview(){
@@ -3554,15 +3549,13 @@ function toggleLineControls(event){
 }
 
 function toggleXMLTags(event){
-    var locationX = event.pageX;
-    var locationY = event.pageY;
-    $("#xmlTagFloat").toggle();
+    $("#xmlTagFloat").fadeToggle();
+    $("#toggleXML").toggleClass('xmlTagged');
 }
 
 function toggleSpecialChars(event){
-    var locationX = event.pageX;
-    var locationY = event.pageY;
-    $("#specialCharsFloat").toggle();
+    $("#specialCharsFloat").fadeToggle();
+    $("#toggleChars").toggleClass('specialCharactered');
 }
 
 /* Control the hiding and showing of the image tools in the transcription interface. Depricated

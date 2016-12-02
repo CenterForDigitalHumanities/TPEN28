@@ -211,6 +211,9 @@ body{
     border: 1px solid #000;
     resize: vertical;
 }
+.theText,#captions{
+    font-family:'Junicode','Georgia', serif
+}
 .notes {
     display: none;
 }
@@ -252,6 +255,7 @@ body{
 }
 .flex-container{
     display: flex;
+    margin: 2px 0;
 }
 .flex-bookend {
     width: 4em;
@@ -267,6 +271,15 @@ body{
     flex-align: stretch;
     justify-content: center;
     align-items: stretch;
+}
+.flex-stretch.buttons {
+    display: flex;
+    flex-wrap:reverse-wrap;
+    justify-content:space-between;
+}
+.flex-stretch.buttons button {
+    margin: 0 2px;
+    flex: 2 1;
 }
 #captions {
     min-height: 2em;
@@ -350,42 +363,7 @@ body{
     left:auto;
     right:4px;
 }
-/*The text inside this needs to resize with this container*/
-/*#workspacePageControl{
-    background-color: #FFF;
-    text-align: center;
-    width: 10%;
-    position: absolute;
-    height: 107px;
-    font-size: 0.8vw;
-    top: 27px;
-    left: 24px;
-    border: 2px solid black;
-}*/
 
-
-.bottomButtons{
-    position: relative;
-    width: auto;
-    height: auto;
-    top: 3px;
-    display: inline-block;
-}
-
-.bottomButtons select{
-    margin: 0px 3px;
-    height: 35px;
-    background: white;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    text-transform: none;
-    font-size: 15px;
-    color: black;
-}
-.bottomButtons:last-child{
-    padding-left:20px;
-}
 #transcriptletArea,#captions{
     opacity: 1;
     position: relative;
@@ -872,14 +850,12 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     text-align: center;
 }
 #splitScreenTools{
-    position: relative;
     border: 2px solid #000;
-    background-color: white;
-    display: inline-table;
-    color: black;
-    top: 2px;
-    text-align:center;
-    cursor: default;
+    height: 35px;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    flex:2 1 auto;
 }
 #magnifyTools{
     position: absolute;
@@ -933,8 +909,19 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 }
 .character, .lookLikeButtons, .xmlTag{
     cursor: pointer;
-    margin: 2px;
-    min-width:2em;
+    margin: 0 1px;
+    min-width: 2em;
+    display: inline-block;
+    text-align: center;
+    line-height: 35px;
+    padding: 0 4px !important;
+    font-size: 1em;
+}
+.character{
+    font-family:'Junicode','Georgia', serif;
+}
+.lookLikeButtons:hover {
+    background-color: #d14836 !important;
 }
 
 #parse,#linebreak,#moveimg{
@@ -1121,9 +1108,11 @@ button.imgTool{
     height:auto;
     background: #999;
     color: #333;
+    transition: .5s;
 }
 #prevLine:hover,#nextLine:hover{
     box-shadow: 0 0 3px rgba(0,0,0,.5);
+    background: #BBB;
 }
 #pageControls{
     margin-right: 2px;
@@ -1132,31 +1121,6 @@ button.imgTool{
     background-color: rgba(0,0,0,.3);
     text-align:center;
     border-radius: 4px;
-}
-/* changing margin here moves all buttons across bottom of transcription workspace. */
-.linehdr{
-    color: #002a5c;
-    font-size: 11pt;
-    cursor: default;
-    position: relative;
-    display: inline-block;
-}
-#lineColControls{
-    width: 151px;
-    height: 73px;
-    background-color: #BFBFBF;
-    position: relative;
-    display: none;
-    font-size: 10pt;
-    top: 1px;
-    padding: 3px;
-    border: 2px outset rgba(0,42,92,.4);
-    position: fixed;
-    z-index: 3
-}
-#lineColControls input[type="checkbox"]{
-    margin: 0px 0px 0px 4px;
-    position: relative;
 }
 #lineControls i, #pageControls i{
     display: inline-table;
@@ -1188,15 +1152,12 @@ body{
     height: 100%;
     height: 100vh;
 }
-button, #uploadText{
+button, #uploadText, .lookLikeButtons {
     /*    font-family: 'Open Sans','Helvetica Neue',sans-serif;*/
     font-weight: bold;
     color:white;
     border-radius: 4px;
-    padding-bottom: 4px;
-    padding-left: 6px;
-    padding-right: 6px;
-    padding-top: 4px;
+    padding: 4px 6px;
     height: 35px;
     background-clip: border-box;
     background-origin: padding-box;
@@ -1364,10 +1325,25 @@ a.navigation {
 #xmlTagFloat, #specialCharsFloat{
     z-index: 3;
     position: relative;
-    background-color: rgba(0,0,0,.25);
     display: none;
     padding:.25em;
     border:thin solid #999;
+}
+.specialCharactered{
+    background-color: rgba(0,0,0,.25);
+}
+.xmlTagged {
+    background: rgba(0,0,0,.4);
+}
+.xmlTag, .character {
+    background: #666;
+}
+.charactersPopin button:after {
+    content: '1';
+    position: absolute;
+    z-index: 2;
+    top: 0; right:0;
+    color:#DDD;
 }
 
 .manController{

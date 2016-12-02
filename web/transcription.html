@@ -649,8 +649,10 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
         });
 
         $("#xmlTagPopin").on("change", function(event){
-            var val = $("#xmlTagPopin").val();
-            insterTag(val, "");
+            var val = escape($("#xmlTagPopin").val());
+            var field = tpen.screen.focusItem[1].find('.theText')[0];
+            var closingTag = ""; //How do i check for whether or not this has a value? 
+            insertAtCursor(field, val, closingTag);
         });
 
         $(".magnifyBtn").click(function(event){

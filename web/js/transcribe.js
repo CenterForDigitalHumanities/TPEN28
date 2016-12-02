@@ -310,13 +310,29 @@ function populateXML(){
         var newTagBtn = "";
         var tagName = xmlTags[tagIndex].tag;
         if(tagName && tagName!== "" && tagName !== " "){
+            var fullTag = "";
             var xmlTagObject = xmlTags[tagIndex];
             var parametersArray = xmlTagObject.parameters; //This is a string array of properties, paramater1-parameter5 out of the db.
+            if (parametersArray[0] != null) {
+                fullTag += " " + parametersArray[0];
+            }
+            if (parametersArray[1] != null) {
+               fullTag += " " + parametersArray[1];
+            }
+            if (parametersArray[2] != null) {
+               fullTag += " " + parametersArray[2];
+            }
+            if (parametersArray[3] != null) {
+               fullTag += " " + parametersArray[3];
+            }
+            if (parametersArray[4] != null) {
+               fullTag += " " + parametersArray[4];
+            }
+            if(fullTag !== ""){
+                fullTag = "<"+tagName+" "+fullTag+">";
+            }
             var description = xmlTagObject.description;
-            //TODO:QUESTION what is the right way to build this tag?
-            var fullTag = "";
-            newTagBtn = "<option class='xmlTag' title='" + fullTag + "' onclick='Interaction.insertTag('" + tagName + "', '" + fullTag + "');>" + description+"</option>";
-            //newTagBtn = "<option class='xmlTag'>"+xmlTagObject.tag+"</option>";
+            newTagBtn = "<option class='xmlTag' title='" + fullTag + "'>" + description + "</option>"; //onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\">
             var button = $(newTagBtn);
             $(".xmlTags").append(button);
         }
@@ -2653,50 +2669,83 @@ function reparseColumns(){
      * @param myValue value to insert
      * @return int end of inserted value position
      */
-     function insertAtCursor(myField, myValue, closingTag) {
+     function insertAtCursor(myValue, closingTag, fullTag, specChar) {
          //how do I pass the closing tag in?  How do i know if it exists?
+        var myField = tpen.screen.focusItem[1].find('.theText')[0];
         var closeTag = (closingTag == undefined) ? "" : unescape(closingTag);
-        //IE support
-        if (document.selection) {
-            myField.focus();
-            sel = document.selection.createRange();
-            sel.text = unescape("<"+myValue+">");
-            updateLine(myField, false, true);
-            return sel+unescape("<"+myValue+">").length;
-        }
-        //MOZILLA/NETSCAPE support
-        else if (myField.selectionStart || myField.selectionStart == '0') {
-            var startPos = myField.selectionStart;
-            var endPos = myField.selectionEnd;
-            if (startPos != endPos) {
-                // something is selected, wrap it instead
-                var toWrap = myField.value.substring(startPos,endPos);
-                myField.value = myField.value.substring(0, startPos)
-                    + unescape("<"+myValue+">")
-                    + toWrap
-                    + "</" + myValue +">"
-                    + myField.value.substring(endPos, myField.value.length);
-                myField.focus();
-                updateLine(myField, false, true);
-                var insertLength = startPos + unescape("<"+myValue+">").length +
-                    toWrap.length + 3 + closeTag.length;
-                return "wrapped" + insertLength;              
-            } else {
-                myField.value = myField.value.substring(0, startPos)
-                    + unescape("<"+myValue+">")
-                    + myField.value.substring(startPos, myField.value.length);
-                myField.focus();
-                updateLine(myField, false, true);
-                return startPos+unescape("<"+myValue+">").length;
-            }
-        } else {
-            myField.value += unescape("<"+myValue+">");
-            myField.focus();
-            updateLine(myField, false, true);
-            return myField.length;
-        }
-    }
 
+        //IE support
+        if(specChar){
+             if (document.selection) {
+                myField.focus();
+                sel = document.selection.createRange();
+                sel.text = unescape(myValue);
+                updateLine(myField.parent(), false, true);
+                //return sel+unescape(fullTag).length;
+            }
+            //MOZILLA/NETSCAPE support
+            else if (myField.selectionStart || myField.selectionStart == '0') {
+                var startPosChar = myField.selectionStart;
+                var currentValue = myField.value;
+                currentValue = currentValue.slice(0, startPosChar) + unescape(myValue) + currentValue.slice(startPosChar);
+                myField.value = currentValue;
+                myField.focus();
+                updateLine(myField.parent(), false, true);
+            }
+        }
+        else{
+            if (document.selection) {
+                if(fullTag === ""){
+                    fullTag = "<"+myValue+"/>";
+                }
+                myField.focus();
+                sel = document.selection.createRange();
+                sel.text = unescape(fullTag);
+                updateLine(myField.parent(), false, true);
+                //return sel+unescape(fullTag).length;
+            }
+            //MOZILLA/NETSCAPE support
+            else if (myField.selectionStart || myField.selectionStart == '0') {
+                var startPos = myField.selectionStart;
+                var endPos = myField.selectionEnd;
+                if (startPos !== endPos) {
+                    if(fullTag === ""){
+                        fullTag = "<"+myValue+"/>";
+                    }
+                    // something is selected, wrap it instead
+                    var toWrap = myField.value.substring(startPos,endPos);
+                    closeTag = "</" + myValue +">";
+                    myField.value = 
+                          myField.value.substring(0, startPos)
+                        + unescape(fullTag)
+                        + toWrap
+                        + closeTag
+                        + myField.value.substring(endPos, myField.value.length);
+                    myField.focus();
+                    updateLine(myField.parent(), false, true);
+    //                var insertLength = startPos + unescape(fullTag).length +
+    //                    toWrap.length + 3 + closeTag.length;
+                    //return "wrapped" + insertLength;              
+                } 
+                else {
+                    myField.value = myField.value.substring(0, startPos)
+                        + unescape(fullTag)
+                        + myField.value.substring(startPos, fullTag.length);
+                    myField.focus();
+                    updateLine(myField.parent(), false, true);
+                    //return startPos+unescape(fullTag).length;
+                }
+            } 
+            else {
+                myField.value += unescape(fullTag);
+                myField.focus();
+                updateLine(myField.parent(), false, true);
+                //return myField.length;
+            }
+        }
+        
+    }
+    
 function closeTag(tagName, fullTag){
     // Do not create for self-closing tags
     if (tagName.lastIndexOf("/") === (tagName.length - 1)) return false;
@@ -2724,33 +2773,32 @@ function closeTag(tagName, fullTag){
 
 function addchar(theChar, closingTag) {
     var closeTag = (closingTag === undefined) ? "" : closingTag;
-    var e = tpen.screen.focusItem[1].find('textarea')[0];
+    var e = tpen.screen.focusItem[1].find('.theText')[0];
     if (e !== null) {
-        return setCursorPosition(e, insertAtCursor(e, theChar, closeTag));
+        insertAtCursor(theChar, closeTag, "", true);
     }
-    return false;
 }
 
-function setCursorPosition(e, position) {
-    var pos = position;
-    var wrapped = false;
-    if (pos.toString().indexOf("wrapped") === 0) {
-        pos = parseInt(pos.substr(7));
-        wrapped = true;
-    }
-    e.focus();
-    if (e.setSelectionRange) {
-        e.setSelectionRange(pos, pos);
-    }
-    else if (e.createTextRange) {
-        e = e.createTextRange();
-        e.collapse(true);
-        e.moveEnd('character', pos);
-        e.moveStart('character', pos);
-        e.select();
-    }
-    return wrapped;
-}
+//function setCursorPosition(e, position) {
+//    var pos = position;
+//    var wrapped = false;
+//    if (pos.toString().indexOf("wrapped") === 0) {
+//        pos = parseInt(pos.substr(7));
+//        wrapped = true;
+//    }
+//    e.focus();
+//    if (e.setSelectionRange) {
+//        e.setSelectionRange(pos, pos);
+//    }
+//    else if (e.createTextRange) {
+//        e = e.createTextRange();
+//        e.collapse(true);
+//        e.moveEnd('character', pos);
+//        e.moveStart('character', pos);
+//        e.select();
+//    }
+//    return wrapped;
+//}
 
 
 function toggleCharacters(){

@@ -627,15 +627,36 @@ public class TagButton {
          ResultSet rs = stmt.executeQuery();
          int ctr = 0;
          JSONArray ja = new JSONArray();
+         String[] blank_case = new String[5];
+         blank_case[0] = null;
+         blank_case[1] = null;
+         blank_case[2] = null;
+         blank_case[3] = null;
+         blank_case[4] = null;
          while (rs.next()) {
             int position = rs.getInt("position");
             try {
                TagButton b = new TagButton(projectID, position, true);
                 ctr++;
                 JSONObject jo = new JSONObject();
-                jo.element("tag", b.getTag()); //b.getButton()
-                jo.element("parameters", b.getparameters());
-                jo.element("description", b.getDescription());
+                if(null != b.getTag() && !"".equals(b.getTag())){
+                    jo.element("tag", b.getTag()); //b.getButton()
+                }
+                else{
+                    jo.element("tag", ""); //b.getButton()
+                }
+                if(null != b.getparameters() && b.getparameters().length != 0){
+                    jo.element("parameters", b.getparameters());
+                }
+                else{
+                    jo.element("parameters",blank_case);
+                }
+                if(null != b.getTag() && !"".equals(b.getTag())){
+                    jo.element("description", b.getTag());
+                }
+                else{
+                    jo.element("description","");
+                }
                 //jo.element("color", b.getXMLColor());
                 ja.add(jo);
             } catch (NullPointerException e) {

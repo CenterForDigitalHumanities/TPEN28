@@ -650,9 +650,9 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
         $("#xmlTagPopin").on("change", function(event){
             var val = escape($("#xmlTagPopin").val());
-            var field = tpen.screen.focusItem[1].find('.theText')[0];
+            var fullTag = $("#xmlTagPopin option:selected").attr("title");
             var closingTag = ""; //How do i check for whether or not this has a value? 
-            insertAtCursor(field, val, closingTag);
+            insertAtCursor(val, closingTag, fullTag);
         });
 
         $(".magnifyBtn").click(function(event){

@@ -216,6 +216,7 @@ function populatePreview(lines, pageLabel, currentPage, order){
         + pageLabel + '</span><br>No Lines</div>');
     }
     var num = 0;
+    //TODO: specificially find the xml tags and wrap them in a <span class='xmlPreview'> so that the UI can make a button to toggle the highlight on and off. 
     for (var j = 0; j < lines.length; j++){
         num++;
         var col = letters[letterIndex];
@@ -225,7 +226,11 @@ function populatePreview(lines, pageLabel, currentPage, order){
         var currentLineX = currentLineXYWH[0];
         var line = lines[j];
         var lineID = line["@id"];
-        var lineText = line.resource["cnt:chars"];
+        var rawLineText = line.resource["cnt:chars"];
+        rawLineText = $("<div/>").text(rawLineText).html();
+        var lineText = highlightTags(rawLineText);
+//        console.log("Did the tags highlight?");
+//        console.log(lineText);
         if (j >= 1){
             var lastLine = lines[j - 1].on;
             var lastLineXYWH = lastLine.slice(lastLine.indexOf("#xywh=") + 6);
@@ -245,6 +250,48 @@ function populatePreview(lines, pageLabel, currentPage, order){
         previewPage.append(previewLine);
     }
     $("#previewDiv").append(previewPage);
+}
+
+/*
+ * Takes a line of transcription text and wraps the xml tags in a <span> element.  Returns the new string with the span elements.
+ * This is to enable toggling highlight on XML tags on and off in the preview split page area.
+ * @param {type} transLineText
+ * @returns {undefined}
+ */
+function highlightTags(workingText){
+    var encodedText = [workingText];
+    if (workingText.indexOf("&gt;")>-1){
+        var open = workingText.indexOf("&lt;");
+        var beginTags = new Array();
+        var endTags = new Array();
+        var i = 0;
+        while (open > -1){
+            beginTags[i] = open;
+            var close = workingText.indexOf("&gt;",beginTags[i]);
+            if (close > -1){
+                endTags[i] = (close+4);
+            } 
+            else {
+                beginTags[0] = null;
+                break;
+            }
+            open = workingText.indexOf("&lt;",endTags[i]);
+            i++;
+        }
+        //use endTags because it might be 1 shorter than beginTags
+        var oeLen = endTags.length; 
+        encodedText = [workingText.substring(0, beginTags[0])];
+        for (i=0;i<oeLen;i++){
+            encodedText.push("<span class='previewTag'>",
+            workingText.substring(beginTags[i], endTags[i]),
+            "</span>");
+            if (i!=oeLen-1){
+                encodedText.push(workingText.substring(endTags[i], beginTags[i+1]));
+            }
+        }
+        if(oeLen>0)encodedText.push(workingText.substring(endTags[oeLen-1]));
+    }
+    return encodedText.join("");
 }
 
 function populateSpecialCharacters(specialCharacters){
@@ -274,8 +321,31 @@ function populateXML(){
     var tagsInOrder = [];
     for (var tagIndex = 0; tagIndex < xmlTags.length; tagIndex++){
         var newTagBtn = "";
-        if(xmlTags[tagIndex].tag && xmlTags[tagIndex].tag!== "" && xmlTags[tagIndex].tag !== " "){
-            newTagBtn = "<div onclick='insertTag(\""+xmlTags[tagIndex].tag+"\")' class='xmlTag lookLikeButtons'>"+xmlTags[tagIndex].tag+"</div>";
+        var tagName = xmlTags[tagIndex].tag;
+        if(tagName && tagName!== "" && tagName !== " "){
+            var fullTag = "";
+            var xmlTagObject = xmlTags[tagIndex];
+            var parametersArray = xmlTagObject.parameters; //This is a string array of properties, paramater1-parameter5 out of the db.
+            if (parametersArray[0] != null) {
+                fullTag += " " + parametersArray[0];
+            }
+            if (parametersArray[1] != null) {
+               fullTag += " " + parametersArray[1];
+            }
+            if (parametersArray[2] != null) {
+               fullTag += " " + parametersArray[2];
+            }
+            if (parametersArray[3] != null) {
+               fullTag += " " + parametersArray[3];
+            }
+            if (parametersArray[4] != null) {
+               fullTag += " " + parametersArray[4];
+            }
+            if(fullTag !== ""){
+                fullTag = "<"+tagName+" "+fullTag+">";
+            }
+            var description = xmlTagObject.description;
+            newTagBtn = "<div onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\" class='xmlTag lookLikeButtons' title='" + fullTag + "'>" + description + "</div>"; //onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\">
             var button = $(newTagBtn);
             $(".xmlTags").append(button);
         }
@@ -1248,7 +1318,22 @@ function linesToScreen(lines, tool){
             if(e.which !== 18){
                 typingTimer = setTimeout(function(){
                     console.log("timer update");
-                    updateLine(lineToUpdate, false, false);
+                    var currentFolio = tpen.screen.currentFolio;
+                    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+                    var idToCheckFor = lineToUpdate.attr("lineserverid");
+                    var newText = lineToUpdate.find(".theText").val();
+                    if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
+                    // if it IIIF, we need to update the list
+                        $.each(currentAnnoList, function(index, data){
+                            if(data["@id"] == idToCheckFor){
+                                currentAnnoList[index].resource["cnt:chars"] = newText;
+                                tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
+                                updateLine(lineToUpdate, false, true);
+                                return false;
+                            }
+
+                        });                                                
+                    }
                 }, 2000);
             }
 
@@ -1501,7 +1586,7 @@ function adjustImgs(positions) {
     lineToMakeActive.addClass("activeLine");
     // use the active line color to give the active line a little background color
     // to make it stand out if the box shadow is not enough.
-    var activeLineColor = tpen.screen.colorThisTime.replace(".4", ".2");
+    var activeLineColor = tpen.screen.colorThisTime.replace("1", ".2");
     $('.activeLine').css({
         'box-shadow': '0px 0px 15px 8px ' + tpen.screen.colorThisTime
     });
@@ -1513,7 +1598,7 @@ function loadTranscriptlet(lineid){
     if ($('#transcriptlet_' + lineid).length > 0){
         if (tpen.user.UID || tpen.user.isAdmin){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
-            updateLine(lineToUpdate, false, false);
+            updateLine(lineToUpdate, false, true);
             updatePresentation($('#transcriptlet_' + lineid));
         }
         else {
@@ -1546,7 +1631,7 @@ function nextTranscriptlet() {
     if ($('#transcriptlet_' + nextID).length > 0){
         if (tpen.user.UID || tpen.user.isAdmin){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
-            updateLine(lineToUpdate, false, false);
+            updateLine(lineToUpdate, false, true);
             updatePresentation($('#transcriptlet_' + nextID));
         }
         else {
@@ -2092,9 +2177,27 @@ function fullPage(){
     var adjustedHeightForFullscreen = (originalCanvasHeight2 / originalCanvasWidth2) * screenWidth;
     $("#transcriptionCanvas").css("height", adjustedHeightForFullscreen + "px");
     $(".lineColIndicatorArea").css("height", adjustedHeightForFullscreen + "px");
-    $("#imgTop, #imgBottom").hover(function(){
-        $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + tpen.screen.colorThisTime);
-    });
+    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
+    $("#imgTop").hover(
+       function(){
+            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+        },
+        function(){
+            var lineColor2 = lineColor.replace(".9", ".4");
+            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+        }
+    );
+        
+    $("#imgBottom").hover(
+        function(){
+            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+        },
+        function(){
+            var lineColor2 = lineColor.replace(".9", ".4");
+            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+        }
+    );
+
     $.each($(".lineColOnLine"), function(){
         $(this).css("line-height", $(this).height() + "px");
     });
@@ -2566,18 +2669,90 @@ function reparseColumns(){
     });
 }
 
-function insertTag(tagName, fullTag){
-    if (tagName.lastIndexOf("/") === (tagName.length - 1)) {
-        //transform self-closing tags
-        var slashIndex = tagName.length;
-        fullTag = fullTag.slice(0, slashIndex) + fullTag.slice(slashIndex + 1, - 1) + " />";
-    }
-    // Check for wrapped tag
-    if (!addchar(escape(fullTag), escape(tagName))) {
-        closeTag(escape(tagName), escape(fullTag));
-    }
-}
+/**
+     * Inserts value at cursor location.
+     * 
+     * @param myField element to insert into
+     * @param myValue value to insert
+     * @return int end of inserted value position
+     */
+     function insertAtCursor(myValue, closingTag, fullTag, specChar) {
+         //how do I pass the closing tag in?  How do i know if it exists?
+        var myField = tpen.screen.focusItem[1].find('.theText')[0];
+        var closeTag = (closingTag == undefined) ? "" : unescape(closingTag);
 
+        //IE support
+        if(specChar){
+             if (document.selection) {
+                myField.focus();
+                sel = document.selection.createRange();
+                sel.text = unescape(myValue);
+                updateLine(myField.parent(), false, true);
+                //return sel+unescape(fullTag).length;
+            }
+            //MOZILLA/NETSCAPE support
+            else if (myField.selectionStart || myField.selectionStart == '0') {
+                var startPosChar = myField.selectionStart;
+                var currentValue = myField.value;
+                currentValue = currentValue.slice(0, startPosChar) + unescape(myValue) + currentValue.slice(startPosChar);
+                myField.value = currentValue;
+                myField.focus();
+                updateLine(myField.parent(), false, true);
+            }
+        }
+        else{
+            if (document.selection) {
+                if(fullTag === ""){
+                    fullTag = "<"+myValue+"/>";
+                }
+                myField.focus();
+                sel = document.selection.createRange();
+                sel.text = unescape(fullTag);
+                updateLine(myField.parent(), false, true);
+                //return sel+unescape(fullTag).length;
+            }
+            //MOZILLA/NETSCAPE support
+            else if (myField.selectionStart || myField.selectionStart == '0') {
+                var startPos = myField.selectionStart;
+                var endPos = myField.selectionEnd;
+                if (startPos !== endPos) {
+                    if(fullTag === ""){
+                        fullTag = "<"+myValue+"/>";
+                    }
+                    // something is selected, wrap it instead
+                    var toWrap = myField.value.substring(startPos,endPos);
+                    closeTag = "</" + myValue +">";
+                    myField.value = 
+                          myField.value.substring(0, startPos)
+                        + unescape(fullTag)
+                        + toWrap
+                        + closeTag
+                        + myField.value.substring(endPos, myField.value.length);
+                    myField.focus();
+                    updateLine(myField.parent(), false, true);
+    //                var insertLength = startPos + unescape(fullTag).length +
+    //                    toWrap.length + 3 + closeTag.length;
+                    //return "wrapped" + insertLength;              
+                } 
+                else {
+                    myField.value = myField.value.substring(0, startPos)
+                        + unescape(fullTag)
+                        + myField.value.substring(startPos, fullTag.length);
+                    myField.focus();
+                    updateLine(myField.parent(), false, true);
+                    //return startPos+unescape(fullTag).length;
+                }
+            } 
+            else {
+                myField.value += unescape(fullTag);
+                myField.focus();
+                updateLine(myField.parent(), false, true);
+                //return myField.length;
+            }
+        }
+        
+    }
+    
 function closeTag(tagName, fullTag){
     // Do not create for self-closing tags
     if (tagName.lastIndexOf("/") === (tagName.length - 1)) return false;
@@ -2605,72 +2780,33 @@ function closeTag(tagName, fullTag){
 
 function addchar(theChar, closingTag) {
     var closeTag = (closingTag === undefined) ? "" : closingTag;
-    var e = tpen.screen.focusItem[1].find('textarea')[0];
+    var e = tpen.screen.focusItem[1].find('.theText')[0];
     if (e !== null) {
-        return setCursorPosition(e, insertAtCursor(e, theChar, closeTag));
+        insertAtCursor(theChar, closeTag, "", true);
     }
-    return false;
 }
 
-function setCursorPosition(e, position) {
-    var pos = position;
-    var wrapped = false;
-    if (pos.toString().indexOf("wrapped") === 0) {
-        pos = parseInt(pos.substr(7));
-        wrapped = true;
-    }
-    e.focus();
-    if (e.setSelectionRange) {
-        e.setSelectionRange(pos, pos);
-    }
-    else if (e.createTextRange) {
-        e = e.createTextRange();
-        e.collapse(true);
-        e.moveEnd('character', pos);
-        e.moveStart('character', pos);
-        e.select();
-    }
-    return wrapped;
-}
+//function setCursorPosition(e, position) {
+//    var pos = position;
+//    var wrapped = false;
+//    if (pos.toString().indexOf("wrapped") === 0) {
+//        pos = parseInt(pos.substr(7));
+//        wrapped = true;
+//    }
+//    e.focus();
+//    if (e.setSelectionRange) {
+//        e.setSelectionRange(pos, pos);
+//    }
+//    else if (e.createTextRange) {
+//        e = e.createTextRange();
+//        e.collapse(true);
+//        e.moveEnd('character', pos);
+//        e.moveStart('character', pos);
+//        e.select();
+//    }
+//    return wrapped;
+//}
 
-function insertAtCursor (myField, myValue, closingTag) {
-    var closeTag = (closingTag === undefined) ? "" : unescape(closingTag);
-    //IE support
-    if (document.selection) {
-        myField.focus();
-        sel = document.selection.createRange();
-        sel.text = unescape(myValue);
-        return sel + unescape(myValue).length;
-    }
-    //MOZILLA/NETSCAPE support
-    else if (myField.selectionStart || myField.selectionStart == '0') {
-        var startPos = myField.selectionStart;
-        var endPos = myField.selectionEnd;
-        if (startPos != endPos) {
-            // something is selected, wrap it instead
-            var toWrap = myField.value.substring(startPos, endPos);
-            myField.value = myField.value.substring(0, startPos)
-            + unescape(myValue)
-            + toWrap
-            + "</" + closeTag + ">"
-            + myField.value.substring(endPos, myField.value.length);
-            myField.focus();
-            var insertLength = startPos + unescape(myValue).length +
-            toWrap.length + 3 + closeTag.length;
-            return "wrapped" + insertLength;
-        } else {
-            myField.value = myField.value.substring(0, startPos)
-            + unescape(myValue)
-            + myField.value.substring(startPos, myField.value.length);
-            myField.focus();
-            return startPos + unescape(myValue).length;
-        }
-    } else {
-        myField.value += unescape(myValue);
-        myField.focus();
-        return myField.length;
-    }
-}
 
 function toggleCharacters(){
     if ($("#charactersPopin .character:first").is(":visible")){
@@ -2745,7 +2881,7 @@ function markerColors(){
     tpen.screen.colorList.splice(tpen.screen.colorList.indexOf(tpen.screen.colorThisTime), 1);
     var oneToChange = tpen.screen.colorThisTime.lastIndexOf(")") - 2;
     var borderColor = tpen.screen.colorThisTime.substr(0, oneToChange) + '.2' + tpen.screen.colorThisTime.substr(oneToChange + 1);
-    var lineColor = tpen.screen.colorThisTime.replace(".4", "1"); //make this color opacity 100
+    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9"); //make this color opacity 100
     $('.lineColIndicator').css('border', '1px solid ' + lineColor);
     $('.lineColOnLine').css({'border-left':'1px solid ' + borderColor, 'color':lineColor});
     $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + tpen.screen.colorThisTime); //keep this color opacity .4 until imgTop is hovered.

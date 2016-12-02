@@ -794,7 +794,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 }
 .helpPanel h2{
     color: rgba(40,40,40,1);text-shadow:1px 1px 0 rgba(240,240,240,1);}
-#closeHelp {position: absolute;z-index: 1;right:5px;top:5px;}
+#closeHelp {position: absolute;z-index: 1;right:20px;top:5px;}
 #closeHelp:hover {background-image: url(css/custom-theme/images/ui-icons_cd0a0a_256x240.png);}
 #helpMe{cursor: help;}
 /*.showMe {border: dotted 1px transparent; border-bottom: dotted 1px orangered;cursor: help;display: inline-block;position: relative;}
@@ -1001,13 +1001,15 @@ button.imgTool{
     position: absolute;
     top: 0;
     right: 0;
-    color: #D14836;
-    background-color: #272727;
-    cursor: pointer;
-}
-.fullScreenTrans:hover{
-    background-color: #D14836;
     color: #272727;
+    background-color: #D14836;
+    cursor: pointer;
+    margin: 4px;
+}
+
+.fullScreenTrans:hover{
+    background-color: #272727;
+    color: #D14836;
 }
 #miradorInstance { background: black; width: 100%; position: relative; display:block; }
 

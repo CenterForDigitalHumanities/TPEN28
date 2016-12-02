@@ -2639,17 +2639,56 @@ function reparseColumns(){
     });
 }
 
-function insertTag(tagName, fullTag){
-    if (tagName.lastIndexOf("/") === (tagName.length - 1)) {
-        //transform self-closing tags
-        var slashIndex = tagName.length;
-        fullTag = fullTag.slice(0, slashIndex) + fullTag.slice(slashIndex + 1, - 1) + " />";
+/**
+     * Inserts value at cursor location.
+     * 
+     * @param myField element to insert into
+     * @param myValue value to insert
+     * @return int end of inserted value position
+     */
+     function insertAtCursor(myField, myValue, closingTag) {
+         //how do I pass the closing tag in?  How do i know if it exists?
+        var closeTag = (closingTag == undefined) ? "" : unescape(closingTag);
+        //IE support
+        if (document.selection) {
+            myField.focus();
+            sel = document.selection.createRange();
+            sel.text = unescape("<"+myValue+">");
+            updateLine(myField, false, true);
+            return sel+unescape("<"+myValue+">").length;
+        }
+        //MOZILLA/NETSCAPE support
+        else if (myField.selectionStart || myField.selectionStart == '0') {
+            var startPos = myField.selectionStart;
+            var endPos = myField.selectionEnd;
+            if (startPos != endPos) {
+                // something is selected, wrap it instead
+                var toWrap = myField.value.substring(startPos,endPos);
+                myField.value = myField.value.substring(0, startPos)
+                    + unescape("<"+myValue+">")
+                    + toWrap
+                    + "</" + myValue +">"
+                    + myField.value.substring(endPos, myField.value.length);
+                myField.focus();
+                updateLine(myField, false, true);
+                var insertLength = startPos + unescape("<"+myValue+">").length +
+                    toWrap.length + 3 + closeTag.length;
+                return "wrapped" + insertLength;              
+            } else {
+                myField.value = myField.value.substring(0, startPos)
+                    + unescape("<"+myValue+">")
+                    + myField.value.substring(startPos, myField.value.length);
+                myField.focus();
+                updateLine(myField, false, true);
+                return startPos+unescape("<"+myValue+">").length;
+            }
+        } else {
+            myField.value += unescape("<"+myValue+">");
+            myField.focus();
+            updateLine(myField, false, true);
+            return myField.length;
+        }
     }
-    // Check for wrapped tag
-    if (!addchar(escape(fullTag), escape(tagName))) {
-        closeTag(escape(tagName), escape(fullTag));
-    }
-}
 
 function closeTag(tagName, fullTag){
     // Do not create for self-closing tags
@@ -2706,44 +2745,6 @@ function setCursorPosition(e, position) {
     return wrapped;
 }
 
-function insertAtCursor (myField, myValue, closingTag) {
-    var closeTag = (closingTag === undefined) ? "" : unescape(closingTag);
-    //IE support
-    if (document.selection) {
-        myField.focus();
-        sel = document.selection.createRange();
-        sel.text = unescape(myValue);
-        return sel + unescape(myValue).length;
-    }
-    //MOZILLA/NETSCAPE support
-    else if (myField.selectionStart || myField.selectionStart == '0') {
-        var startPos = myField.selectionStart;
-        var endPos = myField.selectionEnd;
-        if (startPos != endPos) {
-            // something is selected, wrap it instead
-            var toWrap = myField.value.substring(startPos, endPos);
-            myField.value = myField.value.substring(0, startPos)
-            + unescape(myValue)
-            + toWrap
-            + "</" + closeTag + ">"
-            + myField.value.substring(endPos, myField.value.length);
-            myField.focus();
-            var insertLength = startPos + unescape(myValue).length +
-            toWrap.length + 3 + closeTag.length;
-            return "wrapped" + insertLength;
-        } else {
-            myField.value = myField.value.substring(0, startPos)
-            + unescape(myValue)
-            + myField.value.substring(startPos, myField.value.length);
-            myField.focus();
-            return startPos + unescape(myValue).length;
-        }
-    } else {
-        myField.value += unescape(myValue);
-        myField.focus();
-        return myField.length;
-    }
-}
 
 function toggleCharacters(){
     if ($("#charactersPopin .character:first").is(":visible")){
@@ -4334,6 +4335,8 @@ var Help = {
         }
     }
 }
+
+
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?
 if (!window.console) window.console = {};

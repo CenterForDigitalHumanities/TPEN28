@@ -615,7 +615,6 @@ public class TagButton {
       for (int i = 0; i < t.length; i++) {
          stackTrace += t[i].toString() + "\n";
       }
-
       //LOG.log(Level.SEVERE, "{0} Running tagButton.getAllProjectButtons\n{1}", new Object[]{formatter.format(date), stackTrace});
       Connection j = null;
       PreparedStatement stmt = null;
@@ -634,8 +633,10 @@ public class TagButton {
                TagButton b = new TagButton(projectID, position, true);
                 ctr++;
                 JSONObject jo = new JSONObject();
-                jo.element("position", rs.getInt("position"));
-                jo.element("tag", b.getButton());
+                jo.element("tag", b.getTag()); //b.getButton()
+                jo.element("parameters", b.getparameters());
+                jo.element("description", b.getDescription());
+                //jo.element("color", b.getXMLColor());
                 ja.add(jo);
             } catch (NullPointerException e) {
             }

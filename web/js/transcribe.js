@@ -305,11 +305,18 @@ function populateSpecialCharacters(specialCharacters){
 function populateXML(){
     var xmlTags = tpen.project.xml;
     var tagsInOrder = [];
-    //TODO make sure this respects xmlTags.position order
+    //TODO: make sure this respects xmlTags.position order.  Confirmed?  NOT YET
     for (var tagIndex = 0; tagIndex < xmlTags.length; tagIndex++){
         var newTagBtn = "";
-        if(xmlTags[tagIndex].tag && xmlTags[tagIndex].tag!== "" && xmlTags[tagIndex].tag !== " "){
-            newTagBtn = "<option class='xmlTag'>"+xmlTags[tagIndex].tag+"</option>";
+        var tagName = xmlTags[tagIndex].tag;
+        if(tagName && tagName!== "" && tagName !== " "){
+            var xmlTagObject = xmlTags[tagIndex];
+            var parametersArray = xmlTagObject.parameters; //This is a string array of properties, paramater1-parameter5 out of the db.
+            var description = xmlTagObject.description;
+            //TODO:QUESTION what is the right way to build this tag?
+            var fullTag = "";
+            newTagBtn = "<option class='xmlTag' title='" + fullTag + "' onclick='Interaction.insertTag('" + tagName + "', '" + fullTag + "');>" + description+"</option>";
+            //newTagBtn = "<option class='xmlTag'>"+xmlTagObject.tag+"</option>";
             var button = $(newTagBtn);
             $(".xmlTags").append(button);
         }

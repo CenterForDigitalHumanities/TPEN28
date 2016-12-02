@@ -110,10 +110,6 @@ body{
     box-shadow: 0px 0px 15px 8px #FFF;
     display: block !important;
 }
-.specialCharacters, .xmlTags{
-    position: relative;
-    display: none;
-}
 .lookLikeButtons{
     /*    font-family: "Open Sans","Helvetica Neue",sans-serif;*/
     font-weight: bold;
@@ -131,13 +127,7 @@ body{
     line-height: 26px;
     background-color: #272727;
 }
-/*.lookLikeButtons:hover{
-    background-color: #d14836;
-}*/
 
-/*.character:hover{
-    background-color: #272727;
-}*/
 .destroyPage{
     background-color: red;
     color: white;
@@ -212,21 +202,20 @@ body{
 }
 
 #transWorkspace textarea {
-    left: 0px;
     max-height: 12em;
     min-height: 60px;
     position: relative;
     width: 100%;
     z-index: 5;
-    -webkit-box-shadow: 4px 4px 4px 2px #DDD inset;
-    -moz-box-shadow: 4px 4px 4px 2px #DDD inset;
-    box-shadow: 4px 4px 4px 2px #DDD inset;
     overflow: auto;
     border: 1px solid #000;
     resize: vertical;
-    margin: 0px auto;
-    padding-top:7px;
-    padding-left:7px;
+}
+.theText,#captions{
+    font-family:'Junicode','Georgia', serif
+}
+.notes {
+    display: none;
 }
 
 #imgTop,#imgBottom{
@@ -263,23 +252,34 @@ body{
     z-index: 3;
     height: auto;
     padding: 7px;
-    overflow-x: auto;
-    overflow-y: hidden;
 }
 .flex-container{
     display: flex;
+    margin: 2px 0;
 }
 .flex-bookend {
-    width: 108px;
+    width: 4em;
+    text-align: center;
+    padding: 0 1em;
 }
 .flex-wide, .flex-wide div {
     display:flex;
     flex-grow:8;
+    padding-left: .25em;
 }
 .flex-stretch{
     flex-align: stretch;
     justify-content: center;
     align-items: stretch;
+}
+.flex-stretch.buttons {
+    display: flex;
+    flex-wrap:reverse-wrap;
+    justify-content:space-between;
+}
+.flex-stretch.buttons button {
+    margin: 0 2px;
+    flex: 2 1;
 }
 #captions {
     min-height: 2em;
@@ -289,8 +289,6 @@ body{
     -moz-transition: opacity .25s;
     -o-transition: opacity .25s;
     transition: opacity .25s;
-    top: -6px;
-    margin-left: 109px;
 }
 #captionsText {
     display: inline-block;
@@ -357,55 +355,21 @@ body{
     position: absolute;
     height:20px;
     width: 30px;
-    left:2px;
-    top:1px;
+    left:4px;
+    top:4px;
 }
 
 .slideHandleRight{
     left:auto;
-    right:3px;
-}
-/*The text inside this needs to resize with this container*/
-/*#workspacePageControl{
-    background-color: #FFF;
-    text-align: center;
-    width: 10%;
-    position: absolute;
-    height: 107px;
-    font-size: 0.8vw;
-    top: 27px;
-    left: 24px;
-    border: 2px solid black;
-}*/
-
-
-.bottomButtons{
-    position: relative;
-    width: auto;
-    height: auto;
-    top: 3px;
-    display: inline-block;
+    right:4px;
 }
 
-.bottomButtons select{
-    margin: 0px 3px;
-    height: 35px;
-    background: white;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    text-transform: none;
-    font-size: 15px;
-    color: black;
-}
-.bottomButtons:last-child{
-    padding-left:20px;
-}
-#transcriptletArea{
+#transcriptletArea,#captions{
     opacity: 1;
     position: relative;
     z-index: 3;
     visibility: visible;
+    max-width: 40em;
 }
 #pageLabel{
     top: 3px !important;
@@ -429,15 +393,6 @@ body{
     margin-bottom: 2px;
     cursor: move;
 }
-#prevPage, #nextPage{
-    font-size: 30pt;
-    border: 1px solid black;
-    cursor: pointer;
-    position: relative;
-}
-#prevPage{
-    margin-right:60px;
-}
 #lineCol{
     position: relative;
     display: inline-block;
@@ -447,11 +402,13 @@ body{
     width: auto;
     height: 0px;
 }
-#colLineWrapper{
-    display: inline-block;
-    position: relative;
-    margin:0px 3px;
+#toggleNotes{
+    border-radius: 4px;
+    width: 30px;
+    text-align: center;
+    background: #999;
 }
+
 #prevColLine, #currentColLine{
     border-radius: 4px;
     height: 30px;
@@ -464,6 +421,10 @@ body{
     font-size: 11pt;
     position: relative;
     display: block; /* We may still want these, but they are wildly out of position right now. */
+    opacity: .5;
+}
+#prevColLine:hover, #currentColLine:hover{
+    opacity: 1;
 }
 #captionsColLine{
     display: inline-block;
@@ -889,14 +850,12 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     text-align: center;
 }
 #splitScreenTools{
-    position: relative;
     border: 2px solid #000;
-    background-color: white;
-    display: inline-table;
-    color: black;
-    top: 2px;
-    text-align:center;
-    cursor: default;
+    height: 35px;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    flex:2 1 auto;
 }
 #magnifyTools{
     position: absolute;
@@ -912,7 +871,6 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     position: absolute;
     top: 2px;
     right: 2px;
-    border: 1px solid black;
     padding: 2px;
     cursor: pointer;
     width: 16px;
@@ -920,6 +878,9 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     display: inline-block;
     text-align: center;
     z-index: 4;
+}
+.closeBtn:hover{
+    background: #FFF;
 }
 .popupTitle{
     margin: 0 auto;
@@ -936,39 +897,31 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     color: black;
     text-align: center;
     position: absolute;
-    /*bottom: -13px;*/
     z-index: 3;
-    /*transition: height 1s;*/
     border: 2px solid black;
     margin-left: 6px;
     color: rgba(0,42,92,1);
     position: fixed;
 }
-#charactersPopin, #xmlTagPopin{
-    position: relative;
-    /* height: auto; */
-    border: 2px solid #000;
-    /* background-color: #D14836; */
-    display: inline-table;
-    /* color: #FFF; */
-    text-align: center;
-    top: 2px;
-    /* padding: 4px 0px;
-  /*padding: 4px 0px;*/
-}
-#xmlTagPopin option, #charactersPopin option{
-    padding: 4px 6px;
-}
+
 #brightnessSlider, #contrastSlider{
     margin: 7px 0px 18px 0px;
 }
 .character, .lookLikeButtons, .xmlTag{
-    display: block;
-    /*background-color: #D14836;*/
-    background-color:white;
     cursor: pointer;
-    color: black;
-    padding: 4px 6px;
+    margin: 0 1px;
+    min-width: 2em;
+    display: inline-block;
+    text-align: center;
+    line-height: 35px;
+    padding: 0 4px !important;
+    font-size: 1em;
+}
+.character{
+    font-family:'Junicode','Georgia', serif;
+}
+.lookLikeButtons:hover {
+    background-color: #d14836 !important;
 }
 
 #parse,#linebreak,#moveimg{
@@ -1024,7 +977,6 @@ button.imgTool{
     background-color: transparent !important;
 }
 #activeCharacters, #activeTags{
-    /*background-color: rgb(209,72,54);*/
     background-color: white;
     cursor: default;
     padding: 4px 6px;
@@ -1037,7 +989,6 @@ button.imgTool{
 .splitTool,  .magnifyTool, .folioJump, .compareJump{
     cursor: pointer;
     color: black;
-    /*    background-color: #D14836;*/
     background-color: white;
     padding: 4px 0px;
 }
@@ -1127,6 +1078,11 @@ button.imgTool{
 .trimSection span{
     margin-left:5px;
 }
+.trimSection .fa-2x {
+    margin-top: -0.5em;
+    top: 0.25em;
+    position: relative;
+}
 .showMe{
     position: relative;
     /*display: none;*/
@@ -1149,17 +1105,16 @@ button.imgTool{
     background-color: rgba(1,51,90,.5);
     padding: 5px 0px;
 }
-#prevCanvas, #prevLine{
-    margin-right: 3px;
+#prevLine,#nextLine{
     position: relative;
-    top: 6px;
+    height:auto;
+    background: #999;
+    color: #333;
+    transition: .5s;
 }
-/*#prevCanvas, #nextCanvas{
-    top: -15px !important;
-}*/
-#nextCanvas, #nextLine{
-    position: relative;
-    top: 6px;
+#prevLine:hover,#nextLine:hover{
+    box-shadow: 0 0 3px rgba(0,0,0,.5);
+    background: #BBB;
 }
 #pageControls{
     margin-right: 2px;
@@ -1168,31 +1123,6 @@ button.imgTool{
     background-color: rgba(0,0,0,.3);
     text-align:center;
     border-radius: 4px;
-}
-/* changing margin here moves all buttons across bottom of transcription workspace. */
-.linehdr{
-    color: #002a5c;
-    font-size: 11pt;
-    cursor: default;
-    position: relative;
-    display: inline-block;
-}
-#lineColControls{
-    width: 151px;
-    height: 73px;
-    background-color: #BFBFBF;
-    position: relative;
-    display: none;
-    font-size: 10pt;
-    top: 1px;
-    padding: 3px;
-    border: 2px outset rgba(0,42,92,.4);
-    position: fixed;
-    z-index: 3
-}
-#lineColControls input[type="checkbox"]{
-    margin: 0px 0px 0px 4px;
-    position: relative;
 }
 #lineControls i, #pageControls i{
     display: inline-table;
@@ -1224,15 +1154,12 @@ body{
     height: 100%;
     height: 100vh;
 }
-button, #uploadText{
+button, #uploadText, .lookLikeButtons {
     /*    font-family: 'Open Sans','Helvetica Neue',sans-serif;*/
     font-weight: bold;
     color:white;
     border-radius: 4px;
-    padding-bottom: 4px;
-    padding-left: 6px;
-    padding-right: 6px;
-    padding-top: 4px;
+    padding: 4px 6px;
     height: 35px;
     background-clip: border-box;
     background-origin: padding-box;
@@ -1259,7 +1186,7 @@ p{
     border:1px solid white;
     font-size:.8em;
     color:white;
-    transition: box-shadow 2s;
+    transition: box-shadow .5s;
 }
 .lineColIndicatorArea{
     position: absolute;
@@ -1399,17 +1326,26 @@ a.navigation {
 }
 #xmlTagFloat, #specialCharsFloat{
     z-index: 3;
-    position: absolute;
-    border: 2px solid black;
-    height: auto !important;
-    padding: 7px;
-    background-color: white;
-    width: 130px;
-    height: 40px;
+    position: relative;
     display: none;
+    padding:.25em;
+    border:thin solid #999;
 }
-#xmlTagFloat .closeBtn, #specialCharsFloat .closeBtn{
-    background-color: white;
+.specialCharactered{
+    background-color: rgba(0,0,0,.25);
+}
+.xmlTagged {
+    background: rgba(0,0,0,.4);
+}
+.xmlTag, .character {
+    background: #666;
+}
+.charactersPopin button:after {
+    content: '1';
+    position: absolute;
+    z-index: 2;
+    top: 0; right:0;
+    color:#DDD;
 }
 
 .manController{

@@ -92,6 +92,20 @@ function redraw() {
     } else {
     // failed to draw, no Canvas selected
     }
+    scrubNav();
+}
+
+function scrubNav(){
+    if(tpen.screen.currentFolio === 0){
+        $("#prevCanvas").css("visibility","hidden");
+    } else {
+        $("#prevCanvas").css("visibility","");
+    }
+    if (tpen.screen.currentFolio >= tpen.manifest.sequences[0].canvases.length - 1) {
+        $("#nextCanvas").css("visibility","hidden");
+    } else {
+        $("#nextCanvas").css("visibility","");
+    }
 }
 
 /* Load the interface to the first page of the manifest. */
@@ -289,7 +303,7 @@ function populateSpecialCharacters(specialCharacters){
         else {
             var keyVal = thisChar.key;
             var position2 = parseInt(thisChar.position);
-            var newCharacter = "<option class='character'>&#" + keyVal + ";</option>";
+            var newCharacter = "<div class='character lookLikeButtons' onclick='addchar(\"&#" + keyVal + "\")'>&#" + keyVal + ";</div>";
             if (position2 - 1 >= 0 && (position2 - 1) < specialCharacters.length) {
                 speCharactersInOrder[position2 - 1] = newCharacter;
             }
@@ -305,7 +319,6 @@ function populateSpecialCharacters(specialCharacters){
 function populateXML(){
     var xmlTags = tpen.project.xml;
     var tagsInOrder = [];
-    //TODO: make sure this respects xmlTags.position order.  Confirmed?  NOT YET
     for (var tagIndex = 0; tagIndex < xmlTags.length; tagIndex++){
         var newTagBtn = "";
         var tagName = xmlTags[tagIndex].tag;
@@ -332,7 +345,7 @@ function populateXML(){
                 fullTag = "<"+tagName+" "+fullTag+">";
             }
             var description = xmlTagObject.description;
-            newTagBtn = "<option class='xmlTag' title='" + fullTag + "'>" + description + "</option>"; //onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\">
+            newTagBtn = "<div onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\" class='xmlTag lookLikeButtons' title='" + fullTag + "'>" + description + "</div>"; //onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\">
             var button = $(newTagBtn);
             $(".xmlTags").append(button);
         }
@@ -486,15 +499,14 @@ function loadTranscription(pid, tool){
                         });
                     }
                     scrubFolios();
-                    var count = 1;
-                    $.each(transcriptionFolios, function(){
-                        $("#pageJump").append("<option folioNum='" + count
-                            + "' class='folioJump' val='" + this.label + "'>"
-                            + this.label + "</option>"); // add page indicator... (tpen.screen.currentFolio===count && "‣") is false
-                        $("#compareJump").append("<option class='compareJump' folioNum='"
-                            + count + "' val='" + this.label + "'>"
-                            + this.label + "</option>");
-                        count++;
+                    $.each(transcriptionFolios, function(count){
+                        var label = (tpen.screen.currentFolio===count) ?
+                        "‣" + this.label : "&nbsp;" + this.label;
+                        var opt = $("<option folioNum='" + count
+                            + "' val='" + this.label + "'>"
+                            + label + "</option>");
+                        $("#pageJump").append(opt.clone().addClass("folioJump")); // add page indicator... (tpen.screen.currentFolio===count && "‣") is false
+                        $("#compareJump").append(opt.addClass("compareJump"));
                         if (this.otherContent){
                             if (this.otherContent.length > 0){
                                 // all's well
@@ -811,6 +823,7 @@ function loadTranscription(pid, tool){
     else {
         throw new Error("The input was invalid.");
     }
+    scrubNav();
 }
 
 function activateTool(tool){
@@ -903,7 +916,6 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
     $("#imgTop img, #imgBottom img").css("width", "auto");
     $("#prevColLine").html("**");
     $("#currentColLine").html("**");
-    $("#captionsColLine").html("**");
     $('.transcriptionImage').attr('src', "images/loading2.gif"); //background loader if there is a hang time waiting for image
     $('.lineColIndicator').remove();
     $(".transcriptlet").remove();
@@ -942,6 +954,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
                 $("#parseOptions").find(".tpenButton").removeAttr("disabled");
                 $("#parsingBtn").removeAttr("disabled");
+                tpen.screen.textSize();
             }
             else{
                 $('#requestAccessContainer').show();
@@ -1255,7 +1268,8 @@ function linesToScreen(lines, tool){
             + '" colLineNum="' + colCounter + '" lineID="' + counter
             + '" lineserverid="' + lineID + '" class="transcriptlet" data-answer="'
             + thisContent + '"><textarea class="theText" placeholder="' + thisPlaceholder + '">'
-            + thisContent + '</textarea></div>');
+            + thisContent + '</textarea><textarea class="notes" placeholder="Line notes">'
+            + line._tpen_note||'' + '</textarea></div>');
         // 1000 is promised, 10 goes to %
         var left = parseFloat(XYWHarray[0]) / (10 * ratio);
         var top = parseFloat(XYWHarray[1]) / 10;
@@ -1345,19 +1359,16 @@ function updatePresentation(transcriptlet) {
             else{ }
             var prevLineCol = transcriptletBefore.attr("col");
             var prevLineText = transcriptletBefore.attr("data-answer");
-            $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum);
-            $("#captionsColLine").html(prevLineCol + "" + currentTranscriptletNum+":");
+            $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","");
             $("#captionsText").html((prevLineText.length && prevLineText) || "This line is not transcribed.");
         }
         else { //this is a problem
-            $("#prevColLine").html("**");
-            $("#captionsColLine").html("**");
+            $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
             $("#captionsText").html("You are on the first line.");
         }
     }
     else { //there is no previous line
-        $("#prevColLine").html("**");
-        $("#captionsColLine").html("**");
+        $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
         $("#captionsText").html("ERROR.  NUMBERS ARE OFF");
     }
     tpen.screen.focusItem[0] = tpen.screen.focusItem[1];
@@ -2037,6 +2048,7 @@ function hideWorkspaceForParsing(){
             var splitWidth = window.innerWidth - (width + 35) + "px";
             $(".split img").css("max-width", splitWidth);
             $(".split:visible").css("width", splitWidth);
+            tpen.screen.textSize();
         },
         stop: function(event, ui){
             //$(".lineColIndicator .lineColOnLine").css("line-height", $(this).height()+"px");
@@ -2221,6 +2233,7 @@ function splitPage(event, tool) {
     $("#imgTop img").css("top", newImgTopTop + "px");
     $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
     $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
+
     $("#transcriptionTemplate").resizable({
         disabled:false,
         minWidth: window.innerWidth / 2,
@@ -2261,15 +2274,9 @@ function splitPage(event, tool) {
             'max-width': $(".split:visible")
                 .width() + "px"
         });
-    var pageJumpIcons = $("#pageJump")
-        .parent()
-        .children("i");
-//    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
-//    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
-//    pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
-//    pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
-    $("#prevCanvas").attr("onclick", "");
-    $("#nextCanvas").attr("onclick", "");
+        if(tool==="controls"){
+            $("#transcriptionCanvas").css("width", Page.width()-200 + "px");
+        }
 }
 
 function forceOrderPreview(){
@@ -3678,25 +3685,13 @@ function toggleLineControls(event){
 }
 
 function toggleXMLTags(event){
-    var locationX = event.pageX;
-    var locationY = event.pageY;
-    $("#xmlTagFloat").css({
-        "display":  "block",
-        "left" : locationX + "px",
-        "top" : locationY + 15 + "px"
-    });
-    $("#xmlTagFloat").draggable();
+    $("#xmlTagFloat").fadeToggle();
+    $("#toggleXML").toggleClass('xmlTagged');
 }
 
 function toggleSpecialChars(event){
-    var locationX = event.pageX;
-    var locationY = event.pageY;
-    $("#specialCharsFloat").css({
-        "display":  "block",
-        "left" : locationX + "px",
-        "top" : locationY + 15 + "px"
-    });
-    $("#specialCharsFloat").draggable();
+    $("#specialCharsFloat").fadeToggle();
+    $("#toggleChars").toggleClass('specialCharactered');
 }
 
 /* Control the hiding and showing of the image tools in the transcription interface. Depricated
@@ -4207,7 +4202,7 @@ var Help = {
             $("#closeHelp:visible").click(); // close if open
             return false;
         }
-        
+
         var workspaceHeight = $("#transWorkspace").height();
         var imgTopHeight = $("#imgTop").height() + workspaceHeight;
         //Screen.maintainWorkspace();
@@ -4389,9 +4384,25 @@ var Help = {
             $(".video[ref='"+refIndex+"']").addClass('ui-state-disabled').text('unavailable');
         }
     }
-}
+};
 
-
+    /**
+     * Adjusts font-size in transcription and notes fields based on size of screen.
+     * Minimum is 13px and maximum is 18px.
+     *
+     */
+    tpen.screen.textSize= function () {
+           var wrapperWidth = $('#transcriptionCanvas').width();
+        var textSize = Math.floor(wrapperWidth / 60),
+            resize = (textSize > 18) ? 18 : textSize,
+        resize = (resize < 13) ? 13 : resize;
+        $(".theText,.notes,#previous span,#helpPanels ul").css("font-size",resize+"px");
+//        if (wrapperWidth < 550) {
+//            Interaction.shrinkButtons();
+//        } else {
+//            Interaction.expandButtons();
+//        }
+    };
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?
 if (!window.console) window.console = {};

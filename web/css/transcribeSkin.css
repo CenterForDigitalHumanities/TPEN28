@@ -1356,13 +1356,15 @@ a.navigation {
     counter-increment: hotkey;
 }
 .character::after {
-    content: counter(hotkey);
+    content: "CTRL+" counter(hotkey);
     position: absolute;
     color: #999;
     font-size: .75em;
     top: -1.25em;
-    right: 2px;
+    left: 0;
     font-family: monospace;
+    width: 100%;
+    text-align: center;
 }
 .charactersPopin button:after {
     content: '1';

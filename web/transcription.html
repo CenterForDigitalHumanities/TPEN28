@@ -55,7 +55,7 @@
             <div class="turnLoader"><img src="images/loading2.gif" /></div>
         </div>
         <div class="magnifyHelp">
-            <div id='magnifyHlpLabel'>Magnify Help</div>
+            <div id='magnifyHlpLabel'>Inspect Help</div>
             <button style='margin-bottom: 3px;' class='nohover'>esc</button><span>   to quit</span><br>
             <button style='margin-bottom: 3px;' class='nohover'>+</button><span>   or mouse wheel to zoom in</span><br>
             <button class='nohover'>-</button><span>   or mouse wheel to zoom out</span>
@@ -158,9 +158,9 @@
                         <button id="canvasControls" title="Page Adjustments" onclick="splitPage(event,'controls');">
                             <i class="fa fa-file-image-o"></i>
                             Page Controls</button>
-                        <button id="magnify1" class="magnifyBtn" magnifyImg="trans" title="Magnify Transcription Image" >
+                        <button id="magnify1" class="magnifyBtn" magnifyImg="trans" title="Inspect Transcription Image" >
                             <i class="fa fa-search-plus"></i>
-                            Magnify</button> <!--Page event on the listener for this class in js.-->
+                            Inspect</button> <!--Page event on the listener for this class in js.-->
                         <button id="toggleChars" title="Move Transcription Image" onclick="toggleSpecialChars(event);">
                             <i class="fa fa-keyboard-o"></i>
                             Characters</button>
@@ -322,7 +322,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     </select>
                     <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
-                    <button class="magnifyBtn" magnifyImg="compare" >Magnify</button>
+                    <button class="magnifyBtn" magnifyImg="compare" >Inspect</button>
                 </div>
 
                 <img class="compareImage" folioNum="1"></img>
@@ -376,7 +376,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 <div class="toolLinks">
                     <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
-                    <button class="magnifyBtn" style="position: relative;" magnifyImg="full" >Magnify</button>
+                    <button class="magnifyBtn" style="position: relative;" magnifyImg="full" >Inspect</button>
                 </div>
                 <div id="fullPageSplitCanvas"><img id="fullPageImg" src="" /></div>
             </div>
@@ -421,7 +421,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                                 <dt>Custom Text Entry</dt>
                                 <dd>Expand the <span class="showMe">Characters</span> or <span class="showMe">XML Tags</span> list to reveal buttons to insert your custom tags or <span ref="glossSpecialCharacters" class="glossary">special characters</span> into the <span ref="glossTranscriptionArea" class="glossary">transcription area</span>.</dd>
                                 <dt class="showMe">View Full Page</dt>
-                                <dd>Show the whole image. Click within the full view image to navigate directly to that line in the transcription area. Use the available <span class="showMe">magnify tool</span> to take a closer look.</dd>
+                                <dd>Show the whole image. Click within the full view image to navigate directly to that line in the transcription area. Use the available <span class="showMe">inspection tool</span> to take a closer look.</dd>
 <!--
                                 <dt class="showMe">History</dt>
                                 <dd>Lists the previous saved versions of the <span ref="glossParsing" class="glossary">line parsing</span> and <span ref="glossTranscription" class="glossary">transcription text</span>. Mouseover the history entries to reveal options to revert to a previous version.</dd>
@@ -429,7 +429,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                                 <dd>Browse A. Capelli's <cite>lexicon abbreviarum</cite> Latin and Italian abbreviations.</dd>-->
 
                                 <dt class="showMe">Compare Pages</dt>
-                                <dd>View other pages from this project. Use the available <span class="showMe">magnify tool</span> to take a closer look.</dd>
+                                <dd>View other pages from this project. Use the available <span class="showMe">inspection tool</span> to take a closer look.</dd>
                                 <dt class="showMe">Linebreak</dt>
                                 <dd>Upload a file for manual or automatic linebreaking.</dd>
                                 <dt class="showMe">Correct Parsing</dt>
@@ -478,7 +478,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 <!--                                        <dt>ALT + CTRL:</dt>
                                         <dd>Hold both to use the peek-zoom, which scales the bounded area to fit your screen and increases the quality of the image, if possible.</dd>-->
 
-                                    <dt>+ or - while magnifying:</dt>
+                                    <dt>+ or - while inspecting:</dt>
                                         <dd>Each keystroke will adjust the magnification of the tool by .4x to fine tune the image result.</dd>
                                 </dl>
                         </div>

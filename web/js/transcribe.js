@@ -542,8 +542,8 @@ function loadTranscription(pid, tool){
                         var toolLabel = this.name;
                         var toolSource = this.url;
                         var splitTool = $('<div toolName="' + toolLabel
-                            + '" class="split iTool"><button class="fullScreenTrans">'
-                            + 'Full Screen Transcription</button></div>');
+                            + '" class="split iTool"><div class="fullScreenTrans"><i class="fa fa-reply"></i>'
+                            + 'Full Screen Transcription</div></div>');
                         var splitToolIframe = $('<iframe style="height:' + splitHeight
                             + ';" src="' + toolSource + '"></iframe>');
                         var splitToolSelector = $('<option splitter="' + toolLabel
@@ -724,8 +724,8 @@ function loadTranscription(pid, tool){
                             var toolLabel = this.name;
                             var toolSource = this.url;
                             var splitTool = $('<div toolName="' + toolLabel
-                                + '" class="split iTool"><button class="fullScreenTrans">'
-                                + 'Full Screen Transcription</button></div>');
+                                + '" class="split iTool"><div class="fullScreenTrans"><i class="fa fa-reply"></i>'
+                                + 'Full Screen Transcription</div></div>');
                             var splitToolIframe = $('<iframe style="height:' + splitHeight
                                 + ';" src="' + toolSource + '"></iframe>');
                             var splitToolSelector = $('<option splitter="' + toolLabel
@@ -3624,7 +3624,7 @@ function cleanupTranscriptlets(draw) {
     if (draw){
         transcriptlets.remove();
         $(".lineColIndicatorArea").children(".lineColIndicator").remove();
-        $("#parsingSplit").find('.fullScreenTrans').unbind();
+        $("#parsingSplit").find('.fullScreenTrans').unbind(); // QUESTION: Why is this happening? cubap
         $("#parsingSplit").find('.fullScreenTrans').bind("click", function(){
             fullPage();
             drawLinesToCanvas(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], "");

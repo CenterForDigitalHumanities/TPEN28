@@ -883,6 +883,11 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 .closeBtn:hover{
     background: #FFF;
 }
+.closeBtn::after {
+    content: "close";
+    position: absolute;
+    right: 1.5em;
+}
 .popupTitle{
     margin: 0 auto;
     position: relative;
@@ -998,14 +1003,12 @@ button.imgTool{
 }
 
 .fullScreenTrans{
-    width: auto;
-    position: absolute;
-    top: 0;
-    right: 0;
+    width: 100%;
+    position: relative;
     color: #272727;
     background-color: #D14836;
     cursor: pointer;
-    margin: 4px;
+    margin: 0; padding:.25em;
 }
 
 .fullScreenTrans:hover{
@@ -1156,10 +1159,9 @@ body{
     height: 100vh;
 }
 button, #uploadText, .lookLikeButtons {
-    /*    font-family: 'Open Sans','Helvetica Neue',sans-serif;*/
     font-weight: bold;
     color:white;
-    border-radius: 4px;
+    border-radius: 2px;
     padding: 4px 6px;
     height: 35px;
     background-clip: border-box;

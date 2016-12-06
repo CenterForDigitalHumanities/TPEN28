@@ -823,18 +823,14 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     else $("#nextLine").click();
                 }
             }
-            else if (event.ctrlKey || event.keyCode == ctrlKey || event.keyCode == cmdKey) { //ctrl
+            else if (event.ctrlKey || event.metaKey) { //ctrl
                 //This is also how you select a new tab in the browser.
-                if(event.ctrlKey && (event.which >= 49 && event.which <= 57)){ //insert a special char
+                if(event.which >= 49 && event.which <= 57){ //insert a special char
                     event.preventDefault();
                     event.stopPropagation();
                     //find the index in the special chars field and insert it.
-                    var index = event.which - 48;
-                    //This will insert a null if you do not make sure the index exists.
-                    if(index > 0 && ($("option.character").length >= index)){
-                        document.getElementById("charactersPopin").selectedIndex = index;
-                        $("#charactersPopin").change(); //populating to the text field fires in onchange to this element, we have to register the change.
-                    }
+                    var hotkey = $("#charactersPopin").children().eq(String.fromCharCode(event.which));
+                    hotkey.click(); //populating to the text field fires in onclick to this element, we have to register the change.
                 }
                 else if(event.ctrlKey && event.which === 36){ //HOME key.  Jump to first line.
                     event.preventDefault();

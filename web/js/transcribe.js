@@ -2734,7 +2734,7 @@ function reparseColumns(){
                 currentValue = currentValue.slice(0, startPosChar) + unescape(myValue) + currentValue.slice(startPosChar);
                 myField.value = currentValue;
                 myField.focus();
-                updateLine(myField.parent(), false, true);
+                updateLine($(myField).parent(), false, true);
             }
         }
         else{

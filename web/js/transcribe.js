@@ -629,13 +629,7 @@ function loadTranscription(pid, tool){
         //TODO: allow users to include the p variable and load a page?
         var localProject = false;
         if (userTranscription.indexOf("/TPEN28/project") > - 1 || userTranscription.indexOf("/TPEN28/manifest") > - 1){
-//            if (userTranscription.indexOf("t-pen.org") > - 1){
-//                localProject = false;
-//                projectID = 0; //This way, it will not grab the t-pen project id.
-//            }
-//            else {
-            localProject = true; //Well, probably anyway.  I forsee this being an issue like with t-pen.
-            //TODO: this URL exists in more ways now (/manifest/PID/manifest.json)
+            localProject = true; 
             if(userTranscription.indexOf("/TPEN28/project") > - 1){
                 projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/project/') + 9));
             }
@@ -901,6 +895,40 @@ function checkManuscriptPermissions(id){
     return permitted;
 }
 
+/* Hit the API to record this user has accepted the IPR agreement.  */
+function acceptIPR(folio){
+    var url = "acceptIPR";
+    var paramObj = {user:tpen.user.UID, folio:folio};
+    var params = {"content":JSON.stringify(paramObj)};
+    $.post(url, params)
+    .success(function(data){
+        $("#iprAccept").fadeOut(1500);
+        $(".trexHead").fadeOut(1500);
+        console.log("IPR accepted.");
+    });
+}
+
+/*
+ * Checks the TPEN object for the IPR agreement from a specific folio.  If this user has not accepted the
+ * agreement, then they will see a pop up requiring them to request access.
+ * @param {type} id
+ * @returns {Boolean}
+ * */
+function checkIPRagreement(id){
+    var agreed = false;
+    for(var i=0; i<tpen.project.folios.length; i++){
+        if(id == tpen.project.folios[i].folioNumber){
+            agreed = tpen.project.folios[i].ipr;
+            $("#ipr_who").html(tpen.project.folios[i].archive);
+            $("#iprAgreement").html(tpen.project.folios[i].ipr_agreement);
+            $("#accept_ipr").attr("onclick", "acceptIPR("+id+")");
+            //$("#ipr_user") is set in transcription.html
+            break;
+        }
+    }
+    return agreed;
+}
+
 /*
  * Load a canvas from the manifest to the transcription interface.
  */
@@ -911,6 +939,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
     var lastslashindex = canvasURI.lastIndexOf('/');
     var folioID= canvasURI.substring(lastslashindex  + 1).replace(".png","");
     var permissionForImage = checkManuscriptPermissions(folioID);
+    var ipr_agreement = checkIPRagreement(folioID);
     $("#imgTop, #imgBottom").css("height", "400px");
     $("#imgTop img, #imgBottom img").css("height", "400px");
     $("#imgTop img, #imgBottom img").css("width", "auto");
@@ -955,10 +984,14 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 $("#parseOptions").find(".tpenButton").removeAttr("disabled");
                 $("#parsingBtn").removeAttr("disabled");
                 tpen.screen.textSize();
+                if(!ipr_agreement){
+                    $('#iprAccept').show();
+                    $(".trexHead").show();
+                }
             }
             else{
                 $('#requestAccessContainer').show();
-
+                $(".trexHead").show();
                 //handle the background
                 var image2 = new Image();
                 $(image2)

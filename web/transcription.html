@@ -389,8 +389,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 <div class="ui-state-error-text" style="text-align: center;"><span style="display: inline-block;" class="ui-icon ui-icon-alert"></span>You do not have permission to view this manuscript!</div>
                 <br />
                 <form action="requestAccess.jsp" method="POST">
-                    <!--    TODO: Include controller hint for user name of controller
-                            TODO: Include MS and projectIDs here.-->
                     <p title="">Request access for from the <span class="manController" title="">TPEN user who controls access</span> to this document.</P
                     <textarea name="reason" placeholder="Add any additional request details."></textarea>
                     <input type="hidden" name="ms" value="">
@@ -400,8 +398,19 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 </form>
                 <a class="returnButton" href="index.jsp">Return Home</a>
             </div>
-            <div id="trexHead"></div>
         </div>
+        
+        <div id="iprAccept" class="ui-widget ui-corner-all ui-widget-content">
+            <h2 class="ui-widget-header ui-corner-all">Accept IPR Agreement</h2>
+            <p>Please read and accept the IPR agreement below to access <span id="ipr_who" class="loud"></span>. You only need to do this once.</p>
+            <div id="iprAgreement" class="notice"></div>
+                <span id="ipr_user" class="right small"></span>
+                <div class="clear right buttons">
+                <button id="accept_ipr" class="ui-button tpenButton" onclick="">I Agree</button>
+                <button class="ui-button tpenButton" onclick="document.location='index.jsp'">I do not agree</button>
+            </div>
+        </div>
+        
         <div id="help">
             <div id="closeHelp" class="ui-icon-closethick ui-icon"></div>
                     <div id="helpPanels">
@@ -527,7 +536,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     <option SELECTED>Jump to page</option>
                 </select>-->
                 </div>
-
+                <div class="trexHead"></div>
                 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
                 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
                 <script type="text/javascript" src="js/transcribe.js"></script>
@@ -543,8 +552,8 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                         $("#linebreakNoTextContainer").show();
                     }
                     var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
-                +"&projectID="+tpen.project.id;
-        $("#uploadText").add("#newText").attr("href",uploadLocation);
+                    +"&projectID="+tpen.project.id;
+                    $("#uploadText").add("#newText").attr("href",uploadLocation);
                 </script>
 
                 <script>
@@ -579,6 +588,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     user = data.uname;
                     $("#trimCurrentUser").html(user);
                     $("#trimCurrentUser").attr("title",user);
+                    $("#ipr_user").html(user);
                     var theURL = window.location.href;
                     if (theURL.indexOf("projectID=") > -1){
                         var projID = getURLVariable("projectID");

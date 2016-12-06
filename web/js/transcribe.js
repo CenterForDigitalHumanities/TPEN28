@@ -901,6 +901,7 @@ function checkManuscriptPermissions(id){
     return permitted;
 }
 
+/* Hit the API to record this user has accepted the IPR agreement.  */
 function acceptIPR(folio){
     var url = "acceptIPR";
     var paramObj = {user:tpen.user.UID, folio:folio};
@@ -908,6 +909,7 @@ function acceptIPR(folio){
     $.post(url, params)
     .success(function(data){
         $("#iprAccept").fadeOut(1500);
+        $(".trexHead").fadeOut(1500);
         console.log("IPR accepted.");
     });
 }
@@ -990,10 +992,12 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 tpen.screen.textSize();
                 if(!ipr_agreement){
                     $('#iprAccept').show();
+                    $(".trexHead").show();
                 }
             }
             else{
                 $('#requestAccessContainer').show();
+                $(".trexHead").show();
                 //handle the background
                 var image2 = new Image();
                 $(image2)

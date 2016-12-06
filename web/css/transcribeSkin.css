@@ -883,6 +883,11 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 .closeBtn:hover{
     background: #FFF;
 }
+.closeBtn::after {
+    content: "close";
+    position: absolute;
+    right: 1.5em;
+}
 .popupTitle{
     margin: 0 auto;
     position: relative;

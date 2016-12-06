@@ -1362,23 +1362,20 @@ a.navigation {
     margin: 0 .25em;
     counter-increment: hotkey;
 }
+.character {
+    min-width: 2em;
+    line-height: 2;
+}
 .character::after {
     content: "CTRL+" counter(hotkey);
     position: absolute;
     color: #999;
     font-size: .75em;
-    top: -1.25em;
+    top: -.5em;
     left: 0;
     font-family: monospace;
     width: 100%;
     text-align: center;
-}
-.charactersPopin button:after {
-    content: '1';
-    position: absolute;
-    z-index: 2;
-    top: 0; right:0;
-    color:#DDD;
 }
 
 .manController{

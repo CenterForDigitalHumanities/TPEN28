@@ -1339,6 +1339,7 @@ a.navigation {
     display: none;
     padding:.25em;
     border:thin solid #999;
+    counter-reset: hotkey;
 }
 .specialCharactered{
     background-color: rgba(0,0,0,.25);
@@ -1352,6 +1353,16 @@ a.navigation {
     height: auto;
     min-width: 1em;
     margin: 0 .25em;
+    counter-increment: hotkey;
+}
+.character::after {
+    content: counter(hotkey);
+    position: absolute;
+    color: #999;
+    font-size: .75em;
+    top: -1.25em;
+    right: 2px;
+    font-family: monospace;
 }
 .charactersPopin button:after {
     content: '1';

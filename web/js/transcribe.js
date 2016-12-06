@@ -1306,7 +1306,7 @@ function linesToScreen(lines, tool){
     }
     // we want automatic updating for the lines these texareas correspond to.
     var typingTimer; //timer identifier
-    $("textarea")
+    $("textarea, .notes")
         .keydown(function(e){
         //user has begun typing, clear the wait for an update
         clearTimeout(typingTimer);

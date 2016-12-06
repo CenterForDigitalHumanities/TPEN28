@@ -402,6 +402,16 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             </div>
             <div id="trexHead"></div>
         </div>
+        <div id="iprAccept" class="ui-widget ui-corner-all ui-widget-content">
+            <h2 class="ui-widget-header ui-corner-all">Accept IPR Agreement</h2>
+            <p>Please read and accept the IPR agreement below to access <span id="ipr_who" class="loud"></span>. You only need to do this once.</p>
+            <div id="iprAgreement" class="notice"></div>
+                <span id="ipr_user" class="right small"></span>
+                <div class="clear right buttons">
+                <button id="accept_ipr" class="ui-button tpenButton" onclick="">I Agree</button>
+                <button class="ui-button tpenButton" onclick="document.location='index.jsp'">I do not agree</button>
+            </div>
+        </div>
         <div id="help">
             <div id="closeHelp" class="ui-icon-closethick ui-icon"></div>
                     <div id="helpPanels">
@@ -543,8 +553,8 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                         $("#linebreakNoTextContainer").show();
                     }
                     var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
-                +"&projectID="+tpen.project.id;
-        $("#uploadText").add("#newText").attr("href",uploadLocation);
+                    +"&projectID="+tpen.project.id;
+                    $("#uploadText").add("#newText").attr("href",uploadLocation);
                 </script>
 
                 <script>
@@ -579,6 +589,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     user = data.uname;
                     $("#trimCurrentUser").html(user);
                     $("#trimCurrentUser").attr("title",user);
+                    $("#ipr_user").html(user);
                     var theURL = window.location.href;
                     if (theURL.indexOf("projectID=") > -1){
                         var projID = getURLVariable("projectID");

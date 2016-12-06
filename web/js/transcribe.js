@@ -629,13 +629,7 @@ function loadTranscription(pid, tool){
         //TODO: allow users to include the p variable and load a page?
         var localProject = false;
         if (userTranscription.indexOf("/TPEN28/project") > - 1 || userTranscription.indexOf("/TPEN28/manifest") > - 1){
-//            if (userTranscription.indexOf("t-pen.org") > - 1){
-//                localProject = false;
-//                projectID = 0; //This way, it will not grab the t-pen project id.
-//            }
-//            else {
-            localProject = true; //Well, probably anyway.  I forsee this being an issue like with t-pen.
-            //TODO: this URL exists in more ways now (/manifest/PID/manifest.json)
+            localProject = true; 
             if(userTranscription.indexOf("/TPEN28/project") > - 1){
                 projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/project/') + 9));
             }

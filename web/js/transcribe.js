@@ -1112,6 +1112,7 @@ function linesToScreen(lines, tool){
         update = false; // TODO: Is this just a tpen.screen.liveTool check?
     }
     var thisContent = "";
+    var thisNote = "";
     var thisPlaceholder = "Enter a line transcription";
     var counter = -1;
     var colCounter = 0;
@@ -1263,13 +1264,16 @@ function linesToScreen(lines, tool){
             && line.resource['cnt:chars'] !== "") {
             thisContent = line.resource['cnt:chars'];
         }
+        if(line._tpen_note !== undefined){
+            thisNote = line._tpen_note;
+        }
         counter++;
         var newAnno = $('<div id="transcriptlet_' + counter + '" col="' + col
             + '" colLineNum="' + colCounter + '" lineID="' + counter
             + '" lineserverid="' + lineID + '" class="transcriptlet" data-answer="'
             + thisContent + '"><textarea class="theText" placeholder="' + thisPlaceholder + '">'
             + thisContent + '</textarea><textarea class="notes" placeholder="Line notes">'
-            + line._tpen_note||'' + '</textarea></div>');
+            + thisNote + '</textarea></div>');
         // 1000 is promised, 10 goes to %
         var left = parseFloat(XYWHarray[0]) / (10 * ratio);
         var top = parseFloat(XYWHarray[1]) / 10;
@@ -1306,7 +1310,7 @@ function linesToScreen(lines, tool){
     }
     // we want automatic updating for the lines these texareas correspond to.
     var typingTimer; //timer identifier
-    $("textarea, .notes")
+    $("textarea")
         .keydown(function(e){
         //user has begun typing, clear the wait for an update
         clearTimeout(typingTimer);
@@ -3086,7 +3090,7 @@ function updateLine(line, cleanup, updateList){
     var currentLineServerID = line.attr('lineserverid');
     var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
     var currentAnnoListID = tpen.screen.currentAnnoListID;
-    var lineNote = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("notes").val();
+    var lineNote = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".notes").val();
     var dbLine = {
         "@id" : currentLineServerID,
         "@type" : "oa:Annotation",
@@ -3126,7 +3130,8 @@ function updateLine(line, cleanup, updateList){
                     content : JSON.stringify({
                     "@id" : dbLine['@id'],			// URI to find it in the repo
                     "resource" : dbLine.resource,	// the transcription content
-                    "on" : dbLine.on 				// parsing update of xywh=
+                    "on" : dbLine.on,
+                    "_tpen_note": dbLine._tpen_note// parsing update of xywh=
             	})
             };
             if(updateList){
@@ -3134,6 +3139,8 @@ function updateLine(line, cleanup, updateList){
                 for(var i=0  ;i < currentAnnoList.length; i++){
                     if(currentAnnoList[i]["@id"] === dbLine['@id']){
                         currentAnnoList[i].on = dbLine.on;
+                        currentAnnoList[i].resource = dbLine.resource;
+                        currentAnnoList[i]._tpen_note = dbLine._tpen_note;
                     }
                     if(i===currentAnnoList.length -1){
                         tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;

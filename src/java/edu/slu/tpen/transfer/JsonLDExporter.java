@@ -168,6 +168,8 @@ public class JsonLDExporter {
                resources.add(lineAnnot);
                String note = rs.getString("comment");
                lineAnnot.put("_tpen_note", note);
+               int creatorID = rs.getInt("creator");
+               lineAnnot.put("_tpen_creator",creatorID);
 //               if (StringUtils.isNotBlank(note)) {
 //                  Map<String, Object> noteAnnot = new LinkedHashMap<>();
 //                  //noteAnnot.put("@id", projName + "/note/" + lineID);

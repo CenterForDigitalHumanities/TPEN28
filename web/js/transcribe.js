@@ -3223,6 +3223,7 @@ function saveNewLine(lineBefore, newLine){
         "otherContent":[],
         "forProject": tpen.manifest['@id'],
         "_tpen_note": "",
+        "_tpen_creator" : tpen.user.UID,
         "testing":"TPEN28"
     };
     var url = "saveNewTransLineServlet";

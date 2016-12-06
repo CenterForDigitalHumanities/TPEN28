@@ -164,6 +164,7 @@ public class CopyProjectAndAnnos extends HttpServlet {
                                       String note = rs.getString("comment");
                                       lineAnnot.put("_tpen_note",note);
                                       int creatorID = rs.getInt("creator");
+                                      lineAnnot.put("_tpen_creator",creatorID);
 //                                      if (StringUtils.isNotBlank(note)) { //could make the note an annotation...
 //                                         Map<String, Object> noteAnnot = new LinkedHashMap<>();
 //                                         //noteAnnot.put("@id", projName + "/note/" + lineID);

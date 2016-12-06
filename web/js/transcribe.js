@@ -2953,6 +2953,7 @@ function batchLineUpdate(linesInColumn){
         var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
         var currentLineServerID = line.attr('lineserverid');
         var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
+        var lineNote = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".notes").val();
         var dbLine = {
             "@id" : currentLineServerID,
             "@type" : "oa:Annotation",
@@ -2964,6 +2965,7 @@ function batchLineUpdate(linesInColumn){
             "on" : onCanvas + "#xywh=" + lineString,
             "otherContent" : [],
             "forProject": tpen.manifest['@id'],
+            "_tpen_note" : lineNote,
             "testing":"TPEN28"
         };
         var index = - 1;
@@ -3084,6 +3086,7 @@ function updateLine(line, cleanup, updateList){
     var currentLineServerID = line.attr('lineserverid');
     var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
     var currentAnnoListID = tpen.screen.currentAnnoListID;
+    var lineNote = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("notes").val();
     var dbLine = {
         "@id" : currentLineServerID,
         "@type" : "oa:Annotation",
@@ -3095,6 +3098,7 @@ function updateLine(line, cleanup, updateList){
         "on" : onCanvas + "#xywh=" + lineString,
         "otherContent" : [],
         "forProject": tpen.manifest['@id'],
+        "_tpen_note" : lineNote,
         "testing":"TPEN28"
     };
     if (!currentAnnoListID){
@@ -3218,6 +3222,7 @@ function saveNewLine(lineBefore, newLine){
         "on" : lineString,
         "otherContent":[],
         "forProject": tpen.manifest['@id'],
+        "_tpen_note": "",
         "testing":"TPEN28"
     };
     var url = "saveNewTransLineServlet";

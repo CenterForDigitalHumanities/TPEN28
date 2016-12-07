@@ -143,12 +143,10 @@ public class GetProjectTPENServlet extends HttpServlet {
                                 folio_obj.element("archive", archive);
                                 folio_obj.element("ipr_agreement", ipr_agreement);
                                 if(user.getUname().equals(controllerName) || forThisFolio.isRestricted()){ //
-                                    folio_obj.element("ipr", false); //should be true in this case because the check needs to pass
-                                    //true
+                                    folio_obj.element("ipr", true); //should be true in this case because the check needs to pass
                                 }
                                 else{
-                                    folio_obj.element("ipr", false);
-                                    //user.hasAcceptedIPR(folioNum)
+                                    folio_obj.element("ipr", user.hasAcceptedIPR(folioNum));
                                 }
                                 folios_array.set(x, folio_obj);
                                 JSONObject for_the_array = new JSONObject();

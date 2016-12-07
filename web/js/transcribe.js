@@ -2752,7 +2752,7 @@ function reparseColumns(){
                 updateLine($(myField).parent(), false, true);
             }
         }
-        else{
+        else{ //its an xml tag
             if (document.selection) {
                 if(fullTag === ""){
                     fullTag = "<"+myValue+"/>";
@@ -2782,6 +2782,7 @@ function reparseColumns(){
                         + myField.value.substring(endPos, myField.value.length);
                     myField.focus();
                     updateLine(myField.parent(), false, true);
+                    
     //                var insertLength = startPos + unescape(fullTag).length +
     //                    toWrap.length + 3 + closeTag.length;
                     //return "wrapped" + insertLength;              
@@ -2792,6 +2793,7 @@ function reparseColumns(){
                         + myField.value.substring(startPos, fullTag.length);
                     myField.focus();
                     updateLine(myField.parent(), false, true);
+                    closeTag(myValue, fullTag);
                     //return startPos+unescape(fullTag).length;
                 }
             } 
@@ -2799,8 +2801,10 @@ function reparseColumns(){
                 myField.value += unescape(fullTag);
                 myField.focus();
                 updateLine(myField.parent(), false, true);
+                closeTag(myValue, fullTag);
                 //return myField.length;
             }
+            
         }
         
     }

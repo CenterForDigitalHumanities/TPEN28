@@ -752,15 +752,15 @@ function loadTranscription(pid, tool){
                 }
             });
             //Build in the XML tag reminders for this project.
-            $.get("tagTracker",{
-                    listTags    : true,
-                    folio    : tpen.project.folios[canvasIndex].folioNumber,
-                    projectID   : projectID
-                }, function(tags){
-                if (tags !== undefined) {
-                    buildClosingTags(tags.split("\n"));
-                }
-            });
+//            $.get("tagTracker",{
+//                    listTags    : true,
+//                    folio    : tpen.project.folios[canvasIndex].folioNumber,
+//                    projectID   : projectID
+//                }, function(tags){
+//                if (tags !== undefined) {
+//                    buildClosingTags(tags.split("\n"));
+//                }
+//            });
         }
         else {
         //it is not a local project, so just grab the url that was input and request the manifest.
@@ -1331,7 +1331,8 @@ function linesToScreen(lines, tool){
                 counter: counter
         });
         colCounter++;
-        $("#transcriptletArea").append(newAnno);
+        //$("#transcriptletArea").append(newAnno);
+        $(".xmlClosingTags").before(newAnno);
         var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter
             + "' lineserverid='" + lineID + "' lineID='" + counter + "' class='lineColIndicator' style='left:"
             + left + "%; top:" + top + "%; width:" + width + "%; height:" + height + "%;'><div class='lineColOnLine' >"
@@ -1348,9 +1349,12 @@ function linesToScreen(lines, tool){
         $(".lineColIndicatorArea").append(lineColumnIndicator);
         $("#fullPageSplitCanvas").append(fullPageLineColumnIndicator);
     }
-    if (update && $(".transcriptlet").eq(0) !== undefined){
+    if (update && $(".transcriptlet").eq(0).length > 0){
         updatePresentation($(".transcriptlet").eq(0));
         activateTool(tool);
+    }
+    else{
+        console.warn("No lines found in a bad place...");
     }
     // we want automatic updating for the lines these texareas correspond to.
     var typingTimer; //timer identifier

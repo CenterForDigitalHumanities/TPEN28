@@ -216,7 +216,7 @@ function populatePreview(lines, pageLabel, currentPage, order){
         + pageLabel + '</span><br>No Lines</div>');
     }
     var num = 0;
-    //TODO: specificially find the xml tags and wrap them in a <span class='xmlPreview'> so that the UI can make a button to toggle the highlight on and off. 
+    //TODO: specificially find the xml tags and wrap them in a <span class='xmlPreview'> so that the UI can make a button to toggle the highlight on and off.
     for (var j = 0; j < lines.length; j++){
         num++;
         var col = letters[letterIndex];
@@ -270,7 +270,7 @@ function highlightTags(workingText){
             var close = workingText.indexOf("&gt;",beginTags[i]);
             if (close > -1){
                 endTags[i] = (close+4);
-            } 
+            }
             else {
                 beginTags[0] = null;
                 break;
@@ -279,7 +279,7 @@ function highlightTags(workingText){
             i++;
         }
         //use endTags because it might be 1 shorter than beginTags
-        var oeLen = endTags.length; 
+        var oeLen = endTags.length;
         encodedText = [workingText.substring(0, beginTags[0])];
         for (i=0;i<oeLen;i++){
             encodedText.push("<span class='previewTag'>",
@@ -445,6 +445,7 @@ function setTPENObjectData(data){
             console.warn("Not an admin");
         }
     });
+    initLinks(); // defined on transcription.html
 }
 
 /*
@@ -629,7 +630,7 @@ function loadTranscription(pid, tool){
         //TODO: allow users to include the p variable and load a page?
         var localProject = false;
         if (userTranscription.indexOf("/TPEN28/project") > - 1 || userTranscription.indexOf("/TPEN28/manifest") > - 1){
-            localProject = true; 
+            localProject = true;
             if(userTranscription.indexOf("/TPEN28/project") > - 1){
                 projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/project/') + 9));
             }
@@ -1369,7 +1370,7 @@ function linesToScreen(lines, tool){
                                 return false;
                             }
 
-                        });                                                
+                        });
                     }
                 }, 2000);
             }
@@ -2224,7 +2225,7 @@ function fullPage(){
             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
         }
     );
-        
+
     $("#imgBottom").hover(
         function(){
             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
@@ -2708,7 +2709,7 @@ function reparseColumns(){
 
 /**
      * Inserts value at cursor location.
-     * 
+     *
      * @param myField element to insert into
      * @param myValue value to insert
      * @return int end of inserted value position
@@ -2759,7 +2760,7 @@ function reparseColumns(){
                     // something is selected, wrap it instead
                     var toWrap = myField.value.substring(startPos,endPos);
                     closeTag = "</" + myValue +">";
-                    myField.value = 
+                    myField.value =
                           myField.value.substring(0, startPos)
                         + unescape(fullTag)
                         + toWrap
@@ -2769,8 +2770,8 @@ function reparseColumns(){
                     updateLine(myField.parent(), false, true);
     //                var insertLength = startPos + unescape(fullTag).length +
     //                    toWrap.length + 3 + closeTag.length;
-                    //return "wrapped" + insertLength;              
-                } 
+                    //return "wrapped" + insertLength;
+                }
                 else {
                     myField.value = myField.value.substring(0, startPos)
                         + unescape(fullTag)
@@ -2779,7 +2780,7 @@ function reparseColumns(){
                     updateLine(myField.parent(), false, true);
                     //return startPos+unescape(fullTag).length;
                 }
-            } 
+            }
             else {
                 myField.value += unescape(fullTag);
                 myField.focus();
@@ -2787,9 +2788,9 @@ function reparseColumns(){
                 //return myField.length;
             }
         }
-        
+
     }
-    
+
 function closeTag(tagName, fullTag){
     // Do not create for self-closing tags
     if (tagName.lastIndexOf("/") === (tagName.length - 1)) return false;

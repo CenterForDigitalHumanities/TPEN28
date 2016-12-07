@@ -169,6 +169,9 @@
                             XML Tags</button>
                     </div>
                     <div id="specialCharsFloat" class="flex-container flex-stretch specialCharactered">
+                        <a title="Edit Special Characters" class="pull-left lookLikeButtons editButtons" href="buttons.jsp">
+                            <i class="fa fa-edit"></i>
+                        </a>
                         <div class="closeBtn" onclick="$('#toggleChars').click();">
                             <i class="fa fa-close"></i>
                         </div>
@@ -176,6 +179,9 @@
                         </div>
                     </div>
                     <div id="xmlTagFloat" class="flex-container flex-stretch xmlTagged">
+                        <a title="Edit XML Tags" class="pull-left lookLikeButtons editXMLs" href="buttons.jsp">
+                            <i class="fa fa-edit"></i>
+                        </a>
                         <div class="closeBtn" onclick="$('#toggleXML').click();">
                             <i class="fa fa-close"></i>
                         </div>
@@ -412,7 +418,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 <a class="returnButton" href="index.jsp">Return Home</a>
             </div>
         </div>
-        
+
         <div id="iprAccept" class="ui-widget ui-corner-all ui-widget-content">
             <h2 class="ui-widget-header ui-corner-all">Accept IPR Agreement</h2>
             <p>Please read and accept the IPR agreement below to access <span id="ipr_who" class="loud"></span>. You only need to do this once.</p>
@@ -423,7 +429,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 <button class="ui-button tpenButton" onclick="document.location='index.jsp'">I do not agree</button>
             </div>
         </div>
-        
+
         <div id="help">
             <div id="closeHelp" class="ui-icon-closethick ui-icon"></div>
                     <div id="helpPanels">
@@ -564,9 +570,19 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                         $("#linebreakTextContainer").hide();
                         $("#linebreakNoTextContainer").show();
                     }
+                function initLinks(){
                     var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
                     +"&projectID="+tpen.project.id;
                     $("#uploadText").add("#newText").attr("href",uploadLocation);
+
+                    // add projectID to buttons.jsp links
+                    $(".editButtons").attr("href","buttons.jsp?p="
+                        + tpen.project.folios[tpen.screen.currentFolio].folioNumber
+                        + "&projectID=" + tpen.project.id+"#tabs-1");
+                    $(".editXMLs").attr("href","buttons.jsp?p="
+                        + tpen.project.folios[tpen.screen.currentFolio].folioNumber
+                        + "&projectID=" + tpen.project.id+"#tabs-2");
+                }
                 </script>
 
                 <script>
@@ -690,7 +706,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
         $("#xmlTagPopin").on("change", function(event){
             var val = escape($("#xmlTagPopin").val());
             var fullTag = $("#xmlTagPopin option:selected").attr("title");
-            var closingTag = ""; //How do i check for whether or not this has a value? 
+            var closingTag = ""; //How do i check for whether or not this has a value?
             insertAtCursor(val, closingTag, fullTag);
         });
 

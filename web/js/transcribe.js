@@ -2790,30 +2790,117 @@ function reparseColumns(){
         
     }
     
-function closeTag(tagName, fullTag){
-    // Do not create for self-closing tags
-    if (tagName.lastIndexOf("/") === (tagName.length - 1)) return false;
-    var tagLineID = tpen.screen.focusItem[1].attr("lineserverid");
-    var closeTag = document.createElement("div");
-    var tagID;
-    $.get("tagTracker", {
-        addTag      : true,
-        tag         : tagName,
-        projectID   : tpen.project.id,
-        line        : tagLineID
+     /**
+     * Adds closing tag button to textarea.
+     * 
+     * @param tagName text of tag for display in button
+     * @param fullTag title of tag for display in button
+     */
+    function closeTag(tagName, fullTag){
+        // Do not create for self-closing tags
+        if (tagName.lastIndexOf("/") === (tagName.length - 1)) return false;
+        var tagLineID = tpen.screen.focusItem[1].attr("lineserverid");
+        var closeTag = document.createElement("div");
+        var tagID;
+        $.get("tagTracker", {
+            addTag      : true,
+            tag         : tagName,
+            projectID   : tpen.project.id,
+            line        : tagLineID
+            }, function(data){
+                tagID = data;
+                $(closeTag).attr({
+                    "class"     :   "tags ui-corner-all right ui-state-error",
+                    "title"     :   unescape(fullTag),
+                    "data-line" :   tagLineID,
+                    "data-folio":   tpen.project.folios[tpen.screen.currentFolio].folioNumber,
+                    "data-tagID":   tagID
+                }).text("/" + tagName);
+                $(".xmlClosingTags").append(closeTag); //tpen.screen.focusItem[1].children(".xmlClosingTags").append(closeTag)
+            }
+        );
+    }
+    
+   
+    /**
+     * Removes tag from screen and database without inserting.
+     * 
+     * @param thisTag tag element
+     */
+     function destroyClosingTag (thisTag){
+        $(thisTag).fadeOut("normal",function(){
+            $(thisTag).remove();
+        });
+        this.removeClosingTag(thisTag);
+        return false;
+    }
+    /**
+     * Removes tag from screen and database without closing.
+     * 
+     * @param thisTag tag element
+     */
+     function removeClosingTag(thisTag){
+        var tagID = thisTag.getAttribute("data-tagID");
+        $.get("tagTracker",{
+            removeTag   : true,
+            id          : tagID
         }, function(data){
-            tagID = data;
-            $(closeTag).attr({
-                "class"     :   "tags ui-corner-all right ui-state-error",
-                "title"     :   unescape(fullTag),
-                "data-line" :   tagLineID,
-                //"data-folio":   folio,
-                "data-tagID":   tagID
-            }).text("/" + tagName);
-            tpen.screen.focusItem[1].children(".xmlClosingTags").append(closeTag);
+            if(!data){
+                alert("Database communication error.\n(openTagTracker.removeTag:removal "+tagID+")");
+            }
+        });
+    }
+    //make tags visible or invisible depending on location
+    /**
+     * Hides or shows closing tags based on origination.
+     */
+      function updateClosingTags(){
+        var tagIndex = 0;
+        var tagFolioLocation = 0;
+        var currentLineLocation = tpen.screen.focusItem[1].index();
+        var currentFolioLocation = folio;
+        tpen.screen.focusItem[1].find("div.tags").each(function(){
+            tagFolioLocation = parseInt($(this).attr("data-folio"),10);
+            tagIndex = $(".transcriptlet[data-lineid='"+$(this).attr("data-line")+"']").index();
+            if (tagFolioLocation == currentFolioLocation && tagIndex > currentLineLocation) {
+            // tag is from this page, but a later line
+                $(this).hide();
+            } else {
+            //tag is from a previous page or line    
+                $(this).show();
+            }
+        });
+    }
+    //use String[] from TagTracker.getTagsAfterFolio() to build the live tags list
+    /**
+     * Builds live tags list from string and insert closing buttons.
+     * Uses String[] from utils.openTagTracker.getTagsAfterFolio().
+     * 
+     * @param tags comma separated collection of live tags and location properties
+     */
+     function buildClosingTags(tags){
+        var thisTag;
+        var closingTags = [];
+        for (i=0;i<tags.length;i++){
+            thisTag = tags[i].split(",");
+            var tagID               =   thisTag[0];     
+            var tagName             =   thisTag[1];
+            var tagFolioLocation    =   thisTag[2];
+            var tagLineLocation     =   thisTag[3];
+            if (tagID>0){        //prevent the proliferation of bogus tags that did not input correctly
+                closingTags.push("<div class='tags ui-corner-all right ui-state-error");
+                if (tpen.project.folios[tpen.screen.currentFolio].folioNumber !== tagFolioLocation) {
+                    closingTags.push(" ui-state-disabled' title='(previous page) ");
+                } else {
+                    closingTags.push("' title='");
+                }
+                closingTags.push(tagName,"' data-line='",tagLineLocation,"' data-folio='",tagFolioLocation,"' data-tagID='",tagID,"'>","/",tagName,"</div>");
+            }    
         }
-    );
-}
+        $(".xmlClosingTags").html(closingTags.join(""));
+    }
+    
+
 
 function addchar(theChar, closingTag) {
     var closeTag = (closingTag === undefined) ? "" : closingTag;

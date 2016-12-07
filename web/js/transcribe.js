@@ -2739,7 +2739,7 @@ function reparseColumns(){
                 myField.focus();
                 sel = document.selection.createRange();
                 sel.text = unescape(myValue);
-                updateLine(myField.parent(), false, true);
+                //updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
             //MOZILLA/NETSCAPE support
@@ -2749,27 +2749,31 @@ function reparseColumns(){
                 currentValue = currentValue.slice(0, startPosChar) + unescape(myValue) + currentValue.slice(startPosChar);
                 myField.value = currentValue;
                 myField.focus();
-                updateLine($(myField).parent(), false, true);
+                //updateLine($(myField).parent(), false, true);
             }
         }
         else{ //its an xml tag
             if (document.selection) {
+                
                 if(fullTag === ""){
                     fullTag = "<"+myValue+"/>";
                 }
                 myField.focus();
                 sel = document.selection.createRange();
+                console.log("XML tag highlighted text 1.");
+                console.log(sel);
                 sel.text = unescape(fullTag);
-                updateLine(myField.parent(), false, true);
+                //updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
             //MOZILLA/NETSCAPE support
             else if (myField.selectionStart || myField.selectionStart == '0') {
+                console.log("XML tag highlighted text 2.    "+myField.selectionStart+"  "+myField.selectionEnd);
                 var startPos = myField.selectionStart;
                 var endPos = myField.selectionEnd;
                 if (startPos !== endPos) {
                     if(fullTag === ""){
-                        fullTag = "<"+myValue+"/>";
+                        fullTag = "<" + myValue +"/>";
                     }
                     // something is selected, wrap it instead
                     var toWrap = myField.value.substring(startPos,endPos);
@@ -2781,27 +2785,29 @@ function reparseColumns(){
                         + closeTag
                         + myField.value.substring(endPos, myField.value.length);
                     myField.focus();
-                    updateLine(myField.parent(), false, true);
+                   // updateLine($(myField).parent(), false, true);
                     
     //                var insertLength = startPos + unescape(fullTag).length +
     //                    toWrap.length + 3 + closeTag.length;
                     //return "wrapped" + insertLength;              
                 } 
                 else {
+                    console.log("The positions are the same, no highlighted text.");
                     myField.value = myField.value.substring(0, startPos)
                         + unescape(fullTag)
-                        + myField.value.substring(startPos, fullTag.length);
+                        + myField.value.substring(startPos + fullTag.length);
                     myField.focus();
-                    updateLine(myField.parent(), false, true);
-                    closeTag(myValue, fullTag);
+                    //updateLine($(myField).parent(), false, true);
+                    //closeTag(myValue, fullTag);
                     //return startPos+unescape(fullTag).length;
                 }
             } 
             else {
+                console.log("XML tag direct insert with no cursor position detected. .");
                 myField.value += unescape(fullTag);
                 myField.focus();
-                updateLine(myField.parent(), false, true);
-                closeTag(myValue, fullTag);
+                //updateLine($(myField).parent(), false, true);
+                //closeTag(myValue, fullTag);
                 //return myField.length;
             }
             

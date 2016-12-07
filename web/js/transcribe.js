@@ -751,6 +751,16 @@ function loadTranscription(pid, tool){
                     loadIframes();
                 }
             });
+            //Build in the XML tag reminders for this project.
+            $.get("tagTracker",{
+                    listTags    : true,
+                    folio    : tpen.project.folios[canvasIndex].folioNumber,
+                    projectID   : projectID
+                }, function(tags){
+                if (tags !== undefined) {
+                    buildClosingTags(tags.split("\n"));
+                }
+            });
         }
         else {
         //it is not a local project, so just grab the url that was input and request the manifest.
@@ -818,6 +828,7 @@ function loadTranscription(pid, tool){
         throw new Error("The input was invalid.");
     }
     scrubNav();
+
 }
 
 function activateTool(tool){

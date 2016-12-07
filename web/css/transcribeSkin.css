@@ -1014,7 +1014,13 @@ button.imgTool{
 .splitTool:hover, .imgTool:hover, .magnifyTool:hover, .folioJump:hover, .compareJump:hover{
     background-color: rgb(209,72,54);
 }
-
+.split header {
+    font-weight: bold;
+    margin: 1em -1em 0em;
+    text-align: center;
+    background: rgba(255,255,255,.4);
+    color: #2f5c9c;
+}
 .fullScreenTrans{
     width: 100%;
     position: relative;
@@ -1031,6 +1037,15 @@ button.imgTool{
     background-color: #CCC;
     color: #000;
 }
+
+kbd {
+    background: #CCC;
+    border-radius: 2px;
+    border: solid thin #333;
+    color: #666;
+    padding: 0 .5em;
+}
+
 #miradorInstance { background: black; width: 100%; position: relative; display:block; }
 
 

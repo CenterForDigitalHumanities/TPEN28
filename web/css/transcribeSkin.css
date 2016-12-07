@@ -215,10 +215,13 @@ body{
 .theText,#captions{
     font-family:'Junicode','Georgia', serif
 }
-.notes {
-    display: none;
-}
 
+#transWorkspace textarea.notes {
+    display:none;
+    max-width: 40%;
+    border: solid thin #AAA;
+    resize: none;
+}
 #imgTop,#imgBottom{
     display:block;
     height:35%;

@@ -327,38 +327,46 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
                 <img class="compareImage" folioNum="1"></img>
             </div>
-<div id='controlsSplit' class='split' style="width:200px;max-width:200px;">
+<div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
     <div class="fullScreenTrans"><i class="fa fa-reply"></i>Full Screen Transcription</div>
     <div style="padding:15px;">
-        <h3> Image Controls </h3>
-        <button which="grayscale" onclick="toggleFilter('grayscale');">Grayscale</button>
-        <button which="invert" onclick="toggleFilter('invert');">Invert</button>
+        <h4> Annotation Controls </h4>
+        <div class="lookLikeButtons block">
+            <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" checked="checked">
+        </div>
+        <div class="lookLikeButtons block">
+            <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
+        </div>
+        <button id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
+
+            <p>
+                Redraw the lines on this page
+    </p>
+        <button id="parsingBtn" title="Correct Page Parsing" class='block'>
+            <i class="fa fa-barcode fa-rotate-90"></i>
+            Correct Parsing</button>
+        
+        <h4> Image Controls </h4>
+        <button which="grayscale" onclick="toggleFilter('grayscale');" title="Grayscale">
+        <i class="fa fa-picture-o" style="color: #999;background: #DDD;border-radius: 2px;"></i>
+        Grayscale</button>
+        <button which="invert" onclick="toggleFilter('invert');">
+        <i class="fa fa-picture-o" style="background: #FFF;border-radius: 2px;color: #000;"></i>
+        Invert</button>
         <div id="imageToolSliders" class="imgTool">
-            Brightness
+            <i class="fa fa-sun-o"> Brightness
             <div id="brightnessSlider"></div>
-            Contrast
+            <i class="fa fa-adjust"> Contrast
             <div id="contrastSlider"></div>
         </div>
     </div>
-    <button id="moveImage" title="Move Transcription Image" class="block" onclick="startMoveImg();">
+<!--     <button id="moveImage" title="Move Transcription Image" class="block" onclick="startMoveImg();">
         <i class="fa fa-hand-paper-o"></i>
         Move Img</button>
     <p>
         Click to adjust the position of the main image.
-    </p>
-    <button id="parsingBtn" title="Correct Page Parsing" class='block'>
-        <i class="fa fa-barcode fa-rotate-90"></i>
-        Correct Parsing</button>
-    <p>
-        Click to draw or adjust the lines on page.
-    </p>
+    </p> -->
 
-    <div id="lineColControls">
-                        <h3 title="Control Drawn Line Settings" id="lineCtrlLabel">Line Control</h3>
-                        <span title="Toggle Entire Lines">Lines</span><input title="Toggle Lines" type="checkbox" onchange="toggleLineMarkers();" checked="checked"><br>
-                        <span title="Toggle Lines' Indicator">Line #s</span><input type="checkbox" onchange="toggleLineCol();" checked="checked">
-                        <button id="markerColors" onclick="markerColors();">Line Color</button>
-                    </div>
 
 </div>
             <div id="previewSplit" class="split">

@@ -1324,11 +1324,12 @@ function linesToScreen(lines, tool){
             thisNote = line._tpen_note;
         }
         counter++;
+        var htmlSafeText = $("<div/>").text(thisContent).html();
         var newAnno = $('<div id="transcriptlet_' + counter + '" col="' + col
             + '" colLineNum="' + colCounter + '" lineID="' + counter
             + '" lineserverid="' + lineID + '" class="transcriptlet" data-answer="'
-            + thisContent + '"><textarea class="theText" placeholder="' + thisPlaceholder + '">'
-            + thisContent + '</textarea><textarea class="notes" placeholder="Line notes">'
+            + escape(thisContent) + '"><textarea class="theText" placeholder="' + thisPlaceholder + '">'
+            + htmlSafeText + '</textarea><textarea class="notes" placeholder="Line notes">'
             + thisNote + '</textarea></div>');
         // 1000 is promised, 10 goes to %
         var left = parseFloat(XYWHarray[0]) / (10 * ratio);
@@ -1382,7 +1383,6 @@ function linesToScreen(lines, tool){
             if(e.which !== 18){
                 typingTimer = setTimeout(function(){
                     console.log("timer update");
-                    var currentFolio = tpen.screen.currentFolio;
                     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
                     var idToCheckFor = lineToUpdate.attr("lineserverid");
                     var newText = lineToUpdate.find(".theText").val();
@@ -1422,9 +1422,9 @@ function updatePresentation(transcriptlet) {
             if (transcriptletBefore.length > 0){ }
             else{ }
             var prevLineCol = transcriptletBefore.attr("col");
-            var prevLineText = transcriptletBefore.attr("data-answer");
+            var prevLineText = unescape(transcriptletBefore.attr("data-answer"));
             $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","");
-            $("#captionsText").html((prevLineText.length && prevLineText) || "This line is not transcribed.");
+            $("#captionsText").text((prevLineText.length && prevLineText) || "This line is not transcribed.");
         }
         else { //this is a problem
             $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
@@ -2924,7 +2924,7 @@ function reparseColumns(){
             var tagLineLocation     =   thisTag[3];
             if (tagID>0){        //prevent the proliferation of bogus tags that did not input correctly
                 closingTags.push("<div class='tags ui-corner-all right ui-state-error");
-                if (tpen.project.folios[tpen.screen.currentFolio].folioNumber !== tagFolioLocation) {
+                if (parseInt(tpen.project.folios[tpen.screen.currentFolio].folioNumber) !== parseInt(tagFolioLocation)) {
                     closingTags.push(" ui-state-disabled' title='(previous page) ");
                 } else {
                     closingTags.push("' title='");
@@ -2933,31 +2933,29 @@ function reparseColumns(){
             }    
         }
         $(".xmlClosingTags").html(closingTags.join(""));
-         $(".tags").click(function(event){
-                console.log("click a .tag");
-                if(event.target != this){return true;}
-                makeUnsaved();
-                addchar("</" + $(this).text() + ">");
-                destroyClosingTag(this);
-            });
-            $(".tags").mouseenter(function(){
-                console.log("mouse into a .tag");
-                $(this).css({
-                    "padding": "4px",
-                    "margin": "-3px -4px -2px -3px",
-                    "z-index": 21
-                })
-                .append("<span onclick='destroyClosingTag(this.parentNode);' class='destroyTag ui-icon ui-icon-closethick right'></span>");
-            });
-            $(".tags").mouseleave(function(){
-                console.log("mouse out of a .tag");
-                $(this).css({
-                    "padding": "1px",
-                    "margin": "0px -1px 1px 0px",
-                    "z-index": 20
-                })
-                .find(".destroyTag").remove();
-            });
+        $(".tags").click(function(event){
+            //we could detect if tag is in this line.
+            if(event.target != this){return true;}
+            makeUnsaved();
+            addchar("</" + $(this).text() + ">");
+            destroyClosingTag(this);
+        });
+        $(".tags").mouseenter(function(){
+            $(this).css({
+                "padding": "4px",
+                "margin": "-3px -4px -2px -3px",
+                "z-index": 21
+            })
+            .append("<span onclick='destroyClosingTag(this.parentNode);' class='destroyTag ui-icon ui-icon-closethick right'></span>");
+        });
+        $(".tags").mouseleave(function(){
+            $(this).css({
+                "padding": "1px",
+                "margin": "0px -1px 1px 0px",
+                "z-index": 20
+            })
+            .find(".destroyTag").remove();
+        });
     }
     
 

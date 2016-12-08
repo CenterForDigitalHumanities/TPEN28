@@ -927,7 +927,6 @@ function acceptIPR(folio){
     .success(function(data){
         $("#iprAccept").fadeOut(1500);
         $(".trexHead").fadeOut(1500);
-        console.log("IPR accepted.");
     });
 }
 
@@ -2797,13 +2796,13 @@ function reparseColumns(){
                 currentValue = currentValue.slice(0, startPosChar) + unescape(myValue) + currentValue.slice(startPosChar);
                 myField.value = currentValue;
                 myField.focus();
-                //updateLine($(myField).parent(), false, true);
+                updateLine($(myField).parent(), false, true);
             }
         }
         else{ //its an xml tag
             if (document.selection) {
                 if(fullTag === ""){
-                    fullTag = "<"+myValue+"/>";
+                    fullTag = "</"+myValue+">";
                 }
                 myField.focus();
                 sel = document.selection.createRange();
@@ -2936,8 +2935,8 @@ function reparseColumns(){
         $(".tags").click(function(event){
             //we could detect if tag is in this line.
             if(event.target != this){return true;}
-            makeUnsaved();
-            addchar("</" + $(this).text() + ">");
+            //makeUnsaved();
+            addchar("<" + $(this).text() + ">"); //there's an extra / somehow...
             destroyClosingTag(this);
         });
         $(".tags").mouseenter(function(){

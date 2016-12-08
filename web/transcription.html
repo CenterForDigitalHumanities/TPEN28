@@ -121,9 +121,10 @@
                 <div id="transWorkspace">
                     <div title="Slide Workspace" class="workspaceHandle slideHandleLeft"><i class="fa fa-bars"></i><i class="fa fa-arrows-v"></i></div><div title="Slide Workspace" class="workspaceHandle slideHandleRight"><i class="fa fa-arrows-v"></i><i class="fa fa-bars"></i></div>
                     <div class="flex-container flex-stretch">
-                        <div class="flex-bookend"></div>
+                        <div class="flex-bookend">
+                            <div title="Previous Line" class="pull-right" id="prevColLine"></div>
+                        </div>
                         <div class="flex-stretch">
-                            <div title="Previous Line" id="prevColLine"></div>
                         </div>
                         <div id="captions" class="flex-wide">
                             <div id="captionsText"></div>
@@ -132,22 +133,18 @@
                     </div>
                     <div class="flex-container flex-stretch">
                         <div class="flex-bookend">
-                            <button id="prevLine" title="Previous Line" onclick="previousTranscriptlet();">
-                                <i class="fa fa-chevron-left fa-2x"></i><br>
-                                Previous Line
+                            <button id="prevLine" class="pull-right" title="Previous Line" onclick="previousTranscriptlet();">
+                                <i class="fa fa-chevron-left"></i> Previous
                             </button>
-                        </div>
-                        <div class="flex-stretch">
                             <div title="Current Line" id="currentColLine"></div>
-                            <button id='toggleNotes' role="button" onclick="$('.notes').fadeToggle('slow')" title='Toggle Notes'>
-                                <i class="fa fa-comment"></i>
-                            </button>
                         </div>
                         <div id="transcriptletArea" class="flex-wide"></div>
                         <div class="flex-bookend">
-                            <button id="nextLine" title="Next Line" onclick="nextTranscriptlet();">
-                                <i class="fa fa-chevron-right fa-2x"></i><br>
-                                Next Line
+                            <button class="pull-left" id="nextLine" title="Next Line" onclick="nextTranscriptlet();">
+                                Next <i class="fa fa-chevron-right"></i>
+                            </button>
+                            <button class="pull-left" id='toggleNotes' role="button" onclick="$('.notes').fadeToggle('slow')" title='Toggle Notes'>
+                                Notes <i class="fa fa-comment"></i>
                             </button>
                         </div>
                     </div>
@@ -412,7 +409,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 <a class="returnButton" href="index.jsp">Return Home</a>
             </div>
         </div>
-        
+
         <div id="iprAccept" class="ui-widget ui-corner-all ui-widget-content">
             <h2 class="ui-widget-header ui-corner-all">Accept IPR Agreement</h2>
             <p>Please read and accept the IPR agreement below to access <span id="ipr_who" class="loud"></span>. You only need to do this once.</p>
@@ -423,7 +420,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 <button class="ui-button tpenButton" onclick="document.location='index.jsp'">I do not agree</button>
             </div>
         </div>
-        
+
         <div id="help">
             <div id="closeHelp" class="ui-icon-closethick ui-icon"></div>
                     <div id="helpPanels">
@@ -690,7 +687,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
         $("#xmlTagPopin").on("change", function(event){
             var val = escape($("#xmlTagPopin").val());
             var fullTag = $("#xmlTagPopin option:selected").attr("title");
-            var closingTag = ""; //How do i check for whether or not this has a value? 
+            var closingTag = ""; //How do i check for whether or not this has a value?
             insertAtCursor(val, closingTag, fullTag);
         });
 

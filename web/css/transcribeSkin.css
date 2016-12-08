@@ -255,7 +255,7 @@ body{
     width: auto;
     z-index: 3;
     height: auto;
-    padding: 7px;
+    padding: .25em;
 }
 .flex-container{
     display: flex;
@@ -269,7 +269,6 @@ body{
 .flex-wide, .flex-wide div {
     display:flex;
     flex-grow:8;
-    padding-left: .25em;
 }
 .flex-stretch{
     flex-align: stretch;
@@ -377,6 +376,9 @@ max-width: 10em;
     visibility: visible;
     max-width: 40em;
 }
+div#transcriptletArea {
+    margin-bottom: 0.25em;
+}
 #pageLabel{
     top: 3px !important;
     position: relative;
@@ -408,31 +410,19 @@ max-width: 10em;
     width: auto;
     height: 0px;
 }
-#toggleNotes{
-    border-radius: 4px;
-    width: 30px;
-    text-align: center;
-    background: #999;
-}
 
 #prevColLine, #currentColLine{
-    border-radius: 4px;
-    height: 30px;
-    width: 30px;
+    border-radius: 2px;
     text-align: center;
-    line-height: 30px;
-    cursor: default;
     color: #002a5c;
     font-weight: bold;
-    font-size: 11pt;
     position: relative;
     display: block; /* We may still want these, but they are wildly out of position right now. */
-    opacity: .5;
+    padding:.25em;
+    float: right;
 }
-#prevColLine:hover, #currentColLine:hover{
-    opacity: 1;
-}
-#captionsColLine{
+
+#captionsColLine {
     display: inline-block;
     height: 30px;
     width: 30px;
@@ -445,11 +435,13 @@ max-width: 10em;
     position: relative;
     color:wheat;
 }
-#prevColLine{
+#prevColLine {
     background-color: wheat;
 }
-#currentColLine{
-    background-color: rgba(0,0,0,.15);
+#currentColLine {
+    background: #ffebb9;
+    border: 1px solid #69acc9;
+    color: #226683;
 }
 #zoomDiv {
     display: none;
@@ -469,7 +461,7 @@ max-width: 10em;
     z-index: 4;
 }
 
-#pageLabel1{
+#pageLabel1 {
     left: 35%;
     position: absolute;
 }
@@ -1130,28 +1122,47 @@ kbd {
 .showMe:hover{
     border: 1px solid orangered;
 }
-.hideme{
+.hideme {
     position: relative;
     display: none;
 }
-.toolLinks{
+.toolLinks {
     position: relative;
     width: 100%;
     background-color: rgba(1,51,90,.5);
     padding: 5px 0px;
 }
-#prevLine,#nextLine{
+#prevLine,#nextLine,#toggleNotes {
     position: relative;
     height:auto;
-    background: #999;
-    color: #333;
+    border: 1px solid #69acc9;
+    background: #a8d2e4;
+    color: #226683;
     transition: .5s;
+    line-height: 2;
+    white-space: nowrap;
+    width:9em;
+    padding: 0 .5em;
+    margin: .25em 0;
+    left: -3.5em;
+    text-align: right;
 }
-#prevLine:hover,#nextLine:hover{
-    box-shadow: 0 0 3px rgba(0,0,0,.5);
-    background: #BBB;
+#toggleNotes {
+    margin-top:0;
 }
-#pageControls{
+#prevLine {
+    right: -3.5em; left:auto;
+    text-align: left;
+}
+#prevLine:hover,#nextLine:hover,#toggleNotes:hover {
+    box-shadow: 1px 1px 2px rgba(0,0,0,.5);
+    background: #c8f2f4;
+    left:-1.5em;
+}
+#prevLine:hover {
+    left:auto;right:-1.5em;
+}
+#pageControls {
     margin-right: 2px;
 }
 #pageControls,#lineControls{
@@ -1392,7 +1403,7 @@ a.navigation {
     position: absolute;
     color: #999;
     font-size: .75em;
-    top: -.5em;
+    bottom: -.25em;
     left: 0;
     font-family: monospace;
     width: 100%;

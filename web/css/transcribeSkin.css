@@ -265,6 +265,7 @@ body{
     width: 4em;
     text-align: center;
     padding: 0 1em;
+    position: relative;
 }
 .flex-wide, .flex-wide div {
     display:flex;

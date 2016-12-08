@@ -216,7 +216,7 @@ function populatePreview(lines, pageLabel, currentPage, order){
         + pageLabel + '</span><br>No Lines</div>');
     }
     var num = 0;
-    //TODO: specificially find the xml tags and wrap them in a <span class='xmlPreview'> so that the UI can make a button to toggle the highlight on and off.
+    //TODO: specificially find the xml tags and wrap them in a <span class='xmlPreview'> so that the UI can make a button to toggle the highlight on and off. 
     for (var j = 0; j < lines.length; j++){
         num++;
         var col = letters[letterIndex];
@@ -270,7 +270,7 @@ function highlightTags(workingText){
             var close = workingText.indexOf("&gt;",beginTags[i]);
             if (close > -1){
                 endTags[i] = (close+4);
-            }
+            } 
             else {
                 beginTags[0] = null;
                 break;
@@ -279,7 +279,7 @@ function highlightTags(workingText){
             i++;
         }
         //use endTags because it might be 1 shorter than beginTags
-        var oeLen = endTags.length;
+        var oeLen = endTags.length; 
         encodedText = [workingText.substring(0, beginTags[0])];
         for (i=0;i<oeLen;i++){
             encodedText.push("<span class='previewTag'>",
@@ -345,7 +345,7 @@ function populateXML(){
                 fullTag = "<"+tagName+" "+fullTag+">";
             }
             var description = xmlTagObject.description;
-            newTagBtn = "<div onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\" class='xmlTag lookLikeButtons' title='" + fullTag + "'>" + description + "</div>"; //onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\">
+            newTagBtn = "<div onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "',false);\" class='xmlTag lookLikeButtons' title='" + fullTag + "'>" + description + "</div>"; //onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\">
             var button = $(newTagBtn);
             $(".xmlTags").append(button);
         }
@@ -445,7 +445,6 @@ function setTPENObjectData(data){
             console.warn("Not an admin");
         }
     });
-    initLinks(); // defined on transcription.html
 }
 
 /*
@@ -562,6 +561,18 @@ function loadTranscription(pid, tool){
                     if (tpen.project.xml) {
                         populateXML();
                     }
+                    if(tpen.project.folios.length > 0){
+                        $.get("tagTracker",{
+                            listTags    : true,
+                            folio    : tpen.project.folios[canvasIndex].folioNumber,
+                            projectID   : projectID
+                        }, function(tags){
+                            if (tags !== undefined) {
+                                buildClosingTags(tags.split("\n"));
+                            }
+                        });
+                    }
+                    
             },
             error: function(jqXHR, error, errorThrown) {
                 if (jqXHR.status && jqXHR.status === 404){
@@ -577,7 +588,7 @@ function loadTranscription(pid, tool){
                 loadIframes();
             }
         });
-
+        
     }
     else if (isJSON(userTranscription)){
         tpen.manifest = userTranscription = JSON.parse(userTranscription);
@@ -630,7 +641,7 @@ function loadTranscription(pid, tool){
         //TODO: allow users to include the p variable and load a page?
         var localProject = false;
         if (userTranscription.indexOf("/TPEN28/project") > - 1 || userTranscription.indexOf("/TPEN28/manifest") > - 1){
-            localProject = true;
+            localProject = true; 
             if(userTranscription.indexOf("/TPEN28/project") > - 1){
                 projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/project/') + 9));
             }
@@ -752,6 +763,16 @@ function loadTranscription(pid, tool){
                     loadIframes();
                 }
             });
+            //Build in the XML tag reminders for this project.
+            $.get("tagTracker",{
+                    listTags    : true,
+                    folio    : tpen.project.folios[canvasIndex].folioNumber,
+                    projectID   : projectID
+                }, function(tags){
+                if (tags !== undefined) {
+                    buildClosingTags(tags.split("\n"));
+                }
+            });
         }
         else {
         //it is not a local project, so just grab the url that was input and request the manifest.
@@ -819,6 +840,7 @@ function loadTranscription(pid, tool){
         throw new Error("The input was invalid.");
     }
     scrubNav();
+
 }
 
 function activateTool(tool){
@@ -905,7 +927,6 @@ function acceptIPR(folio){
     .success(function(data){
         $("#iprAccept").fadeOut(1500);
         $(".trexHead").fadeOut(1500);
-        console.log("IPR accepted.");
     });
 }
 
@@ -1302,11 +1323,12 @@ function linesToScreen(lines, tool){
             thisNote = line._tpen_note;
         }
         counter++;
+        var htmlSafeText = $("<div/>").text(thisContent).html();
         var newAnno = $('<div id="transcriptlet_' + counter + '" col="' + col
             + '" colLineNum="' + colCounter + '" lineID="' + counter
             + '" lineserverid="' + lineID + '" class="transcriptlet" data-answer="'
-            + thisContent + '"><textarea class="theText" placeholder="' + thisPlaceholder + '">'
-            + thisContent + '</textarea><textarea class="notes" placeholder="Line notes">'
+            + escape(thisContent) + '"><textarea class="theText" placeholder="' + thisPlaceholder + '">'
+            + htmlSafeText + '</textarea><textarea class="notes" placeholder="Line notes">'
             + thisNote + '</textarea></div>');
         // 1000 is promised, 10 goes to %
         var left = parseFloat(XYWHarray[0]) / (10 * ratio);
@@ -1321,7 +1343,8 @@ function linesToScreen(lines, tool){
                 counter: counter
         });
         colCounter++;
-        $("#transcriptletArea").append(newAnno);
+        //$("#transcriptletArea").append(newAnno);
+        $(".xmlClosingTags").before(newAnno);
         var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter
             + "' lineserverid='" + lineID + "' lineID='" + counter + "' class='lineColIndicator' style='left:"
             + left + "%; top:" + top + "%; width:" + width + "%; height:" + height + "%;'><div class='lineColOnLine' >"
@@ -1338,9 +1361,12 @@ function linesToScreen(lines, tool){
         $(".lineColIndicatorArea").append(lineColumnIndicator);
         $("#fullPageSplitCanvas").append(fullPageLineColumnIndicator);
     }
-    if (update && $(".transcriptlet").eq(0) !== undefined){
+    if (update && $(".transcriptlet").eq(0).length > 0){
         updatePresentation($(".transcriptlet").eq(0));
         activateTool(tool);
+    }
+    else{
+        console.warn("No lines found in a bad place...");
     }
     // we want automatic updating for the lines these texareas correspond to.
     var typingTimer; //timer identifier
@@ -1356,7 +1382,6 @@ function linesToScreen(lines, tool){
             if(e.which !== 18){
                 typingTimer = setTimeout(function(){
                     console.log("timer update");
-                    var currentFolio = tpen.screen.currentFolio;
                     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
                     var idToCheckFor = lineToUpdate.attr("lineserverid");
                     var newText = lineToUpdate.find(".theText").val();
@@ -1370,7 +1395,7 @@ function linesToScreen(lines, tool){
                                 return false;
                             }
 
-                        });
+                        });                                                
                     }
                 }, 2000);
             }
@@ -1396,9 +1421,9 @@ function updatePresentation(transcriptlet) {
             if (transcriptletBefore.length > 0){ }
             else{ }
             var prevLineCol = transcriptletBefore.attr("col");
-            var prevLineText = transcriptletBefore.attr("data-answer");
+            var prevLineText = unescape(transcriptletBefore.attr("data-answer"));
             $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","");
-            $("#captionsText").html((prevLineText.length && prevLineText) || "This line is not transcribed.");
+            $("#captionsText").text((prevLineText.length && prevLineText) || "This line is not transcribed.");
         }
         else { //this is a problem
             $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
@@ -2225,7 +2250,7 @@ function fullPage(){
             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
         }
     );
-
+        
     $("#imgBottom").hover(
         function(){
             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
@@ -2707,9 +2732,45 @@ function reparseColumns(){
     });
 }
 
+     /**
+     * Adds closing tag button to textarea.
+     * 
+     * @param tagName text of tag for display in button
+     * @param fullTag title of tag for display in button
+     * 
+     * Function named as closeTag made the error:
+     * transcribe.js:2831 Uncaught TypeError: closeTag is not a function(…)
+     * so I had to rename it.
+     */
+    function closeAddedTag(tagName, fullTag){
+        // Do not create for self-closing tags
+        if (tagName.lastIndexOf("/") === (tagName.length - 1)) return false;
+        var tagLineID = tpen.screen.focusItem[1].attr("lineserverid");
+        var closeTag = document.createElement("div");
+        var tagID;
+        $.get("tagTracker", {
+            addTag      : true,
+            tag         : tagName,
+            projectID   : tpen.project.id,
+            line        : tagLineID,
+            folio       : tpen.project.folios[tpen.screen.currentFolio].folioNumber
+            }, function(data){
+                tagID = data;
+                $(closeTag).attr({
+                    "class"     :   "tags ui-corner-all right ui-state-error",
+                    "title"     :   unescape(fullTag),
+                    "data-line" :   tagLineID,
+                    "data-folio":   tpen.project.folios[tpen.screen.currentFolio].folioNumber,
+                    "data-tagID":   tagID
+                }).text("/" + tagName);
+                $(".xmlClosingTags").append(closeTag); //tpen.screen.focusItem[1].children(".xmlClosingTags").append(closeTag)
+            }
+        );
+    }
+
 /**
      * Inserts value at cursor location.
-     *
+     * 
      * @param myField element to insert into
      * @param myValue value to insert
      * @return int end of inserted value position
@@ -2725,7 +2786,7 @@ function reparseColumns(){
                 myField.focus();
                 sel = document.selection.createRange();
                 sel.text = unescape(myValue);
-                updateLine(myField.parent(), false, true);
+                updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
             //MOZILLA/NETSCAPE support
@@ -2738,15 +2799,15 @@ function reparseColumns(){
                 updateLine($(myField).parent(), false, true);
             }
         }
-        else{
+        else{ //its an xml tag
             if (document.selection) {
                 if(fullTag === ""){
-                    fullTag = "<"+myValue+"/>";
+                    fullTag = "</"+myValue+">";
                 }
                 myField.focus();
                 sel = document.selection.createRange();
                 sel.text = unescape(fullTag);
-                updateLine(myField.parent(), false, true);
+                updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
             //MOZILLA/NETSCAPE support
@@ -2755,66 +2816,148 @@ function reparseColumns(){
                 var endPos = myField.selectionEnd;
                 if (startPos !== endPos) {
                     if(fullTag === ""){
-                        fullTag = "<"+myValue+"/>";
+                        fullTag = "</" + myValue +">";
                     }
                     // something is selected, wrap it instead
                     var toWrap = myField.value.substring(startPos,endPos);
                     closeTag = "</" + myValue +">";
-                    myField.value =
+                    myField.value = 
                           myField.value.substring(0, startPos)
                         + unescape(fullTag)
                         + toWrap
                         + closeTag
                         + myField.value.substring(endPos, myField.value.length);
                     myField.focus();
-                    updateLine(myField.parent(), false, true);
+                    updateLine($(myField).parent(), false, true);
+                    
     //                var insertLength = startPos + unescape(fullTag).length +
     //                    toWrap.length + 3 + closeTag.length;
-                    //return "wrapped" + insertLength;
-                }
+                    //return "wrapped" + insertLength;              
+                } 
                 else {
                     myField.value = myField.value.substring(0, startPos)
                         + unescape(fullTag)
-                        + myField.value.substring(startPos, fullTag.length);
+                        + myField.value.substring(startPos);
                     myField.focus();
-                    updateLine(myField.parent(), false, true);
+                    updateLine($(myField).parent(), false, true);
+                    closeAddedTag(myValue, fullTag);
                     //return startPos+unescape(fullTag).length;
                 }
-            }
+            } 
             else {
                 myField.value += unescape(fullTag);
                 myField.focus();
-                updateLine(myField.parent(), false, true);
+                updateLine($(myField).parent(), false, true);
+                closeAddedTag(myValue, fullTag);
                 //return myField.length;
             }
+            
         }
-
+        
+    }  
+   
+    /**
+     * Removes tag from screen and database without inserting.
+     * 
+     * @param thisTag tag element
+     */
+     function destroyClosingTag (thisTag){
+        $(thisTag).fadeOut("normal",function(){
+            $(thisTag).remove();
+        });
+        this.removeClosingTag(thisTag);
+        return false;
     }
-
-function closeTag(tagName, fullTag){
-    // Do not create for self-closing tags
-    if (tagName.lastIndexOf("/") === (tagName.length - 1)) return false;
-    var tagLineID = tpen.screen.focusItem[1].attr("lineserverid");
-    var closeTag = document.createElement("div");
-    var tagID;
-    $.get("tagTracker", {
-        addTag      : true,
-        tag         : tagName,
-        projectID   : tpen.project.id,
-        line        : tagLineID
+    /**
+     * Removes tag from screen and database without closing.
+     * 
+     * @param thisTag tag element
+     */
+     function removeClosingTag(thisTag){
+        var tagID = thisTag.getAttribute("data-tagID");
+        $.get("tagTracker",{
+            removeTag   : true,
+            id          : tagID
         }, function(data){
-            tagID = data;
-            $(closeTag).attr({
-                "class"     :   "tags ui-corner-all right ui-state-error",
-                "title"     :   unescape(fullTag),
-                "data-line" :   tagLineID,
-                //"data-folio":   folio,
-                "data-tagID":   tagID
-            }).text("/" + tagName);
-            tpen.screen.focusItem[1].children(".xmlClosingTags").append(closeTag);
+            if(!data){
+                alert("Database communication error.\n(openTagTracker.removeTag:removal "+tagID+")");
+            }
+        });
+    }
+    //make tags visible or invisible depending on location
+    /**
+     * Hides or shows closing tags based on origination.
+     */
+      function updateClosingTags(){
+        var tagIndex = 0;
+        var tagFolioLocation = 0;
+        var currentLineLocation = tpen.screen.focusItem[1].index();
+        var currentFolioLocation = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
+        tpen.screen.focusItem[1].find("div.tags").each(function(){
+            tagFolioLocation = parseInt($(this).attr("data-folio"),10);
+            tagIndex = $(".transcriptlet[data-lineid='"+$(this).attr("data-line")+"']").index();
+            if (tagFolioLocation == currentFolioLocation && tagIndex > currentLineLocation) {
+            // tag is from this page, but a later line
+                $(this).hide();
+            } else {
+            //tag is from a previous page or line    
+                $(this).show();
+            }
+        });
+    }
+    //use String[] from TagTracker.getTagsAfterFolio() to build the live tags list
+    /**
+     * Builds live tags list from string and insert closing buttons.
+     * Uses String[] from utils.openTagTracker.getTagsAfterFolio().
+     * 
+     * @param tags comma separated collection of live tags and location properties
+     */
+     function buildClosingTags(tags){
+        var thisTag;
+        var closingTags = [];
+        for (var i=0;i<tags.length;i++){
+            thisTag = tags[i].split(",");
+            var tagID               =   thisTag[0];     
+            var tagName             =   thisTag[1];
+            var tagFolioLocation    =   thisTag[2];
+            var tagLineLocation     =   thisTag[3];
+            if (tagID>0){        //prevent the proliferation of bogus tags that did not input correctly
+                closingTags.push("<div class='tags ui-corner-all right ui-state-error");
+                if (parseInt(tpen.project.folios[tpen.screen.currentFolio].folioNumber) !== parseInt(tagFolioLocation)) {
+                    closingTags.push(" ui-state-disabled' title='(previous page) ");
+                } else {
+                    closingTags.push("' title='");
+                }
+                closingTags.push(tagName,"' data-line='",tagLineLocation,"' data-folio='",tagFolioLocation,"' data-tagID='",tagID,"'>","/",tagName,"</div>");
+            }    
         }
-    );
-}
+        $(".xmlClosingTags").html(closingTags.join(""));
+        $(".tags").click(function(event){
+            //we could detect if tag is in this line.
+            if(event.target != this){return true;}
+            //makeUnsaved();
+            addchar("<" + $(this).text() + ">"); //there's an extra / somehow...
+            destroyClosingTag(this);
+        });
+        $(".tags").mouseenter(function(){
+            $(this).css({
+                "padding": "4px",
+                "margin": "-3px -4px -2px -3px",
+                "z-index": 21
+            })
+            .append("<span onclick='destroyClosingTag(this.parentNode);' class='destroyTag ui-icon ui-icon-closethick right'></span>");
+        });
+        $(".tags").mouseleave(function(){
+            $(this).css({
+                "padding": "1px",
+                "margin": "0px -1px 1px 0px",
+                "z-index": 20
+            })
+            .find(".destroyTag").remove();
+        });
+    }
+    
+
 
 function addchar(theChar, closingTag) {
     var closeTag = (closingTag === undefined) ? "" : closingTag;
@@ -3201,6 +3344,7 @@ function updateLine(line, cleanup, updateList){
     }
     //I am not sure if cleanup is ever true
     if (cleanup) cleanupTranscriptlets(true);
+    updateClosingTags();
 }
 
 function saveNewLine(lineBefore, newLine){

@@ -626,7 +626,14 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
                 box-shadow:0 0 5px #A64129;}
 #abbreviations select {width:100%;}
 iframe {background: url('../images/linen.png') white scroll repeat; position: relative;width: 100%;height:100%; margin-top:32px;}
-.xmlClosingTags {position: absolute; bottom:0;right:10px;z-index: 20;}
+.xmlClosingTags {
+        position: absolute;
+        bottom: 0px;
+        right: 10px;
+        z-index: 10;
+        width: auto;
+        height: auto;
+}
 .tags {font-size: 80%; padding: 1px;margin: 0px -1px 1px 0px;display: inline-block;z-index: 20;cursor: pointer;position: relative;}
 .destroyTag {position:absolute;top:-15px;right:0;}
 .loadingStatus {position:absolute;color: white; top:25%;left:30%;font-family: 'Nova Cut',sans-serif;font-size: 24px;text-shadow:0px 1px 0 #69ACC9;}

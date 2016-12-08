@@ -365,9 +365,11 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             Keyboard Shortcuts
         </header>
         <div>
-            <kbd>ALT</kbd>: hold to temporarily hide the workspace and drag around your page image
+            <strong>View/Move Image</strong> 
+            <kbd>CTRL</kbd>+<kbd>ALT</kbd>: hold to temporarily hide the workspace and drag around your page image
         </div>
         <div>
+            <strong>Peek-Zoom</strong>
             <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>: peek-zoom into the current line of transcription
         </div>
     </div>
@@ -790,10 +792,14 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             }
             else if (event.which == 18 || event.altKey){
                //console.log('ALT KEY');
-               var lineForEditing = $(".activeLine");
+            var lineForEditing = $(".activeLine");
                lineForEditing.resizable();
+               if(event.altKey&&event.ctrlKey || event.altKey&&event.metaKey){
+                   // hide workspace and move image
+                   tpen.screen.toggleMoveImage(event);
+               }
                //alt + arrows will bump active line left and right
-               if(event.which == 37 && (event.altKey||event.which == 18)){
+            else if(event.which == 37 && (event.altKey||event.which == 18)){
                    //left
                    event.preventDefault();
                    bumpLine("left", lineForEditing);
@@ -868,9 +874,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     $("#imgTop, #imgBottom").unbind("mouseup");
                     var lineForEditing = $(".transcriptlet[lineserverid='" + $(".activeLine").attr("lineserverid") + "']");
                     updateLine(lineForEditing, false, true); //update the active line in case it was bumped.
-                }
-                else{
-
                 }
             });
 

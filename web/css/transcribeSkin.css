@@ -285,7 +285,7 @@ body{
     margin: 0 2px;
     flex: 2 1;
 height: 2em;
-max-width: 10em;
+max-width: 9em;
 }
 #captions {
     min-height: 2em;
@@ -467,6 +467,14 @@ max-width: 10em;
     background-size: auto;
     background-repeat:no-repeat;
     z-index: 4;
+}
+#dragHelper {                    /* Provide more room to move when dragging */
+    position:absolute;
+    opacity:0;
+    width:200px;
+    height:200px;
+    z-index:100;
+    cursor:url(custom-theme/images/grabbing.gif),move;
 }
 
 #pageLabel1{
@@ -876,7 +884,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     border-radius: 2px;
     cursor: pointer;
     flex:2 1 auto;
-    max-width: 20em;
+    max-width: 9em;
 }
 #magnifyTools{
     position: absolute;

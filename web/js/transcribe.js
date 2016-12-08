@@ -3331,18 +3331,22 @@ function updateLine(line, cleanup, updateList){
                 }
 
             }
+            console.log("Check for change.");
+            console.log(currentLineText +" === "+currentLineTextAttr);
             if(currentLineText === currentLineTextAttr){
                 //This line's text has not changed
                 $("#saveReport")
                 .stop(true,true).animate({"color":"red"}, 400)
-                .prepend("<div class='noChange'>No changes made</div>")//+", "+Data.dateFormat(date.getDate())+" "+month[date.getMonth()]+" "+date.getFullYear())
+                .prepend("<div class='noChange'>No changes made</div>")//
                 .animate({"color":"#618797"}, 1600,function(){$("#saveReport").find(".noChange").remove();});
                 $("#saveReport").find(".nochanges").show().fadeOut(2000);
             }
             else{
+                var columnMark = "Column&nbsp;"+line.attr("col")+"&nbsp;Line&nbsp;"+line.attr("collinenum");
+                var date=new Date();
                 $("#saveReport")
                 .stop(true,true).animate({"color":"green"}, 400)
-                .prepend("<div class='saveLog'>"+columnMark + '&nbsp;saved&nbsp;at&nbsp;'+date.getHours()+':'+Data.dateFormat(date.getMinutes())+':'+Data.dateFormat(date.getSeconds())+"</div>")//+", "+Data.dateFormat(date.getDate())+" "+month[date.getMonth()]+" "+date.getFullYear())
+                .prepend("<div class='saveLog'>"+columnMark + '&nbsp;saved&nbsp;at&nbsp;'+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+"</div>")//+", "+Data.dateFormat(date.getDate())+" "+month[date.getMonth()]+" "+date.getFullYear())
                 .animate({"color":"#618797"}, 600);
             }
             $.post(url,payload,function(){

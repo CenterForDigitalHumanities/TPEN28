@@ -658,11 +658,16 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
 #previewSplit {overflow: hidden;height:100%;}
 .previewSave {position: absolute; right:0;font-size: 80%;cursor: pointer;z-index: 4;}
 .previewTag {color:#488AC7;display:inline-block;}
-#saveReport,#contribution {position: absolute; z-index: 4;width:18em;cursor: pointer;bottom:0;right:0;color:#226683;text-transform: capitalize;padding: 1px;margin: 0px;max-height:18px;overflow: hidden;}
+#saveReport,#contribution {position: absolute; z-index: 4;width:18em;cursor: pointer;top: -25px;
+    right: -301px; color:#226683;text-transform: capitalize;padding: 1px;margin: 0px;max-height:18px;overflow: hidden; display:block;}
 #contribution {right:auto;left:0;}
 #contribution:before {content:'Last edit by: '}
 .saveLog:first-child {color:#618797;}
-#saveReport:hover {box-shadow: -4px -4px 8px -4px #666666;max-height: 95px;overflow:auto;
+.saveLog{
+    display: block;
+}
+#saveReport:hover {
+       box-shadow: -4px -4px 8px -4px #666666;max-height: 95px;overflow:auto;
        /* IE10 */
        background-image: -ms-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
        /* Mozilla Firefox */

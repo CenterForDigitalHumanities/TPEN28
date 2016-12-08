@@ -165,19 +165,27 @@
                             <i class="fa fa-code"></i>
                             XML Tags</button>
                     </div>
-                    <div id="specialCharsFloat" class="flex-container flex-stretch specialCharactered">
-                        <div class="closeBtn" onclick="$('#toggleChars').click();">
-                            <i class="fa fa-close"></i>
-                        </div>
-                        <div id="charactersPopin" class="specialCharacters"  title="Special Characters" >
+                    <div class="flex-container flex-stretch" style="flex-wrap: wrap; justify-content: space-around;">
+                        <div id="specialCharsFloat" class="flex-container specialCharactered">
+                            <a title="Edit Special Characters" class="pull-left lookLikeButtons editButtons" href="buttons.jsp">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                            <!--                        <div class="closeBtn" onclick="$('#toggleChars').click();">
+                                                        <i class="fa fa-close"></i>
+                                                    </div>-->
+<div id="charactersPopin" class="specialCharacters"  title="Special Characters" >
                         </div>
                     </div>
-                    <div id="xmlTagFloat" class="flex-container flex-stretch xmlTagged">
-                        <div class="closeBtn" onclick="$('#toggleXML').click();">
-                            <i class="fa fa-close"></i>
+                    <div id="xmlTagFloat" class="flex-container xmlTagged">
+                        <a title="Edit XML Tags" class="pull-left lookLikeButtons editButtons" href="buttons.jsp">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <!--                        <div class="closeBtn" onclick="$('#toggleXML').click();">
+                                                    <i class="fa fa-close"></i>
+                                                </div>-->
+<div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
                         </div>
-                        <div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
-                        </div>
+                    </div>
                     </div>
                 </div>
                 <div id="imgBottom">
@@ -561,9 +569,19 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                         $("#linebreakTextContainer").hide();
                         $("#linebreakNoTextContainer").show();
                     }
+                function initLinks(){
                     var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
                     +"&projectID="+tpen.project.id;
                     $("#uploadText").add("#newText").attr("href",uploadLocation);
+
+                    // add projectID to buttons.jsp links
+                    $(".editButtons").attr("href","buttons.jsp?p="
+                        + tpen.project.folios[tpen.screen.currentFolio].folioNumber
+                        + "&projectID=" + tpen.project.id+"#tabs-1");
+                    $(".editXMLs").attr("href","buttons.jsp?p="
+                        + tpen.project.folios[tpen.screen.currentFolio].folioNumber
+                        + "&projectID=" + tpen.project.id+"#tabs-2");
+                }
                 </script>
 
                 <script>
@@ -820,18 +838,14 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     else $("#nextLine").click();
                 }
             }
-            else if (event.ctrlKey || event.keyCode == ctrlKey || event.keyCode == cmdKey) { //ctrl
+            else if (event.ctrlKey || event.metaKey) { //ctrl
                 //This is also how you select a new tab in the browser.
-                if(event.ctrlKey && (event.which >= 49 && event.which <= 57)){ //insert a special char
+                if(event.which >= 49 && event.which <= 57){ //insert a special char
                     event.preventDefault();
                     event.stopPropagation();
                     //find the index in the special chars field and insert it.
-                    var index = event.which - 48;
-                    //This will insert a null if you do not make sure the index exists.
-                    if(index > 0 && ($("option.character").length >= index)){
-                        document.getElementById("charactersPopin").selectedIndex = index;
-                        $("#charactersPopin").change(); //populating to the text field fires in onchange to this element, we have to register the change.
-                    }
+                    var hotkey = $("#charactersPopin").children().eq(String.fromCharCode(event.which));
+                    hotkey.click(); //populating to the text field fires in onclick to this element, we have to register the change.
                 }
                 else if(event.ctrlKey && event.which === 36){ //HOME key.  Jump to first line.
                     event.preventDefault();

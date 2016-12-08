@@ -651,8 +651,8 @@ public class TagButton {
                 else{
                     jo.element("parameters",blank_case);
                 }
-                if(null != b.getTag() && !"".equals(b.getTag())){
-                    jo.element("description", b.getTag());
+                if(null != b.getDescription()&& !"".equals(b.getDescription())){
+                    jo.element("description", b.getDescription());
                 }
                 else{
                     jo.element("description","");

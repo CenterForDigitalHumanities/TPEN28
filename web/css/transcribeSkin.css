@@ -212,8 +212,8 @@ body{
     border: 1px solid #000;
     resize: vertical;
 }
-.theText,#captions{
-    font-family:'Junicode','Georgia', serif
+.theText,#captions,input.hotkey {
+    font-family:'Junicode','Georgia', serif;
 }
 
 #transWorkspace textarea.notes {
@@ -856,7 +856,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 }
 #splitScreenTools{
     border: 2px solid #000;
-    height: auto;
+    height: 1.75em;
     font-size: 1rem;
     border-radius: 2px;
     cursor: pointer;
@@ -1379,6 +1379,7 @@ a.navigation {
     padding:.25em;
     border:thin solid #999;
     counter-reset: hotkey;
+    flex-grow: 1;
 }
 .specialCharactered{
     background-color: rgba(0,0,0,.25);
@@ -1389,25 +1390,43 @@ a.navigation {
 .xmlTag, .character {
     background: #666;
     line-height: 1.25;
-    height: auto;
     min-width: 1em;
     margin: 0 .25em;
     counter-increment: hotkey;
 }
+.xmlTag::after{
+    content: attr(title);
+    position: absolute;
+    color: #999;
+    font-size: .75em;
+    bottom: 0;
+    left: 0;
+    font-family: monospace;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
 .character {
     min-width: 2em;
-    line-height: 2;
+    line-height: 1.5;
 }
-.character::after {
+.character::after,.editButtons::after {
     content: "CTRL+" counter(hotkey);
     position: absolute;
     color: #999;
     font-size: .75em;
-    bottom: -.25em;
+    bottom: 0;
     left: 0;
     font-family: monospace;
     width: 100%;
     text-align: center;
+}
+a.editButtons {
+    line-height: 1.5;
+    float: left;
+}
+.editButtons::after{
+    content: "edit";
 }
 
 .manController{

@@ -633,8 +633,6 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
         z-index: 10;
         width: auto;
         height: auto;
-        border: 2px solid red;
-        background-color: yellow;
 }
 .tags {font-size: 80%; padding: 1px;margin: 0px -1px 1px 0px;display: inline-block;z-index: 20;cursor: pointer;position: relative;}
 .destroyTag {position:absolute;top:-15px;right:0;}

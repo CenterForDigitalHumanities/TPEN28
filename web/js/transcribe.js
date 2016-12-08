@@ -2787,7 +2787,7 @@ function reparseColumns(){
                 myField.focus();
                 sel = document.selection.createRange();
                 sel.text = unescape(myValue);
-                //updateLine($(myField).parent(), false, true);
+                updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
             //MOZILLA/NETSCAPE support
@@ -2808,7 +2808,7 @@ function reparseColumns(){
                 myField.focus();
                 sel = document.selection.createRange();
                 sel.text = unescape(fullTag);
-                //updateLine($(myField).parent(), false, true);
+                updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
             //MOZILLA/NETSCAPE support
@@ -2829,7 +2829,7 @@ function reparseColumns(){
                         + closeTag
                         + myField.value.substring(endPos, myField.value.length);
                     myField.focus();
-                    //updateLine($(myField).parent(), false, true);
+                    updateLine($(myField).parent(), false, true);
                     
     //                var insertLength = startPos + unescape(fullTag).length +
     //                    toWrap.length + 3 + closeTag.length;
@@ -2840,7 +2840,7 @@ function reparseColumns(){
                         + unescape(fullTag)
                         + myField.value.substring(startPos);
                     myField.focus();
-                    //updateLine($(myField).parent(), false, true);
+                    updateLine($(myField).parent(), false, true);
                     closeAddedTag(myValue, fullTag);
                     //return startPos+unescape(fullTag).length;
                 }
@@ -2848,7 +2848,7 @@ function reparseColumns(){
             else {
                 myField.value += unescape(fullTag);
                 myField.focus();
-                //updateLine($(myField).parent(), false, true);
+                updateLine($(myField).parent(), false, true);
                 closeAddedTag(myValue, fullTag);
                 //return myField.length;
             }
@@ -2893,7 +2893,7 @@ function reparseColumns(){
         var tagIndex = 0;
         var tagFolioLocation = 0;
         var currentLineLocation = tpen.screen.focusItem[1].index();
-        var currentFolioLocation = folio;
+        var currentFolioLocation = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
         tpen.screen.focusItem[1].find("div.tags").each(function(){
             tagFolioLocation = parseInt($(this).attr("data-folio"),10);
             tagIndex = $(".transcriptlet[data-lineid='"+$(this).attr("data-line")+"']").index();
@@ -2916,7 +2916,7 @@ function reparseColumns(){
      function buildClosingTags(tags){
         var thisTag;
         var closingTags = [];
-        for (i=0;i<tags.length;i++){
+        for (var i=0;i<tags.length;i++){
             thisTag = tags[i].split(",");
             var tagID               =   thisTag[0];     
             var tagName             =   thisTag[1];
@@ -2933,6 +2933,31 @@ function reparseColumns(){
             }    
         }
         $(".xmlClosingTags").html(closingTags.join(""));
+         $(".tags").click(function(event){
+                console.log("click a .tag");
+                if(event.target != this){return true;}
+                makeUnsaved();
+                addchar("</" + $(this).text() + ">");
+                destroyClosingTag(this);
+            });
+            $(".tags").mouseenter(function(){
+                console.log("mouse into a .tag");
+                $(this).css({
+                    "padding": "4px",
+                    "margin": "-3px -4px -2px -3px",
+                    "z-index": 21
+                })
+                .append("<span onclick='destroyClosingTag(this.parentNode);' class='destroyTag ui-icon ui-icon-closethick right'></span>");
+            });
+            $(".tags").mouseleave(function(){
+                console.log("mouse out of a .tag");
+                $(this).css({
+                    "padding": "1px",
+                    "margin": "0px -1px 1px 0px",
+                    "z-index": 20
+                })
+                .find(".destroyTag").remove();
+            });
     }
     
 
@@ -3322,6 +3347,7 @@ function updateLine(line, cleanup, updateList){
     }
     //I am not sure if cleanup is ever true
     if (cleanup) cleanupTranscriptlets(true);
+    updateClosingTags();
 }
 
 function saveNewLine(lineBefore, newLine){

@@ -212,8 +212,8 @@ body{
     border: 1px solid #000;
     resize: vertical;
 }
-.theText,#captions{
-    font-family:'Junicode','Georgia', serif
+.theText,#captions,input.hotkey {
+    font-family:'Junicode','Georgia', serif;
 }
 
 #transWorkspace textarea.notes {
@@ -1385,25 +1385,41 @@ a.navigation {
 .xmlTag, .character {
     background: #666;
     line-height: 1.25;
-    height: auto;
     min-width: 1em;
     margin: 0 .25em;
     counter-increment: hotkey;
 }
+.xmlTag{
+    height:auto;
+}
 .character {
     min-width: 2em;
-    line-height: 2;
+    line-height: 1.5;
 }
-.character::after {
+.character::after,.editButtons::after,.editXMLs::after {
     content: "CTRL+" counter(hotkey);
     position: absolute;
     color: #999;
     font-size: .75em;
-    top: -.5em;
+    bottom: 0;
     left: 0;
     font-family: monospace;
     width: 100%;
     text-align: center;
+}
+a.editButtons,a.editXMLs {
+    line-height: 1.5;
+    float: left;
+}
+.editButtons::after,a.editXMLs::after{
+    content: "edit";
+}
+a.editXMLs {
+    line-height: 1.25;
+    height: auto;
+}
+.editXMLs::after{
+    position:relative;
 }
 
 .manController{

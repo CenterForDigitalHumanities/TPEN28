@@ -2753,7 +2753,8 @@ function reparseColumns(){
             addTag      : true,
             tag         : tagName,
             projectID   : tpen.project.id,
-            line        : tagLineID
+            line        : tagLineID,
+            folio       : tpen.project.folios[tpen.screen.currentFolio].folioNumber
             }, function(data){
                 tagID = data;
                 $(closeTag).attr({
@@ -2801,26 +2802,22 @@ function reparseColumns(){
         }
         else{ //its an xml tag
             if (document.selection) {
-                
                 if(fullTag === ""){
                     fullTag = "<"+myValue+"/>";
                 }
                 myField.focus();
                 sel = document.selection.createRange();
-                console.log("XML tag highlighted text 1.");
-                console.log(sel);
                 sel.text = unescape(fullTag);
                 //updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
             //MOZILLA/NETSCAPE support
             else if (myField.selectionStart || myField.selectionStart == '0') {
-                console.log("XML tag highlighted text 2.    "+myField.selectionStart+"  "+myField.selectionEnd);
                 var startPos = myField.selectionStart;
                 var endPos = myField.selectionEnd;
                 if (startPos !== endPos) {
                     if(fullTag === ""){
-                        fullTag = "<" + myValue +"/>";
+                        fullTag = "</" + myValue +">";
                     }
                     // something is selected, wrap it instead
                     var toWrap = myField.value.substring(startPos,endPos);

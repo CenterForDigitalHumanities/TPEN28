@@ -561,6 +561,18 @@ function loadTranscription(pid, tool){
                     if (tpen.project.xml) {
                         populateXML();
                     }
+                    if(tpen.project.folios.length > 0){
+                        $.get("tagTracker",{
+                            listTags    : true,
+                            folio    : tpen.project.folios[canvasIndex].folioNumber,
+                            projectID   : projectID
+                        }, function(tags){
+                            if (tags !== undefined) {
+                                buildClosingTags(tags.split("\n"));
+                            }
+                        });
+                    }
+                    
             },
             error: function(jqXHR, error, errorThrown) {
                 if (jqXHR.status && jqXHR.status === 404){
@@ -576,7 +588,7 @@ function loadTranscription(pid, tool){
                 loadIframes();
             }
         });
-
+        
     }
     else if (isJSON(userTranscription)){
         tpen.manifest = userTranscription = JSON.parse(userTranscription);
@@ -752,15 +764,15 @@ function loadTranscription(pid, tool){
                 }
             });
             //Build in the XML tag reminders for this project.
-//            $.get("tagTracker",{
-//                    listTags    : true,
-//                    folio    : tpen.project.folios[canvasIndex].folioNumber,
-//                    projectID   : projectID
-//                }, function(tags){
-//                if (tags !== undefined) {
-//                    buildClosingTags(tags.split("\n"));
-//                }
-//            });
+            $.get("tagTracker",{
+                    listTags    : true,
+                    folio    : tpen.project.folios[canvasIndex].folioNumber,
+                    projectID   : projectID
+                }, function(tags){
+                if (tags !== undefined) {
+                    buildClosingTags(tags.split("\n"));
+                }
+            });
         }
         else {
         //it is not a local project, so just grab the url that was input and request the manifest.
@@ -2721,6 +2733,41 @@ function reparseColumns(){
     });
 }
 
+     /**
+     * Adds closing tag button to textarea.
+     * 
+     * @param tagName text of tag for display in button
+     * @param fullTag title of tag for display in button
+     * 
+     * Function named as closeTag made the error:
+     * transcribe.js:2831 Uncaught TypeError: closeTag is not a function(…)
+     * so I had to rename it.
+     */
+    function closeAddedTag(tagName, fullTag){
+        // Do not create for self-closing tags
+        if (tagName.lastIndexOf("/") === (tagName.length - 1)) return false;
+        var tagLineID = tpen.screen.focusItem[1].attr("lineserverid");
+        var closeTag = document.createElement("div");
+        var tagID;
+        $.get("tagTracker", {
+            addTag      : true,
+            tag         : tagName,
+            projectID   : tpen.project.id,
+            line        : tagLineID
+            }, function(data){
+                tagID = data;
+                $(closeTag).attr({
+                    "class"     :   "tags ui-corner-all right ui-state-error",
+                    "title"     :   unescape(fullTag),
+                    "data-line" :   tagLineID,
+                    "data-folio":   tpen.project.folios[tpen.screen.currentFolio].folioNumber,
+                    "data-tagID":   tagID
+                }).text("/" + tagName);
+                $(".xmlClosingTags").append(closeTag); //tpen.screen.focusItem[1].children(".xmlClosingTags").append(closeTag)
+            }
+        );
+    }
+
 /**
      * Inserts value at cursor location.
      * 
@@ -2797,7 +2844,7 @@ function reparseColumns(){
                         + myField.value.substring(startPos);
                     myField.focus();
                     //updateLine($(myField).parent(), false, true);
-                    closeTag(myValue, fullTag);
+                    closeAddedTag(myValue, fullTag);
                     //return startPos+unescape(fullTag).length;
                 }
             } 
@@ -2805,45 +2852,13 @@ function reparseColumns(){
                 myField.value += unescape(fullTag);
                 myField.focus();
                 //updateLine($(myField).parent(), false, true);
-                closeTag(myValue, fullTag);
+                closeAddedTag(myValue, fullTag);
                 //return myField.length;
             }
             
         }
         
-    }
-    
-     /**
-     * Adds closing tag button to textarea.
-     * 
-     * @param tagName text of tag for display in button
-     * @param fullTag title of tag for display in button
-     */
-    function closeTag(tagName, fullTag){
-        // Do not create for self-closing tags
-        if (tagName.lastIndexOf("/") === (tagName.length - 1)) return false;
-        var tagLineID = tpen.screen.focusItem[1].attr("lineserverid");
-        var closeTag = document.createElement("div");
-        var tagID;
-        $.get("tagTracker", {
-            addTag      : true,
-            tag         : tagName,
-            projectID   : tpen.project.id,
-            line        : tagLineID
-            }, function(data){
-                tagID = data;
-                $(closeTag).attr({
-                    "class"     :   "tags ui-corner-all right ui-state-error",
-                    "title"     :   unescape(fullTag),
-                    "data-line" :   tagLineID,
-                    "data-folio":   tpen.project.folios[tpen.screen.currentFolio].folioNumber,
-                    "data-tagID":   tagID
-                }).text("/" + tagName);
-                $(".xmlClosingTags").append(closeTag); //tpen.screen.focusItem[1].children(".xmlClosingTags").append(closeTag)
-            }
-        );
-    }
-    
+    }  
    
     /**
      * Removes tag from screen and database without inserting.

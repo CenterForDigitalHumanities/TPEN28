@@ -2738,7 +2738,7 @@ function reparseColumns(){
      * @param tagName text of tag for display in button
      * @param fullTag title of tag for display in button
      * 
-     * Function named as closeTag made the error:
+     * Function named as Added made the error:
      * transcribe.js:2831 Uncaught TypeError: closeTag is not a function(…)
      * so I had to rename it.
      */
@@ -3254,6 +3254,7 @@ function updateLine(line, cleanup, updateList){
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2;
+    
     lineTop = parseFloat(line.attr("linetop")) * 10;
     lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
     lineWidth = parseFloat(line.attr("linewidth")) * (10 * ratio);
@@ -3266,6 +3267,7 @@ function updateLine(line, cleanup, updateList){
     var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
     var currentLineServerID = line.attr('lineserverid');
     var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
+    var currentLineTextAttr = unescape(line.attr("data-answer"));
     var currentAnnoListID = tpen.screen.currentAnnoListID;
     var lineNote = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".notes").val();
     var dbLine = {
@@ -3329,7 +3331,20 @@ function updateLine(line, cleanup, updateList){
                 }
 
             }
-
+            if(currentLineText === currentLineTextAttr){
+                //This line's text has not changed
+                $("#saveReport")
+                .stop(true,true).animate({"color":"red"}, 400)
+                .prepend("<div class='noChange'>No changes made</div>")//+", "+Data.dateFormat(date.getDate())+" "+month[date.getMonth()]+" "+date.getFullYear())
+                .animate({"color":"#618797"}, 1600,function(){$("#saveReport").find(".noChange").remove();});
+                $("#saveReport").find(".nochanges").show().fadeOut(2000);
+            }
+            else{
+                $("#saveReport")
+                .stop(true,true).animate({"color":"green"}, 400)
+                .prepend("<div class='saveLog'>"+columnMark + '&nbsp;saved&nbsp;at&nbsp;'+date.getHours()+':'+Data.dateFormat(date.getMinutes())+':'+Data.dateFormat(date.getSeconds())+"</div>")//+", "+Data.dateFormat(date.getDate())+" "+month[date.getMonth()]+" "+date.getFullYear())
+                .animate({"color":"#618797"}, 600);
+            }
             $.post(url,payload,function(){
             	line.attr("hasError",null);
                 $("#parsingCover").hide();

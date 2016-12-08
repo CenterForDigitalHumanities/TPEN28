@@ -345,7 +345,7 @@ function populateXML(){
                 fullTag = "<"+tagName+" "+fullTag+">";
             }
             var description = xmlTagObject.description;
-            newTagBtn = "<div onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\" class='xmlTag lookLikeButtons' title='" + fullTag + "'>" + description + "</div>"; //onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\">
+            newTagBtn = "<div onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "',false);\" class='xmlTag lookLikeButtons' title='" + fullTag + "'>" + description + "</div>"; //onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\">
             var button = $(newTagBtn);
             $(".xmlTags").append(button);
         }
@@ -2785,29 +2785,27 @@ function reparseColumns(){
                         + closeTag
                         + myField.value.substring(endPos, myField.value.length);
                     myField.focus();
-                   // updateLine($(myField).parent(), false, true);
+                    //updateLine($(myField).parent(), false, true);
                     
     //                var insertLength = startPos + unescape(fullTag).length +
     //                    toWrap.length + 3 + closeTag.length;
                     //return "wrapped" + insertLength;              
                 } 
                 else {
-                    console.log("The positions are the same, no highlighted text.");
                     myField.value = myField.value.substring(0, startPos)
                         + unescape(fullTag)
-                        + myField.value.substring(startPos + fullTag.length);
+                        + myField.value.substring(startPos);
                     myField.focus();
                     //updateLine($(myField).parent(), false, true);
-                    //closeTag(myValue, fullTag);
+                    closeTag(myValue, fullTag);
                     //return startPos+unescape(fullTag).length;
                 }
             } 
             else {
-                console.log("XML tag direct insert with no cursor position detected. .");
                 myField.value += unescape(fullTag);
                 myField.focus();
                 //updateLine($(myField).parent(), false, true);
-                //closeTag(myValue, fullTag);
+                closeTag(myValue, fullTag);
                 //return myField.length;
             }
             

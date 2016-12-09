@@ -175,7 +175,7 @@
                             XML Tags</button>
                     </div>
                     <div id="specialCharsFloat" class="flex-container flex-stretch specialCharactered">
-                        <a title="Edit Special Characters" class="pull-left lookLikeButtons editButtons" href="buttons.jsp">
+                        <a title="Edit Special Characters" class="pull-left lookLikeButtons editButtons exitPage" href="buttons.jsp">
                             <i class="fa fa-edit"></i>
                         </a>
                         <div class="closeBtn" onclick="$('#toggleChars').click();">
@@ -185,7 +185,7 @@
                         </div>
                     </div>
                     <div id="xmlTagFloat" class="flex-container flex-stretch xmlTagged">
-                        <a title="Edit XML Tags" class="pull-left lookLikeButtons editXMLs" href="buttons.jsp">
+                        <a title="Edit XML Tags" class="pull-left lookLikeButtons editXMLs exitPage" href="buttons.jsp">
                             <i class="fa fa-edit"></i>
                         </a>
                         <div class="closeBtn" onclick="$('#toggleXML').click();">
@@ -422,9 +422,8 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     <input type="hidden" name="ms" value="">
                     <input type="hidden" name="projectID" value="">
                     <input class="ui-button tpenButton clear right" type="submit" name="submitted" value="Send Request"/>
-
                 </form>
-                <a class="returnButton" href="index.jsp">Return Home</a>
+                <a class="returnButton exitPage" href="index.jsp">Return Home</a>
             </div>
         </div>
 
@@ -582,13 +581,13 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 function initLinks(){
                     var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
                     +"&projectID="+tpen.project.id;
-                    $("#uploadText").add("#newText").attr("href",uploadLocation);
+                    $("#uploadText").addClass("exitPage").add("#newText").attr("href",uploadLocation);
 
                     // add projectID to buttons.jsp links
-                    $(".editButtons").attr("href","buttons.jsp?p="
+                    $(".editButtons").addClass("exitPage").attr("href","buttons.jsp?p="
                         + tpen.project.folios[tpen.screen.currentFolio].folioNumber
                         + "&projectID=" + tpen.project.id+"#tabs-1");
-                    $(".editXMLs").attr("href","buttons.jsp?p="
+                    $(".editXMLs").addClass("exitPage").attr("href","buttons.jsp?p="
                         + tpen.project.folios[tpen.screen.currentFolio].folioNumber
                         + "&projectID=" + tpen.project.id+"#tabs-2");
                 }
@@ -1294,6 +1293,23 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
           var def = $("#"+ref);
           def.css('color','orangered');
       });
+      
+        $(".exitPage").click(function(event) {
+            var thisLink = $(this).attr("href");
+            event.preventDefault();
+            //If there is any ajax running and you try to leave a page, this will stop you
+            $("body").ajaxStart(function() {
+              $(this).addClass("ui-state-disabled");
+            }).ajaxStop(function() {
+                //When the ajax finishes, you can leave. 
+              if (thisLink.indexOf("?") != -1)
+                thisLink += "&tool=" + tpen.screen.liveTool;
+                Data.saveTranscription(thisLink);
+            });
+            Data.saveTranscription(thisLink);
+//            if (leftovers != undefined)
+//              Linebreak.saveLeftovers(escape(leftovers));
+        });
       
            
     });

@@ -57,6 +57,7 @@ var tpen = {
     }
 };
 var dragHelper = "<div id='dragHelper'></div>";
+var typingTimer;
 
 /**
  * Redraw the screen for use after updating the current line, folio, or
@@ -110,12 +111,14 @@ function scrubNav(){
 
 /* Load the interface to the first page of the manifest. */
 function firstFolio () {
+    Data.saveTranscription(""); //Are we sure we need this here?  It should already be updated and saved....
     tpen.screen.currentFolio = 0;
     redraw("");
 }
 
 /* Load the interface to the last page of the manifest. */
 function lastFolio(){
+    Data.saveTranscription(""); //Are we sure we need this here?  It should already be updated and saved....
     tpen.screen.currentFolio = tpen.manifest.sequences[0].canvases.length - 1;
     redraw("");
 }
@@ -124,6 +127,7 @@ function previousFolio (parsing) {
     if (tpen.screen.currentFolio === 0) {
         throw new Error("You are already on the first page.");
     }
+    //Data.saveTranscription(); //Are we sure we need this here?  It should already be updated and saved....
     tpen.screen.currentFolio--;
     redraw("");
 }
@@ -133,6 +137,7 @@ function nextFolio (parsing) {
     if (tpen.screen.currentFolio >= tpen.manifest.sequences[0].canvases.length - 1) {
         throw new Error("That page is beyond the last page.");
     }
+    //Data.saveTranscription(); //Are we sure we need this here?  It should already be updated and saved....
     tpen.screen.currentFolio++;
     redraw("");
 }
@@ -356,6 +361,9 @@ function setTPENObjectData(data){
     if(data.project){
         if(data.projectTool){
             tpen.project.tools = JSON.parse(data.projectTool);
+        }
+        if(data.userTool){
+            tpen.project.userTools = JSON.parse(data.userTool);
         }
         if(data.ls_u){
             tpen.project.user_list = JSON.parse(data.ls_u);
@@ -1369,7 +1377,7 @@ function linesToScreen(lines, tool){
         console.warn("No lines found in a bad place...");
     }
     // we want automatic updating for the lines these texareas correspond to.
-    var typingTimer; //timer identifier
+    typingTimer; //timer identifier
     $("textarea")
         .keydown(function(e){
         //user has begun typing, clear the wait for an update
@@ -3053,6 +3061,7 @@ function pageJump(page, parsing){
     var folioNum = parseInt(page); //1,2,3...
     var canvasToJumpTo = folioNum - 1; //0,1,2...
     if (tpen.screen.currentFolio !== canvasToJumpTo && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio
+        Data.saveTranscription(""); 
         tpen.screen.currentFolio = canvasToJumpTo;
         if (parsing === "parsing"){
             $(".pageTurnCover").show();
@@ -3143,7 +3152,7 @@ function updateLinesInColumn(column){
 }
 
 /* Bulk update for lines in a column.  Also updates annotation list those lines are in with the new anno data. */
-function batchLineUpdate(linesInColumn){
+function batchLineUpdate(linesInColumn, relocate){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var currentAnnoListID = tpen.screen.currentAnnoListID;
     var currentAnnoListResources = [];
@@ -3205,7 +3214,9 @@ function batchLineUpdate(linesInColumn){
     $.post(url2, params2, function(data){ //update individual annotations
         var params = {"content":JSON.stringify(paramObj)};
         $.post(url, params, function(data2){ //update annotation list
-
+            if(relocate){
+                document.location = relocate;
+            }
         });
     });
 
@@ -3981,7 +3992,7 @@ function bumpLine(direction, activeLine){
     var currentLineLeftPX = parseFloat(currentLineLeftPerc/100) * $("#imgTop").width() + "px";
     $(".transcriptlet[lineserverid='"+id+"']").attr("lineleft", currentLineLeftPerc);
     activeLine.css("left", currentLineLeftPX);
-    //updateLine($(".transcriptlet[lineserverid='"+id+"']"), false, true);
+    updateLine($(".transcriptlet[lineserverid='"+id+"']"), false, true);
 }
 
 
@@ -4237,9 +4248,9 @@ var Preview= {
 
 var Data = {
     /* Save all lines on the canvas */
-    saveTranscription:function(){
+    saveTranscription:function(relocate){
         var linesAsJSONArray = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
-        batchLineUpdate(linesAsJSONArray);
+        batchLineUpdate(linesAsJSONArray, relocate);
     }
 }
 
@@ -4267,7 +4278,7 @@ var Linebreak = {
             .parent().addClass("isUnsaved")
             .nextAll(".transcriptlet").addClass("isUnsaved")
                 .find(".theText").html("");
-            Data.saveTranscription();
+            Data.saveTranscription("");
             Preview.updateLine(tpen.screen.focusItem[1].find(".theText")[0]);
         }
     },
@@ -4301,7 +4312,7 @@ var Linebreak = {
                     }
                 }
             });
-            Data.saveTranscription();
+            Data.saveTranscription("");
         }
     },
     /**
@@ -4320,7 +4331,7 @@ var Linebreak = {
         })(tpen.user.UID);
         if(!isMember && !tpen.project.permissions.allow_public_modify)return false;
         $(".transcriptlet").addClass(".isUnsaved");
-        Data.saveTranscription();
+        Data.saveTranscription("");
     },
     /**
      * Records remaining linebreaking text for later use.
@@ -4410,7 +4421,7 @@ var Linebreak = {
                 tpen.screen.focusItem[1].find(".nextLine").click();
             }
         }
-        Data.saveTranscription();
+        Data.saveTranscription("");
         return false;
     }
 };

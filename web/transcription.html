@@ -258,7 +258,11 @@
                                             <div id="sampleRuler"></div>
                                             <label for="black"><input onclick="rulerColor('black');" CHECKED type="radio" value="black" name="rulerColor"/>Black</label>
                                             <label for="white"><input onclick='rulerColor("white");' id="white" type="radio" value="white" name="rulerColor"/>White</label>
-                                            <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown." type="text" id="customRuler" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
+                                            <label style="margin-left: 10px; margin-right: 3px;" for="customRuler">
+                                                Custom
+                                                <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown." 
+                                                type="text" id="customRuler" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
+                                            </label>
                                         </div>
                                     </div>
                                     <div class="startHide" id="removeLinesInst">
@@ -1503,7 +1507,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
     function rulerColor(color){
         if(color==="custom"){
             color=$("#customRuler").val();
-            if(validTextColor(color)){
+            if(validTextColour(color)){
 
             }
             else{

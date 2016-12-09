@@ -600,14 +600,46 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 <script>
 
     //Must explicitly set new height and width for percentages values in the DOM to take effect.
-    window.onresize = function(event) {
-        var newHeight = $("#imgBottom img").height();
-        $("#transcriptionCanvas").css("height",newHeight+"px");
-        $(".lineColIndicatorArea").css("height",newHeight+"px");
+    window.onresize = function(event, ui) {
+        if(tpen.screen.liveTool === 'parsing'){
+            var ratio = originalCanvasWidth / originalCanvasHeight;
+            var newCanvasWidth = originalCanvasWidth2 * .57;
+            var newCanvasHeight = 1 / ratio * newCanvasWidth;
+            var PAGEHEIGHT = $("#transcriptionTemplate").width();
+            if (newCanvasHeight > PAGEHEIGHT){
+                console.log("Canvas height is greater than page height, adjust");
+                newCanvasHeight = PAGEHEIGHT;
+                newCanvasWidth = 1/ratio*newCanvasHeight;
+            }
+            var width = $("#transcriptionTemplate").width();
+            var height = 1 / ratio * width;
+            if (height > PAGEHEIGHT){
+                height = PAGEHEIGHT;
+                newCanvasWidth = 1/ratio*height;
+            }
+            //$(".lineColIndicatorArea").css("height", height + "px");
+            var splitWidth = window.innerWidth - (width + 35) + "px";
+            $(".split img").css("max-width", splitWidth);
+            $(".split:visible").css("width", splitWidth);
+            $("#transcriptionCanvas").css("height", height + "px");//.css("width", newCanvasWidth + "px");
+            $("#imgTop img").css({
+                'height': height + "px",
+//                'width': $("#imgTop img").width()
+            });
+            $("#imgTop").css({
+                'height': $("#imgTop img").height(),
+                'width': $("#imgTop img").width()
+            });
+        }
+        else{
+            var newHeight = $("#imgTop img").height();
+            $("#transcriptionCanvas").css("height",newHeight+"px");
+            $(".lineColIndicatorArea").css("height",newHeight+"px");
+        }        
         $.each($(".lineColOnLine"),function(){
-              $(this).css("line-height", $(this).height()+"px");
-          });
-          tpen.screen.textSize();
+            $(this).css("line-height", $(this).height()+"px");
+        });
+        tpen.screen.textSize();
     };
 
     //Page load event triggers and attached here.
@@ -889,7 +921,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             });
 
             $("#parsingBtn").click(function(){
-                tpen.screen.liveTool = "parsing";
                 if(tpen.screen.isFullscreen)tpen.screen.isUnadjusted = true;
                 tpen.screen.isFullscreen = false;
                 hideWorkspaceForParsing();

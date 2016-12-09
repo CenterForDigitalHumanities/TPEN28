@@ -2093,10 +2093,30 @@ function restoreTransition(){
 * for the selected tool.
 */
 function hideWorkspaceForParsing(){
+    tpen.screen.liveTool = "parsing";
     $("#parsingBtn").css("box-shadow: none;");
+
     originalCanvasHeight = $("#transcriptionCanvas").height();
     originalCanvasWidth = $("#transcriptionCanvas").width();
     imgTopOriginalTop = $("#imgTop img").css("top");
+    $("#transcriptionTemplate").css("max-width", "57%");
+    $("#transcriptionCanvas").css("max-height", window.innerHeight + "px");
+    $("#transcriptionTemplate").css("max-height", window.innerHeight + "px");
+    var ratio = originalCanvasWidth / originalCanvasHeight;
+    var newCanvasWidth = originalCanvasWidth2 * .57;
+    var newCanvasHeight = 1 / ratio * newCanvasWidth;
+    var PAGEHEIGHT = $("#transcriptionTemplate").width();
+    if (newCanvasHeight > PAGEHEIGHT){
+        console.log("Canvas height is greater than page height, adjust");
+        newCanvasHeight = PAGEHEIGHT;
+        newCanvasWidth = 1/ratio*newCanvasHeight;
+    }
+    $("#transcriptionCanvas").css("height", newCanvasHeight);
+    console.log(originalCanvasHeight);
+    console.log(originalCanvasWidth);
+    console.log(newCanvasWidth);
+    console.log(newCanvasHeight);
+    console.log(ratio);
 //    var pageJumpIcons = $("#pageJump").parent().children("i");
 //    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
 //    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
@@ -2106,12 +2126,7 @@ function hideWorkspaceForParsing(){
     $("#nextCanvas").attr("onclick", "");
     $("#imgTop").addClass("fixingParsing");
     var topImg = $("#imgTop img");
-    imgRatio = topImg.width() / topImg.height();
-    var wrapWidth = imgRatio * $("#transcriptionTemplate").height();
-    var PAGEWIDTH = $("#transcriptionTemplate").width();
-    if (wrapWidth > PAGEWIDTH - 350){
-        wrapWidth = PAGEWIDTH - 350;
-    }
+    
     $("#tools").children("[id$='Split']").hide();
     $("#parsingSplit")
     .css({
@@ -2119,33 +2134,49 @@ function hideWorkspaceForParsing(){
         "height": window.innerHeight + "px"
     })
     .fadeIn();
+    
     topImg.css({
         "top":"0px",
         "left":"0px",
-        "height":"auto",
+        "height":newCanvasHeight+"px",
         "overflow":"auto"
     });
     $("#imgTop .lineColIndicatorArea").css({
         "top":"0px",
-        "left":"0px"
+        "left":"0px",
+        "height":newCanvasHeight+"px"
     });
-    $("#transcriptionTemplate").css("max-width", "57%");
+    
     //the width and max-width here may need to be played with a bit.
     $("#transcriptionTemplate").resizable({
         disabled:false,
         minWidth: window.innerWidth / 2,
-        maxWidth: window.innerWidth * .75,
+        maxWidth: window.innerWidth * .57,
         start: function(event, ui){
             originalRatio = $("#transcriptionCanvas").width() / $("#transcriptionCanvas").height();
         },
         resize: function(event, ui) {
             var width = ui.size.width;
-            var height = 1 / originalRatio * width;
-            $("#transcriptionCanvas").css("height", height + "px").css("width", width + "px");
-            $(".lineColIndicatorArea").css("height", height + "px");
+            var height = 1 / ratio * width;
+            newCanvasWidth = 1/ratio*height;
+            if (height > PAGEHEIGHT){
+                height = PAGEHEIGHT;
+                newCanvasWidth = 1/ratio*height;
+            }
+//            console.log(originalCanvasHeight, originalCanvasWidth, height, newCanvasWidth, originalRatio );
+            //$(".lineColIndicatorArea").css("height", height + "px");
             var splitWidth = window.innerWidth - (width + 35) + "px";
             $(".split img").css("max-width", splitWidth);
             $(".split:visible").css("width", splitWidth);
+            $("#transcriptionCanvas").css("height", height + "px");//.css("width", newCanvasWidth + "px")
+            $("#imgTop img").css({
+                'height': height + "px",
+//                'width' : $("#imgTop img").width()
+            });
+            $("#imgTop").css({
+                'height': $("#imgTop img").height(),
+                'width': $("#imgTop img").width()
+            });
             tpen.screen.textSize();
         },
         stop: function(event, ui){
@@ -2155,14 +2186,14 @@ function hideWorkspaceForParsing(){
     $("#transWorkspace,#imgBottom").hide();
     $("#noLineWarning").hide();
     window.setTimeout(function(){
-        $("#imgTop, #imgTop img").height($(window).innerHeight());
+        //$("#imgTop, #imgTop img").height($(window).innerHeight());
         $("#imgTop img").css("width", "auto");
         $("#imgTop").css("width", $("#imgTop img").width());
         $("#imgTop").css("height", $("#imgTop img").height());
         //At this point, transcription canvas is the original height and width
         //of the full page image.  We can use that for when we resume transcription.
-        $("#transcriptionCanvas").css("height", $(window).innerHeight());
-        $(".lineColIndicatorArea").css("height", $(window).innerHeight());
+        //$("#transcriptionCanvas").css("height", $(window).innerHeight());
+        //$(".lineColIndicatorArea").css("height", $(window).innerHeight());
         $("#transcriptionCanvas").css("display", "block");
     }, 500);
     window.setTimeout(function(){
@@ -2264,8 +2295,10 @@ function fullPage(){
     $("#splitScreenTools").find('option:eq(0)').prop("selected", true);
     $("#transcriptionCanvas").css("width", "100%");
     $("#transcriptionCanvas").css("height", "auto"); //Need a real height here, it can't be auto.  It needs to be the height of the image.
+    $("#transcriptionCanvas").css("max-height", "none"); //Need a real height here, it can't be auto.  It needs to be the height of the image.
     $("#transcriptionTemplate").css("width", "100%");
     $("#transcriptionTemplate").css("max-width", "100%");
+    $("#transcriptionTemplate").css("max-height", "none");
     $("#transcriptionTemplate").css("height", "auto");
     $("#transcriptionTemplate").css("display", "inline-block");
     $('.lineColIndicatorArea').show();
@@ -2330,13 +2363,14 @@ function splitPage(event, tool) {
     });
     var newImgBtmTop = imgBottomRatio * newCanvasHeight;
     var newImgTopTop = imgTopRatio * newCanvasHeight;
+    $(".lineColIndicatorArea").css("max-height", newCanvasHeight + "px");
     $(".lineColIndicatorArea").css("height", newCanvasHeight + "px");
     $("#imgBottom img").css("top", newImgBtmTop + "px");
     $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
     $("#imgTop img").css("top", newImgTopTop + "px");
     $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
+    
     $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
-
     $("#transcriptionTemplate").resizable({
         disabled:false,
         minWidth: window.innerWidth / 2,
@@ -2356,6 +2390,7 @@ function splitPage(event, tool) {
             var newHeight2 = parseFloat($(".compareImage").height()) + parseFloat($("#compareSplit .toolLinks").height());
             $('#fullPageSplit').css('height', newHeight1 + 'px');
             $('#compareSplit').css('height', newHeight2 + 'px');
+            
         },
         stop: function(event, ui){
             $.each($(".lineColOnLine"), function(){
@@ -2380,6 +2415,7 @@ function splitPage(event, tool) {
         if(tool==="controls"){
             $("#transcriptionCanvas").css("width", Page.width()-200 + "px");
         }
+        
 }
 
 function forceOrderPreview(){

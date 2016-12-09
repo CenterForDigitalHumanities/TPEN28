@@ -2112,6 +2112,7 @@ function hideWorkspaceForParsing(){
         newCanvasWidth = 1/ratio*newCanvasHeight;
     }
     $("#transcriptionCanvas").css("height", newCanvasHeight);
+    $("#transcriptionCanvas").css("width", newCanvasWidth);
     console.log(originalCanvasHeight);
     console.log(originalCanvasWidth);
     console.log(newCanvasWidth);
@@ -2173,9 +2174,9 @@ function hideWorkspaceForParsing(){
                 'height': height + "px",
 //                'width' : $("#imgTop img").width()
             });
-            $("#imgTop").css({
+            $("#imgTop").css({ //This width will not change when the area is expanded, but does when it is shrunk.  We need to do the math to grow it.  
                 'height': $("#imgTop img").height(),
-                'width': $("#imgTop img").width()
+                'width': $("#imgTop img").width() //This locks up and does not change.
             });
             tpen.screen.textSize();
         },

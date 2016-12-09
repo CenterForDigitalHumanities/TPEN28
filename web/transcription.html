@@ -622,9 +622,9 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             $(".split img").css("max-width", splitWidth);
             $(".split:visible").css("width", splitWidth);
             $("#transcriptionCanvas").css("height", height + "px");//.css("width", newCanvasWidth + "px");
-            $("#imgTop img").css({
-                'height': height + "px",
-//                'width': $("#imgTop img").width()
+            $("#imgTop").css({ //This width will not change when the area is expanded, but does when it is shrunk.  We need to do the math to grow it.  
+                'height': $("#imgTop img").height(),
+                'width': $("#imgTop img").width() //This locks up and does not change.
             });
             $("#imgTop").css({
                 'height': $("#imgTop img").height(),

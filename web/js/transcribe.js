@@ -215,11 +215,9 @@ function gatherAndPopulate(currentOn, pageLabel, currentPage, i){
 function populatePreview(lines, pageLabel, currentPage, order){
     var letterIndex = 0;
     var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    var previewPage = $('<div order="' + order + '" class="previewPage"><span class="previewFolioNumber">' + pageLabel + '</span></div>');
+    var previewPage = $('<div order="' + order + '" class="previewPage" data-pagenumber="' + pageLabel + '"></div>');
     if (lines.length === 0) {
-        previewPage = $('<div order="' + order + '" class="previewPage">'
-        + '<span class="previewFolioNumber">'
-        + pageLabel + '</span><br>No Lines</div>');
+        previewPage.text("No Lines");
     }
     var num = 0;
     //TODO: specificially find the xml tags and wrap them in a <span class='xmlPreview'> so that the UI can make a button to toggle the highlight on and off. 
@@ -543,43 +541,64 @@ function loadTranscription(pid, tool){
                 else {
                     throw new Error("This transcription object is malformed. No canvas sequence is defined.");
                 }
-                if(tpen.project.tools){
-                    $.each(tpen.project.tools, function(){
-                        var splitHeight = window.innerHeight + "px";
-                        var toolLabel = this.name;
-                        var toolSource = this.url;
-                        var splitTool = $('<div toolName="' + toolLabel
-                            + '" class="split iTool"><div class="fullScreenTrans"><i class="fa fa-reply"></i>'
-                            + 'Full Screen Transcription</div></div>');
-                        var splitToolIframe = $('<iframe style="height:' + splitHeight
-                            + ';" src="' + toolSource + '"></iframe>');
-                        var splitToolSelector = $('<option splitter="' + toolLabel
-                            + '" class="splitTool">' + toolLabel + '</option>');
-                        splitTool.append(splitToolIframe);
-                        $("#splitScreenTools")
-                            .append(splitToolSelector);
-                        $(".iTool:last")
-                            .after(splitTool);
+                $.each(tpen.project.userTools, function(index,tool){
+                    var label;
+                    switch(tool){
+                        case "abbreviation" : label = "Cappelli Abbreviations";
+                            break;
+                        case "compare" : label = "Compare Pages";
+                            break;
+                        case "parsing" : label = false;
+                            break;
+                        case "preview" : label = "Preview Transcription";
+                            break;
+                        case "history" : label = "Line History";
+                            break;
+                        case "linebreaking" : label = "Import Text";
+                            break;
+                        case "paleography" : label = false;
+                            break;
+                    }
+                    var splitToolSelector = $('<option splitter="' + tool
+                        + '" class="splitTool">' + label + '</option>');
+                    if(label){
+                        $("#splitScreenTools").append(splitToolSelector);
+                    }
+                });
+                $.each(tpen.project.tools, function(){
+                    var splitHeight = window.innerHeight + "px";
+                    var toolLabel = this.name;
+                    var toolSource = this.url;
+                    var splitTool = $('<div toolName="' + toolLabel
+                        + '" class="split iTool"><div class="fullScreenTrans"><i class="fa fa-reply"></i>'
+                        + 'Full Screen Transcription</div></div>');
+                    var splitToolIframe = $('<iframe style="height:' + splitHeight
+                        + ';" src="' + toolSource + '"></iframe>');
+                    var splitToolSelector = $('<option splitter="' + toolLabel
+                        + '" class="splitTool">' + toolLabel + '</option>');
+                    splitTool.append(splitToolIframe);
+                    $("#splitScreenTools")
+                    .append(splitToolSelector);
+                    $(".iTool:last")
+                    .after(splitTool);
+                });
+                if (tpen.project.specialChars) {
+                    populateSpecialCharacters();
+                }
+                if (tpen.project.xml) {
+                    populateXML();
+                }
+                if(tpen.project.folios.length > 0){
+                    $.get("tagTracker",{
+                        listTags    : true,
+                        folio    : tpen.project.folios[canvasIndex].folioNumber,
+                        projectID   : projectID
+                    }, function(tags){
+                        if (tags !== undefined) {
+                            buildClosingTags(tags.split("\n"));
+                        }
                     });
-                    }
-                    if (tpen.project.specialChars) {
-                        populateSpecialCharacters();
-                    }
-                    if (tpen.project.xml) {
-                        populateXML();
-                    }
-                    if(tpen.project.folios.length > 0){
-                        $.get("tagTracker",{
-                            listTags    : true,
-                            folio    : tpen.project.folios[canvasIndex].folioNumber,
-                            projectID   : projectID
-                        }, function(tags){
-                            if (tags !== undefined) {
-                                buildClosingTags(tags.split("\n"));
-                            }
-                        });
-                    }
-                    
+                }
             },
             error: function(jqXHR, error, errorThrown) {
                 if (jqXHR.status && jqXHR.status === 404){
@@ -867,6 +886,13 @@ function activateTool(tool){
  *
  */
 function activateUserTools(tools, permissions){
+    var placeholderSplit = function(name,msg){
+        $('body').append('<div id="'+name+'Split" class="split">'
+            +'<div class="fullScreenTrans"><i class="fa fa-reply"></i> Full Screen Transcription</div>'
+            +'<p>'+msg+'</p>'
+            +'</div>');
+        $('#'+name+"Split").show();
+    }
     if(tpen.user.isAdmin || $.inArray("parsing", tools) > -1 || permissions.allow_public_modify || permissions.allow_public_modify_line_parsing){
         $("#parsingBtn").show();
         tpen.user.isAdmin = true; // QUESTION: #169 Why isAdmin if you can parse?
@@ -877,17 +903,20 @@ function activateUserTools(tools, permissions){
         $("#noLineConfirmation").empty();
         $("#noLineConfirmation").append(message);
     }
+    // This is all sort of moot, since they are being built regardless at this point.
     if($.inArray("linebreak", tools) > -1){
-        $("#linebreakSplit").show();
+        $("#linebreakSplit").show(); 
     }
     if($.inArray("history", tools) > -1){
         // No history tool on page #114
+        placeholderSplit('history', "No tool available, ticket #114");
     }
     if($.inArray("preview", tools) > -1){
         $("#previewSplit").show();
     }
     if($.inArray("abbreviation", tools) > -1){
         // No abbreviation tool or endpoint available #170
+        placeholderSplit('abbrev', "No tool available, ticket #170");
     }
     if($.inArray("compare", tools) > -1){
         $("#compareSplit").show();
@@ -2365,6 +2394,7 @@ function splitPage(event, tool) {
     });
     $("#fullScreenBtn")
         .fadeIn(250);
+        $('.split').hide();
     //show/manipulate whichever split tool is activated.
     //This is a user added iframe tool.  tool is toolID= attribute of the tool div to show.
     var splitScreen = $("#" + tool + "Split") || $('div[toolName="' + tool + '"]');
@@ -4655,6 +4685,181 @@ var Help = {
 //            Interaction.expandButtons();
 //        }
     };
+
+    var Preview = {
+    /**
+     *  Syncs changes between the preview tool and the transcription area,
+     *  if it is on the page. If it is the previous or following page, a button
+     *  to save remotely is created and added.
+     *  
+     *  @param line jQuery object, line edited in the preview tool
+     */
+    edit: function(line){
+        var focusLineNumber = $(line).siblings(".previewLineNumber").attr("data-linenumber");
+        var focusFolio = $(line).parents(".previewPage").attr("data-pagenumber");
+        var transcriptionText = ($(line).hasClass("previewText")) ? ".theText" : ".notes";
+        var pair = $(".transcriptlet[lineid='"+focusLineID+"']").find(transcriptionText);
+        if ($(line).hasClass("currentPage")){
+          if (pair.parent().attr('id') !== tpen.screen.focusItem[1].attr('id')) updatePresentation(pair.parent());
+                line.focus();
+            $(line).keyup(function(){
+                Data.makeUnsaved();
+                pair.val($(this).text());
+            });
+        } else {
+            var saveLine = $(line).parent(".previewLine");
+            if (saveLine.find(".previewSave").size() == 0)
+                saveLine.prepend("<div class='right ui-state-default ui-corner-all previewSave' onclick='Preview.remoteSave(this,"+focusLineID+","+focusFolio+");'>Save Changes</div>");
+        }
+    },
+    /**
+     *  Saves the changes made in the preview tool on the previous or following
+     *  page. Overwrites anything currently saved.
+     *  
+     *  @param button element clicked (for removal after success)
+     *  @param saveLineID int lineID of changed transcription object
+     *  @param focusFolio int id of folio in which the line has been changed
+     */
+    remoteSave: function(button,saveLineID,focusFolio){
+        if(!isMember && !permitModify)return false;
+        var saveLine = $(".previewLineNumber[data-lineid='"+saveLineID+"']").parent(".previewLine");
+        var saveText = saveLine.find(".previewText").text();
+        var saveComment = saveLine.find(".previewNotes").text();
+        Data.saveLine(saveText, saveComment, saveLineID, focusFolio);
+        $(button).fadeOut();
+    },
+    /**
+     *  Syncs the current line of transcription in the preview tool when changes
+     *  are made in the main interface. Called on keyup in .theText and .notes.
+     *  
+     *  @param current element textarea in which change is made.
+     */
+     updateLine: function(current) {
+            var lineid = $(current).parent(".transcriptlet").attr("data-lineid");
+            var previewText = ($(current).hasClass("theText")) ? ".previewText" : ".previewNotes";
+            $(".previewLineNumber[data-lineid='"+lineid+"']").siblings(previewText).html(Preview.scrub($(current).val()));
+            Data.makeUnsaved();
+     },
+    /**
+     *  Rebuilds every line of the preview when changed by parsing.
+     *  
+     */
+    rebuild: function(){
+        var allTrans = $(".transcriptlet");
+        var columnValue = 65;
+        var columnLineShift = 0;
+        var oldLeftPreview = allTrans.eq(0).find(".lineLeft").val();
+        // empty the current page
+        var currentPreview = $("[data-pagenumber='"+folio+"']");
+        currentPreview.find(".previewLine").remove();
+        var newPage = new Array();
+        allTrans.each(function(index){
+            var columnLeft = $(this).find(".lineLeft").val();
+            if (columnLeft > oldLeftPreview){
+                columnValue++;
+                columnLineShift = (index+1);
+                oldLeftPreview = columnLeft;
+            }
+            newPage.push("<div class='previewLine' data-linenumber='",
+                    (index+1),"'>",
+                "<span class='previewLineNumber' data-lineid='",
+                    $(this).attr("data-lineid"),"' data-linenumber='",
+                    (index+1),"' data-linenumber='",
+                    String.fromCharCode(columnValue),"' data-lineofcolumn='",
+                    (index+1-columnLineShift),"'>",
+                    String.fromCharCode(columnValue),(index+1-columnLineShift),
+                    "</span>",
+                "<span class='previewText currentPage' contenteditable=true>",
+                    Preview.scrub($(this).find(".theText").val()),
+                    "</span><span class='previewLinebreak'></span>",
+                "<span class='previewNotes currentPage' contenteditable=true>",
+                    Preview.scrub($(this).find(".notes").val()),"</span></div>");
+        });
+        currentPreview.find('.previewFolioNumber').after(newPage.join(""));
+     },
+    /**
+     *  Cleans up the preview tool display.
+     */
+    format: function(){
+        $(".previewText").each(function(){
+            $(this).html(Preview.scrub($(this).text()));
+        });       
+    },
+    /**
+     *  Analyzes the text in the preview tool to highlight the tags detected.
+     *  Returns html of this text to Preview.format()
+     *  
+     *  @param thisText String loaded in the current line of the preview tool
+     */
+    scrub: function(thisText){
+        var workingText = $("<div/>").text(thisText).html();
+        var encodedText = [workingText];
+        if (workingText.indexOf("&gt;")>-1){
+            var open = workingText.indexOf("&lt;");
+            var beginTags = new Array();
+            var endTags = new Array();
+            var i = 0;
+            while (open > -1){
+                beginTags[i] = open;
+                var close = workingText.indexOf("&gt;",beginTags[i]);
+                if (close > -1){
+                    endTags[i] = (close+4);
+                } else {
+                    beginTags[0] = null;
+                    break;}
+                open = workingText.indexOf("&lt;",endTags[i]);
+                i++;
+            }
+            //use endTags because it might be 1 shorter than beginTags
+            var oeLen = endTags.length; 
+            encodedText = [workingText.substring(0, beginTags[0])];
+            for (i=0;i<oeLen;i++){
+                encodedText.push("<span class='previewTag'>",
+                    workingText.substring(beginTags[i], endTags[i]),
+                    "</span>");
+                if (i!=oeLen-1){
+                    encodedText.push(workingText.substring(endTags[i], beginTags[i+1]));
+            }
+            }
+        if(oeLen>0)encodedText.push(workingText.substring(endTags[oeLen-1]));
+        }
+        return encodedText.join("");
+    },
+    /**
+     *  Animates scrolling to the current page (middle of 3 shown)
+     *  in the Preview Tool. Also restores the intention of the selected options.
+     */
+    scrollToCurrentPage: function(){
+        var pageOffset = $(".previewPage").filter(":first").height() + 20;
+        $("#previewDiv").animate({
+            scrollTop:pageOffset
+        },500);
+        $("#previewNotes").filter(".ui-state-active").each( // pulled out #previewAnnotations
+            function(){
+                if ($("."+this.id).is(":hidden")){
+                    $("."+this.id).show();
+                    Preview.scrollToCurrentPage();
+                }
+            });
+    }
+}
+    $("#previewSplit")
+        .on("click",".previewText,.previewNotes",function(){Preview.edit(this);})
+        .on("click","#previewNotes",function(){
+            if($(this).hasClass("ui-state-active")){
+                $(".previewNotes").hide();
+                $("#previewNotes")
+                    .text("Show Notes")
+                    .removeClass("ui-state-active");
+            } else {
+                $(".previewNotes").show();
+                $("#previewNotes")
+                    .text("Hide Notes")
+                    .addClass("ui-state-active");
+            }
+            Preview.scrollToCurrentPage();
+        });
+
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?
 if (!window.console) window.console = {};

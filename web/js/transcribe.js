@@ -2,6 +2,7 @@ var tpen = {
     project: {
         id: 0,
         tools: [],
+        userTools:[],
         leaders: [],
         buttons: [],
         hotkeys: [],
@@ -489,9 +490,7 @@ function loadTranscription(pid, tool){
                     return false;
                 }
                 setTPENObjectData(activeProject);
-                var userToolsAvailable = activeProject.userTool;
-                var projectPermissions = JSON.parse(activeProject.projper);
-                activateUserTools(userToolsAvailable, projectPermissions);
+                activateUserTools(tpen.project.userTools, tpen.project.permissions);
                 if (tpen.manifest.sequences[0] !== undefined
                     && tpen.manifest.sequences[0].canvases !== undefined
                     && tpen.manifest.sequences[0].canvases.length > 0)
@@ -679,7 +678,7 @@ function loadTranscription(pid, tool){
                     setTPENObjectData(activeProject);
                     var userToolsAvailable = activeProject.userTool;
                     var projectPermissions = JSON.parse(activeProject.projper);
-                    activateUserTools(userToolsAvailable, projectPermissions);
+                    activateUserTools(tpen.project.userTools, tpen.project.permissions);
                     if (tpen.manifest.sequences[0] !== undefined
                         && tpen.manifest.sequences[0].canvases !== undefined
                         && tpen.manifest.sequences[0].canvases.length > 0)
@@ -870,7 +869,7 @@ function activateTool(tool){
 function activateUserTools(tools, permissions){
     if(tpen.user.isAdmin || $.inArray("parsing", tools) > -1 || permissions.allow_public_modify || permissions.allow_public_modify_line_parsing){
         $("#parsingBtn").show();
-        tpen.user.isAdmin = true;
+        tpen.user.isAdmin = true; // QUESTION: #169 Why isAdmin if you can parse?
         var message = $('<span>This canvas has no lines. If you would like to create lines</span>'
             + '<span style="color: blue;" onclick="hideWorkspaceForParsing()">click here</span>.'
             + 'Otherwise, you can <span style="color: red;" onclick="$(\'#noLineWarning\').hide()">'
@@ -879,19 +878,19 @@ function activateUserTools(tools, permissions){
         $("#noLineConfirmation").append(message);
     }
     if($.inArray("linebreak", tools) > -1){
-        $(".splitTool[splitter='linebreak']").show();
+        $("#linebreakSplit").show();
     }
     if($.inArray("history", tools) > -1){
-        $(".splitTool[splitter='history']").show();
+        // No history tool on page #114
     }
     if($.inArray("preview", tools) > -1){
-        $(".splitTool[splitter='preview']").show();
+        $("#previewSplit").show();
     }
     if($.inArray("abbreviation", tools) > -1){
-        $(".splitTool[splitter='abbreviation']").show();
+        // No abbreviation tool or endpoint available #170
     }
     if($.inArray("compare", tools) > -1){
-        $(".splitTool[splitter='compare']").show();
+        $("#compareSplit").show();
     }
 }
 

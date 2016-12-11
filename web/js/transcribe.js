@@ -249,8 +249,8 @@ function populatePreview(lines, pageLabel, currentPage, order){
         var previewLine = $('<div class="previewLine" data-lineNumber="' + j + '">'
             + '<span class="previewLineNumber" lineserverid="' + lineID + '" data-lineNumber="' + j + '"  data-column="' + col + '"  data-lineOfColumn="' + j + '">'
             + col + '' + num + '</span>'
-            + '<span class="previewText ' + currentPage + '">' + lineText + '<span class="previewLinebreak"></span></span>'
-            + '<span class="previewNotes" contentEditable="(permitModify||isMember)" ></span></div>');
+            + '<span class="previewText ' + currentPage + '" contentEditable="true" >' + lineText + '<span class="previewLinebreak"></span></span>'
+            + '<span class="previewNotes" contentEditable="true" ></span></div>');
         previewPage.append(previewLine);
     }
     $("#previewDiv").append(previewPage);
@@ -1412,6 +1412,7 @@ function linesToScreen(lines, tool){
         clearTimeout(typingTimer);
     })
         .keyup(function(e){
+            Preview.updateLine(this);
             var lineToUpdate = $(this).parent();
             clearTimeout(typingTimer);
             //when a user stops typing for 2 seconds, fire an update to get the new text.
@@ -4269,11 +4270,6 @@ function getURLVariable(variable)
        }
        return(false);
 }
-var Preview= {
-    updateLine:function(){
-        // TODO: update the preview line when the text is changed in the main transcription area.
-    }
-}
 
 var Data = {
     /* Save all lines on the canvas */
@@ -4698,12 +4694,12 @@ var Help = {
         var focusLineNumber = $(line).siblings(".previewLineNumber").attr("data-linenumber");
         var focusFolio = $(line).parents(".previewPage").attr("data-pagenumber");
         var transcriptionText = ($(line).hasClass("previewText")) ? ".theText" : ".notes";
-        var pair = $(".transcriptlet[lineid='"+focusLineID+"']").find(transcriptionText);
+        var pair = $(".transcriptlet[lineid='"+focusLineNumber+"']").find(transcriptionText);
         if ($(line).hasClass("currentPage")){
           if (pair.parent().attr('id') !== tpen.screen.focusItem[1].attr('id')) updatePresentation(pair.parent());
                 line.focus();
             $(line).keyup(function(){
-                Data.makeUnsaved();
+                // Data.makeUnsaved();
                 pair.val($(this).text());
             });
         } else {
@@ -4735,10 +4731,10 @@ var Help = {
      *  @param current element textarea in which change is made.
      */
      updateLine: function(current) {
-            var lineid = $(current).parent(".transcriptlet").attr("data-lineid");
+            var lineid = $(current).parent(".transcriptlet").attr("lineid");
             var previewText = ($(current).hasClass("theText")) ? ".previewText" : ".previewNotes";
-            $(".previewLineNumber[data-lineid='"+lineid+"']").siblings(previewText).html(Preview.scrub($(current).val()));
-            Data.makeUnsaved();
+            $(".previewLineNumber[data-linenumber='"+lineid+"']").siblings(previewText).html(Preview.scrub($(current).val()));
+            // Data.makeUnsaved();
      },
     /**
      *  Rebuilds every line of the preview when changed by parsing.

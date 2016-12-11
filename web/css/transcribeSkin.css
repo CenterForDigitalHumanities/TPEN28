@@ -1255,6 +1255,7 @@ p{
     color:white;
     transition: box-shadow .5s;
     opacity: .36;
+    display: none;
 }
 .lineColIndicator:hover{
     opacity: 1;

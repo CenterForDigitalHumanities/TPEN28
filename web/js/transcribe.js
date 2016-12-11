@@ -3057,9 +3057,9 @@ function togglePageJump(){
 
 /* Change the page to the specified page from the drop down selection. */
 function pageJump(page, parsing){
-    var folioNum = parseInt(page); //1,2,3...
-    var canvasToJumpTo = folioNum - 1; //0,1,2...
+    var canvasToJumpTo = parseInt(page);; //0,1,2...
     if (tpen.screen.currentFolio !== canvasToJumpTo && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio
+        console.log("Jumping to a dif page!");
         Data.saveTranscription(""); 
         tpen.screen.currentFolio = canvasToJumpTo;
         if (parsing === "parsing"){

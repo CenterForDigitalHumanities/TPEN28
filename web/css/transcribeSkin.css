@@ -113,7 +113,7 @@ body{
 }
 .lookLikeButtons{
     /*    font-family: "Open Sans","Helvetica Neue",sans-serif;*/
-    font-weight: bold;
+    /*font-weight: bold;*/
     color: #FFF;
     border-radius: 4px;
     height: 26px;
@@ -424,7 +424,7 @@ max-width: 9em;
     line-height: 30px;
     cursor: default;
     color: #002a5c;
-    font-weight: bold;
+    /*font-weight: bold;*/
     font-size: 11pt;
     position: relative;
     display: block; /* We may still want these, but they are wildly out of position right now. */
@@ -526,7 +526,7 @@ max-width: 9em;
     display:none;
 }
 .tpenButton{
-    font-weight: bold;
+    /*font-weight: bold;*/
     color:white !important;
     border-radius: 4px;
     padding-bottom: 4px;
@@ -652,8 +652,11 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
              -webkit-box-shadow: -1px -1px 3px rgba(0,0,0,.4);
              box-shadow:-1px -1px 3px rgba(0,0,0,.4);
 }
-.previewFolioNumber {float: left;font-weight: bold; display: block;padding-left: 20px;}
-/*.previewAnnotations {float: left;width:100%;background: wheat;}*/
+.previewPage::before {
+    content:attr(data-pagenumber);
+    float: left;font-weight: bold; display: block;padding-left: 20px;}
+/*.previewFolioNumber {float: left;font-weight: bold; display: block;padding-left: 20px;}
+*//*.previewAnnotations {float: left;width:100%;background: wheat;}*/
 /*            .previewAnnoText {display: block;}*/
 .previewLine{float: left;clear:left;display:block;width:100%;cursor:default;}
 .previewLine:nth-child(even) { background-color: whitesmoke; }
@@ -1224,7 +1227,7 @@ body{
     height: 100vh;
 }
 button, #uploadText, .lookLikeButtons {
-    font-weight: bold;
+    /*font-weight: bold;*/
     color:white;
     border-radius: 2px;
     padding: 4px 6px;

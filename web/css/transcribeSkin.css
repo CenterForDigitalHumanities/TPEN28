@@ -680,6 +680,7 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
     max-height: 18px;
     overflow: hidden;
     display: block;
+    text-align: left; 
 }
 #contribution {right:auto;left:0;}
 #contribution:before {content:'Last edit by: '}
@@ -1255,6 +1256,7 @@ p{
     color:white;
     transition: box-shadow .5s;
     opacity: .36;
+    display: none;
 }
 .lineColIndicator:hover{
     opacity: 1;

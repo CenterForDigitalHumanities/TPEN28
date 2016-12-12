@@ -2,6 +2,7 @@ var tpen = {
     project: {
         id: 0,
         tools: [],
+        userTools:[],
         leaders: [],
         buttons: [],
         hotkeys: [],
@@ -489,9 +490,7 @@ function loadTranscription(pid, tool){
                     return false;
                 }
                 setTPENObjectData(activeProject);
-                var userToolsAvailable = activeProject.userTool;
-                var projectPermissions = JSON.parse(activeProject.projper);
-                activateUserTools(userToolsAvailable, projectPermissions);
+                activateUserTools(tpen.project.userTools, tpen.project.permissions);
                 if (tpen.manifest.sequences[0] !== undefined
                     && tpen.manifest.sequences[0].canvases !== undefined
                     && tpen.manifest.sequences[0].canvases.length > 0)
@@ -679,7 +678,7 @@ function loadTranscription(pid, tool){
                     setTPENObjectData(activeProject);
                     var userToolsAvailable = activeProject.userTool;
                     var projectPermissions = JSON.parse(activeProject.projper);
-                    activateUserTools(userToolsAvailable, projectPermissions);
+                    activateUserTools(tpen.project.userTools, tpen.project.permissions);
                     if (tpen.manifest.sequences[0] !== undefined
                         && tpen.manifest.sequences[0].canvases !== undefined
                         && tpen.manifest.sequences[0].canvases.length > 0)
@@ -870,7 +869,7 @@ function activateTool(tool){
 function activateUserTools(tools, permissions){
     if(tpen.user.isAdmin || $.inArray("parsing", tools) > -1 || permissions.allow_public_modify || permissions.allow_public_modify_line_parsing){
         $("#parsingBtn").show();
-        tpen.user.isAdmin = true;
+        tpen.user.isAdmin = true; // QUESTION: #169 Why isAdmin if you can parse?
         var message = $('<span>This canvas has no lines. If you would like to create lines</span>'
             + '<span style="color: blue;" onclick="hideWorkspaceForParsing()">click here</span>.'
             + 'Otherwise, you can <span style="color: red;" onclick="$(\'#noLineWarning\').hide()">'
@@ -879,19 +878,19 @@ function activateUserTools(tools, permissions){
         $("#noLineConfirmation").append(message);
     }
     if($.inArray("linebreak", tools) > -1){
-        $(".splitTool[splitter='linebreak']").show();
+        $("#linebreakSplit").show();
     }
     if($.inArray("history", tools) > -1){
-        $(".splitTool[splitter='history']").show();
+        // No history tool on page #114
     }
     if($.inArray("preview", tools) > -1){
-        $(".splitTool[splitter='preview']").show();
+        $("#previewSplit").show();
     }
     if($.inArray("abbreviation", tools) > -1){
-        $(".splitTool[splitter='abbreviation']").show();
+        // No abbreviation tool or endpoint available #170
     }
     if($.inArray("compare", tools) > -1){
-        $(".splitTool[splitter='compare']").show();
+        $("#compareSplit").show();
     }
 }
 
@@ -1332,12 +1331,13 @@ function linesToScreen(lines, tool){
         }
         counter++;
         var htmlSafeText = $("<div/>").text(thisContent).html();
+        var htmlSafeText2 = $("<div/>").text(thisNote).html();
         var newAnno = $('<div id="transcriptlet_' + counter + '" col="' + col
             + '" colLineNum="' + colCounter + '" lineID="' + counter
             + '" lineserverid="' + lineID + '" class="transcriptlet" data-answer="'
             + escape(thisContent) + '"><textarea class="theText" placeholder="' + thisPlaceholder + '">'
-            + htmlSafeText + '</textarea><textarea class="notes" placeholder="Line notes">'
-            + thisNote + '</textarea></div>');
+            + htmlSafeText + '</textarea><textarea class="notes" data-answer="'+escape(thisNote)+'" placeholder="Line notes">'
+            + htmlSafeText2 + '</textarea></div>');
         // 1000 is promised, 10 goes to %
         var left = parseFloat(XYWHarray[0]) / (10 * ratio);
         var top = parseFloat(XYWHarray[1]) / 10;
@@ -1377,7 +1377,6 @@ function linesToScreen(lines, tool){
         console.warn("No lines found in a bad place...");
     }
     // we want automatic updating for the lines these texareas correspond to.
-    typingTimer; //timer identifier
     $("textarea")
         .keydown(function(e){
         //user has begun typing, clear the wait for an update
@@ -3095,9 +3094,9 @@ function togglePageJump(){
 
 /* Change the page to the specified page from the drop down selection. */
 function pageJump(page, parsing){
-    var folioNum = parseInt(page); //1,2,3...
-    var canvasToJumpTo = folioNum - 1; //0,1,2...
+    var canvasToJumpTo = parseInt(page);; //0,1,2...
     if (tpen.screen.currentFolio !== canvasToJumpTo && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio
+        console.log("Jumping to a dif page!");
         Data.saveTranscription(""); 
         tpen.screen.currentFolio = canvasToJumpTo;
         if (parsing === "parsing"){
@@ -3328,7 +3327,12 @@ function batchLineUpdate(linesInColumn, relocate){
 
     };
 
-/* Update line information for a particular line. */
+/* 
+ * Update line information for a particular line. Until we fix the data schema, this also forces us to update the annotation list for any change to a line.
+ * 
+ * Included in this is the interaction with #saveReport, which populates with entries if a change to a line's text or comment has occurred (not any positional change).
+ * 
+ * */
 function updateLine(line, cleanup, updateList){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
@@ -3346,10 +3350,11 @@ function updateLine(line, cleanup, updateList){
     lineHeight = Math.round(lineHeight, 0);
     var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
     var currentLineServerID = line.attr('lineserverid');
-    var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
+    var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".theText").val();
+    var currentLineNotes = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".notes").val();
     var currentLineTextAttr = unescape(line.attr("data-answer"));
+    var currentLineNotesAttr = unescape(line.find(".notes").attr("data-answer"));
     var currentAnnoListID = tpen.screen.currentAnnoListID;
-    var lineNote = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".notes").val();
     var dbLine = {
         "@id" : currentLineServerID,
         "@type" : "oa:Annotation",
@@ -3361,7 +3366,7 @@ function updateLine(line, cleanup, updateList){
         "on" : onCanvas + "#xywh=" + lineString,
         "otherContent" : [],
         "forProject": tpen.manifest['@id'],
-        "_tpen_note" : lineNote,
+        "_tpen_note" : currentLineNotes,
         "testing":"TPEN28"
     };
     if (!currentAnnoListID){
@@ -3395,6 +3400,7 @@ function updateLine(line, cleanup, updateList){
             };
             if(updateList){
                 var url1 = "updateAnnoList";
+                clearTimeout(typingTimer);
                 for(var i=0  ;i < currentAnnoList.length; i++){
                     if(currentAnnoList[i]["@id"] === dbLine['@id']){
                         currentAnnoList[i].on = dbLine.on;
@@ -3409,19 +3415,16 @@ function updateLine(line, cleanup, updateList){
                         });
                     }
                 }
-
             }
-            console.log("Check for change.");
-            console.log(currentLineText +" === "+currentLineTextAttr);
-            if(currentLineText === currentLineTextAttr){
-                //This line's text has not changed
+            if(currentLineText === currentLineTextAttr && currentLineNotes === currentLineNotesAttr){
+                //This line's text has not changed, and neither does the notes
                 $("#saveReport")
                 .stop(true,true).animate({"color":"red"}, 400)
                 .prepend("<div class='noChange'>No changes made</div>")//
                 .animate({"color":"#618797"}, 1600,function(){$("#saveReport").find(".noChange").remove();});
                 $("#saveReport").find(".nochanges").show().fadeOut(2000);
             }
-            else{
+            else{ //something about the line text or note text has changed. 
                 var columnMark = "Column&nbsp;"+line.attr("col")+"&nbsp;Line&nbsp;"+line.attr("collinenum");
                 var date=new Date();
                 $("#saveReport")
@@ -3429,6 +3432,8 @@ function updateLine(line, cleanup, updateList){
                 .prepend("<div class='saveLog'>"+columnMark + '&nbsp;saved&nbsp;at&nbsp;'+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+"</div>")//+", "+Data.dateFormat(date.getDate())+" "+month[date.getMonth()]+" "+date.getFullYear())
                 .animate({"color":"#618797"}, 600);
             }
+            line.attr("data-answer", currentLineText);
+            line.find(".notes").attr("data-answer", currentLineNotes);
             $.post(url,payload,function(){
             	line.attr("hasError",null);
                 $("#parsingCover").hide();

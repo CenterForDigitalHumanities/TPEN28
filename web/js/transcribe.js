@@ -2106,17 +2106,11 @@ function hideWorkspaceForParsing(){
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
     var PAGEHEIGHT = $("#transcriptionTemplate").width();
     if (newCanvasHeight > PAGEHEIGHT){
-        console.log("Canvas height is greater than page height, adjust");
         newCanvasHeight = PAGEHEIGHT;
         newCanvasWidth = 1/ratio*newCanvasHeight;
     }
     $("#transcriptionCanvas").css("height", newCanvasHeight);
     $("#transcriptionCanvas").css("width", newCanvasWidth);
-    console.log(originalCanvasHeight);
-    console.log(originalCanvasWidth);
-    console.log(newCanvasWidth);
-    console.log(newCanvasHeight);
-    console.log(ratio);
 //    var pageJumpIcons = $("#pageJump").parent().children("i");
 //    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
 //    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
@@ -2147,6 +2141,7 @@ function hideWorkspaceForParsing(){
         "height":newCanvasHeight+"px"
     });
     
+    
     //the width and max-width here may need to be played with a bit.
     $("#transcriptionTemplate").resizable({
         disabled:false,
@@ -2175,7 +2170,7 @@ function hideWorkspaceForParsing(){
             });
             $("#imgTop").css({ //This width will not change when the area is expanded, but does when it is shrunk.  We need to do the math to grow it.  
                 'height': $("#imgTop img").height(),
-                'width': $("#imgTop img").width() //This locks up and does not change.
+                'width': imgTopRatio * $("#imgTop img").height() + "px" //This locks up and does not change.
             });
             tpen.screen.textSize();
         },
@@ -2190,11 +2185,10 @@ function hideWorkspaceForParsing(){
         $("#imgTop img").css("width", "auto");
         $("#imgTop").css("width", $("#imgTop img").width());
         $("#imgTop").css("height", $("#imgTop img").height());
-        //At this point, transcription canvas is the original height and width
-        //of the full page image.  We can use that for when we resume transcription.
         //$("#transcriptionCanvas").css("height", $(window).innerHeight());
         //$(".lineColIndicatorArea").css("height", $(window).innerHeight());
         $("#transcriptionCanvas").css("display", "block");
+        imgTopRatio = $("#imgTop img").width() / $("#imgTop img").height();
     }, 500);
     window.setTimeout(function(){
         //in here we can control what interface loads up.  writeLines
@@ -2339,7 +2333,16 @@ function fullPage(){
     });
     if (tpen.screen.focusItem[0] == null
         && tpen.screen.focusItem[1] == null){
-        updatePresentation($("#transcriptlet_1"));
+        updatePresentation($("#transcriptlet_0"));
+    }
+    if(tpen.screen.liveTool == "parsing"){
+        tpen.screen.liveTool = "";
+        $("#transcriptionTemplate").hide();
+        $("#transTemplateLoading").show();
+        //FIXME: If there is no delay here, it does not draw correctly
+        setTimeout(function(){
+            redraw("");
+        }, 1000);
     }
 }
 

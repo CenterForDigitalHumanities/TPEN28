@@ -608,7 +608,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             var newCanvasHeight = 1 / ratio * newCanvasWidth;
             var PAGEHEIGHT = $("#transcriptionTemplate").width();
             if (newCanvasHeight > PAGEHEIGHT){
-                console.log("Canvas height is greater than page height, adjust");
                 newCanvasHeight = PAGEHEIGHT;
                 newCanvasWidth = 1/ratio*newCanvasHeight;
             }
@@ -629,7 +628,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             });
             $("#imgTop").css({
                 'height': $("#imgTop img").height(),
-                'width': $("#imgTop img").width()
+                'width': imgTopRatio * $("#imgTop img").height() + "px" //This locks up and does not change.
             });
         }
         else{
@@ -731,7 +730,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             };
             reader.readAsText(selectedFile);
         });
-
 
         $(".fullScreenTrans").click(function(){
             fullPage();

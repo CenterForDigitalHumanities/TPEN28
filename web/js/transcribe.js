@@ -46,7 +46,12 @@ var tpen = {
         parsing: false,
         linebreakString : "<br>",
         brokenText : [""],
-        currentManuscriptID: -1
+        currentManuscriptID: -1,
+        imgTopSizeRatio : 1, //This is used specifically for resizing the window to help the parsing interface.
+        imgTopPositionRatio: 1,
+        imgBottomPositionRatio:1,
+        originalCanvasHeight : 1000, //The canvas height when initially loaded into the transcription interface.
+        originalCanvasWidth: 1 //The canvas width when initially loaded into the transcrtiption interface.
     },
     user: {
         isAdmin: false,
@@ -72,7 +77,7 @@ function redraw() {
     if (tpen.screen.currentFolio > - 1) {
         if (tpen.screen.liveTool === "parsing") {
             $(".pageTurnCover").show();
-            fullPage();
+            //fullPage();
             tpen.screen.currentFolio = parseInt(tpen.screen.currentFolio);
             if (!canvas) {
                 canvas = tpen.manifest.sequences[0].canvases[0];
@@ -683,6 +688,7 @@ function loadTranscription(pid, tool){
 
         if (localProject){
             //get project info first, get manifest out of it, populate
+            
             var aBar = document.location.href;
             var toAddressBar = aBar+"?projectID=" + projectID;
             if(aBar.indexOf("projectID=") === -1){
@@ -1034,6 +1040,8 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
                 $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
                 populateCompareSplit(tpen.screen.currentFolio);
+                //FIXME At some point I had to track tpen.screen.originalCanvasHeight differently.  Not sure that
+                //I need to anymore, test making these tpen.screen.* and see what happens.
                 originalCanvasHeight2 = $("#imgTop img").height();
                 originalCanvasWidth2 = $("#imgTop img").width();
                 drawLinesToCanvas(canvasObj, parsing, tool);
@@ -1212,6 +1220,7 @@ function linesToScreen(lines, tool){
     var theWidth = image.width();
     $('#transcriptionCanvas').css('height', originalCanvasHeight2 + "px");
     $('.lineColIndicatorArea').css('height', originalCanvasHeight2 + "px");
+    //can i use tpen.screen.originalCanvasHeight here?
     var ratio = 0;
     //should be the same as originalCanvasWidth2/originalCanvasHeight2
     ratio = theWidth / theHeight;
@@ -1558,6 +1567,8 @@ function setPositions() {
         bottomImgPositionPx: bottomImgPositionPx,
         activeLine: pairForBookmark
     };
+    tpen.screen.imgTopPositionRatio = positions.topImgPositionPx / bottomImageHeight;
+    tpen.screen.imgBottomPositionRatio = positions.bottomImgPositionPx / bottomImageHeight;
     return positions;
 }
 
@@ -2124,15 +2135,14 @@ function restoreTransition(){
 function hideWorkspaceForParsing(){
     tpen.screen.liveTool = "parsing";
     $("#parsingBtn").css("box-shadow: none;");
-
-    originalCanvasHeight = $("#transcriptionCanvas").height();
-    originalCanvasWidth = $("#transcriptionCanvas").width();
+    tpen.screen.originalCanvasHeight = $("#transcriptionCanvas").height();
+    tpen.screen.originalCanvasWidth = $("#transcriptionCanvas").width();
     imgTopOriginalTop = $("#imgTop img").css("top");
     $("#transcriptionTemplate").css("max-width", "57%");
     $("#transcriptionCanvas").css("max-height", window.innerHeight + "px");
     $("#transcriptionTemplate").css("max-height", window.innerHeight + "px");
-    var ratio = originalCanvasWidth / originalCanvasHeight;
-    var newCanvasWidth = originalCanvasWidth2 * .57;
+    var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
+    var newCanvasWidth = tpen.screen.originalCanvasWidth * .57;
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
     var PAGEHEIGHT = $("#transcriptionTemplate").width();
     if (newCanvasHeight > PAGEHEIGHT){
@@ -2200,7 +2210,7 @@ function hideWorkspaceForParsing(){
             });
             $("#imgTop").css({ //This width will not change when the area is expanded, but does when it is shrunk.  We need to do the math to grow it.  
                 'height': $("#imgTop img").height(),
-                'width': imgTopRatio * $("#imgTop img").height() + "px" //This locks up and does not change.
+                'width': tpen.screen.imgTopSizeRatio * $("#imgTop img").height() + "px" //This locks up and does not change.
             });
             tpen.screen.textSize();
         },
@@ -2218,7 +2228,7 @@ function hideWorkspaceForParsing(){
         //$("#transcriptionCanvas").css("height", $(window).innerHeight());
         //$(".lineColIndicatorArea").css("height", $(window).innerHeight());
         $("#transcriptionCanvas").css("display", "block");
-        imgTopRatio = $("#imgTop img").width() / $("#imgTop img").height();
+        tpen.screen.imgTopSizeRatio = $("#imgTop img").width() / $("#imgTop img").height();
     }, 500);
     window.setTimeout(function(){
         //in here we can control what interface loads up.  writeLines
@@ -2325,6 +2335,7 @@ function fullPage(){
     $("#transcriptionTemplate").css("max-height", "none");
     $("#transcriptionTemplate").css("height", "auto");
     $("#transcriptionTemplate").css("display", "inline-block");
+    $('.lineColIndicatorArea').css("max-height","none");
     $('.lineColIndicatorArea').show();
     $("#help").css({"left":"100%"}).fadeOut(1000);
     $("#fullScreenBtn").fadeOut(250);
@@ -2334,9 +2345,10 @@ function fullPage(){
     restoreWorkspace();
     $("#splitScreenTools").show();
     var screenWidth = $(window).width();
-    var adjustedHeightForFullscreen = (originalCanvasHeight2 / originalCanvasWidth2) * screenWidth;
-    $("#transcriptionCanvas").css("height", adjustedHeightForFullscreen + "px");
-    $(".lineColIndicatorArea").css("height", adjustedHeightForFullscreen + "px");
+    var adjustedHeightForFullscreen = (tpen.screen.originalCanvasHeight / tpen.screen.originalCanvasWidth) * screenWidth;
+    //can i just use tpen.screen.originalCanvasHeight and Width here?
+    $("#transcriptionCanvas").css("height", tpen.screen.originalCanvasHeight + "px");
+    $(".lineColIndicatorArea").css("height", tpen.screen.originalCanvasHeight + "px");
     var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
     $("#imgTop").hover(
        function(){
@@ -2365,51 +2377,64 @@ function fullPage(){
         && tpen.screen.focusItem[1] == null){
         updatePresentation($("#transcriptlet_0"));
     }
-    if(tpen.screen.liveTool == "parsing"){
-        tpen.screen.liveTool = "";
+    
+     //FIXME: If there is no delay here, it does not draw correctly.  Should not use setTimeout. 
+    if(tpen.screen.liveTool === "parsing"){
         $("#transcriptionTemplate").hide();
         $("#transTemplateLoading").show();
-        //FIXME: If there is no delay here, it does not draw correctly
         setTimeout(function(){
             redraw("");
         }, 1000);
     }
+    tpen.screen.liveTool = "";
+    
+   
+    
+    
 }
 
 function splitPage(event, tool) {
     tpen.screen.liveTool = tool;
-    originalCanvasHeight = $("#transcriptionCanvas").height(); //make sure these are set correctly
-    originalCanvasWidth = $("#transcriptionCanvas").width(); //make sure these are set correctly
-    var ratio = originalCanvasWidth / originalCanvasHeight;
-    $("#splitScreenTools").attr("disabled", "disabled");
-    var imgBottomRatio = parseFloat($("#imgBottom img").css("top")) / originalCanvasHeight;
-    var imgTopRatio = parseFloat($("#imgTop img").css("top")) / originalCanvasHeight;
+    tpen.screen.originalCanvasHeight = $("#transcriptionCanvas").height(); //make sure these are set correctly
+    tpen.screen.originalCanvasWidth = $("#transcriptionCanvas").width(); //make sure these are set correctly
+    var newCanvasWidth = tpen.screen.originalCanvasWidth * .55; //
+    
     $("#transcriptionTemplate").css({
         "width"   :   "55%",
         "display" : "inline-table"
     });
-    var newCanvasWidth = originalCanvasWidth2 * .55;
+    if(tool==="controls"){
+        $("#transcriptionCanvas").css("width", Page.width()-200 + "px");
+        $("#transcriptionTemplate").css("width", Page.width()-200 + "px");
+        newCanvasWidth = Page.width()-200;
+    }
+    var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
+    $("#splitScreenTools").attr("disabled", "disabled");
+//    var imgBottomRatio = parseFloat($("#imgBottom img").css("top")) / tpen.screen.originalCanvasHeight;
+//    var imgTopRatio = parseFloat($("#imgTop img").css("top")) / tpen.screen.originalCanvasHeight;
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
+    if(tool)
     $("#transcriptionCanvas").css({
         "width"   :   newCanvasWidth + "px",
         "height"   :   newCanvasHeight + "px"
     });
-    var newImgBtmTop = imgBottomRatio * newCanvasHeight;
-    var newImgTopTop = imgTopRatio * newCanvasHeight;
+    var newImgBtmTop = tpen.screen.imgBottomPositionRatio * newCanvasHeight;
+    var newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
     $(".lineColIndicatorArea").css("max-height", newCanvasHeight + "px");
-    $(".lineColIndicatorArea").css("height", newCanvasHeight + "px");
+    $(".lineColIndicatorArea").css("height", newCanvasHeight + "px");   
     $("#imgBottom img").css("top", newImgBtmTop + "px");
     $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
     $("#imgTop img").css("top", newImgTopTop + "px");
     $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
-    
+    var originalRatio = 1;
     $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
     $("#transcriptionTemplate").resizable({
         disabled:false,
         minWidth: window.innerWidth / 2,
         maxWidth: window.innerWidth * .75,
         start: function(event, ui){
-            originalRatio = $("#transcriptionCanvas").width() / $("#transcriptionCanvas").height();
+            //originalRatio = $("#transcriptionCanvas").width() / $("#transcriptionCanvas").height();
+            originalRatio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
         },
         resize: function(event, ui) {
             var width = ui.size.width;
@@ -2423,6 +2448,12 @@ function splitPage(event, tool) {
             var newHeight2 = parseFloat($(".compareImage").height()) + parseFloat($("#compareSplit .toolLinks").height());
             $('#fullPageSplit').css('height', newHeight1 + 'px');
             $('#compareSplit').css('height', newHeight2 + 'px');
+            newImgBtmTop = tpen.screen.imgBottomPositionRatio * height;
+            newImgTopTop = tpen.screen.imgTopPositionRatio * height;
+            $("#imgBottom img").css("top", newImgBtmTop + "px");
+            $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
+            $("#imgTop img").css("top", newImgTopTop + "px");
+            $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
             
         },
         stop: function(event, ui){
@@ -2446,9 +2477,7 @@ function splitPage(event, tool) {
             'max-width': $(".split:visible")
                 .width() + "px"
         });
-        if(tool==="controls"){
-            $("#transcriptionCanvas").css("width", Page.width()-200 + "px");
-        }
+        
         
 }
 
@@ -3227,7 +3256,7 @@ function batchLineUpdate(linesInColumn, relocate){
     var currentAnnoListID = tpen.screen.currentAnnoListID;
     var currentAnnoListResources = [];
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
-    var ratio = originalCanvasWidth2 / originalCanvasHeight2;
+    var ratio = originalCanvasWidth2 / originalCanvasHeight2; //Can I use tpen.screen.originalCanvasHeight and Width?
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
         //Go over each line from the column resize.
     $.each(linesInColumn, function(){
@@ -3372,7 +3401,7 @@ function updateLine(line, cleanup, updateList){
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2;
-    
+    //Can I use tpen.screen.originalCanvasHeight and Width?
     lineTop = parseFloat(line.attr("linetop")) * 10;
     lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
     lineWidth = parseFloat(line.attr("linewidth")) * (10 * ratio);
@@ -3502,6 +3531,7 @@ function saveNewLine(lineBefore, newLine){
     var newLineTop, newLineLeft, newLineWidth, newLineHeight = 0;
     var oldLineTop, oldLineLeft, oldLineWidth, oldLineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2;
+    //Can I use tpen.screen.originalCanvasHeight and Width?
     newLineTop = parseFloat(newLine.attr("linetop"));
     newLineLeft = parseFloat(newLine.attr("lineleft"));
     newLineWidth = parseFloat(newLine.attr("linewidth"));

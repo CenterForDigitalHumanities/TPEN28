@@ -4861,11 +4861,11 @@ var Help = {
             Preview.scrollToCurrentPage();
         });
 tpen.screen.peekZoom = function(cancel){
-        var topImg = $("#imgTopImg");
+        var topImg = $("#imgTop img");
         var btmImg = $("#imgBottom img");
         var imgSrc = topImg.attr("src");
-        if(imgSrc.indexOf("imageResize?">-1 && imgSrc.indexOf("height=1000">-1))){
-    imgSrc=imgSrc.replace("height=1000","height=1000");
+        if(imgSrc.indexOf("imageResize?">-1 && imgSrc.indexOf("height=1000")>-1)){
+    imgSrc=imgSrc.replace("height=1000","height=2000");
     }
         if (imgSrc.indexOf("quality") === -1) {
             imgSrc += "&quality=100";
@@ -4887,12 +4887,14 @@ tpen.screen.peekZoom = function(cancel){
             topImg.css({
                 "width"     : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%",
                 "left"      : -line.position().left * zoomRatio,
-                "top"       : imgDims[3] * zoomRatio
+                "top"       : imgDims[3] * zoomRatio,
+                "max-width" : "10000%"
             });
             btmImg.css({
                 "left"      : -line.position().left * zoomRatio,
                 "top"       : (imgDims[3]-line.height()) * zoomRatio,
-                "width"     : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%"
+                "width"     : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%",
+                "max-width" : "10000%"
             });
             tpen.screen.isPeeking = true;
         } else {
@@ -4900,16 +4902,19 @@ tpen.screen.peekZoom = function(cancel){
             topImg.css({
                 "width"     : "100%",
                 "left"      : 0,
-                "top"       : tpen.screen.peekMemory[0]
+                "top"       : tpen.screen.peekMemory[0],
+                "max-width" : ""
             });
             btmImg.css({
                 "width"     : "100%",
                 "left"      : 0,
-                "top"       : tpen.screen.peekMemory[1]
+                "top"       : tpen.screen.peekMemory[1],
+                "max-width" : ""
             });
             $("#imgTop").css({
                 "height"    : tpen.screen.peekMemory[2]
             });
+            $(".lineColIndicatorArea").fadeIn();
             tpen.screen.isPeeking = false;
         }
     };

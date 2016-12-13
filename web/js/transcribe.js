@@ -30,14 +30,7 @@ var tpen = {
         isMagnifying: false,
         isFullscreen: true,
         isAddingLines: false,
-        colorList: [
-            "rgba(153,255,0,.4)",
-            "rgba(0,255,204,.4)",
-            "rgba(51,0,204,.4)",
-            "rgba(204,255,0,.4)",
-            "rgba(0,0,0,.4)",
-            "rgba(255,255,255,.4)",
-            "rgba(255,0,0,.4)"],
+        colorList: ["black","lime","magenta","white","#A64129"],
         colorThisTime: "rgba(255,255,255,.4)",
         currentFolio: 0,
         currentAnnoListID: 0,
@@ -1017,14 +1010,15 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
     $('#transcriptionTemplate').css("display", "inline-block");
     $("#parsingBtn").css("box-shadow", "none");
     $("#parsingButton").removeAttr('disabled');
-    $(".lineColIndicator").css({
-        "box-shadow": "rgba(255, 255, 255, 0.4)",
-        "border": "1px solid rgb(255, 255, 255)"
-    });
-    $(".lineColOnLine").css({
-        "border-left": "1px solid rgba(255, 255, 255, 0.2);",
-        "color": "rgb(255, 255, 255)"
-    });
+    // This should just be the CSS
+//    $(".lineColIndicator").css({
+//        "box-shadow": "rgba(255, 255, 255, 0.4)",
+//        "border": "1px solid rgb(255, 255, 255)"
+//    });
+//    $(".lineColOnLine").css({
+//        "border-left": "1px solid rgba(255, 255, 255, 0.2);",
+//        "color": "rgb(255, 255, 255)"
+//    });
     //Move up all image annos
     var cnt = - 1;
     if (canvasObj.images[0].resource['@id'] !== undefined
@@ -2310,26 +2304,27 @@ function fullPage(){
     var adjustedHeightForFullscreen = (originalCanvasHeight2 / originalCanvasWidth2) * screenWidth;
     $("#transcriptionCanvas").css("height", adjustedHeightForFullscreen + "px");
     $(".lineColIndicatorArea").css("height", adjustedHeightForFullscreen + "px");
-    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
-    $("#imgTop").hover(
-       function(){
-            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
-        },
-        function(){
-            var lineColor2 = lineColor.replace(".9", ".4");
-            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
-        }
-    );
+    // This is all repeated from transcription.html
+//    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
+//    $("#imgTop").hover(
+//       function(){
+//            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+//        },
+//        function(){
+//            var lineColor2 = lineColor.replace(".9", ".4");
+//            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+//        }
+//    );
 
-    $("#imgBottom").hover(
-        function(){
-            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
-        },
-        function(){
-            var lineColor2 = lineColor.replace(".9", ".4");
-            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
-        }
-    );
+//    $("#imgBottom").hover(
+//        function(){
+//            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+//        },
+//        function(){
+//            var lineColor2 = lineColor.replace(".9", ".4");
+//            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+//        }
+//    );
 
     $.each($(".lineColOnLine"), function(){
         $(this).css("line-height", $(this).height() + "px");
@@ -3127,17 +3122,24 @@ function markerColors(){
  * colorThisTime
  */
     var tempColorList = ["rgba(153,255,0,.4)", "rgba(0,255,204,.4)", "rgba(51,0,204,.4)", "rgba(204,255,0,.4)", "rgba(0,0,0,.4)", "rgba(255,255,255,.4)", "rgba(255,0,0,.4)"];
-    if (tpen.screen.colorList.length == 0){
+    if (tpen.screen.colorList.length === 0){
         tpen.screen.colorList = tempColorList;
     }
-    tpen.screen.colorThisTime = tpen.screen.colorList[Math.floor(Math.random() * tpen.screen.colorList.length)];
-    tpen.screen.colorList.splice(tpen.screen.colorList.indexOf(tpen.screen.colorThisTime), 1);
-    var oneToChange = tpen.screen.colorThisTime.lastIndexOf(")") - 2;
-    var borderColor = tpen.screen.colorThisTime.substr(0, oneToChange) + '.2' + tpen.screen.colorThisTime.substr(oneToChange + 1);
-    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9"); //make this color opacity 100
-    $('.lineColIndicator').css('border', '1px solid ' + lineColor);
-    $('.lineColOnLine').css({'border-left':'1px solid ' + borderColor, 'color':lineColor});
-    $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + tpen.screen.colorThisTime); //keep this color opacity .4 until imgTop is hovered.
+    var index = tpen.screen.colorList.indexOf(tpen.screen.colorThisTime);
+    if(index++>tpen.screen.colorList.length){
+        index = 0;
+    }
+    var color = tpen.screen.colorThisTime = tpen.screen.colorList[index];
+//    var oneToChange = tpen.screen.colorThisTime.lastIndexOf(")") - 2;
+//    var borderColor = tpen.screen.colorThisTime.substr(0, oneToChange) + '.2' + tpen.screen.colorThisTime.substr(oneToChange + 1);
+//    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9"); //make this color opacity 100
+    $('.lineColIndicator').css('border', '1px solid ' + color);
+    $('.lineColOnLine').css({'border-left':'1px solid ' + color, 'color':color});
+    $('.activeLine').css({
+//        'box-shadow' : '0px 0px 15px 8px ' + color,
+        'box-shadow' : '0 0 15px black',
+        'opacity' : .4
+    }); //keep this color opacity .4 until imgTop is hovered.
 }
 
 /* Toggle the line/column indicators in the transcription interface. (A1, A2...) */

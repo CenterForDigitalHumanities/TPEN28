@@ -362,16 +362,14 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
         </div>
 
         <header> Column Controls</header>
-        <button role="button" class="block">
             <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" checked="checked">
         </button>
-        <button role="button" class=" block">
             <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
         </button>
         <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
         <button role="button" id="parsingBtn" title="Redraw the lines on this page" class='block'>
             <i class="fa fa-barcode fa-rotate-90"></i>
-            Edit Annotations</button>
+            Edit Columns</button>
 
         <header>
             Keyboard Shortcuts
@@ -738,26 +736,25 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             }
         });
 
-        var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
+//        var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
         $("#imgTop").hover(
             function(){
-                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+                $('.activeLine').css('box-shadow', '0 0 15px 1em rgba(0,0,0,.4)');
             },
             function(){
-                var lineColor2 = lineColor.replace(".9", ".4");
-                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+                $('.activeLine').css('box-shadow', '0 0 15px 0 rgba(0,0,0,1)');
             }
         );
 
-        $("#imgBottom").hover(
-            function(){
-                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
-            },
-            function(){
-                var lineColor2 = lineColor.replace(".9", ".4");
-                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
-            }
-        );
+//        $("#imgBottom").hover(
+//            function(){
+//                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+//            },
+//            function(){
+//                var lineColor2 = lineColor.replace(".9", ".4");
+//                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+//            }
+//        );
 
         document.addEventListener("mousewheel", function(e){
             if(tpen.screen.isMagnifying){

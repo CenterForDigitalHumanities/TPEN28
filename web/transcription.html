@@ -107,6 +107,7 @@
             <div class="turnLoader transLoader"><img src="images/loading2.gif" /></div>
         </div>
         <div id="transcriptionTemplate">
+            <div id="templateResizeBar"></div>
             <div id="parsingCover"></div>
             <div id="transcriptionCanvas">
                 <div id="noLineWarning">
@@ -600,19 +601,13 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
                 <script>
 
-    //Must explicitly set new height and width for percentages values in the DOM to take effect.
-    window.onresize = function(event) {
-        var newHeight = $("#imgBottom img").height();
-        $("#transcriptionCanvas").css("height",newHeight+"px");
-        $(".lineColIndicatorArea").css("height",newHeight+"px");
-        $.each($(".lineColOnLine"),function(){
-              $(this).css("line-height", $(this).height()+"px");
-          });
-          tpen.screen.textSize();
-    };
+    
+    
+    
 
     //Page load event triggers and attached here.
     $(document).ready(function(){
+        attachWindowResize();
         $("#imgTop, #imgBottom").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("width", "auto");
@@ -699,7 +694,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             };
             reader.readAsText(selectedFile);
         });
-
 
         $(".fullScreenTrans").click(function(){
             fullPage();
@@ -889,7 +883,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             });
 
             $("#parsingBtn").click(function(){
-                tpen.screen.liveTool = "parsing";
                 if(tpen.screen.isFullscreen)tpen.screen.isUnadjusted = true;
                 tpen.screen.isFullscreen = false;
                 hideWorkspaceForParsing();

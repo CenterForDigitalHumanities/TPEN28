@@ -2391,7 +2391,7 @@ function fullPage(){
             redraw("");
         }, 1000);
     }
-    tpen.screen.liveTool = "";
+    tpen.screen.liveTool = "none";
 
 }
 

@@ -30,14 +30,7 @@ var tpen = {
         isMagnifying: false,
         isFullscreen: true,
         isAddingLines: false,
-        colorList: [
-            "rgba(153,255,0,.4)",
-            "rgba(0,255,204,.4)",
-            "rgba(51,0,204,.4)",
-            "rgba(204,255,0,.4)",
-            "rgba(0,0,0,.4)",
-            "rgba(255,255,255,.4)",
-            "rgba(255,0,0,.4)"],
+        colorList: ["black","lime","magenta","white","#A64129"],
         colorThisTime: "rgba(255,255,255,.4)",
         currentFolio: 0,
         currentAnnoListID: 0,
@@ -192,6 +185,7 @@ function createPreviewPages(){
                 populatePreview([], pageLabel, currentPage, 0);
             }
         }
+
 }
 
 function makePreviewPage(thisList, pageLabel, currentPage, i, j, l){
@@ -218,6 +212,7 @@ function gatherAndPopulate(currentOn, pageLabel, currentPage, i){
 
 /* Populate the line preview interface. */
 function populatePreview(lines, pageLabel, currentPage, order){
+    var isCurrent =(tpen.screen.currentFolio===order);
     var letterIndex = 0;
     var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     var previewPage = $('<div order="' + order + '" class="previewPage" data-pagenumber="' + pageLabel + '"></div>');
@@ -225,7 +220,7 @@ function populatePreview(lines, pageLabel, currentPage, order){
         previewPage.text("No Lines");
     }
     var num = 0;
-    //TODO: specificially find the xml tags and wrap them in a <span class='xmlPreview'> so that the UI can make a button to toggle the highlight on and off. 
+    //TODO: specificially find the xml tags and wrap them in a <span class='xmlPreview'> so that the UI can make a button to toggle the highlight on and off.
     for (var j = 0; j < lines.length; j++){
         num++;
         var col = letters[letterIndex];
@@ -254,8 +249,11 @@ function populatePreview(lines, pageLabel, currentPage, order){
         var previewLine = $('<div class="previewLine" data-lineNumber="' + j + '">'
             + '<span class="previewLineNumber" lineserverid="' + lineID + '" data-lineNumber="' + j + '"  data-column="' + col + '"  data-lineOfColumn="' + j + '">'
             + col + '' + num + '</span>'
-            + '<span class="previewText ' + currentPage + '" contentEditable="true" >' + lineText + '<span class="previewLinebreak"></span></span>'
-            + '<span class="previewNotes" contentEditable="true" ></span></div>');
+            + '<span class="previewText" >' + lineText + '<span class="previewLinebreak"></span></span></div>');
+//            + '<span class="previewNotes" contentEditable="true" ></span></div>');
+        if(isCurrent){
+            previewLine.find(".previewText").addClass("currentPage").attr("contenteditable",true);
+        }
         previewPage.append(previewLine);
     }
     $("#previewDiv").append(previewPage);
@@ -279,7 +277,7 @@ function highlightTags(workingText){
             var close = workingText.indexOf("&gt;",beginTags[i]);
             if (close > -1){
                 endTags[i] = (close+4);
-            } 
+            }
             else {
                 beginTags[0] = null;
                 break;
@@ -288,7 +286,7 @@ function highlightTags(workingText){
             i++;
         }
         //use endTags because it might be 1 shorter than beginTags
-        var oeLen = endTags.length; 
+        var oeLen = endTags.length;
         encodedText = [workingText.substring(0, beginTags[0])];
         for (i=0;i<oeLen;i++){
             encodedText.push("<span class='previewTag'>",
@@ -619,7 +617,7 @@ function loadTranscription(pid, tool){
                 loadIframes();
             }
         });
-        
+
     }
     else if (isJSON(userTranscription)){
         tpen.manifest = userTranscription = JSON.parse(userTranscription);
@@ -672,7 +670,7 @@ function loadTranscription(pid, tool){
         //TODO: allow users to include the p variable and load a page?
         var localProject = false;
         if (userTranscription.indexOf("/TPEN28/project") > - 1 || userTranscription.indexOf("/TPEN28/manifest") > - 1){
-            localProject = true; 
+            localProject = true;
             if(userTranscription.indexOf("/TPEN28/project") > - 1){
                 projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/project/') + 9));
             }
@@ -894,7 +892,7 @@ function activateTool(tool){
 function activateUserTools(tools, permissions){
     var placeholderSplit = function(name,msg){
         $('body').append('<div id="'+name+'Split" class="split">'
-            +'<div class="fullScreenTrans"><i class="fa fa-reply"></i> Full Screen Transcription</div>'
+            +'<div class="fullScreenTrans">⇥ Close Tool</div>'
             +'<p>'+msg+'</p>'
             +'</div>');
         $('#'+name+"Split").show();
@@ -911,7 +909,7 @@ function activateUserTools(tools, permissions){
     }
     // This is all sort of moot, since they are being built regardless at this point.
     if($.inArray("linebreak", tools) > -1){
-        $("#linebreakSplit").show(); 
+        $("#linebreakSplit").show();
     }
     if($.inArray("history", tools) > -1){
         // No history tool on page #114
@@ -1018,14 +1016,15 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
     $('#transcriptionTemplate').css("display", "inline-block");
     $("#parsingBtn").css("box-shadow", "none");
     $("#parsingButton").removeAttr('disabled');
-    $(".lineColIndicator").css({
-        "box-shadow": "rgba(255, 255, 255, 0.4)",
-        "border": "1px solid rgb(255, 255, 255)"
-    });
-    $(".lineColOnLine").css({
-        "border-left": "1px solid rgba(255, 255, 255, 0.2);",
-        "color": "rgb(255, 255, 255)"
-    });
+    // This should just be the CSS
+//    $(".lineColIndicator").css({
+//        "box-shadow": "rgba(255, 255, 255, 0.4)",
+//        "border": "1px solid rgb(255, 255, 255)"
+//    });
+//    $(".lineColOnLine").css({
+//        "border-left": "1px solid rgba(255, 255, 255, 0.2);",
+//        "color": "rgb(255, 255, 255)"
+//    });
     //Move up all image annos
     var cnt = - 1;
     if (canvasObj.images[0].resource['@id'] !== undefined
@@ -1111,10 +1110,6 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
         $('.transcriptionImage').attr('src', "images/missingImage.png");
         throw Error("The canvas is malformed.  No 'images' field in canvas object or images:[0]['@id'] does not exist.  Cannot draw lines.");
     }
-    $(".previewText").removeClass("currentPage");
-    $.each($("#previewDiv").children(".previewPage:eq(" + (parseInt(tpen.screen.currentFolio) - 1) + ")").find(".previewLine"), function(){
-        $(this).find('.previewText').addClass("currentPage");
-    });
     createPreviewPages(); //each time you load a canvas to the screen with all of its updates, remake the preview pages.
 }
 
@@ -1443,7 +1438,7 @@ function linesToScreen(lines, tool){
                                 return false;
                             }
 
-                        });                                                
+                        });
                     }
                 }, 2000);
             }
@@ -2353,29 +2348,28 @@ function fullPage(){
     $("#splitScreenTools").show();
     var screenWidth = $(window).width();
     var adjustedHeightForFullscreen = (tpen.screen.originalCanvasHeight / tpen.screen.originalCanvasWidth) * screenWidth;
-    //can i just use tpen.screen.originalCanvasHeight and Width here?
     $("#transcriptionCanvas").css("height", tpen.screen.originalCanvasHeight + "px");
     $(".lineColIndicatorArea").css("height", tpen.screen.originalCanvasHeight + "px");
     var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
-    $("#imgTop").hover(
-       function(){
-            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
-        },
-        function(){
-            var lineColor2 = lineColor.replace(".9", ".4");
-            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
-        }
-    );
+//     $("#imgTop").hover(
+//        function(){
+//             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+//         },
+//         function(){
+//             var lineColor2 = lineColor.replace(".9", ".4");
+//             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+//         }
+//     );
         
-    $("#imgBottom").hover(
-        function(){
-            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
-        },
-        function(){
-            var lineColor2 = lineColor.replace(".9", ".4");
-            $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
-        }
-    );
+//     $("#imgBottom").hover(
+//         function(){
+//             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+//         },
+//         function(){
+//             var lineColor2 = lineColor.replace(".9", ".4");
+//             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+//         }
+//     );
 
     $.each($(".lineColOnLine"), function(){
         $(this).css("line-height", $(this).height() + "px");
@@ -2879,10 +2873,10 @@ function reparseColumns(){
 
      /**
      * Adds closing tag button to textarea.
-     * 
+     *
      * @param tagName text of tag for display in button
      * @param fullTag title of tag for display in button
-     * 
+     *
      * Function named as Added made the error:
      * transcribe.js:2831 Uncaught TypeError: closeTag is not a function(…)
      * so I had to rename it.
@@ -2915,7 +2909,7 @@ function reparseColumns(){
 
 /**
      * Inserts value at cursor location.
-     * 
+     *
      * @param myField element to insert into
      * @param myValue value to insert
      * @return int end of inserted value position
@@ -2966,7 +2960,7 @@ function reparseColumns(){
                     // something is selected, wrap it instead
                     var toWrap = myField.value.substring(startPos,endPos);
                     closeTag = "</" + myValue +">";
-                    myField.value = 
+                    myField.value =
                           myField.value.substring(0, startPos)
                         + unescape(fullTag)
                         + toWrap
@@ -2974,11 +2968,11 @@ function reparseColumns(){
                         + myField.value.substring(endPos, myField.value.length);
                     myField.focus();
                     updateLine($(myField).parent(), false, true);
-                    
+
     //                var insertLength = startPos + unescape(fullTag).length +
     //                    toWrap.length + 3 + closeTag.length;
-                    //return "wrapped" + insertLength;              
-                } 
+                    //return "wrapped" + insertLength;
+                }
                 else {
                     myField.value = myField.value.substring(0, startPos)
                         + unescape(fullTag)
@@ -2988,7 +2982,7 @@ function reparseColumns(){
                     closeAddedTag(myValue, fullTag);
                     //return startPos+unescape(fullTag).length;
                 }
-            } 
+            }
             else {
                 myField.value += unescape(fullTag);
                 myField.focus();
@@ -2996,14 +2990,14 @@ function reparseColumns(){
                 closeAddedTag(myValue, fullTag);
                 //return myField.length;
             }
-            
+
         }
-        
-    }  
-   
+
+    }
+
     /**
      * Removes tag from screen and database without inserting.
-     * 
+     *
      * @param thisTag tag element
      */
      function destroyClosingTag (thisTag){
@@ -3015,7 +3009,7 @@ function reparseColumns(){
     }
     /**
      * Removes tag from screen and database without closing.
-     * 
+     *
      * @param thisTag tag element
      */
      function removeClosingTag(thisTag){
@@ -3045,7 +3039,7 @@ function reparseColumns(){
             // tag is from this page, but a later line
                 $(this).hide();
             } else {
-            //tag is from a previous page or line    
+            //tag is from a previous page or line
                 $(this).show();
             }
         });
@@ -3054,7 +3048,7 @@ function reparseColumns(){
     /**
      * Builds live tags list from string and insert closing buttons.
      * Uses String[] from utils.openTagTracker.getTagsAfterFolio().
-     * 
+     *
      * @param tags comma separated collection of live tags and location properties
      */
      function buildClosingTags(tags){
@@ -3062,7 +3056,7 @@ function reparseColumns(){
         var closingTags = [];
         for (var i=0;i<tags.length;i++){
             thisTag = tags[i].split(",");
-            var tagID               =   thisTag[0];     
+            var tagID               =   thisTag[0];
             var tagName             =   thisTag[1];
             var tagFolioLocation    =   thisTag[2];
             var tagLineLocation     =   thisTag[3];
@@ -3074,7 +3068,7 @@ function reparseColumns(){
                     closingTags.push("' title='");
                 }
                 closingTags.push(tagName,"' data-line='",tagLineLocation,"' data-folio='",tagFolioLocation,"' data-tagID='",tagID,"'>","/",tagName,"</div>");
-            }    
+            }
         }
         $(".xmlClosingTags").html(closingTags.join(""));
         $(".tags").click(function(event){
@@ -3101,7 +3095,7 @@ function reparseColumns(){
             .find(".destroyTag").remove();
         });
     }
-    
+
 
 
 function addchar(theChar, closingTag) {
@@ -3166,7 +3160,7 @@ function pageJump(page, parsing){
     var canvasToJumpTo = parseInt(page);; //0,1,2...
     if (tpen.screen.currentFolio !== canvasToJumpTo && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio
         console.log("Jumping to a dif page!");
-        Data.saveTranscription(""); 
+        Data.saveTranscription("");
         tpen.screen.currentFolio = canvasToJumpTo;
         if (parsing === "parsing"){
             $(".pageTurnCover").show();
@@ -3201,17 +3195,24 @@ function markerColors(){
  * colorThisTime
  */
     var tempColorList = ["rgba(153,255,0,.4)", "rgba(0,255,204,.4)", "rgba(51,0,204,.4)", "rgba(204,255,0,.4)", "rgba(0,0,0,.4)", "rgba(255,255,255,.4)", "rgba(255,0,0,.4)"];
-    if (tpen.screen.colorList.length == 0){
+    if (tpen.screen.colorList.length === 0){
         tpen.screen.colorList = tempColorList;
     }
-    tpen.screen.colorThisTime = tpen.screen.colorList[Math.floor(Math.random() * tpen.screen.colorList.length)];
-    tpen.screen.colorList.splice(tpen.screen.colorList.indexOf(tpen.screen.colorThisTime), 1);
-    var oneToChange = tpen.screen.colorThisTime.lastIndexOf(")") - 2;
-    var borderColor = tpen.screen.colorThisTime.substr(0, oneToChange) + '.2' + tpen.screen.colorThisTime.substr(oneToChange + 1);
-    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9"); //make this color opacity 100
-    $('.lineColIndicator').css('border', '1px solid ' + lineColor);
-    $('.lineColOnLine').css({'border-left':'1px solid ' + borderColor, 'color':lineColor});
-    $('.activeLine').css('box-shadow', '0px 0px 15px 8px ' + tpen.screen.colorThisTime); //keep this color opacity .4 until imgTop is hovered.
+    var index = tpen.screen.colorList.indexOf(tpen.screen.colorThisTime);
+    if(index++>tpen.screen.colorList.length){
+        index = 0;
+    }
+    var color = tpen.screen.colorThisTime = tpen.screen.colorList[index];
+//    var oneToChange = tpen.screen.colorThisTime.lastIndexOf(")") - 2;
+//    var borderColor = tpen.screen.colorThisTime.substr(0, oneToChange) + '.2' + tpen.screen.colorThisTime.substr(oneToChange + 1);
+//    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9"); //make this color opacity 100
+    $('.lineColIndicator').css('border', '1px solid ' + color);
+    $('.lineColOnLine').css({'border-left':'1px solid ' + color, 'color':color});
+    $('.activeLine').css({
+//        'box-shadow' : '0px 0px 15px 8px ' + color,
+        'box-shadow' : '0 0 15px black',
+        'opacity' : .4
+    }); //keep this color opacity .4 until imgTop is hovered.
 }
 
 /* Toggle the line/column indicators in the transcription interface. (A1, A2...) */
@@ -3396,11 +3397,11 @@ function batchLineUpdate(linesInColumn, relocate){
 
     };
 
-/* 
+/*
  * Update line information for a particular line. Until we fix the data schema, this also forces us to update the annotation list for any change to a line.
- * 
+ *
  * Included in this is the interaction with #saveReport, which populates with entries if a change to a line's text or comment has occurred (not any positional change).
- * 
+ *
  * */
 function updateLine(line, cleanup, updateList){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
@@ -3408,6 +3409,7 @@ function updateLine(line, cleanup, updateList){
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2;
     //Can I use tpen.screen.originalCanvasHeight and Width?
+
     lineTop = parseFloat(line.attr("linetop")) * 10;
     lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
     lineWidth = parseFloat(line.attr("linewidth")) * (10 * ratio);
@@ -3493,7 +3495,7 @@ function updateLine(line, cleanup, updateList){
                 .animate({"color":"#618797"}, 1600,function(){$("#saveReport").find(".noChange").remove();});
                 $("#saveReport").find(".nochanges").show().fadeOut(2000);
             }
-            else{ //something about the line text or note text has changed. 
+            else{ //something about the line text or note text has changed.
                 var columnMark = "Column&nbsp;"+line.attr("col")+"&nbsp;Line&nbsp;"+line.attr("collinenum");
                 var date=new Date();
                 $("#saveReport")
@@ -4769,31 +4771,27 @@ var Help = {
      *  Syncs changes between the preview tool and the transcription area,
      *  if it is on the page. If it is the previous or following page, a button
      *  to save remotely is created and added.
-     *  
+     *
      *  @param line jQuery object, line edited in the preview tool
      */
     edit: function(line){
-        var focusLineNumber = $(line).siblings(".previewLineNumber").attr("data-linenumber");
-        var focusFolio = $(line).parents(".previewPage").attr("data-pagenumber");
-        var transcriptionText = ($(line).hasClass("previewText")) ? ".theText" : ".notes";
-        var pair = $(".transcriptlet[lineid='"+focusLineNumber+"']").find(transcriptionText);
         if ($(line).hasClass("currentPage")){
+            var focusLineNumber = $(line).siblings(".previewLineNumber").attr("data-linenumber");
+            var focusFolio = $(line).parents(".previewPage").attr("data-pagenumber");
+            var transcriptionText = ($(line).hasClass("previewText")) ? ".theText" : ".notes";
+            var pair = $(".transcriptlet[lineid='"+focusLineNumber+"']").find(transcriptionText);
           if (pair.parent().attr('id') !== tpen.screen.focusItem[1].attr('id')) updatePresentation(pair.parent());
                 line.focus();
             $(line).keyup(function(){
                 // Data.makeUnsaved();
                 pair.val($(this).text());
             });
-        } else {
-            var saveLine = $(line).parent(".previewLine");
-            if (saveLine.find(".previewSave").size() == 0)
-                saveLine.prepend("<div class='right ui-state-default ui-corner-all previewSave' onclick='Preview.remoteSave(this,"+focusLineID+","+focusFolio+");'>Save Changes</div>");
         }
     },
     /**
      *  Saves the changes made in the preview tool on the previous or following
      *  page. Overwrites anything currently saved.
-     *  
+     *
      *  @param button element clicked (for removal after success)
      *  @param saveLineID int lineID of changed transcription object
      *  @param focusFolio int id of folio in which the line has been changed
@@ -4809,7 +4807,7 @@ var Help = {
     /**
      *  Syncs the current line of transcription in the preview tool when changes
      *  are made in the main interface. Called on keyup in .theText and .notes.
-     *  
+     *
      *  @param current element textarea in which change is made.
      */
      updateLine: function(current) {
@@ -4820,7 +4818,7 @@ var Help = {
      },
     /**
      *  Rebuilds every line of the preview when changed by parsing.
-     *  
+     *
      */
     rebuild: function(){
         var allTrans = $(".transcriptlet");
@@ -4861,12 +4859,12 @@ var Help = {
     format: function(){
         $(".previewText").each(function(){
             $(this).html(Preview.scrub($(this).text()));
-        });       
+        });
     },
     /**
      *  Analyzes the text in the preview tool to highlight the tags detected.
      *  Returns html of this text to Preview.format()
-     *  
+     *
      *  @param thisText String loaded in the current line of the preview tool
      */
     scrub: function(thisText){
@@ -4889,7 +4887,7 @@ var Help = {
                 i++;
             }
             //use endTags because it might be 1 shorter than beginTags
-            var oeLen = endTags.length; 
+            var oeLen = endTags.length;
             encodedText = [workingText.substring(0, beginTags[0])];
             for (i=0;i<oeLen;i++){
                 encodedText.push("<span class='previewTag'>",

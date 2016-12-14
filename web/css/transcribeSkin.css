@@ -107,9 +107,10 @@ body{
     margin: 0;
 }
 .activeLine{
-    box-shadow: 0px 0px 15px 8px #FFF;
+    box-shadow: 0 0 15px black;
     display: block !important;
     opacity: 1 !important;
+    border-radius: 2px;
 }
 .lookLikeButtons{
     /*    font-family: "Open Sans","Helvetica Neue",sans-serif;*/
@@ -692,7 +693,7 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
     max-height: 18px;
     overflow: hidden;
     display: block;
-    text-align: left; 
+    text-align: left;
 }
 #contribution {right:auto;left:0;}
 #contribution:before {content:'Last edit by: '}
@@ -1249,6 +1250,9 @@ button, #uploadText, .lookLikeButtons {
 }
 button:hover{
     background-color: #d14836;
+}
+button.active {
+    background-color: #618797;
 }
 p{
     /*font-family: 'Open Sans','Helvetica Neue',sans-serif;*/

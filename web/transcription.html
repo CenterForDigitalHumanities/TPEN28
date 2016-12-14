@@ -85,13 +85,13 @@
                     <a id="helpContact" href="admin.jsp#aboutTab" target="_blank" class="wBtn ui-state-default ui-button">Contact <span class="fa fa-comment"></span></a>
                 </span>
                 <span class="trimSection">
-                    <a id="helpMe" onclick="Help.revealHelp();" class="ui-state-default ui-button">Help<i class="fa fa-question" style="margin-left:8px" aria-hidden="true"></i></a> 
+                    <a id="helpMe" onclick="Help.revealHelp();" class="ui-state-default ui-button">Help<i class="fa fa-question" style="margin-left:8px" aria-hidden="true"></i></a> s
                 </span>
             </div>
         </div>
 
         <div class="instructions">
-            <!-- TODO: Are we logged in to see this? -->
+            <!-- TODO: Arc we logged in to see this? -->
             <p>
                 The area below accepts a local project ID number, a project or IIIF manifest url, or a valid T-PEN or IIIF manifest JSON object as valid input.
             </p>
@@ -836,6 +836,9 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 $(".magnifyBtn").removeClass("selected");
                 $("#moveImage").removeClass("selected");
                 $(".transcriptlet").children("textarea").removeClass("imageMove").removeAttr("disabled");
+                if(tpen.screen.liveTool && tpen.screen.liveTool !== "none" && tpen.screen.liveTool !== "parsing"){
+                    fullPage();
+                }
             }
             else if (event.which === 13){ //enter
                 if (event.shiftKey || event.altKey) return true;

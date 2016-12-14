@@ -925,6 +925,18 @@ function activateUserTools(tools, permissions){
     if($.inArray("compare", tools) > -1){
         $("#compareSplit").show();
     }
+    if($.inArray("page", tools) > -1){
+        $("#canvasControls").show();
+    }
+    if($.inArray("xml", tools) > -1){
+        $("#toggleXML").show();
+    }
+    if($.inArray("characters", tools) > -1){
+        $("#toggleChars").show();
+    }
+    if($.inArray("inspector", tools) > -1){
+        $("#magnify1").show();
+    }
 }
 
 /*

@@ -286,8 +286,9 @@ body{
 .flex-stretch.buttons button {
     margin: 0 2px;
     flex: 2 1;
-height: 2em;
-max-width: 9em;
+    height: 2em;
+    max-width: 9em;
+    display: none;
 }
 #captions {
     min-height: 2em;

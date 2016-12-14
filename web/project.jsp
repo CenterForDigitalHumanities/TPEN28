@@ -716,8 +716,10 @@
                                                     newTool = Tool.tools.xml;
                                                 } else if (userTools[i].compareTo("characters") == 0) {
                                                     newTool = Tool.tools.characters;
-                                                } else if (userTools[i].compareTo("preview") == 0) {
+                                                } else if (userTools[i].compareTo("page") == 0) {
                                                     newTool = Tool.tools.page;
+                                                } else if (userTools[i].compareTo("inspector") == 0) {
+                                                    newTool = Tool.tools.inspector;
                                                 } else {
                                                     continue;
                                                 }

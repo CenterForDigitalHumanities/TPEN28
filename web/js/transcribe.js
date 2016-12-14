@@ -557,7 +557,7 @@ function loadTranscription(pid, tool){
                             break;
                         case "history" : label = "Line History";
                             break;
-                        case "linebreaking" : label = "Import Text";
+                        case "linebreak" : label = "Import Text";
                             break;
                         case "paleography" : label = false;
                             break;
@@ -686,7 +686,7 @@ function loadTranscription(pid, tool){
 
         if (localProject){
             //get project info first, get manifest out of it, populate
-            
+
             var aBar = document.location.href;
             var toAddressBar = aBar+"?projectID=" + projectID;
             if(aBar.indexOf("projectID=") === -1){
@@ -895,8 +895,8 @@ function activateUserTools(tools, permissions){
             +'<div class="fullScreenTrans">⇥ Close Tool</div>'
             +'<p>'+msg+'</p>'
             +'</div>');
-        $('#'+name+"Split").show();
-    }
+        // $('#'+name+"Split").show();
+    };
     if(tpen.user.isAdmin || $.inArray("parsing", tools) > -1 || permissions.allow_public_modify || permissions.allow_public_modify_line_parsing){
         $("#parsingBtn").show();
         tpen.user.isAdmin = true; // QUESTION: #169 Why isAdmin if you can parse?
@@ -908,35 +908,35 @@ function activateUserTools(tools, permissions){
         $("#noLineConfirmation").append(message);
     }
     // This is all sort of moot, since they are being built regardless at this point.
-    if($.inArray("linebreak", tools) > -1){
-        $("#linebreakSplit").show();
-    }
-    if($.inArray("history", tools) > -1){
-        // No history tool on page #114
-        placeholderSplit('history', "No tool available, ticket #114");
-    }
-    if($.inArray("preview", tools) > -1){
-        $("#previewSplit").show();
-    }
-    if($.inArray("abbreviation", tools) > -1){
-        // No abbreviation tool or endpoint available #170
-        placeholderSplit('abbrev', "No tool available, ticket #170");
-    }
-    if($.inArray("compare", tools) > -1){
-        $("#compareSplit").show();
-    }
-    if($.inArray("page", tools) > -1){
-        $("#canvasControls").show();
-    }
-    if($.inArray("xml", tools) > -1){
-        $("#toggleXML").show();
-    }
-    if($.inArray("characters", tools) > -1){
-        $("#toggleChars").show();
-    }
-    if($.inArray("inspector", tools) > -1){
-        $("#magnify1").show();
-    }
+    //    if($.inArray("linebreak", tools) > -1){
+    //        $("#linebreakSplit").show();
+    //    }
+    //    if($.inArray("history", tools) > -1){
+    //        // No history tool on page #114
+    //        placeholderSplit('history', "No tool available, ticket #114");
+    //    }
+    //    if($.inArray("preview", tools) > -1){
+    //        $("#previewSplit").show();
+    //    }
+    //    if($.inArray("abbreviation", tools) > -1){
+    //        // No abbreviation tool or endpoint available #170
+    //        placeholderSplit('abbrev', "No tool available, ticket #170");
+    //    }
+    //    if($.inArray("compare", tools) > -1){
+    //        $("#compareSplit").show();
+    //    }
+        if($.inArray("page", tools) > -1){
+            $("#canvasControls").show();
+        }
+        if($.inArray("xml", tools) > -1){
+            $("#toggleXML").show();
+        }
+        if($.inArray("characters", tools) > -1){
+            $("#toggleChars").show();
+        }
+        if($.inArray("inspector", tools) > -1){
+            $("#magnify1").show();
+        }
 }
 
 /*
@@ -1700,7 +1700,6 @@ function adjustImgs(positions) {
     $(".lineColIndicator")
         .removeClass('activeLine')
         .css({
-            "box-shadow": "none",
             "background-color":"transparent"
         });
     lineToMakeActive.addClass("activeLine");
@@ -2160,7 +2159,7 @@ function hideWorkspaceForParsing(){
     $("#nextCanvas").attr("onclick", "");
     $("#imgTop").addClass("fixingParsing");
     var topImg = $("#imgTop img");
-    
+
     $("#tools").children("[id$='Split']").hide();
     $("#parsingSplit")
     .css({
@@ -2168,7 +2167,7 @@ function hideWorkspaceForParsing(){
         "height": window.innerHeight + "px"
     })
     .fadeIn();
-    
+
     topImg.css({
         "top":"0px",
         "left":"0px",
@@ -2182,7 +2181,7 @@ function hideWorkspaceForParsing(){
     });
 
     $("#transcriptionCanvas").css("width", topImg.width());
-    
+
     //the width and max-width here may need to be played with a bit.
     if ($("#trascriptionTemplate").hasClass("ui-resizable")){
         $("#transcriptionTemplate").resizable('destroy');
@@ -2214,7 +2213,7 @@ function hideWorkspaceForParsing(){
                 'top': "0px"
 //                'width' : $("#imgTop img").width()
             });
-            $("#imgTop").css({ //This width will not change when the area is expanded, but does when it is shrunk.  We need to do the math to grow it.  
+            $("#imgTop").css({ //This width will not change when the area is expanded, but does when it is shrunk.  We need to do the math to grow it.
                 'height': $("#imgTop img").height(),
                 'width': tpen.screen.imgTopSizeRatio * $("#imgTop img").height() + "px" //This locks up and does not change.
             });
@@ -2366,7 +2365,7 @@ function fullPage(){
 //             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
 //         }
 //     );
-        
+
 //     $("#imgBottom").hover(
 //         function(){
 //             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
@@ -2383,8 +2382,8 @@ function fullPage(){
     if (tpen.screen.focusItem[0] == null
         && tpen.screen.focusItem[1] == null){
         updatePresentation($("#transcriptlet_0"));
-    }    
-     //FIXME: If there is no delay here, it does not draw correctly.  Should not use setTimeout. 
+    }
+     //FIXME: If there is no delay here, it does not draw correctly.  Should not use setTimeout.
     if(tpen.screen.liveTool === "parsing"){
         $("#transcriptionTemplate").hide();
         $("#transTemplateLoading").show();
@@ -2411,7 +2410,7 @@ function splitPage(event, tool) {
         $("#transcriptionTemplate").css("width", Page.width()-200 + "px");
         newCanvasWidth = Page.width()-200;
         $("#controlsSplit").show();
-        resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway. 
+        resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
     $("#splitScreenTools").attr("disabled", "disabled");
@@ -2424,7 +2423,7 @@ function splitPage(event, tool) {
     var newImgBtmTop = tpen.screen.imgBottomPositionRatio * newCanvasHeight;
     var newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
     //$(".lineColIndicatorArea").css("max-height", newCanvasHeight + "px");
-    $(".lineColIndicatorArea").css("height", newCanvasHeight + "px");   
+    $(".lineColIndicatorArea").css("height", newCanvasHeight + "px");
     $("#imgBottom img").css("top", newImgBtmTop + "px");
     $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
     $("#imgTop img").css("top", newImgTopTop + "px");
@@ -2482,7 +2481,7 @@ function splitPage(event, tool) {
             'max-width': $(".split:visible")
                 .width() + "px"
         });
-  
+
 }
 
 function forceOrderPreview(){
@@ -4999,7 +4998,7 @@ tpen.screen.peekZoom = function(cancel){
             tpen.screen.isPeeking = false;
         }
     };
-    
+
     /* Clear the resize function attached to the window element. */
     function detachWindowResize(){
         console.log("window resize detached");
@@ -5007,9 +5006,9 @@ tpen.screen.peekZoom = function(cancel){
             console.log("detach");
         };
     }
-    
+
     //Must explicitly set new height and width for percentages values in the DOM to take effect.
-    //FIXME: Does not handle resizing the split area correctly except for in parsing interface.  
+    //FIXME: Does not handle resizing the split area correctly except for in parsing interface.
     //FIXME: If you look at project 4080, you will notice that sometimes the annotation will slip off screen
     //FIXME: Gets in the way of transcriptionTemplate resizing.
     //with resizing because the img top position puts it up off screen a little.
@@ -5020,7 +5019,7 @@ tpen.screen.peekZoom = function(cancel){
             var newImgBtmTop = "0px";
             var newImgTopTop = "0px";
     //        if(tpen.screen.liveTool === "controls"){ //the width is different for this one
-    //            
+    //
     //        }
             if(tpen.screen.liveTool === 'parsing'){ //apply to all split tools?
                 var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
@@ -5065,7 +5064,7 @@ tpen.screen.peekZoom = function(cancel){
                 $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
                 $("#transcriptionCanvas").css("height",newHeight+"px");
                 $(".lineColIndicatorArea").css("height",newHeight+"px");
-            }        
+            }
             $.each($(".lineColOnLine"),function(){
                 $(this).css("line-height", $(this).height()+"px");
             });

@@ -212,6 +212,7 @@ body{
     overflow: auto;
     border: 1px solid #000;
     resize: vertical;
+    border-radius: 2px;
 }
 .theText,#captions,input.hotkey {
     font-family:'Junicode','Georgia', serif;

@@ -1178,7 +1178,7 @@ kbd {
 .showMe:hover{
     border: 1px solid orangered;
 }
-.hideme{
+.hideme,.showMe2{
     position: relative;
     display: none;
 }

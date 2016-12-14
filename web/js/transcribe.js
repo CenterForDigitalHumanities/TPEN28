@@ -1044,6 +1044,8 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 //I need to anymore, test making these tpen.screen.* and see what happens.
                 originalCanvasHeight2 = $("#imgTop img").height();
                 originalCanvasWidth2 = $("#imgTop img").width();
+                tpen.screen.originalCanvasHeight = $("#imgTop img").height();
+                tpen.screen.originalCanvasWidth =  $("#imgTop img").width();
                 drawLinesToCanvas(canvasObj, parsing, tool);
                 $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
                 $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
@@ -2135,27 +2137,24 @@ function restoreTransition(){
 function hideWorkspaceForParsing(){
     tpen.screen.liveTool = "parsing";
     $("#parsingBtn").css("box-shadow: none;");
-    tpen.screen.originalCanvasHeight = $("#transcriptionCanvas").height();
-    tpen.screen.originalCanvasWidth = $("#transcriptionCanvas").width();
+    //    tpen.screen.originalCanvasHeight = $("#transcriptionCanvas").height(); //make sure these are set correctly
+//    tpen.screen.originalCanvasWidth = $("#transcriptionCanvas").width(); //make sure these are set correctly
     imgTopOriginalTop = $("#imgTop img").css("top");
     $("#transcriptionTemplate").css("max-width", "57%");
     $("#transcriptionCanvas").css("max-height", window.innerHeight + "px");
     $("#transcriptionTemplate").css("max-height", window.innerHeight + "px");
+    $("#controlsSplit").hide();
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
     var newCanvasWidth = tpen.screen.originalCanvasWidth * .57;
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
-    var PAGEHEIGHT = $("#transcriptionTemplate").width();
+    var PAGEHEIGHT = Page.height();
     if (newCanvasHeight > PAGEHEIGHT){
         newCanvasHeight = PAGEHEIGHT;
         newCanvasWidth = 1/ratio*newCanvasHeight;
     }
     $("#transcriptionCanvas").css("height", newCanvasHeight);
-    $("#transcriptionCanvas").css("width", newCanvasWidth);
-//    var pageJumpIcons = $("#pageJump").parent().children("i");
-//    pageJumpIcons[0].setAttribute('onclick', 'firstFolio("parsing");');
-//    pageJumpIcons[1].setAttribute('onclick', 'previousFolio("parsing");');
-//    pageJumpIcons[2].setAttribute('onclick', 'nextFolio("parsing");');
-//    pageJumpIcons[3].setAttribute('onclick', 'lastFolio("parsing");');
+    //$("#transcriptionCanvas").css("width", newCanvasWidth);
+
     $("#prevCanvas").attr("onclick", "");
     $("#nextCanvas").attr("onclick", "");
     $("#imgTop").addClass("fixingParsing");
@@ -2180,17 +2179,22 @@ function hideWorkspaceForParsing(){
         "left":"0px",
         "height":newCanvasHeight+"px"
     });
-    
+
+    $("#transcriptionCanvas").css("width", topImg.width());
     
     //the width and max-width here may need to be played with a bit.
+    if ($("#trascriptionTemplate").hasClass("ui-resizable")){
+        $("#transcriptionTemplate").resizable('destroy');
+    }
     $("#transcriptionTemplate").resizable({
         disabled:false,
         minWidth: window.innerWidth / 2,
         maxWidth: window.innerWidth * .57,
         start: function(event, ui){
-            originalRatio = $("#transcriptionCanvas").width() / $("#transcriptionCanvas").height();
+            detachWindowResize();
         },
         resize: function(event, ui) {
+            console.log("resize 1");
             var width = ui.size.width;
             var height = 1 / ratio * width;
             newCanvasWidth = 1/ratio*height;
@@ -2206,6 +2210,7 @@ function hideWorkspaceForParsing(){
             $("#transcriptionCanvas").css("height", height + "px");//.css("width", newCanvasWidth + "px")
             $("#imgTop img").css({
                 'height': height + "px",
+                'top': "0px"
 //                'width' : $("#imgTop img").width()
             });
             $("#imgTop").css({ //This width will not change when the area is expanded, but does when it is shrunk.  We need to do the math to grow it.  
@@ -2215,20 +2220,22 @@ function hideWorkspaceForParsing(){
             tpen.screen.textSize();
         },
         stop: function(event, ui){
+            attachWindowResize();
             //$(".lineColIndicator .lineColOnLine").css("line-height", $(this).height()+"px");
         }
     });
     $("#transWorkspace,#imgBottom").hide();
     $("#noLineWarning").hide();
     window.setTimeout(function(){
-        //$("#imgTop, #imgTop img").height($(window).innerHeight());
         $("#imgTop img").css("width", "auto");
+        $("#imgTop img").css("top", "0px");
         $("#imgTop").css("width", $("#imgTop img").width());
+        $("#transcriptionCanvas").css("width", $("#imgTop img").width() + "px"); //fits canvas to image.
+        $("#transcriptionTemplate").css("width", $("#imgTop img").width() + "px"); //fits canvas to image.
         $("#imgTop").css("height", $("#imgTop img").height());
-        //$("#transcriptionCanvas").css("height", $(window).innerHeight());
-        //$(".lineColIndicatorArea").css("height", $(window).innerHeight());
         $("#transcriptionCanvas").css("display", "block");
         tpen.screen.imgTopSizeRatio = $("#imgTop img").width() / $("#imgTop img").height();
+        $("#templateResizeBar").show();
     }, 500);
     window.setTimeout(function(){
         //in here we can control what interface loads up.  writeLines
@@ -2376,8 +2383,7 @@ function fullPage(){
     if (tpen.screen.focusItem[0] == null
         && tpen.screen.focusItem[1] == null){
         updatePresentation($("#transcriptlet_0"));
-    }
-    
+    }    
      //FIXME: If there is no delay here, it does not draw correctly.  Should not use setTimeout. 
     if(tpen.screen.liveTool === "parsing"){
         $("#transcriptionTemplate").hide();
@@ -2387,31 +2393,28 @@ function fullPage(){
         }, 1000);
     }
     tpen.screen.liveTool = "";
-    
-   
-    
-    
+
 }
 
 function splitPage(event, tool) {
     tpen.screen.liveTool = tool;
-    tpen.screen.originalCanvasHeight = $("#transcriptionCanvas").height(); //make sure these are set correctly
-    tpen.screen.originalCanvasWidth = $("#transcriptionCanvas").width(); //make sure these are set correctly
-    var newCanvasWidth = tpen.screen.originalCanvasWidth * .55; //
-    
+    var resize = true;
+    var newCanvasWidth = tpen.screen.originalCanvasWidth * .55;
     $("#transcriptionTemplate").css({
         "width"   :   "55%",
         "display" : "inline-table"
     });
+    $("#templateResizeBar").show();
     if(tool==="controls"){
+        console.log("Do not attach resizable from splitPage");
         $("#transcriptionCanvas").css("width", Page.width()-200 + "px");
         $("#transcriptionTemplate").css("width", Page.width()-200 + "px");
         newCanvasWidth = Page.width()-200;
+        $("#controlsSplit").show();
+        resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway. 
     }
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
     $("#splitScreenTools").attr("disabled", "disabled");
-//    var imgBottomRatio = parseFloat($("#imgBottom img").css("top")) / tpen.screen.originalCanvasHeight;
-//    var imgTopRatio = parseFloat($("#imgTop img").css("top")) / tpen.screen.originalCanvasHeight;
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
     if(tool)
     $("#transcriptionCanvas").css({
@@ -2420,49 +2423,51 @@ function splitPage(event, tool) {
     });
     var newImgBtmTop = tpen.screen.imgBottomPositionRatio * newCanvasHeight;
     var newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
-    $(".lineColIndicatorArea").css("max-height", newCanvasHeight + "px");
+    //$(".lineColIndicatorArea").css("max-height", newCanvasHeight + "px");
     $(".lineColIndicatorArea").css("height", newCanvasHeight + "px");   
     $("#imgBottom img").css("top", newImgBtmTop + "px");
     $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
     $("#imgTop img").css("top", newImgTopTop + "px");
     $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
-    var originalRatio = 1;
+    var originalRatio = ratio;
     $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
-    $("#transcriptionTemplate").resizable({
-        disabled:false,
-        minWidth: window.innerWidth / 2,
-        maxWidth: window.innerWidth * .75,
-        start: function(event, ui){
-            //originalRatio = $("#transcriptionCanvas").width() / $("#transcriptionCanvas").height();
-            originalRatio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
-        },
-        resize: function(event, ui) {
-            var width = ui.size.width;
-            var height = 1 / originalRatio * width;
-            $("#transcriptionCanvas").css("height", height + "px").css("width", width + "px");
-            $(".lineColIndicatorArea").css("height", height + "px");
-            var splitWidth = window.innerWidth - (width + 35) + "px";
-            $(".split img").css("max-width", splitWidth);
-            $(".split:visible").css("width", splitWidth);
-            var newHeight1 = parseFloat($("#fullPageImg").height()) + parseFloat($("#fullPageSplit .toolLinks").height());
-            var newHeight2 = parseFloat($(".compareImage").height()) + parseFloat($("#compareSplit .toolLinks").height());
-            $('#fullPageSplit').css('height', newHeight1 + 'px');
-            $('#compareSplit').css('height', newHeight2 + 'px');
-            newImgBtmTop = tpen.screen.imgBottomPositionRatio * height;
-            newImgTopTop = tpen.screen.imgTopPositionRatio * height;
-            $("#imgBottom img").css("top", newImgBtmTop + "px");
-            $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
-            $("#imgTop img").css("top", newImgTopTop + "px");
-            $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
-            
-        },
-        stop: function(event, ui){
-            $.each($(".lineColOnLine"), function(){
-                var height = $(this).height() + "px";
-                $(this).css("line-height", height);
-            });
-        }
-    });
+    if(resize){
+        $("#transcriptionTemplate").resizable({
+            disabled:false,
+            minWidth: window.innerWidth / 2,
+            maxWidth: window.innerWidth * .75,
+            start: function(event, ui){
+                detachWindowResize();
+            },
+            resize: function(event, ui) {
+                console.log("resize 2");
+                var width = ui.size.width;
+                var height = 1 / originalRatio * width;
+                $("#transcriptionCanvas").css("height", height + "px").css("width", width + "px");
+                $(".lineColIndicatorArea").css("height", height + "px");
+                var splitWidth = window.innerWidth - (width + 35) + "px";
+                $(".split img").css("max-width", splitWidth);
+                $(".split:visible").css("width", splitWidth);
+                var newHeight1 = parseFloat($("#fullPageImg").height()) + parseFloat($("#fullPageSplit .toolLinks").height());
+                var newHeight2 = parseFloat($(".compareImage").height()) + parseFloat($("#compareSplit .toolLinks").height());
+                $('#fullPageSplit').css('height', newHeight1 + 'px');
+                $('#compareSplit').css('height', newHeight2 + 'px');
+                newImgBtmTop = tpen.screen.imgBottomPositionRatio * height;
+                newImgTopTop = tpen.screen.imgTopPositionRatio * height;
+                $("#imgBottom img").css("top", newImgBtmTop + "px");
+                $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
+                $("#imgTop img").css("top", newImgTopTop + "px");
+                $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
+            },
+            stop: function(event, ui){
+                attachWindowResize();
+                $.each($(".lineColOnLine"), function(){
+                    var height = $(this).height() + "px";
+                    $(this).css("line-height", height);
+                });
+            }
+        });
+    }
     $("#fullScreenBtn")
         .fadeIn(250);
         $('.split').hide();
@@ -2477,8 +2482,7 @@ function splitPage(event, tool) {
             'max-width': $(".split:visible")
                 .width() + "px"
         });
-        
-        
+  
 }
 
 function forceOrderPreview(){
@@ -2668,6 +2672,7 @@ function adjustColumn(event){
         handles     : "n,s,w,e",
         containment : 'parent',
         start       : function(event, ui){
+            detachWindowResize();
             $("#progress").html("Adjusting Columns - unsaved").fadeIn();
             $("#columnResizing").show();
             $("#sidebar").fadeIn();
@@ -2699,6 +2704,7 @@ function adjustColumn(event){
             }
         },
         stop        : function(event, ui){
+            attachWindowResize();
             $("#progress").html("Column Resized - Saving...");
             var parseRatio = $("#imgTop img").width() / $("#imgTop img").height();
             var originalX = ui.originalPosition.left;
@@ -4931,6 +4937,79 @@ var Help = {
             }
             Preview.scrollToCurrentPage();
         });
+    
+    /* Clear the resize function attached to the window element. */
+    function detachWindowResize(){
+        console.log("window resize detached");
+        window.onresize = function(event, ui){
+            console.log("detach");
+        };
+    }
+    
+    //Must explicitly set new height and width for percentages values in the DOM to take effect.
+    //FIXME: Does not handle resizing the split area correctly except for in parsing interface.  
+    //FIXME: If you look at project 4080, you will notice that sometimes the annotation will slip off screen
+    //FIXME: Gets in the way of transcriptionTemplate resizing.
+    //with resizing because the img top position puts it up off screen a little.
+    function attachWindowResize(){
+        console.log("window resize attached");
+        window.onresize = function(event, ui) {
+            console.log("window resize detected");
+            var newImgBtmTop = "0px";
+            var newImgTopTop = "0px";
+    //        if(tpen.screen.liveTool === "controls"){ //the width is different for this one
+    //            
+    //        }
+            if(tpen.screen.liveTool === 'parsing'){ //apply to all split tools?
+                var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
+                var newCanvasWidth = tpen.screen.originalCanvasWidth * .57;
+                //Can I use tpen.screen.originalCanvasWidth?
+                var newCanvasHeight = 1 / ratio * newCanvasWidth;
+                var PAGEHEIGHT = $("#transcriptionTemplate").width();
+                if (newCanvasHeight > PAGEHEIGHT){
+                    newCanvasHeight = PAGEHEIGHT;
+                    newCanvasWidth = 1/ratio*newCanvasHeight;
+                }
+                var width = $("#transcriptionTemplate").width();
+                var height = 1 / ratio * width;
+                if (height > PAGEHEIGHT){
+                    height = PAGEHEIGHT;
+                    newCanvasWidth = 1/ratio*height;
+                }
+
+                var splitWidth = window.innerWidth - (width + 35) + "px";
+                $(".split img").css("max-width", splitWidth);
+                $(".split:visible").css("width", splitWidth);
+                $("#transcriptionCanvas").css("height", height + "px");
+                newImgTopTop = tpen.screen.imgTopPositionRatio * height;
+                $("#imgTop img").css("top", newImgTopTop + "px");
+                $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
+                $("#imgTop img").css({
+                    'height': height + "px"
+    //                'width': $("#imgTop img").width()
+                });
+                $("#imgTop").css({
+                    'height': $("#imgTop img").height(),
+                    'width': tpen.screen.imgTopSizeRatio * $("#imgTop img").height() + "px"
+                });
+            }
+            else{
+                var newHeight = $("#imgTop img").height();
+                newImgBtmTop = tpen.screen.imgBottomPositionRatio * newHeight;
+                newImgTopTop = tpen.screen.imgTopPositionRatio * newHeight;
+                $("#imgBottom img").css("top", newImgBtmTop + "px");
+                $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
+                $("#imgTop img").css("top", newImgTopTop + "px");
+                $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
+                $("#transcriptionCanvas").css("height",newHeight+"px");
+                $(".lineColIndicatorArea").css("height",newHeight+"px");
+            }        
+            $.each($(".lineColOnLine"),function(){
+                $(this).css("line-height", $(this).height()+"px");
+            });
+            tpen.screen.textSize();
+        };
+    }
 
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?

@@ -602,6 +602,15 @@ max-width: 9em;
     z-index: 10;
     overflow: visible;
 }
+#templateResizeBar{
+    height: 100%;
+    right: -10px;
+    position: absolute;
+    background-color: blue;
+    cursor: ew-resize;
+    display: none;
+    width: 10px;
+}
 .ui-widget-overlay{}
 #parsingSplit{background-color: white;}
 #parsingDiv, #linebreakDiv {height:100%; padding: 4px;overflow: auto;width:auto;}

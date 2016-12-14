@@ -107,6 +107,7 @@
             <div class="turnLoader transLoader"><img src="images/loading2.gif" /></div>
         </div>
         <div id="transcriptionTemplate">
+            <div id="templateResizeBar"></div>
             <div id="parsingCover"></div>
             <div id="transcriptionCanvas">
                 <div id="noLineWarning">
@@ -600,68 +601,13 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
                 <script>
 
-    //Must explicitly set new height and width for percentages values in the DOM to take effect.
-    //FIXME: Does not handle resizing the split area correctly except for in parsing interface.  
-    //FIXME: If you look at project 4080, you will notice that sometimes the annotation will slip off screen
-    //with resizing because the img top position puts it up off screen a little.
-    window.onresize = function(event, ui) {
-        var newImgBtmTop = "0px";
-        var newImgTopTop = "0px";
-//        if(tpen.screen.liveTool === "controls"){ //the width is different for this one
-//            
-//        }
-        if(tpen.screen.liveTool === 'parsing'){ //apply to all split tools?
-            var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
-            var newCanvasWidth = tpen.screen.originalCanvasWidth * .57;
-            //Can I use tpen.screen.originalCanvasWidth?
-            var newCanvasHeight = 1 / ratio * newCanvasWidth;
-            var PAGEHEIGHT = $("#transcriptionTemplate").width();
-            if (newCanvasHeight > PAGEHEIGHT){
-                newCanvasHeight = PAGEHEIGHT;
-                newCanvasWidth = 1/ratio*newCanvasHeight;
-            }
-            var width = $("#transcriptionTemplate").width();
-            var height = 1 / ratio * width;
-            if (height > PAGEHEIGHT){
-                height = PAGEHEIGHT;
-                newCanvasWidth = 1/ratio*height;
-            }
-            
-            var splitWidth = window.innerWidth - (width + 35) + "px";
-            $(".split img").css("max-width", splitWidth);
-            $(".split:visible").css("width", splitWidth);
-            $("#transcriptionCanvas").css("height", height + "px");
-            newImgTopTop = tpen.screen.imgTopPositionRatio * height;
-            $("#imgTop img").css("top", newImgTopTop + "px");
-            $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
-            $("#imgTop img").css({
-                'height': height + "px"
-//                'width': $("#imgTop img").width()
-            });
-            $("#imgTop").css({
-                'height': $("#imgTop img").height(),
-                'width': tpen.screen.imgTopSizeRatio * $("#imgTop img").height() + "px"
-            });
-        }
-        else{
-            var newHeight = $("#imgTop img").height();
-            newImgBtmTop = tpen.screen.imgBottomPositionRatio * newHeight;
-            newImgTopTop = tpen.screen.imgTopPositionRatio * newHeight;
-            $("#imgBottom img").css("top", newImgBtmTop + "px");
-            $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
-            $("#imgTop img").css("top", newImgTopTop + "px");
-            $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
-            $("#transcriptionCanvas").css("height",newHeight+"px");
-            $(".lineColIndicatorArea").css("height",newHeight+"px");
-        }        
-        $.each($(".lineColOnLine"),function(){
-            $(this).css("line-height", $(this).height()+"px");
-        });
-        tpen.screen.textSize();
-    };
+    
+    
+    
 
     //Page load event triggers and attached here.
     $(document).ready(function(){
+        attachWindowResize();
         $("#imgTop, #imgBottom").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("width", "auto");

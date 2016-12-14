@@ -2140,7 +2140,7 @@ function hideWorkspaceForParsing(){
     //    tpen.screen.originalCanvasHeight = $("#transcriptionCanvas").height(); //make sure these are set correctly
 //    tpen.screen.originalCanvasWidth = $("#transcriptionCanvas").width(); //make sure these are set correctly
     imgTopOriginalTop = $("#imgTop img").css("top");
-    $("#transcriptionTemplate").css("max-width", "57%");
+    $("#transcriptionTemplate").css("max-width", "57%").css("width", "57%");
     $("#transcriptionCanvas").css("max-height", window.innerHeight + "px");
     $("#transcriptionTemplate").css("max-height", window.innerHeight + "px");
     $("#controlsSplit").hide();
@@ -2231,7 +2231,7 @@ function hideWorkspaceForParsing(){
         $("#imgTop img").css("top", "0px");
         $("#imgTop").css("width", $("#imgTop img").width());
         $("#transcriptionCanvas").css("width", $("#imgTop img").width() + "px"); //fits canvas to image.
-        $("#transcriptionTemplate").css("width", $("#imgTop img").width() + "px"); //fits canvas to image.
+        $("#transcriptionTemplate").css("width", "57%"); //fits canvas to image. $("#imgTop img").width() + "px".  Do we need a background color?
         $("#imgTop").css("height", $("#imgTop img").height());
         $("#transcriptionCanvas").css("display", "block");
         tpen.screen.imgTopSizeRatio = $("#imgTop img").width() / $("#imgTop img").height();

@@ -2140,12 +2140,12 @@ function hideWorkspaceForParsing(){
     //    tpen.screen.originalCanvasHeight = $("#transcriptionCanvas").height(); //make sure these are set correctly
 //    tpen.screen.originalCanvasWidth = $("#transcriptionCanvas").width(); //make sure these are set correctly
     imgTopOriginalTop = $("#imgTop img").css("top");
-    $("#transcriptionTemplate").css("max-width", "57%").css("width", "57%");
+    $("#transcriptionTemplate").css("max-width", "55%").css("width", "57%");
     $("#transcriptionCanvas").css("max-height", window.innerHeight + "px");
     $("#transcriptionTemplate").css("max-height", window.innerHeight + "px");
     $("#controlsSplit").hide();
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
-    var newCanvasWidth = tpen.screen.originalCanvasWidth * .57;
+    var newCanvasWidth = tpen.screen.originalCanvasWidth * .55;
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
     var PAGEHEIGHT = Page.height();
     if (newCanvasHeight > PAGEHEIGHT){
@@ -2189,7 +2189,7 @@ function hideWorkspaceForParsing(){
     $("#transcriptionTemplate").resizable({
         disabled:false,
         minWidth: window.innerWidth / 2,
-        maxWidth: window.innerWidth * .57,
+        maxWidth: window.innerWidth * .55,
         start: function(event, ui){
             detachWindowResize();
         },
@@ -2231,7 +2231,7 @@ function hideWorkspaceForParsing(){
         $("#imgTop img").css("top", "0px");
         $("#imgTop").css("width", $("#imgTop img").width());
         $("#transcriptionCanvas").css("width", $("#imgTop img").width() + "px"); //fits canvas to image.
-        $("#transcriptionTemplate").css("width", "57%"); //fits canvas to image. $("#imgTop img").width() + "px".  Do we need a background color?
+        $("#transcriptionTemplate").css("width", "55%"); //fits canvas to image. $("#imgTop img").width() + "px".  Do we need a background color?
         $("#imgTop").css("height", $("#imgTop img").height());
         $("#transcriptionCanvas").css("display", "block");
         tpen.screen.imgTopSizeRatio = $("#imgTop img").width() / $("#imgTop img").height();

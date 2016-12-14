@@ -31,7 +31,7 @@ var tpen = {
         isFullscreen: true,
         isAddingLines: false,
         colorList: ["black","lime","magenta","white","#A64129"],
-        colorThisTime: "rgba(255,255,255,.4)",
+        colorThisTime: "#A64129",
         currentFolio: 0,
         currentAnnoListID: 0,
         nextColumnToRemove: null,
@@ -1679,12 +1679,6 @@ function adjustImgs(positions) {
             "background-color":"transparent"
         });
     lineToMakeActive.addClass("activeLine");
-    // use the active line color to give the active line a little background color
-    // to make it stand out if the box shadow is not enough.
-    var activeLineColor = tpen.screen.colorThisTime.replace("1", ".2");
-    $('.activeLine').css({
-        'box-shadow': '0px 0px 15px 8px ' + tpen.screen.colorThisTime
-    });
 }
 
 /* Update the line information of the line currently focused on, then load the focus to a line that was clicked on */
@@ -4882,10 +4876,10 @@ tpen.screen.peekZoom = function(cancel){
             $(".lineColIndicatorArea").fadeOut();
             tpen.screen.peekMemory = [parseInt(topImg.css("top")),parseInt(btmImg.css("top")),$("#imgTop").height()];
             $("#imgTop").css({
-                "height"    : line.height() * zoomRatio + 32
+                "height"    : line.height() * zoomRatio + "px"
             });
             topImg.css({
-                "width"     : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%",
+                "width"     : imgDims[1] * zoomRatio / WRAPWIDTH + "px",
                 "left"      : -line.position().left * zoomRatio,
                 "top"       : imgDims[3] * zoomRatio,
                 "max-width" : "10000%"
@@ -4893,7 +4887,7 @@ tpen.screen.peekZoom = function(cancel){
             btmImg.css({
                 "left"      : -line.position().left * zoomRatio,
                 "top"       : (imgDims[3]-line.height()) * zoomRatio,
-                "width"     : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%",
+                "width"     : imgDims[1] * zoomRatio / WRAPWIDTH + "px",
                 "max-width" : "10000%"
             });
             tpen.screen.isPeeking = true;

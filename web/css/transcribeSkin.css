@@ -322,10 +322,10 @@ max-width: 9em;
     transition: height .25s, width .5s;
 }
 #imgTop img,#imgBottom img, .lineColIndicatorArea {
-    -webkit-transition: left .25s, top .25s, width .25s;
-    -moz-transition: left .25s, top .25s, width .25s;
-    -o-transition: left .25s, top .25s, width .25s;
-    transition: left .25s, top .25s, width .25s;
+    -webkit-transition: left .25s, top .25s, width .25s, max-width .25s;
+    -moz-transition: left .25s, top .25s, width .25s, max-width .25s;
+    -o-transition: left .25s, top .25s, width .25s, max-width .25s;
+    transition: left .25s, top .25s, width .25s, max-width .25s;
 }
 .transcriptlet {
     -webkit-transition: opacity .5s, top .25s;

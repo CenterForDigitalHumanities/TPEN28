@@ -4870,7 +4870,7 @@ tpen.screen.peekZoom = function(cancel){
         var line = $(".activeLine");
         var limitIndex = (line.width()/line.height()> availableRoom[1]/availableRoom[0]) ? 1 : 0;
         var zoomRatio = (limitIndex === 1) ? availableRoom[1]/line.width() : availableRoom[0]/line.height();
-        var imgDims = new Array (topImg.height(),topImg.width(),parseInt(topImg.css("left")),parseInt(topImg.css("top"))-line.position().top);
+        var imgDims = new Array (topImg.height(),topImg.width(),parseInt(topImg.css("left")),-line.position().top);
         if (!cancel){
             //zoom in
             $(".lineColIndicatorArea").fadeOut();
@@ -4879,16 +4879,16 @@ tpen.screen.peekZoom = function(cancel){
                 "height"    : line.height() * zoomRatio + "px"
             });
             topImg.css({
-                "width"     : imgDims[1] * zoomRatio / WRAPWIDTH + "px",
+                "width"     : imgDims[1] * zoomRatio + "px",
                 "left"      : -line.position().left * zoomRatio,
                 "top"       : imgDims[3] * zoomRatio,
-                "max-width" : "10000%"
+                "max-width" : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%"
             });
             btmImg.css({
                 "left"      : -line.position().left * zoomRatio,
                 "top"       : (imgDims[3]-line.height()) * zoomRatio,
-                "width"     : imgDims[1] * zoomRatio / WRAPWIDTH + "px",
-                "max-width" : "10000%"
+                "width"     : imgDims[1] * zoomRatio + "px",
+                "max-width" : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%"
             });
             tpen.screen.isPeeking = true;
         } else {
@@ -4897,13 +4897,13 @@ tpen.screen.peekZoom = function(cancel){
                 "width"     : "100%",
                 "left"      : 0,
                 "top"       : tpen.screen.peekMemory[0],
-                "max-width" : ""
+                "max-width" : "100%"
             });
             btmImg.css({
                 "width"     : "100%",
                 "left"      : 0,
                 "top"       : tpen.screen.peekMemory[1],
-                "max-width" : ""
+                "max-width" : "100%"
             });
             $("#imgTop").css({
                 "height"    : tpen.screen.peekMemory[2]

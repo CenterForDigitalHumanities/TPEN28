@@ -865,6 +865,9 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     if($("div[pair='A1']").length){
                         $("div[pair='A1']").click();
                     }
+                } else if (event.shiftKey && !tpen.screen.isPeeking && !tpen.screen.isMagnifying) {
+                    // Peek-Zoom
+                    tpen.screen.peekZoom(false);
                 }
             }
             else {
@@ -879,6 +882,9 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     $("#imgTop, #imgBottom").unbind("mouseup");
                     var lineForEditing = $(".transcriptlet[lineserverid='" + $(".activeLine").attr("lineserverid") + "']");
                     updateLine(lineForEditing, false, true); //update the active line in case it was bumped.
+                } else if(tpen.screen.isPeeking && (!event.shiftKey || !(event.ctrlKey||event.metaKey))){
+                    // cancel Peek-Zoom
+                    tpen.screen.peekZoom(true);
                 }
             });
 

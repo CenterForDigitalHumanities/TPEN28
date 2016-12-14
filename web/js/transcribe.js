@@ -31,7 +31,7 @@ var tpen = {
         isFullscreen: true,
         isAddingLines: false,
         colorList: ["black","lime","magenta","white","#A64129"],
-        colorThisTime: "rgba(255,255,255,.4)",
+        colorThisTime: "#A64129",
         currentFolio: 0,
         currentAnnoListID: 0,
         nextColumnToRemove: null,
@@ -1704,12 +1704,6 @@ function adjustImgs(positions) {
             "background-color":"transparent"
         });
     lineToMakeActive.addClass("activeLine");
-    // use the active line color to give the active line a little background color
-    // to make it stand out if the box shadow is not enough.
-    var activeLineColor = tpen.screen.colorThisTime.replace("1", ".2");
-    $('.activeLine').css({
-        'box-shadow': '0px 0px 15px 8px ' + tpen.screen.colorThisTime
-    });
 }
 
 /* Update the line information of the line currently focused on, then load the focus to a line that was clicked on */
@@ -4930,7 +4924,7 @@ var Help = {
                 }
             });
     }
-}
+};
     $("#previewSplit")
         .on("click",".previewText,.previewNotes",function(){Preview.edit(this);})
         .on("click","#previewNotes",function(){
@@ -4947,6 +4941,64 @@ var Help = {
             }
             Preview.scrollToCurrentPage();
         });
+tpen.screen.peekZoom = function(cancel){
+        var topImg = $("#imgTop img");
+        var btmImg = $("#imgBottom img");
+        var imgSrc = topImg.attr("src");
+        if(imgSrc.indexOf("imageResize?">-1 && imgSrc.indexOf("height=1000")>-1)){
+    imgSrc=imgSrc.replace("height=1000","height=2000");
+    }
+        if (imgSrc.indexOf("quality") === -1) {
+            imgSrc += "&quality=100";
+            topImg.add(btmImg).attr("src",imgSrc);
+        }
+        var WRAPWIDTH = $("#transcriptionCanvas").width();
+        var availableRoom = new Array (Page.height(),WRAPWIDTH);
+        var line = $(".activeLine");
+        var limitIndex = (line.width()/line.height()> availableRoom[1]/availableRoom[0]) ? 1 : 0;
+        var zoomRatio = (limitIndex === 1) ? availableRoom[1]/line.width() : availableRoom[0]/line.height();
+        var imgDims = new Array (topImg.height(),topImg.width(),parseInt(topImg.css("left")),-line.position().top);
+        if (!cancel){
+            //zoom in
+            $(".lineColIndicatorArea").fadeOut();
+            tpen.screen.peekMemory = [parseInt(topImg.css("top")),parseInt(btmImg.css("top")),$("#imgTop").height()];
+            $("#imgTop").css({
+                "height"    : line.height() * zoomRatio + "px"
+            });
+            topImg.css({
+                "width"     : imgDims[1] * zoomRatio + "px",
+                "left"      : -line.position().left * zoomRatio,
+                "top"       : imgDims[3] * zoomRatio,
+                "max-width" : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%"
+            });
+            btmImg.css({
+                "left"      : -line.position().left * zoomRatio,
+                "top"       : (imgDims[3]-line.height()) * zoomRatio,
+                "width"     : imgDims[1] * zoomRatio + "px",
+                "max-width" : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%"
+            });
+            tpen.screen.isPeeking = true;
+        } else {
+            //zoom out
+            topImg.css({
+                "width"     : "100%",
+                "left"      : 0,
+                "top"       : tpen.screen.peekMemory[0],
+                "max-width" : "100%"
+            });
+            btmImg.css({
+                "width"     : "100%",
+                "left"      : 0,
+                "top"       : tpen.screen.peekMemory[1],
+                "max-width" : "100%"
+            });
+            $("#imgTop").css({
+                "height"    : tpen.screen.peekMemory[2]
+            });
+            $(".lineColIndicatorArea").fadeIn();
+            tpen.screen.isPeeking = false;
+        }
+    };
     
     /* Clear the resize function attached to the window element. */
     function detachWindowResize(){

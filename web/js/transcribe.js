@@ -97,14 +97,14 @@ function redraw() {
 
 function scrubNav(){
     if(tpen.screen.currentFolio === 0){
-        $("#prevCanvas").css("visibility","hidden");
+        $("#prevCanvas,#prevPage").css("visibility","hidden");
     } else {
-        $("#prevCanvas").css("visibility","");
+        $("#prevCanvas,#prevPage").css("visibility","");
     }
     if (tpen.screen.currentFolio >= tpen.manifest.sequences[0].canvases.length - 1) {
-        $("#nextCanvas").css("visibility","hidden");
+        $("#nextCanvas,#nextPage").css("visibility","hidden");
     } else {
-        $("#nextCanvas").css("visibility","");
+        $("#nextCanvas,#nextPage").css("visibility","");
     }
 }
 
@@ -1508,6 +1508,22 @@ function updatePresentation(transcriptlet) {
     // prevent textareas from going invisible and not moving out of the workspace
     tpen.screen.focusItem[1].removeClass("transcriptletBefore transcriptletAfter")
         .find('.theText')[0].focus();
+    // change prev/next at page edges
+    if($(".transcriptletBefore").size()===0){
+
+        $("#prevLine").hide();
+        $("#prevPage").show();
+    } else {
+        $("#prevLine").show();
+        $("#prevPage").hide();
+    }
+    if($(".transcriptletAfter").size()===0){
+        $("#nextLine").hide();
+        $("#nextPage").show();
+    } else {
+        $("#nextLine").show();
+        $("#nextPage").hide();
+    }
 };
 
 /* Helper for position focus onto a specific transcriptlet.  Makes sure workspace stays on screen. */

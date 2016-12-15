@@ -1189,12 +1189,16 @@ kbd {
     background-color: rgba(1,51,90,.5);
     padding: 5px 0px;
 }
-#prevLine,#nextLine{
+#prevLine, #nextLine,#nextPage,#prevPage{
     position: relative;
     height:auto;
     background: #999;
     color: #333;
     transition: .5s;
+}
+#nextPage,#prevPage{
+    background-color: #993333;
+    color: #DDD;
 }
 #prevLine:hover,#nextLine:hover{
     box-shadow: 0 0 3px rgba(0,0,0,.5);

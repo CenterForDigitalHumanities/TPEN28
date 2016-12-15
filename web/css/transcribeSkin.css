@@ -615,7 +615,6 @@ body{
     width: 10px;
 }
 .ui-widget-overlay{}
-#parsingSplit{background-color: white;}
 #parsingDiv, #linebreakDiv {height:100%; padding: 4px;overflow: auto;width:auto;}
 #parseOptions > span, #linebreakOptions > span, #columnOptions > span, #allColumnOptions > span, .destroyPage, #reparseColumn {width:100%;height:38px;float:left;padding-top:8px;z-index: 2;}
 #columnOptions > span, #allColumnOptions > span {width: 50%;}
@@ -1004,6 +1003,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     overflow: hidden;
     float: right;
     background-color: rgba(1,51,90,.5);
+    background-color: #d0e0ff;
 }
 /*#activeImageTool{
     padding: 4px 6px;
@@ -1080,6 +1080,7 @@ button.imgTool{
     padding: .25em;
     box-shadow: 0 0 .2em;
     box-sizing: border-box;
+    text-align: center;
 }
 
 .fullScreenTrans:hover{

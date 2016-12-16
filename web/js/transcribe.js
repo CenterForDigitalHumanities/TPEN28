@@ -5031,13 +5031,14 @@ tpen.screen.peekZoom = function(cancel){
     function attachWindowResize(){
         console.log("window resize attached");
         window.onresize = function(event, ui) {
-            console.log("window resize detected");
+            console.log("window resize detected.  "+tpen.screen.liveTool+" is active tool.");
             var newImgBtmTop = "0px";
             var newImgTopTop = "0px";
     //        if(tpen.screen.liveTool === "controls"){ //the width is different for this one
     //
     //        }
             if(tpen.screen.liveTool === 'parsing'){ //apply to all split tools?
+                console.log("Tool active, resize, parsing.");
                 var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
                 var newCanvasWidth = tpen.screen.originalCanvasWidth * .57;
                 //Can I use tpen.screen.originalCanvasWidth?
@@ -5051,7 +5052,7 @@ tpen.screen.peekZoom = function(cancel){
                 var height = 1 / ratio * width;
                 if (height > PAGEHEIGHT){
                     height = PAGEHEIGHT;
-                    newCanvasWidth = 1/ratio*height;
+                    newCanvasWidth = ratio*height; //1/ratio*height;
                 }
 
                 var splitWidth = window.innerWidth - (width + 35) + "px";
@@ -5061,14 +5062,46 @@ tpen.screen.peekZoom = function(cancel){
                 newImgTopTop = tpen.screen.imgTopPositionRatio * height;
                 $("#imgTop img").css("top", newImgTopTop + "px");
                 $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
-                $("#imgTop img").css({
-                    'height': height + "px"
-    //                'width': $("#imgTop img").width()
-                });
-                $("#imgTop").css({
-                    'height': $("#imgTop img").height(),
-                    'width': tpen.screen.imgTopSizeRatio * $("#imgTop img").height() + "px"
-                });
+                
+            }
+            else if(tpen.screen.liveTool !== "" && tpen.screen.liveTool!=="none"){
+                console.log("Tool active, resize found, not parsing.");
+                var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
+                var newCanvasWidth = Page.width() * .55;
+                var splitWidth = window.innerWidth - (newCanvasWidth + 35) + "px";
+                if(tpen.screen.liveTool === "controls"){
+                    newCanvasWidth = Page.width()-200;
+                    splitWidth = 200;
+                }
+                //Can I use tpen.screen.originalCanvasWidth?
+                var newCanvasHeight = 1 / ratio * newCanvasWidth;
+                var PAGEHEIGHT = Page.height();
+                if (newCanvasHeight > PAGEHEIGHT){
+                    newCanvasHeight = PAGEHEIGHT;
+                    newCanvasWidth = ratio*newCanvasHeight;
+                }
+                console.log("W, h, sw "+newCanvasWidth, newCanvasHeight, splitWidth);
+                $(".split img").css("max-width", splitWidth);
+                $(".split:visible").css("width", splitWidth);
+                $("#transcriptionTemplate").css("width", newCanvasWidth + "px");
+                $("#transcriptionCanvas").css("width", newCanvasWidth + "px");
+                $("#transcriptionCanvas").css("height", newCanvasHeight + "px");
+                newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
+                $("#imgTop img").css("top", newImgTopTop + "px");
+                $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
+                $("#imgBottom img").css("top", newImgBtmTop + "px");
+                $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
+                $(".lineColIndicatorArea").css("height",newCanvasHeight+"px");
+//                if(tpen.screen.liveTool === "parsing"){
+//                    $("#imgTop img").css({
+//                    'height': height + "px"
+//        //                'width': $("#imgTop img").width()
+//                    });
+//                    $("#imgTop").css({
+//                        'height': $("#imgTop img").height(),
+//                        'width': tpen.screen.imgTopSizeRatio * $("#imgTop img").height() + "px"
+//                    });
+//                }
             }
             else{
                 var newHeight = $("#imgTop img").height();

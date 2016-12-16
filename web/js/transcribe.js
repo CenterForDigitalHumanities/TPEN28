@@ -2156,7 +2156,7 @@ function hideWorkspaceForParsing(){
     //    tpen.screen.originalCanvasHeight = $("#transcriptionCanvas").height(); //make sure these are set correctly
 //    tpen.screen.originalCanvasWidth = $("#transcriptionCanvas").width(); //make sure these are set correctly
     imgTopOriginalTop = $("#imgTop img").css("top");
-    $("#transcriptionTemplate").css("max-width", "55%").css("width", "57%");
+    $("#transcriptionTemplate").css("max-width", "57%").css("width", "57%");
     $("#transcriptionCanvas").css("max-height", window.innerHeight + "px");
     $("#transcriptionTemplate").css("max-height", window.innerHeight + "px");
     $("#controlsSplit").hide();
@@ -2220,7 +2220,7 @@ function hideWorkspaceForParsing(){
             }
 //            console.log(originalCanvasHeight, originalCanvasWidth, height, newCanvasWidth, originalRatio );
             //$(".lineColIndicatorArea").css("height", height + "px");
-            var splitWidth = window.innerWidth - (width + 35) + "px";
+            var splitWidth = Page.width() - (width + 35) + "px";
             $(".split img").css("max-width", splitWidth);
             $(".split:visible").css("width", splitWidth);
             $("#transcriptionCanvas").css("height", height + "px");//.css("width", newCanvasWidth + "px")
@@ -5043,25 +5043,24 @@ tpen.screen.peekZoom = function(cancel){
                 var newCanvasWidth = tpen.screen.originalCanvasWidth * .57;
                 //Can I use tpen.screen.originalCanvasWidth?
                 var newCanvasHeight = 1 / ratio * newCanvasWidth;
-                var PAGEHEIGHT = $("#transcriptionTemplate").width();
+                var PAGEHEIGHT = Page.height();
                 if (newCanvasHeight > PAGEHEIGHT){
                     newCanvasHeight = PAGEHEIGHT;
                     newCanvasWidth = 1/ratio*newCanvasHeight;
                 }
-                var width = $("#transcriptionTemplate").width();
-                var height = 1 / ratio * width;
-                if (height > PAGEHEIGHT){
-                    height = PAGEHEIGHT;
-                    newCanvasWidth = ratio*height; //1/ratio*height;
-                }
-
-                var splitWidth = window.innerWidth - (width + 35) + "px";
+                var splitWidth = Page.width() - ($("#transcriptionTemplate").width()+35) + "px";
                 $(".split img").css("max-width", splitWidth);
                 $(".split:visible").css("width", splitWidth);
-                $("#transcriptionCanvas").css("height", height + "px");
-                newImgTopTop = tpen.screen.imgTopPositionRatio * height;
-                $("#imgTop img").css("top", newImgTopTop + "px");
+                $("#transcriptionCanvas").css("height", newCanvasHeight + "px");
+                newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
                 $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
+                $("#imgTop .lineColIndicatorArea").css("height", newCanvasHeight + "px");
+                $("#imgTop img").css({
+                    'height': newCanvasHeight + "px",
+                    'top': "0px"
+                });
+                $("#imgTop").css("height", newCanvasHeight + "px");
+                $("#imgTop").css("width", newCanvasWidth + "px");
                 
             }
             else if(tpen.screen.liveTool !== "" && tpen.screen.liveTool!=="none"){
@@ -5075,11 +5074,11 @@ tpen.screen.peekZoom = function(cancel){
                 }
                 //Can I use tpen.screen.originalCanvasWidth?
                 var newCanvasHeight = 1 / ratio * newCanvasWidth;
-                var PAGEHEIGHT = Page.height();
-                if (newCanvasHeight > PAGEHEIGHT){
-                    newCanvasHeight = PAGEHEIGHT;
-                    newCanvasWidth = ratio*newCanvasHeight;
-                }
+//                var PAGEHEIGHT = Page.height();
+//                if (newCanvasHeight > PAGEHEIGHT){
+//                    newCanvasHeight = PAGEHEIGHT;
+//                    newCanvasWidth = ratio*newCanvasHeight;
+//                }
                 console.log("W, h, sw "+newCanvasWidth, newCanvasHeight, splitWidth);
                 $(".split img").css("max-width", splitWidth);
                 $(".split:visible").css("width", splitWidth);

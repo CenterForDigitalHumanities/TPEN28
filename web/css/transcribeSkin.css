@@ -573,16 +573,52 @@ body{
 #parsingBtn[disabled]:hover{
     background-color: red;
 }
-
-#ctrlColumns, #ctrlLines, .tpenButton{
-    cursor: pointer;
+.fa-reparse:before,.fa-square-o:before {
+    content: url(../css/custom-theme/images/reparse30.png);
+    height: 30px;
+    display: inline-block;
+    position: absolute;
+    border: solid 1px black;
+    overflow: hidden;
+    background: white;
+    top: 0;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
 }
-
-#ctrlColumns, #ctrlLines{
-    border-bottom: 1px solid #002a5c;
-    color: #002a5c;
+.fa-reparse-lg:before{
+    content: url(../css/custom-theme/images/reparse.png);
+    height: 60px;
+    display: inline-block;
+    position: absolute;
+    border: solid 2px black;
+    overflow: hidden;
+    background: white;
+    top: -16px; right:-16px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    transform: scale(.5);
 }
-
+.splitBlock {
+    padding: .68em;
+}
+.splitBlock .active,.toolLinks {
+    background:#829aac;
+}
+.splitBlock .tpenButton {
+    display: block;
+    padding-right: 32px;
+    padding-left: 1em;
+    height: 32px;
+    font-size: 90%;
+    text-transform: uppercase;
+    box-sizing: border-box;
+    line-height: 1.5em;
+    margin: 0 auto;
+    position: relative;
+}
+.splitBlock small {
+    display:block;
+}
 /*#parsingSplit {max-width:600px; min-width: 350px;position: relative; z-index: 9;}*/
 #overlay{
     display: none;
@@ -615,7 +651,8 @@ body{
     width: 10px;
 }
 .ui-widget-overlay{}
-#parsingDiv, #linebreakDiv {height:100%; padding: 4px;overflow: auto;width:auto;}
+#parsingDiv{overflow: auto;width: auto;}
+#linebreakDiv {height:100%; overflow: auto;width:auto;}
 #parseOptions > span, #linebreakOptions > span, #columnOptions > span, #allColumnOptions > span, .destroyPage, #reparseColumn {width:100%;height:38px;float:left;padding-top:8px;z-index: 2;}
 #columnOptions > span, #allColumnOptions > span {width: 50%;}
 .parsingColumn {background-image: url('css/custom-theme/images/ui-bg_layered-circles_50_618797_13x13.png');background-attachment: scroll;background-repeat: repeat;position: absolute;border-style: solid; border-width: 2px;border-color: black;z-index: 3;opacity:.3;}
@@ -731,7 +768,7 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
 #ruler1,#ruler2 {display: none;background: black;position: absolute;z-index: 4;}
 #sampleRuler {overflow: hidden;position:relative;background:black;width:80%;margin:0 auto;height:2px;top:-10px;}
 #savedChanges {display: none; opacity:0;position: fixed;right:20px;min-width:150px;top:100%;padding: 4px;text-align: center;z-index: 50;}
-#parsingDiv, #linebreakDiv {height:100%; padding: 4px;overflow: auto;width:auto;}
+#linebreakDiv {height:100%; padding: 4px;overflow: auto;width:auto;}
 #parseOptions > span, #linebreakOptions > span, #columnOptions > span, #allColumnOptions > span, .destroyPage, #reparseColumn {width:100%;height:38px;float:left;padding-top:8px;z-index: 2;}
 #columnOptions > span, #allColumnOptions > span {width: 50%;}
 .parsingColumn {background-image: url('css/custom-theme/images/ui-bg_layered-circles_50_618797_13x13.png');background-attachment: scroll;background-repeat: repeat;position: absolute;border-style: solid; border-width: 2px;border-color: black;z-index: 3;opacity:.3;}
@@ -1003,7 +1040,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     overflow: hidden;
     float: right;
     background-color: rgba(1,51,90,.5);
-    background-color: #d0e0ff;
+    background-color: #e1f4fe;
 }
 /*#activeImageTool{
     padding: 4px 6px;
@@ -1064,11 +1101,12 @@ button.imgTool{
     background-color: rgb(209,72,54);
 }
 .split header {
-    font-weight: bold;
-    margin: 1em -1em 0em;
+    margin: 0;
     text-align: center;
-    background: rgba(255,255,255,.4);
-    color: #2f5c9c;
+    background: #6d6e71;
+    color: #e1f4fe;
+    text-transform: uppercase;
+    line-height: 1.5;
 }
 .fullScreenTrans{
     width: 100%;

@@ -220,13 +220,27 @@
                      <i class="fa fa-reply fa-flip-vertical"></i> Return to Transcription</div>
              </div>
              <div class="toolLinks">
-                 <i class="fa fa-square-o"></i>
-                 <i class="fa fa-square-o"></i>
-                 <i class="fa fa-square-o"></i>
-                 <i class="fa fa-square-o"></i>
-                 <i class="fa fa-square-o"></i>
-                 <i class="fa fa-square-o"></i>
-                 <i class="fa fa-square-o"></i>
+                 <button class="tpenButton">
+                     <i class="fa fa-reparse-lg"></i>
+                 </button>
+                 <button class="tpenButton">
+                     <i class="fa fa-reparse"></i>
+                 </button>
+                 <button class="tpenButton">
+                     <i class="fa fa-reparse-lg"></i>
+                 </button>
+                 <button class="tpenButton">
+                     <i class="fa fa-reparse"></i>
+                 </button>
+                 <button class="tpenButton">
+                     <i class="fa fa-reparse-lg"></i>
+                 </button>
+                 <button class="tpenButton">
+                     <i class="fa fa-reparse"></i>
+                 </button>
+                 <button class="tpenButton">
+                     <i class="fa fa-reparse-lg"></i>
+                 </button>
              </div>
 
                 <div id="parsingDiv" class="">
@@ -235,14 +249,14 @@
                         <div class="splitBlock">
                             <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
                                 Create Column
-                                <i class="fa fa-square-o"></i>
+                                <i class="fa fa-reparse"></i>
                             </button>
                             <small>Click and drag to place</small>
                         </div>
                         <div class="splitBlock">
                             <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
                                 Adjust Columns
-                                <i class="fa fa-square-o"></i>
+                                <i class="fa fa-reparse"></i>
                             </button>
                             <small>Drag the edges of an existing column.</small>
                             <small><i class="fa fa-info-circle"></i> This method does not remove any transcription information.</small>
@@ -250,7 +264,7 @@
                         <div class="splitBlock danger">
                             <button id="destroyColumn" class="tpenButton" title="Remove an entire column and its data with a click">
                                 Destroy Column
-                                <i class="fa fa-square-o"></i>
+                                <i class="fa fa-reparse"></i>
                             </button>
                             <small>Click a column to remove all its lines and transcription data.</small>
                             <small class="danger"><i class="fa fa-warning"></i> This is a destructive process and cannot be undone.</small>
@@ -260,7 +274,7 @@
                             <div class="splitBlock">
                             <button id="addLines" class="tpenButton" title="Split lines to create new ones in a column">
                                 Add Line
-                                <i class="fa fa-square-o"></i>
+                                <i class="fa fa-reparse"></i>
                             </button>
                                 <small>Click within the shaded area to define the bottom of the new line.</small>
                                 <small><i class="fa fa-info-circle"></i>Any <acronym title="text, markup, and notes">transcription information</acronym> will remain with the line above where you click.</small>
@@ -279,7 +293,7 @@
                             <div class="splitBlock">
                             <button id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines">
                                 Adjust Lines
-                                <i class="fa fa-square-o"></i>
+                                <i class="fa fa-reparse"></i>
                             </button>
                                 <small>Click and drag the right side of the line to contain the line accurately.</small>
                                 <small><i class="fa fa-info-circle"></i> Only the right boundary can be moved in this tool.</small>
@@ -287,13 +301,14 @@
                             <div class="splitBlock">
                             <button id="removeLines" class="tpenButton" title="Merge two lines in a column">
                                 Merge Lines
-                                <i class="fa fa-square-o"></i>
+                                <i class="fa fa-reparse"></i>
                             </button>
                                 <small>Click within the shaded area to merge the highlighted lines.</small>
                                 <small><i class="fa fa-info-circle"></i> This method combines your transcription information into the new line.</small>
                             </div>
                     </div>
                 </div>
+         </div>
 
 <!--                    Linebreaking Tool-->
            <div id="linebreakSplit" class="ui-widget ui-widget-content split">

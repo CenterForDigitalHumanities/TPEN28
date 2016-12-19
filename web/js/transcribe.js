@@ -96,6 +96,11 @@ function redraw() {
 }
 
 function scrubNav(){
+    if(!tpen.manifest.sequences
+    || !tpen.manifest.sequences[0]
+    || !tpen.manifest.sequences[0].canvases){
+        return false;
+    }
     if(tpen.screen.currentFolio === 0){
         $("#prevCanvas,#prevPage").css("visibility","hidden");
     } else {

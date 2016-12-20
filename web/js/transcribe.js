@@ -1202,7 +1202,7 @@ function drawLinesToCanvas (canvasObj, parsing, tool) {
                 }
             });
         } else if (canvasObj.otherContent && canvasObj.otherContent[0] && canvasObj.otherContent[0].resources) {
-            linesToScreen(canvasObj.otherContent.resources, tool);
+            linesToScreen(canvasObj.otherContent[0].resources, tool);
         }
     }
 }
@@ -3373,6 +3373,9 @@ function batchLineUpdate(linesInColumn, relocate){
     function getList(canvas, drawFlag, parsing, tool){ //this could be the @id of the annoList or the canvas that we need to find the @id of the list for.
         var lists = [];
         var annos = [];
+        if(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0].resources){
+            return tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0].resources;
+        }
         if(tpen.screen.dereferencedLists[tpen.screen.currentFolio]){
             annos = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
             tpen.screen.currentAnnoListID = tpen.screen.dereferencedLists[tpen.screen.currentFolio]["@id"];

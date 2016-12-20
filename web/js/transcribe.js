@@ -3423,7 +3423,7 @@ function updateLine(line, cleanup, updateList){
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2;
-    //Can I use tpen.screen.originalCanvasHeight and Width?
+    //Can I use tpen.screen.originalCanvasHeight and Width?  IDK yet, untested.
 
     lineTop = parseFloat(line.attr("linetop")) * 10;
     lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
@@ -3473,36 +3473,45 @@ function updateLine(line, cleanup, updateList){
         }
     }
     else if (currentAnnoListID){
-        //TODO rewrite to use updateLinePositions.
-        if(currentLineServerID.startsWith("http")){
-            //var url = "http://165.134.241.141/annotationstore/anno/updateAnnotation.action"; //This gets a 403 Forbidden....
-            var url = "updateAnnoList";
-            var payload = { // Just send what we expect to update
-                    content : JSON.stringify({
-                    "@id" : dbLine['@id'],			// URI to find it in the repo
-                    "resource" : dbLine.resource,	// the transcription content
-                    "on" : dbLine.on,
-                    "_tpen_note": dbLine._tpen_note// parsing update of xywh=
-            	})
+        var lineID = (line != null) ? $(line).attr("lineserverid") : -1;
+        var params = new Array({name:'submitted',value:true},{name:'folio',value:tpen.project.folio[tpen.screen.currentFolio].folioNumber},{name:'projectID',value:tpen.project.id});
+        if (lineID>0 || $(line).attr("id")=="dummy"){
+            params.push(
+                {name:"updatey",value:lineTop},
+                {name:"updatex",value:lineLeft},
+                {name:"updatewidth",value:lineWidth},
+                {name:"updateheight",value:lineHeight},
+                {name:"update",value:lineID}
+            );
+        }
+        //isDestroyingLine = false;
+        if(currentLineServerID.startsWith("http")){ //@cubap FIXME: do we need this check anymore?
+            var url = "updateLinePositions"; //updateAnnoList
+//            var payload = { // Just send what we expect to update
+//                    content : JSON.stringify({
+//                    "@id" : dbLine['@id'],			// URI to find it in the repo
+//                    "resource" : dbLine.resource,	// the transcription content
+//                    "on" : dbLine.on,
+//                    "_tpen_note": dbLine._tpen_note// parsing update of xywh=
+//            	})
             };
-            if(updateList){
-                var url1 = "updateAnnoList";
-                clearTimeout(typingTimer);
-                for(var i=0  ;i < currentAnnoList.length; i++){
-                    if(currentAnnoList[i]["@id"] === dbLine['@id']){
-                        currentAnnoList[i].on = dbLine.on;
-                        currentAnnoList[i].resource = dbLine.resource;
-                        currentAnnoList[i]._tpen_note = dbLine._tpen_note;
-                    }
-                    if(i===currentAnnoList.length -1){
-                        tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
-                        var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
-                        var params1 = {"content":JSON.stringify(paramObj1)};
-                        $.post(url1, params1, function(data){
-                        });
-                    }
+            //var url1 = "updateAnnoList";
+            clearTimeout(typingTimer);
+            for(var i=0  ;i < currentAnnoList.length; i++){
+                if(currentAnnoList[i]["@id"] === dbLine['@id']){
+                    currentAnnoList[i].on = dbLine.on;
+                    currentAnnoList[i].resource = dbLine.resource;
+                    currentAnnoList[i]._tpen_note = dbLine._tpen_note; //@cubap FIXME:  How do we handle notes now?
+                }
+                if(i===currentAnnoList.length -1){
+                    tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
+//                    var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
+//                    var params1 = {"content":JSON.stringify(paramObj1)};
+//                    $.post(url1, params1, function(data){
+//                    });
                 }
             }
+            
             if(currentLineText === currentLineTextAttr && currentLineNotes === currentLineNotesAttr){
                 //This line's text has not changed, and neither does the notes
                 $("#saveReport")
@@ -3521,7 +3530,8 @@ function updateLine(line, cleanup, updateList){
             }
             line.attr("data-answer", currentLineText);
             line.find(".notes").attr("data-answer", currentLineNotes);
-            $.post(url,payload,function(){
+            //FIXME: REST says this should be PUT
+            $.post(url,params,function(){
             	line.attr("hasError",null);
                 $("#parsingCover").hide();
             	// success
@@ -3532,11 +3542,12 @@ function updateLine(line, cleanup, updateList){
         } else {
             throw new Error("No good. The ID could not be dereferenced. Maybe this is a new annotation?");
         }
+        //I am not sure if cleanup is ever true
+        if (cleanup) cleanupTranscriptlets(true);
+        updateClosingTags();
     }
-    //I am not sure if cleanup is ever true
-    if (cleanup) cleanupTranscriptlets(true);
-    updateClosingTags();
-}
+    
+
 
 function saveNewLine(lineBefore, newLine){
     var theURL = window.location.href;

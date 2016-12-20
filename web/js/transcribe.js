@@ -3484,6 +3484,7 @@ function updateLine(line, cleanup, updateList){
         }
     }
     else if (currentAnnoListID){
+        //TODO rewrite to use updateLinePositions.
         if(currentLineServerID.startsWith("http")){
             //var url = "http://165.134.241.141/annotationstore/anno/updateAnnotation.action"; //This gets a 403 Forbidden....
             var url = "updateAnnoList";
@@ -3613,17 +3614,22 @@ function saveNewLine(lineBefore, newLine){
         "_tpen_creator" : tpen.user.UID,
         "testing":"TPEN28"
     };
-    var url = "saveNewTransLineServlet";
-    var paramOBJ = dbLine;
-    var params = {"content" : JSON.stringify(paramOBJ)};
+    var url = "updateLinePositions"; //saveNewTransLineServlet
+    var params = new Array(
+        {name:"newy",value:newLineTop},
+        {name:"newx",value:newLineLeft},
+        {name:"newwidth",value:newLineWidth},
+        {name:"newheight",value:newLineHeight},
+        {name:"new",value:true}
+    );
     if (onCanvas !== undefined && onCanvas !== ""){
         $.post(url, params, function(data){
             data = JSON.parse(data);
-            dbLine["@id"] = data["@id"];
-            newLine.attr("lineserverid", data["@id"]);
+            dbLine["@id"] = data;
+            newLine.attr("lineserverid", data); //data["@id"]
             $("div[newcol='" + true + "']").attr({
-                "startid" : dbLine["@id"],
-                "endid" : dbLine["@id"],
+                "startid" : data, //dbLine["@id"]
+                "endid" : data, //dbLine["@id"]
                 "newcol":false
             });
             var currentFolio = tpen.screen.currentFolio;
@@ -3632,34 +3638,37 @@ function saveNewLine(lineBefore, newLine){
                 // if it IIIF, we need to update the list
                 if (beforeIndex == - 1){
                     $(".newColumn").attr({
-                        "lineserverid" : dbLine["@id"],
+                        "lineserverid" : data,
                         "linenum" : $(".parsing").length
                     }).removeClass("newColumn");
-                    currentAnnoList.push(dbLine);
+                    currentAnnoList.push(dbLine); //@cubap FIXME: what should we do for dbLine here?  What does the currentAnnoList look like.
                 }
                 else {
-                    currentAnnoList.splice(beforeIndex + 1, 0, dbLine);
+                    currentAnnoList.splice(beforeIndex + 1, 0, dbLine); //@cubap FIXME: what should we do for dbLine here?  What does the currentAnnoList look like?
                     currentAnnoList[beforeIndex].on = updateLineString;
                 }
                 currentFolio = parseInt(currentFolio);
                 //Write back to db to update list
-                tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
-                var url1 = "updateAnnoList";
-                var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
-                var params1 = {"content":JSON.stringify(paramObj1)};
-                $.post(url1, params1, function(data){
-                    if (lineBefore !== undefined && lineBefore !== null){
-                        //This is the good case.  We called split line and saved
-                        //the new line, now we need to update the other one.
-                        updateLine(lineBefore, false, false); //This will update the line on the server.
-                    }
-                    else{
-                    }
-                        $("#parsingCover").hide();
-                });
+                tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList; //@cubap this is why the FIXMEs above
+                updateLine(lineBefore, false, false); //This will update the line on the server.
+                $("#parsingCover").hide();
+//                var url1 = "updateAnnoList";
+//                var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
+//                var params1 = {"content":JSON.stringify(paramObj1)};
+//                $.post(url1, params1, function(data){
+//                    if (lineBefore !== undefined && lineBefore !== null){
+//                        //This is the good case.  We called split line and saved
+//                        //the new line, now we need to update the other one.
+//                        
+//                    }
+//                    else{
+//                    }
+//                        $("#parsingCover").hide();
+//                });
 
             }
-            else if (currentAnnoList == "empty"){
+            /*
+            else if (currentAnnoList == "empty"){ //Not sure we need to handle this with the roll back.
                 //This means we know no AnnotationList was on the store for this canvas,
                 //and otherContent stored with the canvas object did not have the list.
                 // Make a new one in this case.
@@ -3698,6 +3707,7 @@ function saveNewLine(lineBefore, newLine){
                     });
                 });
             }
+            */
             else if (currentAnnoList == "noList"){
                 //noList is a special scenario for handling classic T-PEN objects.
                 if (beforeIndex == - 1){ //New line vs new column

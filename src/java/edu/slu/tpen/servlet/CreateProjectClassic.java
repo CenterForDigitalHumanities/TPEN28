@@ -52,7 +52,7 @@ public class CreateProjectClassic extends HttpServlet {
      */
     public String createProject(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException, SQLException {
-            int UID = (Integer) request.getSession().getAttribute("UID");
+            int UID = Integer.parseInt(request.getSession().getAttribute("UID").toString());
             int projectID = 0;
             textdisplay.Project thisProject = null;
             if (UID > 0 && request.getParameter("ms")!=null) {
@@ -93,8 +93,7 @@ public class CreateProjectClassic extends HttpServlet {
                     }
                 }
             }
-
-            return "";
+            return ""+projectID;
         }
     
 }

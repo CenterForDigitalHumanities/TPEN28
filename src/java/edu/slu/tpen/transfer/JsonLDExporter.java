@@ -149,7 +149,7 @@ public class JsonLDExporter {
       otherContent = Canvas.getLinesForProject(projID, canvasID,f.getFolioNumber(), u.getUID());
 // no @id because it is not resolveable yet, but when it is it goes here.
       result.put("otherContent", otherContent);
-        result.put("images", images);
+    result.put("images", images);
       return result;
    }
 

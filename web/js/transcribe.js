@@ -1201,7 +1201,7 @@ function drawLinesToCanvas (canvasObj, parsing, tool) {
                         .css("box-shadow", "0px 0px 6px 5px yellow");
                 }
             });
-        } else if (canvasObj.otherContent && canvasObj.otherContent.resources && canvasObj.otherContent.resources.length) {
+        } else if (canvasObj.otherContent && canvasObj.otherContent[0] && canvasObj.otherContent[0].resources) {
             linesToScreen(canvasObj.otherContent.resources, tool);
         }
     }
@@ -1255,8 +1255,8 @@ function linesToScreen(lines, tool){
             lineID = line['@id'];
         }
         else {
-            //ERROR.  Malformed line.
-            update = false;
+            //undereferencable line.
+            lineID = line.tpen_line_id;
         }
         thisContent = "";
         if (lineURL.indexOf('#') > - 1){ //string must contain this to be valid

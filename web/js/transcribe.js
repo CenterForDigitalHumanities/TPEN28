@@ -1033,15 +1033,6 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
     $('#transcriptionTemplate').css("display", "inline-block");
     $("#parsingBtn").css("box-shadow", "none");
     $("#parsingButton").removeAttr('disabled');
-    // This should just be the CSS
-//    $(".lineColIndicator").css({
-//        "box-shadow": "rgba(255, 255, 255, 0.4)",
-//        "border": "1px solid rgb(255, 255, 255)"
-//    });
-//    $(".lineColOnLine").css({
-//        "border-left": "1px solid rgba(255, 255, 255, 0.2);",
-//        "color": "rgb(255, 255, 255)"
-//    });
     //Move up all image annos
     var cnt = - 1;
     if (canvasObj.images[0].resource['@id'] !== undefined
@@ -1202,6 +1193,7 @@ function drawLinesToCanvas (canvasObj, parsing, tool) {
                 }
             });
         } else if (canvasObj.otherContent && canvasObj.otherContent[0] && canvasObj.otherContent[0].resources) {
+            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0];
             linesToScreen(canvasObj.otherContent[0].resources, tool);
         }
     }
@@ -3374,6 +3366,7 @@ function batchLineUpdate(linesInColumn, relocate){
         var lists = [];
         var annos = [];
         if(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0].resources){
+            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0];
             return tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0].resources;
         }
         if(tpen.screen.dereferencedLists[tpen.screen.currentFolio]){

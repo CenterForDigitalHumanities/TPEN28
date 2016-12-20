@@ -1134,13 +1134,13 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
  * @paran canvasObj  A canvas object to extract transcription lines from and draw to the interface.
  * @param parsing boolean if parsing is live tool
  */
-function drawLinesToCanvas(canvasObj, parsing, tool){
+function drawLinesToCanvas (canvasObj, parsing, tool) {
     var lines = [];
     var currentFolio = parseInt(tpen.screen.currentFolio);
     if (canvasObj.resources !== undefined
-        && canvasObj.resources.length > 0){
-        for (var i = 0; i < canvasObj.resources.length; i++){
-            if (isJSON(canvasObj.resources[i])){   // it is directly an annotation
+        && canvasObj.resources.length > 0) {
+        for (var i = 0; i < canvasObj.resources.length; i++) {
+            if (isJSON(canvasObj.resources[i])) {   // it is directly an annotation
                 lines.push(canvasObj.resources[i]);
             }
         }
@@ -1151,66 +1151,59 @@ function drawLinesToCanvas(canvasObj, parsing, tool){
         // If not found, then consider this an empty canvas.
         var annosURL = "getAnno";
         var onValue = canvasObj["@id"];
-        var properties = {"@type": "sc:AnnotationList", "on" : onValue, proj:tpen.project.id};
-        var paramOBJ = {"content": JSON.stringify(properties)};
-        $.post(annosURL, paramOBJ, function(annoList){
-            if (!tpen.manifest.sequences[0].canvases[currentFolio]){
-                throw new Error("Missing canvas:" +currentFolio);
-            }
-            if(!tpen.manifest.sequences[0].canvases[currentFolio].otherContent){
-                tpen.manifest.sequences[0].canvases[currentFolio].otherContent = new Array();
-            }
-            //FIXME: The line below throws a JSON error sometimes, especially on first load.
-            var annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent = tpen.manifest.sequences[0].canvases[currentFolio].otherContent.concat(JSON.parse(annoList));
-            var currentList = {};
-
-            if (annoList.length > 0){
-                // Scrub resolved lists that are already present.
-                tpen.screen.currentAnnoListID = annoList[0]; //There should always just be one that matches because of proj, default to first in array if more
-                lines = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], true, parsing, tool);
-//                $.each(annoList, function(index){
-//                    if (typeof annoList[index] === "string"){
-//                        // annoList is most likely an array of @ids.
-//                        for (var i = annoList.length - 1; i >= 0; i--) {
-//                            if (annoList[index] === annoList[i]["@id"]){
-//                                // found the dereferenced object, wipe this
-//                                delete annoList[index]; // above this scope
-//                                break;
-//                            }
-//                        }
-//                        lines = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio]);
-//                    }
-//                    else if (this.resources) {
-//                        lines = this.resources;
-//                        currentList = this;
-//                    } else {
-//                    	console.warn("Multiple AnnotationLists found, but '" + this + "' was not recognized.");
-//                        delete annoList[index]; // above this scope
-//                    }
-//                });
-//                annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent
-//                = annoList.filter(function(){ // clear out empty items
-//                	return true;
-//                });
-
-
-            }
-            else {
-                // couldnt get list.  one should always exist, even if empty.
-                // We will say no list and changes will be stored locally to the canvas.
-                if (parsing !== "parsing") {
-                    $("#noLineWarning").show();
+        var properties = {
+            "@type": "sc:AnnotationList", "on": onValue, proj: tpen.project.id
+        };
+        var paramOBJ = {
+            "content": JSON.stringify(properties)
+        };
+        if ($.type(canvasObj.otherContent) === "string") {
+            $.post(annosURL, paramOBJ, function (annoList) {
+                if (!tpen.manifest.sequences[0].canvases[currentFolio]) {
+                    throw new Error("Missing canvas:" + currentFolio);
                 }
-                $("#transTemplateLoading").hide();
-                $("#transcriptionTemplate").show();
-                $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
-                $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
-                $("#imgTop").css("height", "0%");
-                $("#imgBottom img").css("top", "0px");
-                $("#imgBottom").css("height", "inherit");
-                $("#parsingBtn").css("box-shadow", "0px 0px 6px 5px yellow");
-            }
-        });
+                if (!tpen.manifest.sequences[0].canvases[currentFolio].otherContent) {
+                    tpen.manifest.sequences[0].canvases[currentFolio].otherContent = new Array();
+                }
+                //FIXME: The line below throws a JSON error sometimes, especially on first load.
+                var annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent = tpen.manifest.sequences[0].canvases[currentFolio].otherContent.concat(JSON.parse(annoList));
+                var currentList = {};
+
+                if (annoList.length > 0) {
+                    // Scrub resolved lists that are already present.
+                    tpen.screen.currentAnnoListID = annoList[0]; //There should always just be one that matches because of proj, default to first in array if more
+                    lines = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], true, parsing, tool);
+                }
+                else {
+                    // couldnt get list.  one should always exist, even if empty.
+                    // We will say no list and changes will be stored locally to the canvas.
+                    if (parsing !== "parsing") {
+                        $("#noLineWarning")
+                            .show();
+                    }
+                    $("#transTemplateLoading")
+                        .hide();
+                    $("#transcriptionTemplate")
+                        .show();
+                    $('#transcriptionCanvas')
+                        .css('height', $("#imgTop img")
+                            .height() + "px");
+                    $('.lineColIndicatorArea')
+                        .css('height', $("#imgTop img")
+                            .height() + "px");
+                    $("#imgTop")
+                        .css("height", "0%");
+                    $("#imgBottom img")
+                        .css("top", "0px");
+                    $("#imgBottom")
+                        .css("height", "inherit");
+                    $("#parsingBtn")
+                        .css("box-shadow", "0px 0px 6px 5px yellow");
+                }
+            });
+        } else if (canvasObj.otherContent && canvasObj.otherContent.resources && canvasObj.otherContent.resources.length) {
+            linesToScreen(canvasObj.otherContent.resources, tool);
+        }
     }
 }
 
@@ -5066,7 +5059,7 @@ tpen.screen.peekZoom = function(cancel){
                 });
                 $("#imgTop").css("height", newCanvasHeight + "px");
                 $("#imgTop").css("width", newCanvasWidth + "px");
-                
+
             }
             else if(tpen.screen.liveTool !== "" && tpen.screen.liveTool!=="none"){
                 console.log("Tool active, resize found, not parsing.");
@@ -5124,8 +5117,8 @@ tpen.screen.peekZoom = function(cancel){
             tpen.screen.textSize();
         };
     }
-    
-    /* 
+
+    /*
      * I believe index.jsp makes a href='javascript:createProject(msID);' call through the links for Start Transcribing.
      * This is the javascript fuction that it tries to call, with the redirect to handle success and an alert for failure.
      * */
@@ -5141,7 +5134,7 @@ tpen.screen.peekZoom = function(cancel){
         .fail(function(data){
             alert("Could not create project");
         });
-        
+
     }
 
 

@@ -179,11 +179,12 @@ function createPreviewPages(){
                 currentPage = "currentPage";
             }
             if (currentFolioToUse.otherContent && currentFolioToUse.otherContent.length > 0){
-                var allAnnoLists = currentFolioToUse.otherContent;
-                for(var j=0; j<allAnnoLists.length; j++){
-                    var thisList = allAnnoLists[j];
-                    makePreviewPage(thisList, pageLabel, currentPage, i, j, allAnnoLists.length);
-                }
+                var listOfAnnos = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+                //var allAnnoLists = currentFolioToUse.otherContent;
+                //for(var j=0; j<allAnnoLists.length; j++){
+                    //var thisList = allAnnoLists[j];
+                makePreviewPage(listOfAnnos, pageLabel, currentPage, i, 0, listOfAnnos.length);
+                //}
             }
             else{
                 console.warn("otherContent was null or empty, passing an empty array of lines");
@@ -194,15 +195,16 @@ function createPreviewPages(){
 }
 
 function makePreviewPage(thisList, pageLabel, currentPage, i, j, l){
-    $.get(thisList,function(data){
-        if(data.proj == tpen.project.id){
-            var linesForThisProject = data.resources;
-            populatePreview(linesForThisProject, pageLabel, currentPage, i);
-        }
-        else if(j == l){ //we did not find the proper annotation list, send this off to create an empty page
-            populatePreview(linesForThisProject, pageLabel, currentPage, i);
-        }
-    });
+    var listOfAnnos = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+    populatePreview(listOfAnnos, pageLabel, currentPage, i);
+//    if(data.proj == tpen.project.id){
+//        var linesForThisProject = data.resources;
+//        populatePreview(linesForThisProject, pageLabel, currentPage, i);
+//    }
+//    else if(j == l){ //we did not find the proper annotation list, send this off to create an empty page
+//        populatePreview(linesForThisProject, pageLabel, currentPage, i);
+//    }
+    
 }
 
 /* Gather the annotations for a canvas and populate the preview interface with them. */
@@ -1193,8 +1195,8 @@ function drawLinesToCanvas (canvasObj, parsing, tool) {
                 }
             });
         } else if (canvasObj.otherContent && canvasObj.otherContent[0] && canvasObj.otherContent[0].resources) {
-            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0];
-            linesToScreen(canvasObj.otherContent[0].resources, tool);
+            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0];
+            drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
         }
     }
 }
@@ -3365,9 +3367,9 @@ function batchLineUpdate(linesInColumn, relocate){
     function getList(canvas, drawFlag, parsing, tool){ //this could be the @id of the annoList or the canvas that we need to find the @id of the list for.
         var lists = [];
         var annos = [];
-        if(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0].resources){
-            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0];
-            return tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0].resources;
+        if(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources){
+            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0];
+            return tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources;
         }
         if(tpen.screen.dereferencedLists[tpen.screen.currentFolio]){
             annos = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;

@@ -1193,7 +1193,7 @@ function drawLinesToCanvas (canvasObj, parsing, tool) {
                 }
             });
         } else if (canvasObj.otherContent && canvasObj.otherContent[0] && canvasObj.otherContent[0].resources) {
-            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0];
+            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0];
             linesToScreen(canvasObj.otherContent[0].resources, tool);
         }
     }
@@ -3659,7 +3659,7 @@ function saveNewLine(lineBefore, newLine){
 //                    if (lineBefore !== undefined && lineBefore !== null){
 //                        //This is the good case.  We called split line and saved
 //                        //the new line, now we need to update the other one.
-//                        
+//
 //                    }
 //                    else{
 //                    }

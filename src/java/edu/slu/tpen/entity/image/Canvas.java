@@ -205,7 +205,7 @@ public class Canvas {
         resources_array = JSONArray.fromObject(resources);
 //            String newListID = Annotation.saveNewAnnotationList(annotationList);
 //            annotationList.element("@id", newListID);
-        annotationList.element("otherContent", resources_array);
+        annotationList.element("resources", resources_array);
         JSONArray annotationLists = new JSONArray();
         annotationLists.add(annotationList); // Only one in this version.
         return annotationLists;

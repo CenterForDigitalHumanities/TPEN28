@@ -1033,15 +1033,6 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
     $('#transcriptionTemplate').css("display", "inline-block");
     $("#parsingBtn").css("box-shadow", "none");
     $("#parsingButton").removeAttr('disabled');
-    // This should just be the CSS
-//    $(".lineColIndicator").css({
-//        "box-shadow": "rgba(255, 255, 255, 0.4)",
-//        "border": "1px solid rgb(255, 255, 255)"
-//    });
-//    $(".lineColOnLine").css({
-//        "border-left": "1px solid rgba(255, 255, 255, 0.2);",
-//        "color": "rgb(255, 255, 255)"
-//    });
     //Move up all image annos
     var cnt = - 1;
     if (canvasObj.images[0].resource['@id'] !== undefined
@@ -1134,13 +1125,13 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
  * @paran canvasObj  A canvas object to extract transcription lines from and draw to the interface.
  * @param parsing boolean if parsing is live tool
  */
-function drawLinesToCanvas(canvasObj, parsing, tool){
+function drawLinesToCanvas (canvasObj, parsing, tool) {
     var lines = [];
     var currentFolio = parseInt(tpen.screen.currentFolio);
     if (canvasObj.resources !== undefined
-        && canvasObj.resources.length > 0){
-        for (var i = 0; i < canvasObj.resources.length; i++){
-            if (isJSON(canvasObj.resources[i])){   // it is directly an annotation
+        && canvasObj.resources.length > 0) {
+        for (var i = 0; i < canvasObj.resources.length; i++) {
+            if (isJSON(canvasObj.resources[i])) {   // it is directly an annotation
                 lines.push(canvasObj.resources[i]);
             }
         }
@@ -1151,66 +1142,60 @@ function drawLinesToCanvas(canvasObj, parsing, tool){
         // If not found, then consider this an empty canvas.
         var annosURL = "getAnno";
         var onValue = canvasObj["@id"];
-        var properties = {"@type": "sc:AnnotationList", "on" : onValue, proj:tpen.project.id};
-        var paramOBJ = {"content": JSON.stringify(properties)};
-        $.post(annosURL, paramOBJ, function(annoList){
-            if (!tpen.manifest.sequences[0].canvases[currentFolio]){
-                throw new Error("Missing canvas:" +currentFolio);
-            }
-            if(!tpen.manifest.sequences[0].canvases[currentFolio].otherContent){
-                tpen.manifest.sequences[0].canvases[currentFolio].otherContent = new Array();
-            }
-            //FIXME: The line below throws a JSON error sometimes, especially on first load.
-            var annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent = tpen.manifest.sequences[0].canvases[currentFolio].otherContent.concat(JSON.parse(annoList));
-            var currentList = {};
-
-            if (annoList.length > 0){
-                // Scrub resolved lists that are already present.
-                tpen.screen.currentAnnoListID = annoList[0]; //There should always just be one that matches because of proj, default to first in array if more
-                lines = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], true, parsing, tool);
-//                $.each(annoList, function(index){
-//                    if (typeof annoList[index] === "string"){
-//                        // annoList is most likely an array of @ids.
-//                        for (var i = annoList.length - 1; i >= 0; i--) {
-//                            if (annoList[index] === annoList[i]["@id"]){
-//                                // found the dereferenced object, wipe this
-//                                delete annoList[index]; // above this scope
-//                                break;
-//                            }
-//                        }
-//                        lines = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio]);
-//                    }
-//                    else if (this.resources) {
-//                        lines = this.resources;
-//                        currentList = this;
-//                    } else {
-//                    	console.warn("Multiple AnnotationLists found, but '" + this + "' was not recognized.");
-//                        delete annoList[index]; // above this scope
-//                    }
-//                });
-//                annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent
-//                = annoList.filter(function(){ // clear out empty items
-//                	return true;
-//                });
-
-
-            }
-            else {
-                // couldnt get list.  one should always exist, even if empty.
-                // We will say no list and changes will be stored locally to the canvas.
-                if (parsing !== "parsing") {
-                    $("#noLineWarning").show();
+        var properties = {
+            "@type": "sc:AnnotationList", "on": onValue, proj: tpen.project.id
+        };
+        var paramOBJ = {
+            "content": JSON.stringify(properties)
+        };
+        if ($.type(canvasObj.otherContent) === "string") {
+            $.post(annosURL, paramOBJ, function (annoList) {
+                if (!tpen.manifest.sequences[0].canvases[currentFolio]) {
+                    throw new Error("Missing canvas:" + currentFolio);
                 }
-                $("#transTemplateLoading").hide();
-                $("#transcriptionTemplate").show();
-                $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
-                $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
-                $("#imgTop").css("height", "0%");
-                $("#imgBottom img").css("top", "0px");
-                $("#imgBottom").css("height", "inherit");
-                $("#parsingBtn").css("box-shadow", "0px 0px 6px 5px yellow");
-            }
-        });
+                if (!tpen.manifest.sequences[0].canvases[currentFolio].otherContent) {
+                    tpen.manifest.sequences[0].canvases[currentFolio].otherContent = new Array();
+                }
+                //FIXME: The line below throws a JSON error sometimes, especially on first load.
+                var annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent = tpen.manifest.sequences[0].canvases[currentFolio].otherContent.concat(JSON.parse(annoList));
+                var currentList = {};
+
+                if (annoList.length > 0) {
+                    // Scrub resolved lists that are already present.
+                    tpen.screen.currentAnnoListID = annoList[0]; //There should always just be one that matches because of proj, default to first in array if more
+                    lines = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], true, parsing, tool);
+                }
+                else {
+                    // couldnt get list.  one should always exist, even if empty.
+                    // We will say no list and changes will be stored locally to the canvas.
+                    if (parsing !== "parsing") {
+                        $("#noLineWarning")
+                            .show();
+                    }
+                    $("#transTemplateLoading")
+                        .hide();
+                    $("#transcriptionTemplate")
+                        .show();
+                    $('#transcriptionCanvas')
+                        .css('height', $("#imgTop img")
+                            .height() + "px");
+                    $('.lineColIndicatorArea')
+                        .css('height', $("#imgTop img")
+                            .height() + "px");
+                    $("#imgTop")
+                        .css("height", "0%");
+                    $("#imgBottom img")
+                        .css("top", "0px");
+                    $("#imgBottom")
+                        .css("height", "inherit");
+                    $("#parsingBtn")
+                        .css("box-shadow", "0px 0px 6px 5px yellow");
+                }
+            });
+        } else if (canvasObj.otherContent && canvasObj.otherContent[0] && canvasObj.otherContent[0].resources) {
+            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0];
+            linesToScreen(canvasObj.otherContent[0].resources, tool);
+        }
     }
 }
 
@@ -1262,8 +1247,8 @@ function linesToScreen(lines, tool){
             lineID = line['@id'];
         }
         else {
-            //ERROR.  Malformed line.
-            update = false;
+            //undereferencable line.
+            lineID = line.tpen_line_id;
         }
         thisContent = "";
         if (lineURL.indexOf('#') > - 1){ //string must contain this to be valid
@@ -2161,7 +2146,7 @@ function hideWorkspaceForParsing(){
     //    tpen.screen.originalCanvasHeight = $("#transcriptionCanvas").height(); //make sure these are set correctly
 //    tpen.screen.originalCanvasWidth = $("#transcriptionCanvas").width(); //make sure these are set correctly
     imgTopOriginalTop = $("#imgTop img").css("top");
-    $("#transcriptionTemplate").css("max-width", "55%").css("width", "57%");
+    $("#transcriptionTemplate").css("max-width", "57%").css("width", "57%");
     $("#transcriptionCanvas").css("max-height", window.innerHeight + "px");
     $("#transcriptionTemplate").css("max-height", window.innerHeight + "px");
     $("#controlsSplit").hide();
@@ -2225,7 +2210,7 @@ function hideWorkspaceForParsing(){
             }
 //            console.log(originalCanvasHeight, originalCanvasWidth, height, newCanvasWidth, originalRatio );
             //$(".lineColIndicatorArea").css("height", height + "px");
-            var splitWidth = window.innerWidth - (width + 35) + "px";
+            var splitWidth = Page.width() - (width + 35) + "px";
             $(".split img").css("max-width", splitWidth);
             $(".split:visible").css("width", splitWidth);
             $("#transcriptionCanvas").css("height", height + "px");//.css("width", newCanvasWidth + "px")
@@ -3380,6 +3365,10 @@ function batchLineUpdate(linesInColumn, relocate){
     function getList(canvas, drawFlag, parsing, tool){ //this could be the @id of the annoList or the canvas that we need to find the @id of the list for.
         var lists = [];
         var annos = [];
+        if(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0].resources){
+            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0];
+            return tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherResources[0].resources;
+        }
         if(tpen.screen.dereferencedLists[tpen.screen.currentFolio]){
             annos = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
             tpen.screen.currentAnnoListID = tpen.screen.dereferencedLists[tpen.screen.currentFolio]["@id"];
@@ -5046,44 +5035,76 @@ tpen.screen.peekZoom = function(cancel){
     function attachWindowResize(){
         console.log("window resize attached");
         window.onresize = function(event, ui) {
-            console.log("window resize detected");
+            console.log("window resize detected.  "+tpen.screen.liveTool+" is active tool.");
             var newImgBtmTop = "0px";
             var newImgTopTop = "0px";
     //        if(tpen.screen.liveTool === "controls"){ //the width is different for this one
     //
     //        }
             if(tpen.screen.liveTool === 'parsing'){ //apply to all split tools?
+                console.log("Tool active, resize, parsing.");
                 var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
                 var newCanvasWidth = tpen.screen.originalCanvasWidth * .57;
                 //Can I use tpen.screen.originalCanvasWidth?
                 var newCanvasHeight = 1 / ratio * newCanvasWidth;
-                var PAGEHEIGHT = $("#transcriptionTemplate").width();
+                var PAGEHEIGHT = Page.height();
                 if (newCanvasHeight > PAGEHEIGHT){
                     newCanvasHeight = PAGEHEIGHT;
                     newCanvasWidth = 1/ratio*newCanvasHeight;
                 }
-                var width = $("#transcriptionTemplate").width();
-                var height = 1 / ratio * width;
-                if (height > PAGEHEIGHT){
-                    height = PAGEHEIGHT;
-                    newCanvasWidth = 1/ratio*height;
-                }
-
-                var splitWidth = window.innerWidth - (width + 35) + "px";
+                var splitWidth = Page.width() - ($("#transcriptionTemplate").width()+35) + "px";
                 $(".split img").css("max-width", splitWidth);
                 $(".split:visible").css("width", splitWidth);
-                $("#transcriptionCanvas").css("height", height + "px");
-                newImgTopTop = tpen.screen.imgTopPositionRatio * height;
+                $("#transcriptionCanvas").css("height", newCanvasHeight + "px");
+                newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
+                $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
+                $("#imgTop .lineColIndicatorArea").css("height", newCanvasHeight + "px");
+                $("#imgTop img").css({
+                    'height': newCanvasHeight + "px",
+                    'top': "0px"
+                });
+                $("#imgTop").css("height", newCanvasHeight + "px");
+                $("#imgTop").css("width", newCanvasWidth + "px");
+
+            }
+            else if(tpen.screen.liveTool !== "" && tpen.screen.liveTool!=="none"){
+                console.log("Tool active, resize found, not parsing.");
+                var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
+                var newCanvasWidth = Page.width() * .55;
+                var splitWidth = window.innerWidth - (newCanvasWidth + 35) + "px";
+                if(tpen.screen.liveTool === "controls"){
+                    newCanvasWidth = Page.width()-200;
+                    splitWidth = 200;
+                }
+                //Can I use tpen.screen.originalCanvasWidth?
+                var newCanvasHeight = 1 / ratio * newCanvasWidth;
+//                var PAGEHEIGHT = Page.height();
+//                if (newCanvasHeight > PAGEHEIGHT){
+//                    newCanvasHeight = PAGEHEIGHT;
+//                    newCanvasWidth = ratio*newCanvasHeight;
+//                }
+                console.log("W, h, sw "+newCanvasWidth, newCanvasHeight, splitWidth);
+                $(".split img").css("max-width", splitWidth);
+                $(".split:visible").css("width", splitWidth);
+                $("#transcriptionTemplate").css("width", newCanvasWidth + "px");
+                $("#transcriptionCanvas").css("width", newCanvasWidth + "px");
+                $("#transcriptionCanvas").css("height", newCanvasHeight + "px");
+                newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
                 $("#imgTop img").css("top", newImgTopTop + "px");
                 $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
-                $("#imgTop img").css({
-                    'height': height + "px"
-    //                'width': $("#imgTop img").width()
-                });
-                $("#imgTop").css({
-                    'height': $("#imgTop img").height(),
-                    'width': tpen.screen.imgTopSizeRatio * $("#imgTop img").height() + "px"
-                });
+                $("#imgBottom img").css("top", newImgBtmTop + "px");
+                $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
+                $(".lineColIndicatorArea").css("height",newCanvasHeight+"px");
+//                if(tpen.screen.liveTool === "parsing"){
+//                    $("#imgTop img").css({
+//                    'height': height + "px"
+//        //                'width': $("#imgTop img").width()
+//                    });
+//                    $("#imgTop").css({
+//                        'height': $("#imgTop img").height(),
+//                        'width': tpen.screen.imgTopSizeRatio * $("#imgTop img").height() + "px"
+//                    });
+//                }
             }
             else{
                 var newHeight = $("#imgTop img").height();
@@ -5102,8 +5123,8 @@ tpen.screen.peekZoom = function(cancel){
             tpen.screen.textSize();
         };
     }
-    
-    /* 
+
+    /*
      * I believe index.jsp makes a href='javascript:createProject(msID);' call through the links for Start Transcribing.
      * This is the javascript fuction that it tries to call, with the redirect to handle success and an alert for failure.
      * */
@@ -5119,7 +5140,7 @@ tpen.screen.peekZoom = function(cancel){
         .fail(function(data){
             alert("Could not create project");
         });
-        
+
     }
 
 

@@ -1477,17 +1477,18 @@ function updatePresentation(transcriptlet) {
             else{ }
             var prevLineCol = transcriptletBefore.attr("col");
             var prevLineText = unescape(transcriptletBefore.attr("data-answer"));
+            var prevLineNote = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources[transcriptlet.attr("lineid")-1]['_tpen_note'];
             $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","");
-            $("#captionsText").text((prevLineText.length && prevLineText) || "This line is not transcribed.");
+            $("#captionsText").text((prevLineText.length && prevLineText) || "This line is not transcribed.").next().html(prevLineNote);
         }
         else { //this is a problem
             $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
-            $("#captionsText").html("You are on the first line.");
+            $("#captionsText").html("You are on the first line.").next().html("");
         }
     }
     else { //there is no previous line
         $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
-        $("#captionsText").html("ERROR.  NUMBERS ARE OFF");
+        $("#captionsText").html("ERROR.  NUMBERS ARE OFF").next().html("");
     }
     tpen.screen.focusItem[0] = tpen.screen.focusItem[1];
     tpen.screen.focusItem[1] = transcriptlet;
@@ -1732,7 +1733,7 @@ function loadTranscriptlet(lineid){
         }
         else {
         var captionText1 = $("#captionsText").html();
-            $("#captionsText").html("You are not logged in.");
+            $("#captionsText").html("You are not logged in.").next().html("");
             $('#captionsText').css("background-color", 'red');
             setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
             setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
@@ -1741,11 +1742,12 @@ function loadTranscriptlet(lineid){
     }
     else { //blink a caption warning
         var captionText = $("#captionsText").html();
-        $("#captionsText").html("Cannot load this line.");
+        var noteText = $("#note").html();
+        $("#captionsText").html("Cannot load this line.").next().html("");
         $('#captionsText').css("background-color", 'red');
         setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
         setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
-        setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText); }, 1500);
+        setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText).next().html(noteText); }, 1500);
     }
 }
 
@@ -1774,7 +1776,7 @@ function nextTranscriptlet() {
     }
     else { //blink a caption warning
         var captionText = $("#captionsText").html();
-        $("#captionsText").html("You are on the last line! ");
+        $("#captionsText").html("You are on the last line! ").next().html("");
         $('#captionsText').css("background-color", 'red');
         setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
         setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
@@ -5061,7 +5063,7 @@ tpen.screen.peekZoom = function(cancel){
                 });
                 $("#imgTop").css("height", newCanvasHeight + "px");
                 $("#imgTop").css("width", newCanvasWidth + "px");
-                
+
             }
             else if(tpen.screen.liveTool !== "" && tpen.screen.liveTool!=="none"){
                 console.log("Tool active, resize found, not parsing.");

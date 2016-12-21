@@ -3660,7 +3660,8 @@ function saveNewLine(lineBefore, newLine){
         {name:"newheight",value:newLineHeight},
         {name:"new",value:true},
         {name:'submitted',value:true},
-        {name:'folio',value:tpen.project.folios[tpen.screen.currentFolio].folioNumber}
+        {name:'folio',value:tpen.project.folios[tpen.screen.currentFolio].folioNumber},
+        {name:'projectID',value:tpen.project.id}
     );
     if (onCanvas !== undefined && onCanvas !== ""){
         $.post(url, params, function(data){

@@ -1477,7 +1477,7 @@ function updatePresentation(transcriptlet) {
             else{ }
             var prevLineCol = transcriptletBefore.attr("col");
             var prevLineText = unescape(transcriptletBefore.attr("data-answer"));
-            var prevLineNote = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources[transcriptlet.attr("lineid")-1]['_tpen_note'];
+            var prevLineNote = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources[transcriptlet.attr("lineid")-1]['_tpen_note'];
             $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","");
             $("#captionsText").text((prevLineText.length && prevLineText) || "This line is not transcribed.").next().html(prevLineNote);
         }

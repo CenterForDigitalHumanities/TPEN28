@@ -224,6 +224,7 @@ body{
     border: solid thin #AAA;
     resize: none;
 }
+
 #imgTop,#imgBottom{
     display:block;
     height:35%;
@@ -300,7 +301,7 @@ body{
     -o-transition: opacity .25s;
     transition: opacity .25s;
 }
-#captionsText {
+#captionsText,#notes {
     display: inline-block;
     font-family: "Junicode","Cambria","Georgia", serif;
     font-size: 16px;
@@ -311,6 +312,11 @@ body{
     top: 3px;
     overflow: hidden;
 
+}
+#notes {
+    font-family: monospace;
+    color:#aaa;
+    max-width:40%;
 }
 
 /*

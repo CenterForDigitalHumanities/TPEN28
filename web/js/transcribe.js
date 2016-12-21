@@ -1472,7 +1472,8 @@ function updatePresentation(transcriptlet) {
             var prevLineText = unescape(transcriptletBefore.attr("data-answer"));
             var prevLineNote = unescape(transcriptletBefore.find(".notes").attr("data-answer"));
             $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","");
-            $("#captionsText").text((prevLineText.length && prevLineText) || "This line is not transcribed.").next().html(prevLineNote);
+            $("#captionsText").text((prevLineText.length && prevLineText) || "This line is not transcribed.").attr("title",prevLineText)
+                .next().html(prevLineNote).attr("title",prevLineNote);
         }
         else { //this is a problem
             $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
@@ -3449,7 +3450,7 @@ function updateLine(line, cleanup, updateList){
     var params2 = new Array({name:'submitted',value:true},{name:'projectID',value:tpen.project.id});
     var updateContent = false;
     var updatePositions = false;
-    if(tpen.screen.liveTool === "parsing"){ 
+    if(tpen.screen.liveTool === "parsing"){
         //OR it was from bump line in the trasncription interface.  How do I detect that?  This is overruled below until we figure that out.
         updatePositions = true;
     }
@@ -3487,7 +3488,7 @@ function updateLine(line, cleanup, updateList){
 //    }
 //    else if (currentAnnoListID){
         var lineID = (line != null) ? $(line).attr("lineserverid") : -1;
-        lineID = parseInt(lineID.replace("line/", "")); //TODO check this in the future to make sure you are getting the lineID and not some string here. 
+        lineID = parseInt(lineID.replace("line/", "")); //TODO check this in the future to make sure you are getting the lineID and not some string here.
         if (lineID>0 || $(line).attr("id")=="dummy"){
             params.push(
                 {name:"updatey",value:lineTop},

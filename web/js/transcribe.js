@@ -3934,11 +3934,12 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     var toUpdate = $(".transcriptlet[lineserverid='" + updatedLineID + "']");
     var removedLine2 = $(".transcriptlet[lineserverid='" + lineid + "']");
     var removedText = $(".transcriptlet[lineserverid='" + lineid + "']").find(".theText").val();
-    var params = new Array();
+    var params = new Array({name:'submitted',value:true},{name:'projectID',value:tpen.project.id});
     var currentFolio = parseInt(tpen.screen.currentFolio);
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
-    var url = "updateLineParsing";
-    
+    var url = "updateLinePositions";
+    var lineIDToRemove = parseInt(lineid.replace("line/", ""));
+    params.push({name:"remove", value:lineIDToRemove});
     if (lineid !== updatedLineID){ 
         //we need to make sure the height and text of the next line is updated ocrrectly
         removeNextLine = true;
@@ -3958,24 +3959,24 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
 //        tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
 //                var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
 //                var params = {"content":JSON.stringify(paramObj)};
-        params.push({name:"remove", value:lineid});
+        
     }
-
-    
+    var lineIDToCheck = "";
+    if (removeNextLine){
+        lineIDToCheck = lineid;
+        removedLine2.remove(); //remove the transcriptlet from UI
+    }
+    else{
+        lineIDToCheck = updatedLineID;
+        //console.log("just a remove: "+lineIDToCheck);
+    }
     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
         $.each(currentAnnoList, function(index){
-            var lineIDToCheck = "";
-            if (removeNextLine){
-                lineIDToCheck = lineid;
-                removedLine2.remove(); //remove the transcriptlet from UI
-            }
-            else{
-                lineIDToCheck = updatedLineID;
-            }
-            if (this["@id"] === lineIDToCheck){
+            
+            if (this.tpen_line_id === lineIDToCheck){
+                //console.log("Got a match in the cached list: "+this.tpen_line_id);
                 currentAnnoList.splice(index, 1);
                 //var url = "updateAnnoList";
-                
                 tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
 //                var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
 //                var params = {"content":JSON.stringify(paramObj)};
@@ -3986,6 +3987,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
                     }
                     else {
                         //we removed a line, but the line after that line needs to absorb its text and height, so we need an update.  The line after is named toUpdate.
+                        //console.log("Here is that update I warned about.");
                         updateLine(toUpdate, false, false); 
                     }
                 });
@@ -4014,34 +4016,51 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
 function removeColumnTranscriptlets(lines, recurse){
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
     $("#parsingCover").show();
+   // console.log("Remove column transcriptlets... "+lines.length);
     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
         // if it IIIF, we need to update the list
             for (var l = lines.length - 1; l >= 0; l--){
+                console.log("remove line "+l);
                 var theLine = $(lines[l]);
-                for(var k=0; k<currentAnnoList.length; k++){
-                    var currentResource = currentAnnoList[k];
-                    if (currentResource["@id"] == theLine.attr("lineserverid")){
-                        currentAnnoList.splice(k, 1);
-                        theLine.remove();
-                    }
-                }
+                removeTranscriptlet(theLine.attr("lineserverid"), theLine.attr("lineserverid"), true, "");
+//                for(var k=0; k<currentAnnoList.length; k++){
+//                    var currentResource = currentAnnoList[k];
+//                    if (currentResource["@id"] == theLine.attr("lineserverid")){
+//                        console.log("remove this line");
+//                        currentAnnoList.splice(k, 1);
+//                        removeTranscriptlet(theLine.attr("lineserverid"), theLine.attr("lineserverid"), true, "");
+//                    }
+//                }
                 if (l === 0){
-                    var url = "updateAnnoList";
-                    var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
-                    var params = {"content":JSON.stringify(paramObj)};
-                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio] = currentAnnoList;
-                    $.post(url, params, function(data){
-                        if (recurse){
-                            tpen.screen.nextColumnToRemove.remove();
-                            // FIXME: I cannot find this object always?
-                            destroyPage();
-                        }
-                        else{
-                            cleanupTranscriptlets(true);
-                            tpen.screen.nextColumnToRemove.remove();
-                            $("#parsingCover").hide();
-                        }
-                    });
+                    console.log("They have all been removed.  make sure to update the cached list of resources.");
+                    //removeTranscriptlet should be updating tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources, but we can do it here too.
+//                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
+//                    var url = "updateAnnoList";
+//                    var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
+//                    var params = {"content":JSON.stringify(paramObj)};
+//                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio] = currentAnnoList;
+                    if (recurse){
+                        tpen.screen.nextColumnToRemove.remove();
+                        // FIXME: I cannot find this object always?
+                        destroyPage();
+                    }
+                    else{
+                        cleanupTranscriptlets(true);
+                        tpen.screen.nextColumnToRemove.remove();
+                        $("#parsingCover").hide();
+                    }
+//                    $.post(url, params, function(data){
+//                        if (recurse){
+//                            tpen.screen.nextColumnToRemove.remove();
+//                            // FIXME: I cannot find this object always?
+//                            destroyPage();
+//                        }
+//                        else{
+//                            cleanupTranscriptlets(true);
+//                            tpen.screen.nextColumnToRemove.remove();
+//                            $("#parsingCover").hide();
+//                        }
+//                    });
                 }
             }
     }

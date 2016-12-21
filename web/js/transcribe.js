@@ -5052,6 +5052,10 @@ tpen.screen.peekZoom = function(cancel){
         var imgDims = new Array (topImg.height(),topImg.width(),parseInt(topImg.css("left")),-line.position().top);
         if (!cancel){
             //zoom in
+            if($(".parsing").size()>0){
+                // Parsing tool is open
+                return false;
+            }
             $(".lineColIndicatorArea").fadeOut();
             tpen.screen.peekMemory = [parseInt(topImg.css("top")),parseInt(btmImg.css("top")),$("#imgTop").height()];
             $("#imgTop").css({

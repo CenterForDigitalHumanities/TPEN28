@@ -204,7 +204,7 @@ function makePreviewPage(thisList, pageLabel, currentPage, i, j, l){
 //    else if(j == l){ //we did not find the proper annotation list, send this off to create an empty page
 //        populatePreview(linesForThisProject, pageLabel, currentPage, i);
 //    }
-    
+
 }
 
 /* Gather the annotations for a canvas and populate the preview interface with them. */
@@ -1197,9 +1197,9 @@ function drawLinesToCanvas (canvasObj, parsing, tool) {
         } else if (canvasObj.otherContent && canvasObj.otherContent[0] && canvasObj.otherContent[0].resources) {
             tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0];
             drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
-
         }
     }
+    tpen.screen.textSize();
 }
 
 /* Take line data, turn it into HTML elements and put them to the DOM */
@@ -3514,7 +3514,7 @@ function updateLine(line, cleanup, updateList){
 //                    });
                 }
             }
-            
+
             if(currentLineText === currentLineTextAttr && currentLineNotes === currentLineNotesAttr){
                 //This line's text has not changed, and neither does the notes
                 $("#saveReport")
@@ -3549,7 +3549,7 @@ function updateLine(line, cleanup, updateList){
         if (cleanup) cleanupTranscriptlets(true);
         updateClosingTags();
     }
-    
+
 
 
 function saveNewLine(lineBefore, newLine){

@@ -481,11 +481,7 @@ function loadTranscription(pid, tool){
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
         projectID = pid || userTranscription;
         tpen.project.id = projectID; //this must be set or the canvas won't draw
-        var aBar = document.location.href;
-        var toAddressBar = aBar+"?projectID=" + projectID;
-        if(aBar.indexOf("projectID=") === -1){
-            window.history.pushState("", "T-PEN Transcription", toAddressBar);
-        }
+        updateURL("");
         var url = "getProjectTPENServlet?projectID=" + projectID;
         $.ajax({
             url: url,
@@ -693,12 +689,7 @@ function loadTranscription(pid, tool){
 
         if (localProject){
             //get project info first, get manifest out of it, populate
-
-            var aBar = document.location.href;
-            var toAddressBar = aBar+"?projectID=" + projectID;
-            if(aBar.indexOf("projectID=") === -1){
-                window.history.pushState("", "T-PEN Transcription", toAddressBar);
-            }
+            updateURL("");
             var url = "getProjectTPENServlet?projectID=" + projectID;
             $.ajax({
                 url: url,
@@ -1161,7 +1152,7 @@ function drawLinesToCanvas (canvasObj, parsing, tool) {
                 //FIXME: The line below throws a JSON error sometimes, especially on first load.
                 var annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent = tpen.manifest.sequences[0].canvases[currentFolio].otherContent.concat(JSON.parse(annoList));
                 var currentList = {};
-
+            updateURL("p");
                 if (annoList.length > 0) {
                     // Scrub resolved lists that are already present.
                     //tpen.screen.currentAnnoListID = annoList[0]; //There should always just be one that matches because of proj, default to first in array if more
@@ -1201,7 +1192,28 @@ function drawLinesToCanvas (canvasObj, parsing, tool) {
     }
     tpen.screen.textSize();
 }
-
+function updateURL(piece){
+    var toAddressBar = document.location.href;
+    //If nothing is passed in, just ensure the projectID is there.
+    console.log("does URL contain projectID?        "+getURLVariable("projectID"));
+    if(!getURLVariable("projectID")){
+        toAddressBar = "?projectID="+tpen.project.id;
+    }
+    //Any other variable will need to be replaced with its new value
+    if(piece === "p"){
+        if(!getURLVariable("p")){
+            console.log("Gotta add P var");
+            toAddressBar += "&p=" + tpen.project.folios[tpen.screen.currentFolio].folioNumber;
+        }
+        else{
+            console.log("Gotta update P var");
+            toAddressBar = replaceURLVariable("p", tpen.project.folios[tpen.screen.currentFolio].folioNumber);
+        }
+    }
+    console.log("push this into history and URL");
+    console.log(toAddressBar);
+    window.history.pushState("", "T-PEN Transcription", toAddressBar);
+}
 /* Take line data, turn it into HTML elements and put them to the DOM */
 function linesToScreen(lines, tool){
     $("#noLineWarning").hide();
@@ -3366,6 +3378,7 @@ function batchLineUpdate(linesInColumn, relocate){
             $("#imgBottom").css("height", "inherit");
             $("#parsingBtn").css("box-shadow", "0px 0px 6px 5px yellow");
         }
+        updateURL("p");
     }
 
     function getList(canvas, drawFlag, parsing, tool){ //this could be the @id of the annoList or the canvas that we need to find the @id of the list for.
@@ -3588,14 +3601,7 @@ function updateLine(line, cleanup, updateList){
 
 
 function saveNewLine(lineBefore, newLine){
-    var theURL = window.location.href;
-    var projID = - 1;
-    if (theURL.indexOf("projectID") === - 1){
-        projID = tpen.project.id;
-    }
-    else{
-        projID = getURLVariable("projectID");
-    }
+    var projID = tpen.project.id;
     var beforeIndex = - 1;
     if (lineBefore !== undefined && lineBefore !== null){
         beforeIndex = parseInt(lineBefore.attr("linenum"));
@@ -4427,6 +4433,24 @@ function getURLVariable(variable)
                if(pair[0] == variable){return pair[1];}
        }
        return(false);
+}
+
+function replaceURLVariable(variable, value){
+       var query = window.location.search.substring(1);
+       var location = window.location.origin + window.location.pathname;
+       var vars = query.split("&");
+       var variables = "";
+       for (var i=0;i<vars.length;i++) {
+        var pair = vars[i].split("=");
+        if(pair[0] == variable){
+            var newVar = pair[0]+"="+value;
+            vars[i] = newVar;
+            break;
+        }
+       }
+       variables = vars.toString();
+       variables = variables.replace(",", "&");
+       return(location + "?"+variables);
 }
 
 var Data = {

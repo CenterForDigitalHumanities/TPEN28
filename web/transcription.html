@@ -80,15 +80,18 @@
                 <span class="trimSection">
                     <a class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="fa fa-home"></span>T-PEN Home</a>
                     <a class="exitPage wBtn ui-state-default ui-button" title="My Projects" href="project.jsp">My&nbsp;Projects</a>
-            </span>
+                </span>
                 <span class="trimSection">
                     <a id="helpContact" href="admin.jsp#aboutTab" target="_blank" class="wBtn ui-state-default ui-button">Contact <span class="fa fa-comment"></span></a>
+                </span>
+                <span class="trimSection">
+                    <a id="helpMe" onclick="Help.revealHelp();" class="ui-state-default ui-button">Help<i class="fa fa-question" style="margin-left:8px" aria-hidden="true"></i></a>
                 </span>
             </div>
         </div>
 
         <div class="instructions">
-            <!-- TODO: Are we logged in to see this? -->
+            <!-- TODO: Arc we logged in to see this? -->
             <p>
                 The area below accepts a local project ID number, a project or IIIF manifest url, or a valid T-PEN or IIIF manifest JSON object as valid input.
             </p>
@@ -107,6 +110,7 @@
             <div class="turnLoader transLoader"><img src="images/loading2.gif" /></div>
         </div>
         <div id="transcriptionTemplate">
+            <div id="templateResizeBar"></div>
             <div id="parsingCover"></div>
             <div id="transcriptionCanvas">
                 <div id="noLineWarning">
@@ -128,33 +132,47 @@
                         </div>
                         <div id="captions" class="flex-wide">
                             <div id="captionsText"></div>
+                            <span id="notes" class="quiet">&nbsp;</span>
                         </div>
-                        <div class="flex-bookend"></div>
+                        <div class="flex-bookend">
+                            <div id="saveReport" class="ui-corner-top"></div>
+                        </div>
                     </div>
                     <div class="flex-container flex-stretch">
                         <div class="flex-bookend">
                             <button id="prevLine" class="pull-right" title="Previous Line" onclick="previousTranscriptlet();">
                                 <i class="fa fa-chevron-left"></i> Previous
                             </button>
+                            <button id="prevPage" title="Previous Page" onclick="previousFolio();">
+                                <i class="fa fa-backward fa-2x"></i><br>
+                                Previous Page
+                            </button>
+                        </div>
+                        <div class="flex-stretch">
                             <div title="Current Line" id="currentColLine"></div>
                         </div>
-                        <div id="transcriptletArea" class="flex-wide"></div>
+                        <div id="transcriptletArea" class="flex-wide">
+                            <div class="xmlClosingTags"></div>
+
+                        </div>
+
                         <div class="flex-bookend">
                             <button class="pull-left" id="nextLine" title="Next Line" onclick="nextTranscriptlet();">
                                 Next <i class="fa fa-chevron-right"></i>
                             </button>
-                            <button class="pull-left" id='toggleNotes' role="button" onclick="$('.notes').fadeToggle('slow')" title='Toggle Notes'>
-                                Notes <i class="fa fa-comment"></i>
+                            <button id="nextPage" title="Next Page" onclick="nextFolio();">
+                                <i class="fa fa-forward fa-2x"></i><br>
+                                Next Page
                             </button>
                         </div>
                     </div>
                     <div class="flex-container flex-stretch buttons">
                         <select id="splitScreenTools" >
-                            <option selected>Tools Available</option>
+                            <option selected>Splitscreen Tools</option>
                         </select>
-                        <button id="canvasControls" title="Page Adjustments" onclick="splitPage(event,'controls');">
+                        <button id="canvasControls" title="Page Tools" onclick="splitPage(event,'controls');">
                             <i class="fa fa-file-image-o"></i>
-                            Page Controls</button>
+                            Page Tools</button>
                         <button id="magnify1" class="magnifyBtn" magnifyImg="trans" title="Inspect Transcription Image" >
                             <i class="fa fa-search-plus"></i>
                             Inspect</button> <!--Page event on the listener for this class in js.-->
@@ -177,7 +195,7 @@
                         </div>
                     </div>
                     <div id="xmlTagFloat" class="flex-container xmlTagged">
-                        <a title="Edit XML Tags" class="pull-left lookLikeButtons editButtons" href="buttons.jsp">
+                        <a title="Edit XML Tags" class="pull-left lookLikeButtons editButtons exitPage" href="buttons.jsp">
                             <i class="fa fa-edit"></i>
                         </a>
                         <!--                        <div class="closeBtn" onclick="$('#toggleXML').click();">
@@ -195,92 +213,106 @@
             </div>
         </div>
          <div id="parsingSplit" class="split" >
-                <div class="fullScreenTrans"><i class="fa fa-reply"></i> Full Screen Transcription</div>
-                <div class="toolLinks">
-                <!-- tool buttons for parsing -->
-                </div>
+             <div class="fullScreenTrans">
+                 <div class="lookLikeButtons caps insetBtn">
+                     <i class="fa fa-reply fa-flip-vertical"></i> Return to Transcription</div>
+             </div>
+             <div class="toolLinks icon-panel">
+                 <div class="icon-panel">
+                     <button>
+                         <img src="css/custom-theme/images/reparse.png" alt="reparse" height="30px" />
+                     </button>
+                     <button>
+                         <img src="css/custom-theme/images/reparse30.png" alt="reparse" />
+                 </button>
+                 <button>
+                     <img src="css/custom-theme/images/reparse.png" alt="reparse" height="30px" />
+                 </button>
+                 </div>
+                 <div class="icon-panel">
+                     <button>
+                         <img src="css/custom-theme/images/reparse30.png" alt="reparse" />
+                     </button>
+                     <button>
+                         <img src="css/custom-theme/images/reparse.png" alt="reparse" height="30px" />
+                     </button>
+                     <button>
+                         <img src="css/custom-theme/images/reparse30.png" alt="reparse" />
+                     </button>
+                 </div>
+             </div>
 
                 <div id="parsingDiv" class="">
-                    <div style="margin-top: 35px;">Any lines or columns that are created or edited are saved automatically.  This is also true for edits made in the full page transcription interface.</div>
                     <div id="parseOptions">
-                        <h3 class="parsingHdr">Line Parsing</h3>
-                        <div id="ctrlColumnsInst" class="actions">
-                            <h4 id="ctrlColumns" title="Make adjustments at the column level" class="clear-left">Column Controls</h4>
-                                <div class="parsingToolButtons">
-                                    <span id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging" show="createColumnInst">Adjust or Create Columns</span>
-                                    <span id="destroyColumn" class="tpenButton" title="Remove an entire column and its data with a click" show="destroyColumnInst">Destroy Columns</span>
-                                    <span id="clearColumns" class="tpenButton" title="Clear the page, removing all transcription information" show="clearColumnsInst">Clear Page</span>
-                                </div>
-                                <div class="activeParsingTool">
-                                    <div class="startHide" id="createColumnInst">
-                                        <dl>
-                                            <dt>New Column:</dt>
-                                            <dd>Click and drag to place</dd><br>
-                                            <dt>Adjustments:</dt>
-                                            <dd>Drag the edges of an existing column</dd>
-                                        </dl>
-                                    </div>
-                                    <div class="startHide" id="destroyColumnInst">
-                                        <p class="">Click a column to remove all lines and transcription data it contains from the project.</p>
-                                        <span class="ui-state-error-text"><span class="inline fa fa-alert"></span>This is a destructive process and cannot be undone.</span></p>
-                                    </div>
-                                    <div class="startHide" id="clearColumnsInst">
-                                        <p class="">Click to clear the page, removing all transcription information.</p>
-                                        <span class="destroyPage" class="tpenButton ui-state-error" title="Destroy all columns on this page"><span class="pull-left fa fa-circle-o"></span>Destroy All Data</span>
-                                        <p class="small"><span class="ui-state-error-text"><span class="inline fa fa-alert"></span>This is a destructive process and cannot be undone.</span><br />
-                                         </p>
-                                    </div>
-                                </div>
+                        <header id="ctrlColumns" title="Make adjustments at the column level">Edit Columns</header>
+                        <div class="splitBlock">
+                            <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
+                                Create Column
+                                <i class="fa fa-reparse"></i>
+                            </button>
+                            <small>Click and drag to place</small>
                         </div>
-                        <div id="ctrlLinesInst" class="actions">
-                            <h4 id="ctrlLines" title="Make adjustments at the line level" class="clear-left">Line Controls</h4>
-                                <div class="parsingToolButtons">
-                                    <span id="addLines" class="tpenButton" title="Split lines to create new ones in a column" show="addLinesInst">Add Lines</span>
-                                    <span id="removeLines" class="tpenButton" title="Merge two lines or remove the last line from a column" show="removeLinesInst">Delete/Merge Lines</span>
-                                    <span id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines" show="adjustLinesInst">Adjust Lines</span>
-                                </div>
-                                <div class="activeParsingTool">
-                                    <div class="startHide" id="addLinesInst">
-                                        <p class="">Click within the shaded area to define the bottom of the new line.</p>
-                                        <p class="small"><span class="inline fa fa-check"></span>This method retains all your <acronym title="Text, markup, and notes saved for lines within this column will remain attached.">transcription information</acronym>.<br />
-                                        <span><span class="inline fa fa-info"></span>Any <acronym title="text, markup, and notes">transcription information</acronym> will remain with the line above where you click.</span><br />
-                                        <span><span class="inline fa fa-info"></span>To add a line outside of the defined columns, <span class="ui-button loud" onclick="$('#ctrlColumns').click();$('#createColumn').click();" title="Click to use the Create a Column option">Create a Column</span>.</span></p>
-                                        <div align="center">
-                                            <p class="clear-left">Trouble seeing the ruler? Change the color below.</p>
-                                            <div id="sampleRuler"></div>
-                                            <label for="black"><input onclick="rulerColor('black');" CHECKED type="radio" value="black" name="rulerColor"/>Black</label>
-                                            <label for="white"><input onclick='rulerColor("white");' id="white" type="radio" value="white" name="rulerColor"/>White</label>
-                                            <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown." type="text" id="customRuler" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
-                                        </div>
-                                    </div>
-                                    <div class="startHide" id="removeLinesInst">
-                                        <p class="">Click within the shaded area to merge the highlighted lines or delete the last line of a column.</p>
-                                        <p class="small"><span class="inline fa fa-info"></span>This method combines your <acronym title="Text, markup, and notes saved for lines within this column will remain attached.">transcription information</acronym> into the new line.<br />
-                                        <span class="ui-state-error-text"><span class="inline fa fa-alert"></span>If a line is removed, so in the information associated <acronym title="text, markup, and notes">with it</acronym>.</span> <br />
-                                        <span><span class="inline fa fa-info"></span>To add a line, use the <span class="ui-button loud" onclick="$('#addLines').click();" title="Click to use the Add Lines option">Add Lines</span> option.</span></p>
-                                    </div>
-                                    <div class="startHide" id="adjustLinesInst">
-                                        <p class="">Click and drag the right side of the line to contain the line accurately.</p>
-                                        <p class="small"><span class="inline fa fa-check"></span>This method retains all your <acronym title="Text, markup, and notes saved for each line will remain attached.">transcription information</acronym>.<br />
-                                        <span><span class="inline fa fa-info"></span>Only the right boundary can be moved in this tool.</span><br />
-                                        <span><span class="inline fa fa-info"></span>Make precise, individual changes in the transcription view on the currently selected line.
-                                            Hold the ALT key and drag the right side of a line to resize it.  While holding the ALT key
-                                        press the left and right arrows to 'bump' the line.</span></p>
-                                    </div>
-                                </div>
+                        <div class="splitBlock">
+                            <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
+                                Adjust Columns
+                                <i class="fa fa-reparse"></i>
+                            </button>
+                            <small>Drag the edges of an existing column.</small>
+                            <small><i class="fa fa-info-circle"></i> This method does not remove any <acronym title="text, markup, and notes">transcription information</acronym>.</small>
                         </div>
+                        <div class="splitBlock danger">
+                            <button id="destroyColumn" class="tpenButton" title="Remove an entire column and its data with a click">
+                                Destroy Column
+                                <i class="fa fa-reparse"></i>
+                            </button>
+                            <small>Click a column to remove all its lines and transcription data.</small>
+                            <small class="danger"><i class="fa fa-warning"></i> This is a destructive process and cannot be undone.</small>
+                            <!-- Reparsing is not enabled yet <button>-->
+                        </div>
+                            <header id="ctrlLines" title="Make adjustments at the line level">Edit Lines</header>
+                            <div class="splitBlock">
+                            <button id="addLines" class="tpenButton" title="Split lines to create new ones in a column">
+                                Add Line
+                                <i class="fa fa-reparse"></i>
+                            </button>
+                                <small>Click within the shaded area to define the bottom of the new line.</small>
+                                <small><i class="fa fa-info-circle"></i> Any <acronym title="text, markup, and notes">transcription information</acronym> will remain with the line above where you click.</small>
+                                <small>
+                                    Trouble seeing the ruler? Change the color below.
+                                    <span id="sampleRuler"></span>
+                                    <label for="black"><input onclick="rulerColor('black');" CHECKED type="radio" value="black" name="rulerColor"/>Black</label>
+                                    <label for="white"><input onclick='rulerColor("white");' id="white" type="radio" value="white" name="rulerColor"/>White</label>
+                                    <label style="margin-left: 10px; margin-right: 3px;" for="customRuler">
+                                        Custom
+                                        <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown."
+                                               type="text" id="customRuler" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
+                                    </label>
+                                </small>
+                            </div>
+                            <div class="splitBlock">
+                            <button id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines">
+                                Adjust Lines
+                                <i class="fa fa-reparse"></i>
+                            </button>
+                                <small>Click and drag the right side of the line to contain the line accurately.</small>
+                                <small><i class="fa fa-info-circle"></i> Only the right boundary can be moved in this tool.</small>
+                            </div>
+                            <div class="splitBlock">
+                            <button id="removeLines" class="tpenButton" title="Merge two lines in a column">
+                                Merge Lines
+                                <i class="fa fa-reparse"></i>
+                            </button>
+                                <small>Click within the shaded area to merge the highlighted lines.</small>
+                                <small><i class="fa fa-info-circle"></i> This method combines your transcription information into the new line.</small>
+                            </div>
                     </div>
                 </div>
-                <div id="sidebar">
-                    <div id="progress" class="ui-widget-content ui-corner-all">Select an option above</div>
-                    <div id="lineResizing" class="ui-widget-content ui-corner-all">Your <span id="originalLine">original</span> pixel line is being resized by <span id="newLine">100</span>%.</div>
-                </div>
-            </div>
+         </div>
 
 <!--                    Linebreaking Tool-->
            <div id="linebreakSplit" class="ui-widget ui-widget-content split">
-               <div class="fullScreenTrans"><i class="fa fa-reply"></i> Full Screen Transcription</div>
-                <h3>Linebreak Existing Transcription</h3>
+               <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
+               <h3>Linebreak Existing Transcription</h3>
                 <div id="linebreakTextContainer">
                     <!-- visible if text is saved -->
            <div>
@@ -320,33 +352,21 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
                        </div>
             <div id="compareSplit" class="split">
-                    <div class="fullScreenTrans"><i class="fa fa-reply"></i> Full Screen Transcription</div>
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
                 <div class="toolLinks">
-                    <select id="compareJump">
+                    <select id="compareJump" class="lookLikeButtons">
                         <option folioNum="0">Compare To</option>
                     </select>
                     <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
-                    <button class="magnifyBtn" magnifyImg="compare" >Inspect</button>
+                    <button class="magnifyBtn" magnifyImg="compare" >Inspect <i class="fa fa-search-plus"></i></button>
                 </div>
 
                 <img class="compareImage" folioNum="1"></img>
             </div>
 <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
-    <div class="fullScreenTrans"><i class="fa fa-reply"></i>  Full Screen Transcription</div>
+    <div class="fullScreenTrans"><i class="fa fa-reply"></i> Close Tool </div>
     <div style="padding:15px;">
-        <header> Annotations Controls</header>
-        <button role="button" class="block">
-            <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" checked="checked">
-        </button>
-        <button role="button" class=" block">
-            <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
-        </button>
-        <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
-        <button role="button" id="parsingBtn" title="Redraw the lines on this page" class='block'>
-            <i class="fa fa-barcode fa-rotate-90"></i>
-            Edit Annotations</button>
-
         <header> Image Controls </header>
         <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
         <i class="fa fa-picture-o" style="color: #999;background: #DDD;border-radius: 2px;"></i>
@@ -360,13 +380,28 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             <i class="fa fa-adjust"></i> Contrast
             <div id="contrastSlider"></div>
         </div>
+
+        <header> Column Controls</header>
+        <button role="button" class="block" onclick="$(this).toggleClass('selected')">
+            <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" >
+        </button>
+        <button role="button" class=" block" onclick="$(this).toggleClass('selected')">
+            <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
+        </button>
+        <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
+        <button role="button" id="parsingBtn" title="Redraw the lines on this page" class='block'>
+            <i class="fa fa-barcode fa-rotate-90"></i>
+            Edit Columns</button>
+
         <header>
             Keyboard Shortcuts
         </header>
         <div>
-            <kbd>ALT</kbd>: hold to temporarily hide the workspace and drag around your page image
+            <strong>View/Move Image</strong>
+            <kbd>CTRL</kbd>+<kbd>ALT</kbd>: hold to temporarily hide the workspace and drag around your page image
         </div>
         <div>
+            <strong>Peek-Zoom</strong>
             <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>: peek-zoom into the current line of transcription
         </div>
     </div>
@@ -380,7 +415,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
 </div>
             <div id="previewSplit" class="split">
-                    <div class="fullScreenTrans"><i class="fa fa-reply"></i> Full Screen Transcription</div>
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
                 <div class="toolLinks">
                     <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
@@ -390,7 +425,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 </div>
             </div>
             <div id="fullPageSplit" class="split">
-                    <div class="fullScreenTrans"><i class="fa fa-reply"></i> Full Screen Transcription</div>
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
                 <div class="toolLinks">
                     <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
@@ -412,9 +447,8 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     <input type="hidden" name="ms" value="">
                     <input type="hidden" name="projectID" value="">
                     <input class="ui-button tpenButton clear right" type="submit" name="submitted" value="Send Request"/>
-
                 </form>
-                <a class="returnButton" href="index.jsp">Return Home</a>
+                <a class="returnButton exitPage" href="index.jsp">Return Home</a>
             </div>
         </div>
 
@@ -483,13 +517,15 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                                         <dd>Quickly jump to the first line of the current page.</dd>
                                     <dt>TAB:</dt>
                                         <dd>Move forward through lines of transcription. Reverse with SHIFT + TAB.</dd>
-                                    <dt>ALT + up/down arrows:</dt>
+                                        <dt>ALT + up/down arrows:</dt>
                                         <dd>Move up and down through lines of transcription with the keyboard arrow keys.</dd>
-                                    <dt>ALT + left/right arrows:</dt>
-                                        <dd>Bump the active transcription line in the direction the arrow was pushed. *Warning: may create new columns.</dd>
-                                    <dt>While holding ALT:</dt>
-                                        <dd>Resize the active line by clicking and dragging the left or right edge.</dd>
-                                    <dt>ESC:</dt>
+                                        <dt>Hold CTRL + ALT:</dt>
+                                        <dd>Clear the workspace to see the image you are transcribing. Drag with the mouse
+                                            to move the image around and release the keys to reset.</dd>
+                                        <dt>Hold CTRL + SHIFT:</dt>
+                                        <dd>Peek-zoom into the current line of transcription to view it as large as can
+                                            be contained on the screen. Release to reset.</dd>
+                                        <dt>ESC:</dt>
                                         <dd>Close any open tool and return to fullscreen transcription.</dd>
 
 <!--                                        <dt>ALT:</dt>
@@ -572,13 +608,13 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 function initLinks(){
                     var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
                     +"&projectID="+tpen.project.id;
-                    $("#uploadText").add("#newText").attr("href",uploadLocation);
+                    $("#uploadText").addClass("exitPage").add("#newText").attr("href",uploadLocation);
 
                     // add projectID to buttons.jsp links
-                    $(".editButtons").attr("href","buttons.jsp?p="
+                    $(".editButtons").addClass("exitPage").attr("href","buttons.jsp?p="
                         + tpen.project.folios[tpen.screen.currentFolio].folioNumber
                         + "&projectID=" + tpen.project.id+"#tabs-1");
-                    $(".editXMLs").attr("href","buttons.jsp?p="
+                    $(".editXMLs").addClass("exitPage").attr("href","buttons.jsp?p="
                         + tpen.project.folios[tpen.screen.currentFolio].folioNumber
                         + "&projectID=" + tpen.project.id+"#tabs-2");
                 }
@@ -586,19 +622,13 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
                 <script>
 
-    //Must explicitly set new height and width for percentages values in the DOM to take effect.
-    window.onresize = function(event) {
-        var newHeight = $("#imgBottom img").height();
-        $("#transcriptionCanvas").css("height",newHeight+"px");
-        $(".lineColIndicatorArea").css("height",newHeight+"px");
-        $.each($(".lineColOnLine"),function(){
-              $(this).css("line-height", $(this).height()+"px");
-          });
-          tpen.screen.textSize();
-    };
+
+
+
 
     //Page load event triggers and attached here.
     $(document).ready(function(){
+        attachWindowResize();
         $("#imgTop, #imgBottom").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("width", "auto");
@@ -686,7 +716,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             reader.readAsText(selectedFile);
         });
 
-
         $(".fullScreenTrans").click(function(){
             fullPage();
         });
@@ -705,8 +734,9 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
         $("#xmlTagPopin").on("change", function(event){
             var val = escape($("#xmlTagPopin").val());
             var fullTag = $("#xmlTagPopin option:selected").attr("title");
-            var closingTag = ""; //How do i check for whether or not this has a value?
-            insertAtCursor(val, closingTag, fullTag);
+            var closingTag = "";
+            insertAtCursor(val, closingTag, fullTag, false);
+
         });
 
         $(".magnifyBtn").click(function(event){
@@ -723,26 +753,25 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             }
         });
 
-        var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
+//        var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
         $("#imgTop").hover(
             function(){
-                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+                $('.activeLine').css('box-shadow', '0 0 15px 1em rgba(0,0,0,.4)');
             },
             function(){
-                var lineColor2 = lineColor.replace(".9", ".4");
-                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+                $('.activeLine').css('box-shadow', '0 0 15px 0 rgba(0,0,0,1)');
             }
         );
 
-        $("#imgBottom").hover(
-            function(){
-                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
-            },
-            function(){
-                var lineColor2 = lineColor.replace(".9", ".4");
-                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
-            }
-        );
+//        $("#imgBottom").hover(
+//            function(){
+//                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
+//            },
+//            function(){
+//                var lineColor2 = lineColor.replace(".9", ".4");
+//                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
+//            }
+//        );
 
         document.addEventListener("mousewheel", function(e){
             if(tpen.screen.isMagnifying){
@@ -789,19 +818,11 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             }
             else if (event.which == 18 || event.altKey){
                //console.log('ALT KEY');
-               var lineForEditing = $(".activeLine");
+            var lineForEditing = $(".activeLine");
                lineForEditing.resizable();
-               //alt + arrows will bump active line left and right
-               if(event.which == 37 && (event.altKey||event.which == 18)){
-                   //left
-                   event.preventDefault();
-                   bumpLine("left", lineForEditing);
-
-               }
-               else if (event.which == 39 && (event.altKey||event.which == 18)){
-                   //right
-                   event.preventDefault();
-                   bumpLine("right", lineForEditing);
+               if(event.altKey&&event.ctrlKey || event.altKey&&event.metaKey){
+                   // hide workspace and move image
+                   tpen.screen.toggleMoveImage(event);
                }
                else if(event.which === 38){ //up.  Go to prev line
                    previousTranscriptlet();
@@ -821,6 +842,9 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 $(".magnifyBtn").removeClass("selected");
                 $("#moveImage").removeClass("selected");
                 $(".transcriptlet").children("textarea").removeClass("imageMove").removeAttr("disabled");
+                if(tpen.screen.liveTool && tpen.screen.liveTool !== "none" && tpen.screen.liveTool !== "parsing"){
+                    fullPage();
+                }
             }
             else if (event.which === 13){ //enter
                 if (event.shiftKey || event.altKey) return true;
@@ -853,6 +877,9 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     if($("div[pair='A1']").length){
                         $("div[pair='A1']").click();
                     }
+                } else if (event.shiftKey && !tpen.screen.isPeeking && !tpen.screen.isMagnifying) {
+                    // Peek-Zoom
+                    tpen.screen.peekZoom(false);
                 }
             }
             else {
@@ -867,14 +894,13 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                     $("#imgTop, #imgBottom").unbind("mouseup");
                     var lineForEditing = $(".transcriptlet[lineserverid='" + $(".activeLine").attr("lineserverid") + "']");
                     updateLine(lineForEditing, false, true); //update the active line in case it was bumped.
-                }
-                else{
-
+                } else if(tpen.screen.isPeeking && (!event.shiftKey || !(event.ctrlKey||event.metaKey))){
+                    // cancel Peek-Zoom
+                    tpen.screen.peekZoom(true);
                 }
             });
 
             $("#parsingBtn").click(function(){
-                tpen.screen.liveTool = "parsing";
                 if(tpen.screen.isFullscreen)tpen.screen.isUnadjusted = true;
                 tpen.screen.isFullscreen = false;
                 hideWorkspaceForParsing();
@@ -884,6 +910,8 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
            $(".workspaceHandle").mousedown(function(event){moveWorkspace(event);})
             .css("cursor","n-resize");
+
+
 
             $(".parsingToolButtons").children("span").click(function(event){
 
@@ -1280,6 +1308,25 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
           var def = $("#"+ref);
           def.css('color','orangered');
       });
+
+        $(".exitPage").click(function(event) {
+            var thisLink = $(this).attr("href");
+            event.preventDefault();
+            //If there is any ajax running and you try to leave a page, this will stop you
+            $("body").ajaxStart(function() {
+              $(this).addClass("ui-state-disabled");
+            }).ajaxStop(function() {
+                //When the ajax finishes, you can leave.
+              if (thisLink.indexOf("?") != -1)
+                thisLink += "&tool=" + tpen.screen.liveTool;
+                Data.saveTranscription(thisLink);
+            });
+            Data.saveTranscription(thisLink);
+//            if (leftovers != undefined)
+//              Linebreak.saveLeftovers(escape(leftovers));
+        });
+
+
     });
 
     /* Allows users to slightly adjust a line within a column while within the transcription interface. */
@@ -1471,7 +1518,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
     function rulerColor(color){
         if(color==="custom"){
             color=$("#customRuler").val();
-            if(validTextColor(color)){
+            if(validTextColour(color)){
 
             }
             else{

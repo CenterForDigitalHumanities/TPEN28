@@ -107,13 +107,14 @@ body{
     margin: 0;
 }
 .activeLine{
-    box-shadow: 0px 0px 15px 8px #FFF;
+    box-shadow: 0 0 15px black;
     display: block !important;
     opacity: 1 !important;
+    border-radius: 2px;
 }
 .lookLikeButtons{
     /*    font-family: "Open Sans","Helvetica Neue",sans-serif;*/
-    font-weight: bold;
+    /*font-weight: bold;*/
     color: #FFF;
     border-radius: 4px;
     height: 26px;
@@ -211,6 +212,7 @@ body{
     overflow: auto;
     border: 1px solid #000;
     resize: vertical;
+    border-radius: 2px;
 }
 .theText,#captions,input.hotkey {
     font-family:'Junicode','Georgia', serif;
@@ -222,6 +224,7 @@ body{
     border: solid thin #AAA;
     resize: none;
 }
+
 #imgTop,#imgBottom{
     display:block;
     height:35%;
@@ -265,6 +268,7 @@ body{
     width: 4em;
     text-align: center;
     padding: 0 1em;
+    position: relative;
 }
 .flex-wide, .flex-wide div {
     display:flex;
@@ -283,8 +287,9 @@ body{
 .flex-stretch.buttons button {
     margin: 0 2px;
     flex: 2 1;
-height: 2em;
-max-width: 10em;
+    height: 2em;
+    max-width: 9em;
+    display: none;
 }
 #captions {
     min-height: 2em;
@@ -295,7 +300,7 @@ max-width: 10em;
     -o-transition: opacity .25s;
     transition: opacity .25s;
 }
-#captionsText {
+#captionsText,#notes {
     display: inline-block;
     font-family: "Junicode","Cambria","Georgia", serif;
     font-size: 16px;
@@ -306,6 +311,11 @@ max-width: 10em;
     top: 3px;
     overflow: hidden;
 
+}
+#notes {
+    font-family: monospace;
+    color:#aaa;
+    max-width:40%;
 }
 
 /*
@@ -319,10 +329,10 @@ max-width: 10em;
     transition: height .25s, width .5s;
 }
 #imgTop img,#imgBottom img, .lineColIndicatorArea {
-    -webkit-transition: left .25s, top .25s, width .25s;
-    -moz-transition: left .25s, top .25s, width .25s;
-    -o-transition: left .25s, top .25s, width .25s;
-    transition: left .25s, top .25s, width .25s;
+    -webkit-transition: left .25s, top .25s, width .25s, max-width .25s;
+    -moz-transition: left .25s, top .25s, width .25s, max-width .25s;
+    -o-transition: left .25s, top .25s, width .25s, max-width .25s;
+    transition: left .25s, top .25s, width .25s, max-width .25s;
 }
 .transcriptlet {
     -webkit-transition: opacity .5s, top .25s;
@@ -415,7 +425,7 @@ div#transcriptletArea {
     border-radius: 2px;
     text-align: center;
     color: #002a5c;
-    font-weight: bold;
+    /*font-weight: bold;*/
     position: relative;
     display: block; /* We may still want these, but they are wildly out of position right now. */
     padding:.25em;
@@ -459,6 +469,14 @@ div#transcriptletArea {
     background-size: auto;
     background-repeat:no-repeat;
     z-index: 4;
+}
+#dragHelper {                    /* Provide more room to move when dragging */
+    position:absolute;
+    opacity:0;
+    width:200px;
+    height:200px;
+    z-index:100;
+    cursor:url(custom-theme/images/grabbing.gif),move;
 }
 
 #pageLabel1 {
@@ -509,7 +527,7 @@ div#transcriptletArea {
     display:none;
 }
 .tpenButton{
-    font-weight: bold;
+    /*font-weight: bold;*/
     color:white !important;
     border-radius: 4px;
     padding-bottom: 4px;
@@ -553,20 +571,85 @@ div#transcriptletArea {
 #parsingBtn[disabled]:hover{
     background-color: red;
 }
-
-#ctrlColumns, #ctrlLines, .tpenButton{
-    cursor: pointer;
+.fa-reparse:before,.fa-square-o:before {
+    content: url(../css/custom-theme/images/reparse30.png);
+    height: 30px;
+    display: inline-block;
+    position: absolute;
+    border: solid 1px black;
+    overflow: hidden;
+    background: white;
+    top: 0;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+.fa-reparse-lg:before{
+    content: url(../css/custom-theme/images/reparse.png);
+    height: 60px;
+    display: inline-block;
+    position: absolute;
+    border: solid 2px black;
+    overflow: hidden;
+    background: white;
+    top: -16px; right:-16px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    transform: scale(.5);
+}
+.splitBlock {
+    padding: .68em;
+}
+.icon-panel {
+    display: block;
+    margin: .25em 1em;
+}
+.icon-panel button {
+    padding: 0;
+    margin: 0;
+    line-height: 0;
+    height: 30px;width:30px;
+    border: 1px solid #000;
+    background-color: #FFF;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.icon-panel button:hover {
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+.splitBlock.active,.icon-panel button.active,.toolLinks {
+    background:#829aac;
+}
+.splitBlock.active.danger,.icon-panel button.active.danger {
+    background: #bf1e2d;
+    color:#fff;
+}
+.splitBlock .tpenButton {
+    display: block;
+    padding-right: 32px;
+    padding-left: 1em;
+    height: 32px;
+    font-size: 90%;
+    text-transform: uppercase;
+    box-sizing: border-box;
+    line-height: 1.5em;
+    margin: 0 auto;
+    position: relative;
+}
+.splitBlock small {
+    display:block;
+}
+.splitBlock small.danger {
+    color:#bf1e2d;
 }
 
-#ctrlColumns, #ctrlLines{
-    border-bottom: 1px solid #002a5c;
-    color: #002a5c;
-}
-
-/*#parsingSplit {max-width:600px; min-width: 350px;position: relative; z-index: 9;}*/
+#parsingSplit {max-width:20em;    position: fixed;
+               min-width: 15em;}
 #overlay{
     display: none;
     z-index: 10;
+}
+.caps {
+    text-transform: uppercase;
 }
 #location {
     bottom: 0;
@@ -585,9 +668,18 @@ div#transcriptletArea {
     z-index: 10;
     overflow: visible;
 }
+#templateResizeBar{
+    height: 100%;
+    right: -10px;
+    position: absolute;
+    background-color: blue;
+    cursor: ew-resize;
+    display: none;
+    width: 10px;
+}
 .ui-widget-overlay{}
-#parsingSplit{background-color: white;}
-#parsingDiv, #linebreakDiv {height:100%; padding: 4px;overflow: auto;width:auto;}
+#parsingDiv{overflow: auto;width: auto;}
+#linebreakDiv {height:100%; overflow: auto;width:auto;}
 #parseOptions > span, #linebreakOptions > span, #columnOptions > span, #allColumnOptions > span, .destroyPage, #reparseColumn {width:100%;height:38px;float:left;padding-top:8px;z-index: 2;}
 #columnOptions > span, #allColumnOptions > span {width: 50%;}
 .parsingColumn {background-image: url('css/custom-theme/images/ui-bg_layered-circles_50_618797_13x13.png');background-attachment: scroll;background-repeat: repeat;position: absolute;border-style: solid; border-width: 2px;border-color: black;z-index: 3;opacity:.3;}
@@ -618,7 +710,14 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
                 box-shadow:0 0 5px #A64129;}
 #abbreviations select {width:100%;}
 iframe {background: url('../images/linen.png') white scroll repeat; position: relative;width: 100%;height:100%; margin-top:32px;}
-.xmlClosingTags {position: absolute; bottom:0;right:10px;z-index: 20;}
+.xmlClosingTags {
+        position: absolute;
+        bottom: 0px;
+        right: 10px;
+        z-index: 10;
+        width: auto;
+        height: auto;
+}
 .tags {font-size: 80%; padding: 1px;margin: 0px -1px 1px 0px;display: inline-block;z-index: 20;cursor: pointer;position: relative;}
 .destroyTag {position:absolute;top:-15px;right:0;}
 .loadingStatus {position:absolute;color: white; top:25%;left:30%;font-family: 'Nova Cut',sans-serif;font-size: 24px;text-shadow:0px 1px 0 #69ACC9;}
@@ -628,8 +727,11 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
              -webkit-box-shadow: -1px -1px 3px rgba(0,0,0,.4);
              box-shadow:-1px -1px 3px rgba(0,0,0,.4);
 }
-.previewFolioNumber {float: left;font-weight: bold; display: block;padding-left: 20px;}
-/*.previewAnnotations {float: left;width:100%;background: wheat;}*/
+.previewPage::before {
+    content:attr(data-pagenumber);
+    float: left;font-weight: bold; display: block;padding-left: 20px;}
+/*.previewFolioNumber {float: left;font-weight: bold; display: block;padding-left: 20px;}
+*//*.previewAnnotations {float: left;width:100%;background: wheat;}*/
 /*            .previewAnnoText {display: block;}*/
 .previewLine{float: left;clear:left;display:block;width:100%;cursor:default;}
 .previewLine:nth-child(even) { background-color: whitesmoke; }
@@ -643,11 +745,29 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
 #previewSplit {overflow: hidden;height:100%;}
 .previewSave {position: absolute; right:0;font-size: 80%;cursor: pointer;z-index: 4;}
 .previewTag {color:#488AC7;display:inline-block;}
-#saveReport,#contribution {position: absolute; z-index: 4;width:18em;cursor: pointer;bottom:0;right:0;color:#226683;text-transform: capitalize;padding: 1px;margin: 0px;max-height:18px;overflow: hidden;}
+#saveReport,#contribution {
+    position: absolute;
+    z-index: 4;
+    width: 18em;
+    cursor: pointer;
+    bottom: 0;
+    color: #226683;
+    text-transform: capitalize;
+    padding: 1px;
+    margin: 0px;
+    max-height: 18px;
+    overflow: hidden;
+    display: block;
+    text-align: left;
+}
 #contribution {right:auto;left:0;}
 #contribution:before {content:'Last edit by: '}
 .saveLog:first-child {color:#618797;}
-#saveReport:hover {box-shadow: -4px -4px 8px -4px #666666;max-height: 95px;overflow:auto;
+.saveLog{
+    display: block;
+}
+#saveReport:hover {
+       box-shadow: -4px -4px 8px -4px #666666;max-height: 95px;overflow:auto;
        /* IE10 */
        background-image: -ms-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
        /* Mozilla Firefox */
@@ -675,7 +795,7 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
 #ruler1,#ruler2 {display: none;background: black;position: absolute;z-index: 4;}
 #sampleRuler {overflow: hidden;position:relative;background:black;width:80%;margin:0 auto;height:2px;top:-10px;}
 #savedChanges {display: none; opacity:0;position: fixed;right:20px;min-width:150px;top:100%;padding: 4px;text-align: center;z-index: 50;}
-#parsingDiv, #linebreakDiv {height:100%; padding: 4px;overflow: auto;width:auto;}
+#linebreakDiv {height:100%; padding: 4px;overflow: auto;width:auto;}
 #parseOptions > span, #linebreakOptions > span, #columnOptions > span, #allColumnOptions > span, .destroyPage, #reparseColumn {width:100%;height:38px;float:left;padding-top:8px;z-index: 2;}
 #columnOptions > span, #allColumnOptions > span {width: 50%;}
 .parsingColumn {background-image: url('css/custom-theme/images/ui-bg_layered-circles_50_618797_13x13.png');background-attachment: scroll;background-repeat: repeat;position: absolute;border-style: solid; border-width: 2px;border-color: black;z-index: 3;opacity:.3;}
@@ -861,7 +981,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     border-radius: 2px;
     cursor: pointer;
     flex:2 1 auto;
-    max-width: 20em;
+    max-width: 9em;
 }
 #magnifyTools{
     position: absolute;
@@ -947,6 +1067,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     overflow: hidden;
     float: right;
     background-color: rgba(1,51,90,.5);
+    background-color: #e1f4fe;
 }
 /*#activeImageTool{
     padding: 4px 6px;
@@ -1007,11 +1128,12 @@ button.imgTool{
     background-color: rgb(209,72,54);
 }
 .split header {
-    font-weight: bold;
-    margin: 1em -1em 0em;
+    margin: 0;
     text-align: center;
-    background: rgba(255,255,255,.4);
-    color: #2f5c9c;
+    background: #6d6e71;
+    color: #e1f4fe;
+    text-transform: uppercase;
+    line-height: 1.5;
 }
 .fullScreenTrans{
     width: 100%;
@@ -1023,6 +1145,7 @@ button.imgTool{
     padding: .25em;
     box-shadow: 0 0 .2em;
     box-sizing: border-box;
+    text-align: center;
 }
 
 .fullScreenTrans:hover{
@@ -1122,7 +1245,7 @@ kbd {
 .showMe:hover{
     border: 1px solid orangered;
 }
-.hideme {
+.hideme,.showMe2{
     position: relative;
     display: none;
 }
@@ -1132,7 +1255,7 @@ kbd {
     background-color: rgba(1,51,90,.5);
     padding: 5px 0px;
 }
-#prevLine,#nextLine,#toggleNotes {
+#prevLine,#nextLine,#toggleNotes,#nextPage,#prevPage{
     position: relative;
     height:auto;
     border: 1px solid #69acc9;
@@ -1149,6 +1272,13 @@ kbd {
 }
 #toggleNotes {
     margin-top:0;
+#nextPage,#prevPage{
+    background-color: #993333;
+    color: #DDD;
+}
+#prevLine:hover,#nextLine:hover{
+    box-shadow: 0 0 3px rgba(0,0,0,.5);
+    background: #BBB;
 }
 #prevLine {
     right: -3.5em; left:auto;
@@ -1201,7 +1331,7 @@ body{
     height: 100vh;
 }
 button, #uploadText, .lookLikeButtons {
-    font-weight: bold;
+    /*font-weight: bold;*/
     color:white;
     border-radius: 2px;
     padding: 4px 6px;
@@ -1214,6 +1344,9 @@ button, #uploadText, .lookLikeButtons {
 }
 button:hover{
     background-color: #d14836;
+}
+button.active {
+    background-color: #618797;
 }
 p{
     /*font-family: 'Open Sans','Helvetica Neue',sans-serif;*/
@@ -1233,6 +1366,7 @@ p{
     color:white;
     transition: box-shadow .5s;
     opacity: .36;
+    display: none;
 }
 .lineColIndicator:hover{
     opacity: 1;

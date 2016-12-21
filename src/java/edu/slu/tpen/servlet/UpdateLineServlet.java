@@ -52,9 +52,8 @@ public class UpdateLineServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+        System.out.println("The back says we should update a line's content");
         try {
-            
-            
 
             if (request.getParameter("text") == null) {
 
@@ -67,6 +66,7 @@ public class UpdateLineServlet extends HttpServlet {
             if (request.getParameter("comment") != null) {
                 comment = request.getParameter("comment");
             }
+            
             HttpSession session = request.getSession();
 
             if (session.getAttribute("UID") == null ||request.getParameter("projectID") == null) {
@@ -91,7 +91,7 @@ public class UpdateLineServlet extends HttpServlet {
 
             if (request.getParameter("projectID") != null) {
                 int projectID = Integer.parseInt(request.getParameter("projectID"));
-                int line = Integer.parseInt(request.getParameter("line"));
+                String line = request.getParameter("line");
                 try {
                     Project thisProject = new Project(projectID);
                     if (new Group(thisProject.getGroupID()).isMember(uid)) {
@@ -101,7 +101,7 @@ public class UpdateLineServlet extends HttpServlet {
                         t.setComment(comment);
                         t.setCreator(uid);
                         
-                        out.print(ESAPI.encoder().decodeForHTML(new Transcription(line).getText()));
+                        out.print(ESAPI.encoder().decodeForHTML(new Transcription(line).getText() +","+ new Transcription(line).getComment()));
                         return;
                     } else {
                         response.sendError(response.SC_FORBIDDEN);
@@ -116,11 +116,9 @@ public class UpdateLineServlet extends HttpServlet {
             }
             else
             {
-                int line = Integer.parseInt(request.getParameter("line"));
-
-
+                String line = request.getParameter("line");
                         Transcription t;
-                try {
+                    try {
                     t = new Transcription(line);
 
                         t.setText(text);

@@ -890,7 +890,7 @@ function activateTool(tool){
 function activateUserTools(tools, permissions){
     var placeholderSplit = function(name,msg){
         $('body').append('<div id="'+name+'Split" class="split">'
-            +'<div class="fullScreenTrans">⇥ Close Tool</div>'
+            +'<div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>'
             +'<p>'+msg+'</p>'
             +'</div>');
         // $('#'+name+"Split").show();

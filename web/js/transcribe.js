@@ -2429,6 +2429,9 @@ function splitPage(event, tool) {
     });
     $("#templateResizeBar").show();
     if(tool==="controls"){
+        if($("#controlsSplit").is(":visible")){
+            return fullPage();
+        }
         console.log("Do not attach resizable from splitPage");
         $("#transcriptionCanvas").css("width", Page.width()-200 + "px");
         $("#transcriptionTemplate").css("width", Page.width()-200 + "px");

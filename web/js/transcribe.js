@@ -3378,6 +3378,7 @@ function batchLineUpdate(linesInColumn, relocate){
             $("#imgBottom").css("height", "inherit");
             $("#parsingBtn").css("box-shadow", "0px 0px 6px 5px yellow");
         }
+        updateURL("p");
     }
 
     function getList(canvas, drawFlag, parsing, tool){ //this could be the @id of the annoList or the canvas that we need to find the @id of the list for.

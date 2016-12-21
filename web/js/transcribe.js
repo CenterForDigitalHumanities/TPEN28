@@ -3658,7 +3658,9 @@ function saveNewLine(lineBefore, newLine){
         {name:"newx",value:newLineLeft},
         {name:"newwidth",value:newLineWidth},
         {name:"newheight",value:newLineHeight},
-        {name:"new",value:true}
+        {name:"new",value:true},
+        {name:'submitted',value:true},
+        {name:'folio',value:tpen.project.folios[tpen.screen.currentFolio].folioNumber}
     );
     if (onCanvas !== undefined && onCanvas !== ""){
         $.post(url, params, function(data){
@@ -3688,8 +3690,12 @@ function saveNewLine(lineBefore, newLine){
                 currentFolio = parseInt(currentFolio);
                 //Write back to db to update list
                 tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList; //@cubap this is why the FIXMEs above
-                updateLine(lineBefore, false, false); //This will update the line on the server.
-                $("#parsingCover").hide();
+                if(lineBefore){
+                    updateLine(lineBefore, false, false); //This will update the line on the server.
+                }
+                else{
+                    $("#parsingCover").hide();
+                }
 //                var url1 = "updateAnnoList";
 //                var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
 //                var params1 = {"content":JSON.stringify(paramObj1)};

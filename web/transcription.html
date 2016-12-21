@@ -670,12 +670,14 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 }
                 else {
                     tpen.user.UID = 0;
+                    var theURL = window.location.href;
                     return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                 }
                 //only get iframes after confirmed user authentication
             },
             error: function(jqXHR,error, errorThrown) {
                 tpen.user.UID = 0;
+                var theURL = window.location.href;
                 return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
             }
         });

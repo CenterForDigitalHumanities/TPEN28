@@ -1164,7 +1164,7 @@ function drawLinesToCanvas (canvasObj, parsing, tool) {
 
                 if (annoList.length > 0) {
                     // Scrub resolved lists that are already present.
-                    tpen.screen.currentAnnoListID = annoList[0]; //There should always just be one that matches because of proj, default to first in array if more
+                    //tpen.screen.currentAnnoListID = annoList[0]; //There should always just be one that matches because of proj, default to first in array if more
                     lines = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], true, parsing, tool);
                 }
                 else {
@@ -1780,7 +1780,7 @@ function nextTranscriptlet() {
              */
 function previousTranscriptlet() {
     var prevID = parseFloat(tpen.screen.focusItem[1].attr('lineID')) - 1;
-    var currentLineServerID = tpen.screen.focusItem[1].attr("lineServerID");
+    var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if (prevID >= 0){
         if (tpen.user.UID || tpen.user.isAdmin){
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
@@ -3374,7 +3374,7 @@ function batchLineUpdate(linesInColumn, relocate){
         }
         if(tpen.screen.dereferencedLists[tpen.screen.currentFolio]){
             annos = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
-            tpen.screen.currentAnnoListID = tpen.screen.dereferencedLists[tpen.screen.currentFolio]["@id"];
+            //tpen.screen.currentAnnoListID = tpen.screen.dereferencedLists[tpen.screen.currentFolio]["@id"];
             if(drawFlag){
                 drawLinesOnCanvas(annos, parsing, tool);
             }
@@ -3443,7 +3443,15 @@ function updateLine(line, cleanup, updateList){
     var currentLineNotes = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".notes").val();
     var currentLineTextAttr = unescape(line.attr("data-answer"));
     var currentLineNotesAttr = unescape(line.find(".notes").attr("data-answer"));
-    var currentAnnoListID = tpen.screen.currentAnnoListID;
+    var params = new Array({name:'submitted',value:true},{name:'folio',value:tpen.project.folios[tpen.screen.currentFolio].folioNumber},{name:'projectID',value:tpen.project.id});
+    var params2 = new Array({name:'submitted',value:true},{name:'projectID',value:tpen.project.id});
+    var updateContent = false;
+    var updatePositions = false;
+    if(tpen.screen.liveTool === "parsing"){ 
+        //OR it was from bump line in the trasncription interface.  How do I detect that?  This is overruled below until we figure that out.
+        updatePositions = true;
+    }
+//    var currentAnnoListID = tpen.screen.currentAnnoListID;
     var dbLine = {
         "@id" : currentLineServerID,
         "@type" : "oa:Annotation",
@@ -3458,26 +3466,26 @@ function updateLine(line, cleanup, updateList){
         "_tpen_note" : currentLineNotes,
         "testing":"TPEN28"
     };
-    if (!currentAnnoListID){
-        if(!currentAnnoList){
-            throw new Error("No annotation list found.");
-        } else if (typeof currentAnnoList==="string"){
-            // unlikely, but just in case
-            $.getJSON(currentAnnoList,function(list){
-                tpen.screen.currentAnnoList = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[tpen.screen.currentAnnoList] = list;
-                return updateLine(line, cleanup, updateList);
-            }).fail(function(err){
-                throw err;
-            });
-        } else if ($.isArray(currentAnnoList.resources)){
-            throw new Error("Everything looks good, but it didn't work.");
-        } else {
-            throw new Error("Annotation List was not recognized.");
-        }
-    }
-    else if (currentAnnoListID){
+//    if (!currentAnnoListID){ //BH 12/21/16 we need to skip this check now since we don't have a anno list ID anymore
+//        if(!currentAnnoList){
+//            throw new Error("No annotation list found.");
+//        } else if (typeof currentAnnoList==="string"){
+//            // unlikely, but just in case
+//            $.getJSON(currentAnnoList,function(list){
+//                tpen.screen.currentAnnoList = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[tpen.screen.currentAnnoList] = list;
+//                return updateLine(line, cleanup, updateList);
+//            }).fail(function(err){
+//                throw err;
+//            });
+//        } else if ($.isArray(currentAnnoList.resources)){
+//            throw new Error("Everything looks good, but it didn't work.");
+//        } else {
+//            throw new Error("Annotation List was not recognized.");
+//        }
+//    }
+//    else if (currentAnnoListID){
         var lineID = (line != null) ? $(line).attr("lineserverid") : -1;
-        var params = new Array({name:'submitted',value:true},{name:'folio',value:tpen.project.folio[tpen.screen.currentFolio].folioNumber},{name:'projectID',value:tpen.project.id});
+        lineID = parseInt(lineID.replace("line/", "")); //TODO check this in the future to make sure you are getting the lineID and not some string here. 
         if (lineID>0 || $(line).attr("id")=="dummy"){
             params.push(
                 {name:"updatey",value:lineTop},
@@ -3486,10 +3494,15 @@ function updateLine(line, cleanup, updateList){
                 {name:"updateheight",value:lineHeight},
                 {name:"update",value:lineID}
             );
+            updatePositions = true; //This will always be true, which we want right now.  Up at the top there is a check for it, but I need the OR to make it happen.
+        }
+        else{
+            updatePositions = false;
         }
         //isDestroyingLine = false;
-        if(currentLineServerID.startsWith("http")){ //@cubap FIXME: do we need this check anymore?
-            var url = "updateLinePositions"; //updateAnnoList
+//        if(currentLineServerID.startsWith("http")){ //@cubap FIXME: do we need this check anymore?
+        var url = "updateLinePositions"; //updateAnnoList
+        var url2 = "updateLineServlet";
 //            var payload = { // Just send what we expect to update
 //                    content : JSON.stringify({
 //                    "@id" : dbLine['@id'],			// URI to find it in the repo
@@ -3497,7 +3510,7 @@ function updateLine(line, cleanup, updateList){
 //                    "on" : dbLine.on,
 //                    "_tpen_note": dbLine._tpen_note// parsing update of xywh=
 //            	})
-            };
+ //           }
             //var url1 = "updateAnnoList";
             clearTimeout(typingTimer);
             for(var i=0  ;i < currentAnnoList.length; i++){
@@ -3517,6 +3530,7 @@ function updateLine(line, cleanup, updateList){
 
             if(currentLineText === currentLineTextAttr && currentLineNotes === currentLineNotesAttr){
                 //This line's text has not changed, and neither does the notes
+                updateContent = false;
                 $("#saveReport")
                 .stop(true,true).animate({"color":"red"}, 400)
                 .prepend("<div class='noChange'>No changes made</div>")//
@@ -3524,6 +3538,10 @@ function updateLine(line, cleanup, updateList){
                 $("#saveReport").find(".nochanges").show().fadeOut(2000);
             }
             else{ //something about the line text or note text has changed.
+                params2.push({name:"comment", value:currentLineNotes});
+                params2.push({name:"text", value:currentLineText});
+                params2.push({name:"line",value:lineID});
+                updateContent = true;
                 var columnMark = "Column&nbsp;"+line.attr("col")+"&nbsp;Line&nbsp;"+line.attr("collinenum");
                 var date=new Date();
                 $("#saveReport")
@@ -3534,17 +3552,31 @@ function updateLine(line, cleanup, updateList){
             line.attr("data-answer", currentLineText);
             line.find(".notes").attr("data-answer", currentLineNotes);
             //FIXME: REST says this should be PUT
-            $.post(url,params,function(){
-            	line.attr("hasError",null);
-                $("#parsingCover").hide();
-            	// success
-            }).fail(function(err){
-            	line.attr("hasError","Saving Failed "+err.status);
-            	throw err;
-            });
-        } else {
-            throw new Error("No good. The ID could not be dereferenced. Maybe this is a new annotation?");
-        }
+
+            //@cubap 12/21/16 FIXME: Is it ok to run this after every line change or typingTimer no matter what, or should there be a check for change?
+            if(updatePositions){
+                $.post(url,params,function(){
+                    line.attr("hasError",null);
+                    $("#parsingCover").hide();
+                    // success
+                }).fail(function(err){
+                    line.attr("hasError","Saving Failed "+err.status);
+                    throw err;
+                });
+            }
+            if(updateContent){
+                $.post(url2,params2,function(){
+                    line.attr("hasError",null);
+                    $("#parsingCover").hide();
+                    // success
+                }).fail(function(err){
+                    line.attr("hasError","Saving Failed "+err.status);
+                    throw err;
+                });
+            }
+//        } else {
+//            throw new Error("No good. The ID could not be dereferenced. Maybe this is a new annotation?");
+//        }
         //I am not sure if cleanup is ever true
         if (cleanup) cleanupTranscriptlets(true);
         updateClosingTags();

@@ -196,7 +196,7 @@ public class Canvas {
                 lineAnnot.put("@type", "oa:Annotation");
                 lineAnnot.put("motivation", "oad:transcribing"); 
                 lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(lines[i].getText())));
-                lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getX(), lines[i].getWidth(), lines[i].getHeight())); 
+                lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight())); 
                 lineAnnot.put("_tpen_note", lines[i].getComment());
                 lineAnnot.put("_tpen_creator",lines[i].getCreator());
                 resources.add(lineAnnot);

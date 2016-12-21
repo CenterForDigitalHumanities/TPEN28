@@ -1470,17 +1470,19 @@ function updatePresentation(transcriptlet) {
             else{ }
             var prevLineCol = transcriptletBefore.attr("col");
             var prevLineText = unescape(transcriptletBefore.attr("data-answer"));
+            var prevLineNote = unescape(transcriptletBefore.find(".notes").attr("data-answer"));
             $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","");
-            $("#captionsText").text((prevLineText.length && prevLineText) || "This line is not transcribed.");
+            $("#captionsText").text((prevLineText.length && prevLineText) || "This line is not transcribed.").attr("title",prevLineText)
+                .next().html(prevLineNote).attr("title",prevLineNote);
         }
         else { //this is a problem
             $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
-            $("#captionsText").html("You are on the first line.");
+            $("#captionsText").html("You are on the first line.").next().html("");
         }
     }
     else { //there is no previous line
         $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
-        $("#captionsText").html("ERROR.  NUMBERS ARE OFF");
+        $("#captionsText").html("ERROR.  NUMBERS ARE OFF").next().html("");
     }
     tpen.screen.focusItem[0] = tpen.screen.focusItem[1];
     tpen.screen.focusItem[1] = transcriptlet;
@@ -1725,7 +1727,7 @@ function loadTranscriptlet(lineid){
         }
         else {
         var captionText1 = $("#captionsText").html();
-            $("#captionsText").html("You are not logged in.");
+            $("#captionsText").html("You are not logged in.").next().html("");
             $('#captionsText').css("background-color", 'red');
             setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
             setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
@@ -1734,11 +1736,12 @@ function loadTranscriptlet(lineid){
     }
     else { //blink a caption warning
         var captionText = $("#captionsText").html();
-        $("#captionsText").html("Cannot load this line.");
+        var noteText = $("#note").html();
+        $("#captionsText").html("Cannot load this line.").next().html("");
         $('#captionsText').css("background-color", 'red');
         setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
         setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
-        setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText); }, 1500);
+        setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText).next().html(noteText); }, 1500);
     }
 }
 
@@ -1767,7 +1770,7 @@ function nextTranscriptlet() {
     }
     else { //blink a caption warning
         var captionText = $("#captionsText").html();
-        $("#captionsText").html("You are on the last line! ");
+        $("#captionsText").html("You are on the last line! ").next().html("");
         $('#captionsText').css("background-color", 'red');
         setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); }, 500);
         setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
@@ -3447,7 +3450,7 @@ function updateLine(line, cleanup, updateList){
     var params2 = new Array({name:'submitted',value:true},{name:'projectID',value:tpen.project.id});
     var updateContent = false;
     var updatePositions = false;
-    if(tpen.screen.liveTool === "parsing"){ 
+    if(tpen.screen.liveTool === "parsing"){
         //OR it was from bump line in the trasncription interface.  How do I detect that?  This is overruled below until we figure that out.
         updatePositions = true;
     }
@@ -3485,7 +3488,7 @@ function updateLine(line, cleanup, updateList){
 //    }
 //    else if (currentAnnoListID){
         var lineID = (line != null) ? $(line).attr("lineserverid") : -1;
-        lineID = parseInt(lineID.replace("line/", "")); //TODO check this in the future to make sure you are getting the lineID and not some string here. 
+        lineID = parseInt(lineID.replace("line/", "")); //TODO check this in the future to make sure you are getting the lineID and not some string here.
         if (lineID>0 || $(line).attr("id")=="dummy"){
             params.push(
                 {name:"updatey",value:lineTop},

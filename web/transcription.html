@@ -131,6 +131,7 @@
                         </div>
                         <div id="captions" class="flex-wide">
                             <div id="captionsText"></div>
+                            <span id="notes" class="quiet">&nbsp;</span>
                         </div>
                         <div class="flex-bookend">
                             <div id="saveReport" class="ui-corner-top"></div>
@@ -215,91 +216,101 @@
             </div>
         </div>
          <div id="parsingSplit" class="split" >
-             <div class="fullScreenTrans">⇥ Close Tool</div>
-             <div class="toolLinks">
-                <!-- tool buttons for parsing -->
-                </div>
+             <div class="fullScreenTrans">
+                 <div class="lookLikeButtons caps insetBtn">
+                     <i class="fa fa-reply fa-flip-vertical"></i> Return to Transcription</div>
+             </div>
+             <div class="toolLinks icon-panel">
+                 <div class="icon-panel">
+                     <button>
+                         <img src="css/custom-theme/images/reparse.png" alt="reparse" height="30px" />
+                     </button>
+                     <button>
+                         <img src="css/custom-theme/images/reparse30.png" alt="reparse" />
+                 </button>
+                 <button>
+                     <img src="css/custom-theme/images/reparse.png" alt="reparse" height="30px" />
+                 </button>
+                 </div>
+                 <div class="icon-panel">
+                     <button>
+                         <img src="css/custom-theme/images/reparse30.png" alt="reparse" />
+                     </button>
+                     <button>
+                         <img src="css/custom-theme/images/reparse.png" alt="reparse" height="30px" />
+                     </button>
+                     <button>
+                         <img src="css/custom-theme/images/reparse30.png" alt="reparse" />
+                     </button>
+                 </div>
+             </div>
 
                 <div id="parsingDiv" class="">
-                    <div style="margin-top: 35px;">Any lines or columns that are created or edited are saved automatically.  This is also true for edits made in the full page transcription interface.</div>
                     <div id="parseOptions">
-                        <h3 class="parsingHdr">Line Parsing</h3>
-                        <div id="ctrlColumnsInst" class="actions">
-                            <h4 id="ctrlColumns" title="Make adjustments at the column level" class="clear-left">Column Controls</h4>
-                                <div class="parsingToolButtons">
-                                    <span id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging" show="createColumnInst">Adjust or Create Columns</span>
-                                    <span id="destroyColumn" class="tpenButton" title="Remove an entire column and its data with a click" show="destroyColumnInst">Destroy Columns</span>
-                                    <span id="clearColumns" class="tpenButton" title="Clear the page, removing all transcription information" show="clearColumnsInst">Clear Page</span>
-                                </div>
-                                <div class="activeParsingTool">
-                                    <div class="startHide" id="createColumnInst">
-                                        <dl>
-                                            <dt>New Column:</dt>
-                                            <dd>Click and drag to place</dd><br>
-                                            <dt>Adjustments:</dt>
-                                            <dd>Drag the edges of an existing column</dd>
-                                        </dl>
-                                    </div>
-                                    <div class="startHide" id="destroyColumnInst">
-                                        <p class="">Click a column to remove all lines and transcription data it contains from the project.</p>
-                                        <span class="ui-state-error-text"><span class="inline fa fa-alert"></span>This is a destructive process and cannot be undone.</span></p>
-                                    </div>
-                                    <div class="startHide" id="clearColumnsInst">
-                                        <p class="">Click to clear the page, removing all transcription information.</p>
-                                        <span class="destroyPage" class="tpenButton ui-state-error" title="Destroy all columns on this page"><span class="pull-left fa fa-circle-o"></span>Destroy All Data</span>
-                                        <p class="small"><span class="ui-state-error-text"><span class="inline fa fa-alert"></span>This is a destructive process and cannot be undone.</span><br />
-                                         </p>
-                                    </div>
-                                </div>
+                        <header id="ctrlColumns" title="Make adjustments at the column level">Edit Columns</header>
+                        <div class="splitBlock">
+                            <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
+                                Create Column
+                                <i class="fa fa-reparse"></i>
+                            </button>
+                            <small>Click and drag to place</small>
                         </div>
-                        <div id="ctrlLinesInst" class="actions">
-                            <h4 id="ctrlLines" title="Make adjustments at the line level" class="clear-left">Line Controls</h4>
-                                <div class="parsingToolButtons">
-                                    <span id="addLines" class="tpenButton" title="Split lines to create new ones in a column" show="addLinesInst">Add Lines</span>
-                                    <span id="removeLines" class="tpenButton" title="Merge two lines or remove the last line from a column" show="removeLinesInst">Delete/Merge Lines</span>
-                                    <span id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines" show="adjustLinesInst">Adjust Lines</span>
-                                </div>
-                                <div class="activeParsingTool">
-                                    <div class="startHide" id="addLinesInst">
-                                        <p class="">Click within the shaded area to define the bottom of the new line.</p>
-                                        <p class="small"><span class="inline fa fa-check"></span>This method retains all your <acronym title="Text, markup, and notes saved for lines within this column will remain attached.">transcription information</acronym>.<br />
-                                        <span><span class="inline fa fa-info"></span>Any <acronym title="text, markup, and notes">transcription information</acronym> will remain with the line above where you click.</span><br />
-                                        <span><span class="inline fa fa-info"></span>To add a line outside of the defined columns, <span class="ui-button loud" onclick="$('#ctrlColumns').click();$('#createColumn').click();" title="Click to use the Create a Column option">Create a Column</span>.</span></p>
-                                        <div align="center">
-                                            <p class="clear-left">Trouble seeing the ruler? Change the color below.</p>
-                                            <div id="sampleRuler"></div>
-                                            <label for="black"><input onclick="rulerColor('black');" CHECKED type="radio" value="black" name="rulerColor"/>Black</label>
-                                            <label for="white"><input onclick='rulerColor("white");' id="white" type="radio" value="white" name="rulerColor"/>White</label>
-                                            <label style="margin-left: 10px; margin-right: 3px;" for="customRuler">
-                                                Custom
-                                                <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown."
-                                                type="text" id="customRuler" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="startHide" id="removeLinesInst">
-                                        <p class="">Click within the shaded area to merge the highlighted lines or delete the last line of a column.</p>
-                                        <p class="small"><span class="inline fa fa-info"></span>This method combines your <acronym title="Text, markup, and notes saved for lines within this column will remain attached.">transcription information</acronym> into the new line.<br />
-                                        <span class="ui-state-error-text"><span class="inline fa fa-alert"></span>If a line is removed, so in the information associated <acronym title="text, markup, and notes">with it</acronym>.</span> <br />
-                                        <span><span class="inline fa fa-info"></span>To add a line, use the <span class="ui-button loud" onclick="$('#addLines').click();" title="Click to use the Add Lines option">Add Lines</span> option.</span></p>
-                                    </div>
-                                    <div class="startHide" id="adjustLinesInst">
-                                        <p class="">Click and drag the right side of the line to contain the line accurately.</p>
-                                        <p class="small"><span class="inline fa fa-check"></span>This method retains all your <acronym title="Text, markup, and notes saved for each line will remain attached.">transcription information</acronym>.<br />
-                                        <span><span class="inline fa fa-info"></span>Only the right boundary can be moved in this tool.</span><br />
-                                        <span><span class="inline fa fa-info"></span>Make precise, individual changes in the transcription view on the currently selected line.
-                                            Hold the ALT key and drag the right side of a line to resize it.  While holding the ALT key
-                                        press the left and right arrows to 'bump' the line.</span></p>
-                                    </div>
-                                </div>
+                        <div class="splitBlock">
+                            <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
+                                Adjust Columns
+                                <i class="fa fa-reparse"></i>
+                            </button>
+                            <small>Drag the edges of an existing column.</small>
+                            <small><i class="fa fa-info-circle"></i> This method does not remove any <acronym title="text, markup, and notes">transcription information</acronym>.</small>
                         </div>
+                        <div class="splitBlock danger">
+                            <button id="destroyColumn" class="tpenButton" title="Remove an entire column and its data with a click">
+                                Destroy Column
+                                <i class="fa fa-reparse"></i>
+                            </button>
+                            <small>Click a column to remove all its lines and transcription data.</small>
+                            <small class="danger"><i class="fa fa-warning"></i> This is a destructive process and cannot be undone.</small>
+                            <!-- Reparsing is not enabled yet <button>-->
+                        </div>
+                            <header id="ctrlLines" title="Make adjustments at the line level">Edit Lines</header>
+                            <div class="splitBlock">
+                            <button id="addLines" class="tpenButton" title="Split lines to create new ones in a column">
+                                Add Line
+                                <i class="fa fa-reparse"></i>
+                            </button>
+                                <small>Click within the shaded area to define the bottom of the new line.</small>
+                                <small><i class="fa fa-info-circle"></i> Any <acronym title="text, markup, and notes">transcription information</acronym> will remain with the line above where you click.</small>
+                                <small>
+                                    Trouble seeing the ruler? Change the color below.
+                                    <span id="sampleRuler"></span>
+                                    <label for="black"><input onclick="rulerColor('black');" CHECKED type="radio" value="black" name="rulerColor"/>Black</label>
+                                    <label for="white"><input onclick='rulerColor("white");' id="white" type="radio" value="white" name="rulerColor"/>White</label>
+                                    <label style="margin-left: 10px; margin-right: 3px;" for="customRuler">
+                                        Custom
+                                        <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown."
+                                               type="text" id="customRuler" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
+                                    </label>
+                                </small>
+                            </div>
+                            <div class="splitBlock">
+                            <button id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines">
+                                Adjust Lines
+                                <i class="fa fa-reparse"></i>
+                            </button>
+                                <small>Click and drag the right side of the line to contain the line accurately.</small>
+                                <small><i class="fa fa-info-circle"></i> Only the right boundary can be moved in this tool.</small>
+                            </div>
+                            <div class="splitBlock">
+                            <button id="removeLines" class="tpenButton" title="Merge two lines in a column">
+                                Merge Lines
+                                <i class="fa fa-reparse"></i>
+                            </button>
+                                <small>Click within the shaded area to merge the highlighted lines.</small>
+                                <small><i class="fa fa-info-circle"></i> This method combines your transcription information into the new line.</small>
+                            </div>
                     </div>
                 </div>
-                <div id="sidebar">
-                    <div id="progress" class="ui-widget-content ui-corner-all">Select an option above</div>
-                    <div id="lineResizing" class="ui-widget-content ui-corner-all">Your <span id="originalLine">original</span> pixel line is being resized by <span id="newLine">100</span>%.</div>
-                </div>
-            </div>
+         </div>
 
 <!--                    Linebreaking Tool-->
            <div id="linebreakSplit" class="ui-widget ui-widget-content split">
@@ -509,13 +520,15 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                                         <dd>Quickly jump to the first line of the current page.</dd>
                                     <dt>TAB:</dt>
                                         <dd>Move forward through lines of transcription. Reverse with SHIFT + TAB.</dd>
-                                    <dt>ALT + up/down arrows:</dt>
+                                        <dt>ALT + up/down arrows:</dt>
                                         <dd>Move up and down through lines of transcription with the keyboard arrow keys.</dd>
-                                    <dt>ALT + left/right arrows:</dt>
-                                        <dd>Bump the active transcription line in the direction the arrow was pushed. *Warning: may create new columns.</dd>
-                                    <dt>While holding ALT:</dt>
-                                        <dd>Resize the active line by clicking and dragging the left or right edge.</dd>
-                                    <dt>ESC:</dt>
+                                        <dt>Hold CTRL + ALT:</dt>
+                                        <dd>Clear the workspace to see the image you are transcribing. Drag with the mouse
+                                            to move the image around and release the keys to reset.</dd>
+                                        <dt>Hold CTRL + SHIFT:</dt>
+                                        <dd>Peek-zoom into the current line of transcription to view it as large as can
+                                            be contained on the screen. Release to reset.</dd>
+                                        <dt>ESC:</dt>
                                         <dd>Close any open tool and return to fullscreen transcription.</dd>
 
 <!--                                        <dt>ALT:</dt>
@@ -811,18 +824,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                if(event.altKey&&event.ctrlKey || event.altKey&&event.metaKey){
                    // hide workspace and move image
                    tpen.screen.toggleMoveImage(event);
-               }
-               //alt + arrows will bump active line left and right
-            else if(event.which == 37 && (event.altKey||event.which == 18)){
-                   //left
-                   event.preventDefault();
-                   bumpLine("left", lineForEditing);
-
-               }
-               else if (event.which == 39 && (event.altKey||event.which == 18)){
-                   //right
-                   event.preventDefault();
-                   bumpLine("right", lineForEditing);
                }
                else if(event.which === 38){ //up.  Go to prev line
                    previousTranscriptlet();

@@ -131,6 +131,7 @@
                         </div>
                         <div id="captions" class="flex-wide">
                             <div id="captionsText"></div>
+                            <span id="notes" class="quiet">&nbsp;</span>
                         </div>
                         <div class="flex-bookend">
                             <div id="saveReport" class="ui-corner-top"></div>
@@ -313,7 +314,7 @@
 
 <!--                    Linebreaking Tool-->
            <div id="linebreakSplit" class="ui-widget ui-widget-content split">
-               <div class="fullScreenTrans">⇥ Close Tool</div>
+               <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
                <h3>Linebreak Existing Transcription</h3>
                 <div id="linebreakTextContainer">
                     <!-- visible if text is saved -->
@@ -354,7 +355,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
                        </div>
             <div id="compareSplit" class="split">
-                <div class="fullScreenTrans">⇥ Close Tool</div>
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
                 <div class="toolLinks">
                     <select id="compareJump" class="lookLikeButtons">
                         <option folioNum="0">Compare To</option>
@@ -417,7 +418,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
 </div>
             <div id="previewSplit" class="split">
-                <div class="fullScreenTrans">⇥ Close Tool</div>
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
                 <div class="toolLinks">
                     <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
@@ -427,7 +428,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 </div>
             </div>
             <div id="fullPageSplit" class="split">
-                <div class="fullScreenTrans">⇥ Close Tool</div>
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
                 <div class="toolLinks">
                     <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
@@ -519,13 +520,15 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                                         <dd>Quickly jump to the first line of the current page.</dd>
                                     <dt>TAB:</dt>
                                         <dd>Move forward through lines of transcription. Reverse with SHIFT + TAB.</dd>
-                                    <dt>ALT + up/down arrows:</dt>
+                                        <dt>ALT + up/down arrows:</dt>
                                         <dd>Move up and down through lines of transcription with the keyboard arrow keys.</dd>
-                                    <dt>ALT + left/right arrows:</dt>
-                                        <dd>Bump the active transcription line in the direction the arrow was pushed. *Warning: may create new columns.</dd>
-                                    <dt>While holding ALT:</dt>
-                                        <dd>Resize the active line by clicking and dragging the left or right edge.</dd>
-                                    <dt>ESC:</dt>
+                                        <dt>Hold CTRL + ALT:</dt>
+                                        <dd>Clear the workspace to see the image you are transcribing. Drag with the mouse
+                                            to move the image around and release the keys to reset.</dd>
+                                        <dt>Hold CTRL + SHIFT:</dt>
+                                        <dd>Peek-zoom into the current line of transcription to view it as large as can
+                                            be contained on the screen. Release to reset.</dd>
+                                        <dt>ESC:</dt>
                                         <dd>Close any open tool and return to fullscreen transcription.</dd>
 
 <!--                                        <dt>ALT:</dt>
@@ -823,18 +826,6 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                if(event.altKey&&event.ctrlKey || event.altKey&&event.metaKey){
                    // hide workspace and move image
                    tpen.screen.toggleMoveImage(event);
-               }
-               //alt + arrows will bump active line left and right
-            else if(event.which == 37 && (event.altKey||event.which == 18)){
-                   //left
-                   event.preventDefault();
-                   bumpLine("left", lineForEditing);
-
-               }
-               else if (event.which == 39 && (event.altKey||event.which == 18)){
-                   //right
-                   event.preventDefault();
-                   bumpLine("right", lineForEditing);
                }
                else if(event.which === 38){ //up.  Go to prev line
                    previousTranscriptlet();

@@ -5220,6 +5220,19 @@ tpen.screen.peekZoom = function(cancel){
         });
 
     }
+    tpen.screen.abbrevLabelsAll = $("#abbrevLabels").clone();
+    $("#abbrevGroups").change(function(){
+        $("#abbrevSplit").addClass("ui-state-disabled");
+        $("#abbrevLabels option").remove();
+        tpen.screen.abbrevLabelsAll.children(".group"+$("#abbrevGroups option:selected").val()).clone(true).appendTo("#abbrevLabels");
+        $("#abbrevLabels").removeAttr("disabled");
+        $("#abbrevSplit").removeClass("ui-state-disabled");
+        $("#abbrevLabels option:first").attr("selected",true);
+        $("#abbrevLabels").change();
+    });
+    $("#abbrevLabels").change(function(){
+        $("#abbrevImg").attr("src","//t-pen.org/images/cappelli/"+$(this).val());
+    });
 
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?

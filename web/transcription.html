@@ -367,7 +367,491 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
                 <img class="compareImage" folioNum="1"></img>
             </div>
-<div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
+<div id="abbreviationSplit" class="split">
+    <!--                        Image is loaded in Data.postLoader()-->
+                <img id="abbrevImg" alt="abbreviation page" src="//t-pen.org/images/cappelli/Scan0064.jpg" style="height: 100%; width: auto;">
+                <div id="abbreviations">
+                    <select id="abbrevGroups">
+                        <option selected="">Select One</option>
+                        <option value="0">A</option>
+                        <option value="1">B</option>
+                        <option value="2">C</option>
+                        <option value="3">9</option>
+                        <option value="4">D</option>
+                        <option value="5">E</option>
+                        <option value="6">F</option>
+                        <option value="7">G</option>
+                        <option value="8">H</option>
+                        <option value="9">I</option>
+                        <option value="10">K</option>
+                        <option value="11">L</option>
+                        <option value="12">M</option>
+                        <option value="13">N</option>
+                        <option value="14">O</option>
+                        <option value="15">P</option>
+                        <option value="16">Q</option>
+                        <option value="17">R</option>
+                        <option value="18">S</option>
+                        <option value="19">T</option>
+                        <option value="20">V</option>
+                        <option value="21">X</option>
+                        <option value="22">Y</option>
+                        <option value="23">Z</option>
+                        <option value="24">SIGNS</option>
+                        <option value="25">ROMAN NUM</option>
+                        <option value="26">ARABIC NUM</option>
+                    </select>
+                    <select disabled="" id="abbrevLabels">
+                        <option selected="">Select One</option>
+                        <option class="group-0" value="Scan0064.jpg" id="596">001 - A-A</option>
+                        <option class="group-0" value="Scan0065.jpg" id="597">002 - At-An</option>
+                        <option class="group-0" value="Scan0066.jpg" id="598">003 - Ana-AiA</option>
+                        <option class="group-0" value="Scan0067.jpg" id="599">004 - AAti-ABBTI</option>
+                        <option class="group-0" value="Scan0068.jpg" id="600">005 - ABD-ABULO</option>
+                        <option class="group-0" value="Scan0069.jpg" id="601">006 - AC-ACCIDt</option>
+                        <option class="group-0" value="Scan0070.jpg" id="602">007 - ACCIT-ACTT</option>
+                        <option class="group-0" value="Scan0071.jpg" id="603">008 - ACTU-ADHNDA</option>
+                        <option class="group-0" value="Scan0072.jpg" id="604">009 - ADHNT-ADUSITs</option>
+                        <option class="group-0" value="Scan0073.jpg" id="605">010 - ADUSO-AGem</option>
+                        <option class="group-0" value="Scan0074.jpg" id="606">011 - AGm-AH</option>
+                        <option class="group-0" value="Scan0075.jpg" id="607">012 - AGTOS-AL</option>
+                        <option class="group-0" value="Scan0076.jpg" id="608">013 - ALd-ALIT</option>
+                        <option class="group-0" value="Scan0077.jpg" id="609">014 - ALL-ALTI</option>
+                        <option class="group-0" value="Scan0078.jpg" id="610">015 - ALTaMTE-AMR</option>
+                        <option class="group-0" value="Scan0079.jpg" id="611">016 - AMT-ANLATA</option>
+                        <option class="group-0" value="Scan0080.jpg" id="612">017 - ANN-ANZ</option>
+                        <option class="group-0" value="Scan0081.jpg" id="613">018 - AOo-APLIS</option>
+                        <option class="group-0" value="Scan0082.jpg" id="614">019 - APM-APPiAT</option>
+                        <option class="group-0" value="Scan0083.jpg" id="615">020 - APPB-APTIne</option>
+                        <option class="group-0" value="Scan0084.jpg" id="616">021 - APTIS-AiQUAr</option>
+                        <option class="group-0" value="Scan0085.jpg" id="617">022 - AR-ARta</option>
+                        <option class="group-0" value="Scan0086.jpg" id="618">023 - ARto-ARGt</option>
+                        <option class="group-0" value="Scan0087.jpg" id="619">024 - ARGta-ASLF</option>
+                        <option class="group-0" value="Scan0088.jpg" id="620">025 - ASO, ASR-AT</option>
+                        <option class="group-0" value="Scan0089.jpg" id="621">026 - AT-ATTNDD</option>
+                        <option class="group-0" value="Scan0090.jpg" id="622">027 - ATTO-AUDITrIS</option>
+                        <option class="group-0" value="Scan0091.jpg" id="623">028 - AUDR-AUTHui</option>
+                        <option class="group-0" value="Scan0092.jpg" id="624">029 - AUTHAS-AZ</option>
+                        <option class="group-1" value="1.jpg" id="484">030 - B-Bn</option>
+                        <option class="group-1" value="3.jpg" id="485">031 - Bor-BAPaRI</option>
+                        <option class="group-1" value="4.jpg" id="486">032 - BAPT-BENEIJS</option>
+                        <option class="group-1" value="5.jpg" id="487">033 - BENELOS-BISlis</option>
+                        <option class="group-1" value="6.jpg" id="489">034 - BL-BNDCS</option>
+                        <option class="group-1" value="6b.jpg" id="488">035 - BNDICT-BOF</option>
+                        <option class="group-1" value="7.jpg" id="490">036 - BOI-BRIS</option>
+                        <option class="group-1" value="8.jpg" id="491">037 - BRO-BTME</option>
+                        <option class="group-1" value="9.jpg" id="492">038 - BTO-BZo</option>
+                        <option class="group-2" value="10.jpg" id="234">039 - C-C</option>
+                        <option class="group-2" value="001.jpg" id="1">040 - C-Cm</option>
+                        <option class="group-2" value="003.jpg" id="2">041 - Cmo-CAla</option>
+                        <option class="group-2" value="004.jpg" id="3">042 - CAli-CALA</option>
+                        <option class="group-2" value="005.jpg" id="4">043- CALA-CANr</option>
+                        <option class="group-2" value="006.jpg" id="5">044 - CANro-CAPte</option>
+                        <option class="group-2" value="007.jpg" id="6">045 - CAPte-CAR</option>
+                        <option class="group-2" value="008.jpg" id="7">046 - CAR-CASA</option>
+                        <option class="group-2" value="009.jpg" id="8">047 - CASAL-CAUoNNO</option>
+                        <option class="group-2" value="010.jpg" id="9">048 - CAUOE-CCHA</option>
+                        <option class="group-2" value="011.jpg" id="10">049 -CCE-CDD</option>
+                        <option class="group-2" value="012.jpg" id="11">050 - CDDI-CEL</option>
+                        <option class="group-2" value="013.jpg" id="12">051 - CELEBaNa-CHOR</option>
+                        <option class="group-2" value="014.jpg" id="13">052 - CHOR-CISTER</option>
+                        <option class="group-2" value="015.jpg" id="14">053 - CIT-CLAUo</option>
+                        <option class="group-2" value="016.jpg" id="15">054 - CLAUE-CLTU</option>
+                        <option class="group-2" value="017.jpg" id="16">055 - CLU-CrO</option>
+                        <option class="group-2" value="018.jpg" id="17">056 - COb-COGSPI</option>
+                        <option class="group-2" value="019.jpg" id="18">057 - COGaTI-COITAS</option>
+                        <option class="group-2" value="020.jpg" id="19">058 - COITER-COLOe</option>
+                        <option class="group-2" value="021.jpg" id="20">059 - COLR-CONCTIM</option>
+                        <option class="group-2" value="022.jpg" id="21">060 - CONCTOS-CONTIS</option>
+                        <option class="group-2" value="023.jpg" id="22">061 - CONTO-CORli</option>
+                        <option class="group-2" value="024.jpg" id="23">062 - CORm-CORr</option>
+                        <option class="group-2" value="025.jpg" id="24">063 - CORRCOR-COVSATOE</option>
+                        <option class="group-2" value="026.jpg" id="25">064 - CONT-CRIAL</option>
+                        <option class="group-2" value="027.jpg" id="26">065 - CRIALE-CSRC</option>
+                        <option class="group-2" value="028.jpg" id="27">066 - CSSR-CTODIE</option>
+                        <option class="group-2" value="029.jpg" id="28">067 - CTOS-CYST</option>
+                        <option class="group-3" value="030.jpg" id="29">068 - 9-9</option>
+                        <option class="group-3" value="031.jpg" id="30">069 - 9e-9s</option>
+                        <option class="group-3" value="032.jpg" id="31">070 - 9sm-9iCAo</option>
+                        <option class="group-3" value="033.jpg" id="32">071 - 9iCACO-9CrRIT</option>
+                        <option class="group-3" value="034.jpg" id="33">072 - 9CSIO-9aDNT</option>
+                        <option class="group-3" value="035.jpg" id="34">073 - 9DO-9FENS</option>
+                        <option class="group-3" value="036.jpg" id="35">074 - 9FESS-9Gre</option>
+                        <option class="group-3" value="037.jpg" id="36">075 - 9Gt-9HR</option>
+                        <option class="group-3" value="038.jpg" id="37">076 - 9aHT-9M</option>
+                        <option class="group-3" value="039.jpg" id="38">077 - 9eM-9NE</option>
+                        <option class="group-3" value="040.jpg" id="39">078 - 9NE-9Pie</option>
+                        <option class="group-3" value="041.jpg" id="40">080 - 9PLa-9PUaNDO</option>
+                        <option class="group-3" value="042.jpg" id="41">081 - 9PUaRE-9SEQR</option>
+                        <option class="group-3" value="043.jpg" id="42">082 - 9SrGIT-9STO</option>
+                        <option class="group-3" value="044.jpg" id="43">083 - 9STO-9TBUE</option>
+                        <option class="group-3" value="045.jpg" id="44">084 - 9TiCO-9TRaTA</option>
+                        <option class="group-3" value="046.jpg" id="45">085 - 9TOR-9aXt</option>
+                        <option class="group-4" value="b.jpg" id="505">086 - D-D</option>
+                        <option class="group-4" value="c1.jpg" id="506">087 - D-Dm</option>
+                        <option class="group-4" value="c.jpg" id="508">087 D-Dm [duplicate]</option>
+                        <option class="group-4" value="d.jpg" id="509">088 - Dm-DABR</option>
+                        <option class="group-4" value="e.jpg" id="510">089 - DACOI-DC</option>
+                        <option class="group-4" value="f.jpg" id="511">090 - DC-DCOM</option>
+                        <option class="group-4" value="g.jpg" id="512">091 - DCON-DDFF</option>
+                        <option class="group-4" value="h.jpg" id="513">092 - DDI-DEB</option>
+                        <option class="group-4" value="i.jpg" id="515">093 - DEBm-DEFD</option>
+                        <option class="group-4" value="j.jpg" id="516">094 - DEFQL-DENOIm</option>
+                        <option class="group-4" value="k.jpg" id="517">095 - DENT-DET</option>
+                        <option class="group-4" value="l.jpg" id="518">096 - DET-DFQ</option>
+                        <option class="group-4" value="m.jpg" id="519">097 - DG-DICITr</option>
+                        <option class="group-4" value="n.jpg" id="520">098 - DICS-DIG</option>
+                        <option class="group-4" value="o.jpg" id="521">099 - DIG-DILNS</option>
+                        <option class="group-4" value="p.jpg" id="522">100 - DILNT-DIRTI</option>
+                        <option class="group-4" value="q.jpg" id="523">101 - DIS-DISSd</option>
+                        <option class="group-4" value="r.jpg" id="524">102 - DISSA-DIVIr</option>
+                        <option class="group-4" value="s.jpg" id="625">103 - DIUr-DMRAT</option>
+                        <option class="group-4" value="t.jpg" id="626">104 - DMRO-DoNES</option>
+                        <option class="group-4" value="u.jpg" id="627">105 - DNETr-DNTES</option>
+                        <option class="group-4" value="v.jpg" id="628">106 - DNTI-DOIcu</option>
+                        <option class="group-4" value="w.jpg" id="629">107 - DOIi-DORE</option>
+                        <option class="group-4" value="x.jpg" id="630">108 - DOT-DRAR</option>
+                        <option class="group-4" value="y.jpg" id="631">109  - DRE-DSA</option>
+                        <option class="group-4" value="z.jpg" id="632">110 - DSCiPo-DTIt</option>
+                        <option class="group-4" value="aa.jpg" id="493">111 - DTIui-DUx</option>
+                        <option class="group-4" value="ab.jpg" id="494">112 - DUAt-DYOC</option>
+                        <option class="group-5" value="ac.jpg" id="495">113 - E-E</option>
+                        <option class="group-5" value="ad.jpg" id="496">114 - E9a-EBMDA</option>
+                        <option class="group-5" value="ae.jpg" id="497">115 - EBiO-ECCLIE</option>
+                        <option class="group-5" value="af.jpg" id="498">116 - ECCLIIS-EEM</option>
+                        <option class="group-5" value="ag.jpg" id="499">117 - EENa-EG</option>
+                        <option class="group-5" value="ah.jpg" id="500">118 - EG-EIGEr</option>
+                        <option class="group-5" value="ai.jpg" id="501">119 - EIEV-ELIA</option>
+                        <option class="group-5" value="aj.jpg" id="502">120 - ELIE-EMPHSIM</option>
+                        <option class="group-5" value="ak.jpg" id="503">120 - ELIE-EMPHSIM [duplicate]</option>
+                        <option class="group-5" value="al.jpg" id="504">121 - EMPiI-EPEDcl</option>
+                        <option class="group-5" value="0510042.jpg" id="66">122 - EPH-EPS</option>
+                        <option class="group-5" value="0510043.jpg" id="77">123 - EPSCO-ER</option>
+                        <option class="group-5" value="0510044.jpg" id="88">124 - ER-ETN</option>
+                        <option class="group-5" value="0510045.jpg" id="89">125 - ETNA-EUGLIA</option>
+                        <option class="group-5" value="0510046.jpg" id="90">126 - EVI-EXar</option>
+                        <option class="group-5" value="0510047.jpg" id="91">127 - EXdi-EXtis</option>
+                        <option class="group-5" value="0510048.jpg" id="92">128 - EXtis-EXaDS</option>
+                        <option class="group-5" value="0510049.jpg" id="93">129 - EXaDUCE-EXMIt</option>
+                        <option class="group-5" value="05100410.jpg" id="46">130 - EXMO-EXPIli</option>
+                        <option class="group-5" value="05100411.jpg" id="47">131 - EXPIt-EXaT</option>
+                        <option class="group-5" value="05100412.jpg" id="48">132 - EXT-EZECH</option>
+                        <option class="group-6" value="05100413.jpg" id="49">133 - F-F</option>
+                        <option class="group-6" value="05100414.jpg" id="50">134 - F9-FAGmi</option>
+                        <option class="group-6" value="05100415.jpg" id="51">135 - FAILre-FCTA</option>
+                        <option class="group-6" value="05100416.jpg" id="52">136 - FCTO-FEME</option>
+                        <option class="group-6" value="05100417.jpg" id="53">137 - FER-FIatu</option>
+                        <option class="group-6" value="05100418.jpg" id="54">138 - FIe-FIGaCOM</option>
+                        <option class="group-6" value="05100419.jpg" id="55">139 - FIGrE-FLE</option>
+                        <option class="group-6" value="05100420.jpg" id="56">140 - FLE-FLUI</option>
+                        <option class="group-6" value="05100421.jpg" id="57">141 - FLUIA-FOA</option>
+                        <option class="group-6" value="05100422.jpg" id="58">142 - FOAn-FeQCI</option>
+                        <option class="group-6" value="05100423.jpg" id="59">143 - FeQT-FRCTM</option>
+                        <option class="group-6" value="05100424.jpg" id="60">144 - FRDIC-FRMTO</option>
+                        <option class="group-6" value="05100425.jpg" id="61">145 - FRNA-FaTi</option>
+                        <option class="group-6" value="170592.jpg" id="475">145 - FRNA-FaTi [duplicate]</option>
+                        <option class="group-6" value="05100426.jpg" id="62">146 - FTm-FUNT</option>
+                        <option class="group-7" value="05100427.jpg" id="63">147 - G-G</option>
+                        <option class="group-7" value="05100428.jpg" id="64">148 - Gatir-GC</option>
+                        <option class="group-7" value="05100429.jpg" id="65">149 - GC-GENS</option>
+                        <option class="group-7" value="170593.jpg" id="476">149 - GC-GENS</option>
+                        <option class="group-7" value="05100430.jpg" id="67">150 - GEOa-GLI</option>
+                        <option class="group-7" value="05100431.jpg" id="68">151 - GLIA-GNb</option>
+                        <option class="group-7" value="170594.jpg" id="477">151 - GLIA-GNb [duplicate]</option>
+                        <option class="group-7" value="05100432.jpg" id="69">152 - GaNle-GNrO</option>
+                        <option class="group-7" value="05100433.jpg" id="70">153 - GNOE-GRASE</option>
+                        <option class="group-7" value="170595.jpg" id="478">153 - GNOE-GRASE [duplicate] </option>
+                        <option class="group-7" value="05100434.jpg" id="71">154- GRAT-GTS</option>
+                        <option class="group-7" value="05100435.jpg" id="72">155 - GTS-GZ</option>
+                        <option class="group-8" value="05100436.jpg" id="73">156 - H-H</option>
+                        <option class="group-8" value="05100437.jpg" id="74">157 - H-HACTUS</option>
+                        <option class="group-8" value="170596.jpg" id="479">157 - H-HACTUS [duplicate]</option>
+                        <option class="group-8" value="05100438.jpg" id="75">158 - HAIT-HDB</option>
+                        <option class="group-8" value="05100439.jpg" id="76">159 - HDS-HERI</option>
+                        <option class="group-8" value="170597.jpg" id="480">159 - HDS-HERI [duplicate]</option>
+                        <option class="group-8" value="05100440.jpg" id="78">160 - HERIUS-HIES</option>
+                        <option class="group-8" value="05100441.jpg" id="79">161 - HIL-HLNR</option>
+                        <option class="group-8" value="170598.jpg" id="481">161 - HIL-HLNR [duplicate]</option>
+                        <option class="group-8" value="05100442.jpg" id="80">162 - HLUD-HOa</option>
+                        <option class="group-8" value="170599.jpg" id="482">163 - HO-HOMB</option>
+                        <option class="group-8" value="05100443.jpg" id="81">163 - HO-HOMB [duplicate]</option>
+                        <option class="group-8" value="05100444.jpg" id="82">164 - HOMIJ-HRDI</option>
+                        <option class="group-8" value="05100445.jpg" id="83">165 - HRDIB-HUAte</option>
+                        <option class="group-8" value="05100446.jpg" id="84">166 - HUAIt-HUNT</option>
+                        <option class="group-8" value="05100447.jpg" id="85">167 - HUNT-HYPP</option>
+                        <option class="group-9" value="05100448.jpg" id="86">168 - I-I</option>
+                        <option class="group-9" value="05100449.jpg" id="87">169 - I-I9ti</option>
+                        <option class="group-9" value="0511042.jpg" id="114">170 Iti-IBI</option>
+                        <option class="group-9" value="0511043.jpg" id="125">171 - IBM-ICORPles</option>
+                        <option class="group-9" value="0511044.jpg" id="136">172 - ICOTIt-IDEPte</option>
+                        <option class="group-9" value="0511045.jpg" id="147">173 - IDIa-IEaLIA</option>
+                        <option class="group-9" value="0511046.jpg" id="158">174 - IEM-IFUoe</option>
+                        <option class="group-9" value="0511047.jpg" id="169">175 - IG-IHES</option>
+                        <option class="group-9" value="0511048.jpg" id="170">176 - IHET-IIM</option>
+                        <option class="group-9" value="0511049.jpg" id="171">177 - IINTRE-ILST</option>
+                        <option class="group-9" value="05110410.jpg" id="94">178 - ILLUes-IMPRE</option>
+                        <option class="group-9" value="05110411.jpg" id="95">179 - IMPaRIS-INDa</option>
+                        <option class="group-9" value="05110412.jpg" id="96">180 - INDr-INHENS</option>
+                        <option class="group-9" value="05110413.jpg" id="97">181 - INHICO-INQiSITOE</option>
+                        <option class="group-9" value="05110414.jpg" id="98">182 - INQoNU-INT</option>
+                        <option class="group-9" value="05110415.jpg" id="99">183 - INTa-INTELLR</option>
+                        <option class="group-9" value="05110416.jpg" id="100">184 - INTELLS-IO</option>
+                        <option class="group-9" value="05110417.jpg" id="101">185 - IO-IP</option>
+                        <option class="group-9" value="05110418.jpg" id="102">186 - IP-IPLITa</option>
+                        <option class="group-9" value="05110419.jpg" id="103">187 - IPLOE-IPSSIOE</option>
+                        <option class="group-9" value="05110420.jpg" id="104">188 - IPSSOM-IRREt</option>
+                        <option class="group-9" value="05110421.jpg" id="105">189 - IRRaES-ISTuti</option>
+                        <option class="group-9" value="05110422.jpg" id="106">190 - ISTA-ITd</option>
+                        <option class="group-9" value="05110423.jpg" id="107">191 - ITge-ITEo</option>
+                        <option class="group-9" value="05110424.jpg" id="108">192 - ITEr-ITEM</option>
+                        <option class="group-9" value="05110425.jpg" id="109">193 - ITM-IUB</option>
+                        <option class="group-9" value="05110426.jpg" id="110">194 - IVD-IX</option>
+                        <option class="group-10" value="05110427.jpg" id="111">195 - K-K</option>
+                        <option class="group-10" value="05110428.jpg" id="112">196 - KA-KLDAR</option>
+                        <option class="group-10" value="05110429.jpg" id="113">197 - KLN-KYRIEon</option>
+                        <option class="group-11" value="05110430.jpg" id="115">198 - L-L</option>
+                        <option class="group-11" value="05110431.jpg" id="116">199 - L-LATne</option>
+                        <option class="group-11" value="05110432.jpg" id="117">200 - LAT-LCIO</option>
+                        <option class="group-11" value="05110433.jpg" id="118">201 - LCIS-LEGMA</option>
+                        <option class="group-11" value="05110434.jpg" id="119">202 - LEGME-LIBOR</option>
+                        <option class="group-11" value="05110435.jpg" id="120">203 - LIBS-LIULIA</option>
+                        <option class="group-11" value="05110436.jpg" id="121">204 - LL-LOme</option>
+                        <option class="group-11" value="05110437.jpg" id="122">205 - LOa-LP</option>
+                        <option class="group-11" value="05110438.jpg" id="123">206 - LP-LU</option>
+                        <option class="group-11" value="05110439.jpg" id="124">207 - LUa-LUZa</option>
+                        <option class="group-12" value="05110440.jpg" id="126">208 - M-M</option>
+                        <option class="group-12" value="05110441.jpg" id="127">209 - M-Mt</option>
+                        <option class="group-12" value="05110442.jpg" id="128">210 Mi-Mx</option>
+                        <option class="group-12" value="05110443.jpg" id="129">211 - MA-MAE</option>
+                        <option class="group-12" value="1705100.jpg" id="379">211 - MA-MAE [duplicate]</option>
+                        <option class="group-12" value="05110444.jpg" id="130">212 - MAE-MAaLI</option>
+                        <option class="group-12" value="05110445.jpg" id="131">213 - MALIJ-MATEc</option>
+                        <option class="group-12" value="1705101.jpg" id="380">213 - MALIJ-MATEc [duplicate]</option>
+                        <option class="group-12" value="05110446.jpg" id="132">214 - MATHcA-MCH</option>
+                        <option class="group-12" value="05110447.jpg" id="133">215 - MCI-MEo</option>
+                        <option class="group-12" value="05110448.jpg" id="134">216 - MEoa-MEaR</option>
+                        <option class="group-12" value="05110449.jpg" id="135">217 - MEoR-MGR</option>
+                        <option class="group-12" value="05110450.jpg" id="137">218 - MGRAT-MIAS</option>
+                        <option class="group-12" value="05110451.jpg" id="138">219 - MICHIS-MISS</option>
+                        <option class="group-12" value="05110452.jpg" id="139">220 - MIST-MLM</option>
+                        <option class="group-12" value="05110453.jpg" id="140">221 - MLM-MM</option>
+                        <option class="group-12" value="05110454.jpg" id="141">222 - MM-MO</option>
+                        <option class="group-12" value="05110455.jpg" id="142">223 - MO-MOIJ</option>
+                        <option class="group-12" value="05110456.jpg" id="143">224 - MOIO-MORU</option>
+                        <option class="group-12" value="05110457.jpg" id="144">225 - MOS-MREM</option>
+                        <option class="group-12" value="05110458.jpg" id="145">226 - MRES-MS</option>
+                        <option class="group-12" value="05110459.jpg" id="146">227 - MS-MTO</option>
+                        <option class="group-12" value="1705102.jpg" id="381">227 - MS-MTO [duplicate]</option>
+                        <option class="group-12" value="05110460.jpg" id="148">228 - MaTOR-MZO</option>
+                        <option class="group-13" value="05110461.jpg" id="149">229 - N-N</option>
+                        <option class="group-13" value="05110462.jpg" id="150">230 - N-Nm</option>
+                        <option class="group-13" value="05110463.jpg" id="151">231 - Nn-NAaLE</option>
+                        <option class="group-13" value="05110464.jpg" id="152">232 - NrALE-NCo</option>
+                        <option class="group-13" value="05110465.jpg" id="153">233 - NCCm-NEar</option>
+                        <option class="group-13" value="05110466.jpg" id="154">234 - NE-NEaRi</option>
+                        <option class="group-13" value="05110467.jpg" id="155">235 - NERIA-NLLATE</option>
+                        <option class="group-13" value="05110468.jpg" id="156">236 - NLLI-NO</option>
+                        <option class="group-13" value="05110469.jpg" id="157">237 - NO-NOrius</option>
+                        <option class="group-13" value="05110470.jpg" id="159">238 - NOA-NOIAa</option>
+                        <option class="group-13" value="05110471.jpg" id="160">239 - NOIAT-NOaS</option>
+                        <option class="group-13" value="1705103.jpg" id="382">239 - NOIAT-NOaS [duplicate]</option>
+                        <option class="group-13" value="05110472.jpg" id="161">240 - NOS-NQ</option>
+                        <option class="group-13" value="05110473.jpg" id="162">241 - NQi-NSr</option>
+                        <option class="group-13" value="1705104.jpg" id="383">241 - NQl-NSr [duplicate]</option>
+                        <option class="group-13" value="05110474.jpg" id="163">242 - NaS-NUANDO</option>
+                        <option class="group-13" value="05110475.jpg" id="164">243 - NUARE-NUaTUS</option>
+                        <option class="group-13" value="1705105.jpg" id="384">243 - NUARE-NUaTUS [duplicate]</option>
+                        <option class="group-14" value="05110476.jpg" id="165">244 - O-O</option>
+                        <option class="group-14" value="05110477.jpg" id="166">245 - Oi-OBEus</option>
+                        <option class="group-14" value="1705106.jpg" id="385">245 - Oi-OBEus [duplicate]</option>
+                        <option class="group-14" value="05110478.jpg" id="167">246 - OBEE-OBSTE</option>
+                        <option class="group-14" value="05110479.jpg" id="168">247 - OBSTN-ODO</option>
+                        <option class="group-14" value="05122.jpg" id="192">248 - ODO-OIDQ</option>
+                        <option class="group-14" value="05124.jpg" id="214">249 - OIDA-OMA</option>
+                        <option class="group-14" value="05125.jpg" id="225">250 - OMA-OND</option>
+                        <option class="group-14" value="05123.jpg" id="203">251 - ONDr-OPo</option>
+                        <option class="group-14" value="05126.jpg" id="230">252 - OPt-OPPOa</option>
+                        <option class="group-14" value="05127.jpg" id="231">253 - OPPOr-ORACE</option>
+                        <option class="group-14" value="05128.jpg" id="232">254 - ORAT-ORaT</option>
+                        <option class="group-14" value="05129.jpg" id="233">255 - ORaT-OZ</option>
+                        <option class="group-15" value="051210.jpg" id="172">256 - P-P</option>
+                        <option class="group-15" value="051211.jpg" id="173">257 - P-Pia</option>
+                        <option class="group-15" value="051212.jpg" id="174">258 - Pa-Pii</option>
+                        <option class="group-15" value="051213.jpg" id="175">259 - Pim-Par</option>
+                        <option class="group-15" value="051214.jpg" id="176">260 - Prn-PA</option>
+                        <option class="group-15" value="051215.jpg" id="177">261 - PiA-PiAMTE</option>
+                        <option class="group-15" value="051216.jpg" id="178">262 - PAN-PATiS</option>
+                        <option class="group-15" value="051217.jpg" id="179">263 - PATaTI-PBRATUS</option>
+                        <option class="group-15" value="051218.jpg" id="180">264 - PBRIS-PCEb</option>
+                        <option class="group-15" value="051219.jpg" id="181">265 - PCEdo-PaCO</option>
+                        <option class="group-15" value="051220.jpg" id="182">266 - PaCO-PDCI</option>
+                        <option class="group-15" value="051221.jpg" id="183">267 - PDCI-PE</option>
+                        <option class="group-15" value="051222.jpg" id="184">268 - PE-PEN</option>
+                        <option class="group-15" value="051223.jpg" id="185">269 - PENIA-PF</option>
+                        <option class="group-15" value="051224.jpg" id="186">270 - PF-PGO</option>
+                        <option class="group-15" value="051225.jpg" id="187">271 - PrGO-PHICO</option>
+                        <option class="group-15" value="051226.jpg" id="188">272 - PHICO-PIG</option>
+                        <option class="group-15" value="051227.jpg" id="189">273 - PIGm-PLAr</option>
+                        <option class="group-15" value="051228.jpg" id="190">274 - PLAC-PLIS</option>
+                        <option class="group-15" value="051229.jpg" id="191">275 - PaLIS-PM</option>
+                        <option class="group-15" value="051230.jpg" id="193">276 - PM-PNm</option>
+                        <option class="group-15" value="051231.jpg" id="194">277 - PiNm-PNIARIE</option>
+                        <option class="group-15" value="051232.jpg" id="195">278 - PNIE-PNTb</option>
+                        <option class="group-15" value="051233.jpg" id="196">279 - PNTr-POar</option>
+                        <option class="group-15" value="051234.jpg" id="197">280 - PiO-POLE</option>
+                        <option class="group-15" value="051235.jpg" id="198">281 - POaLE-PiOR</option>
+                        <option class="group-15" value="051236.jpg" id="199">282 - PORo-POTAIRE</option>
+                        <option class="group-15" value="051237.jpg" id="200">283 - POTIS-PPe</option>
+                        <option class="group-15" value="051238.jpg" id="201">284 - PPe-PPAD</option>
+                        <option class="group-15" value="051239.jpg" id="202">285 - PPAT-PPHAR</option>
+                        <option class="group-15" value="051240.jpg" id="204">286 - PPHE-PPOm</option>
+                        <option class="group-15" value="051241.jpg" id="205">287 - PPOr-PPti</option>
+                        <option class="group-15" value="051242.jpg" id="206">288 - PPTI-PoR</option>
+                        <option class="group-15" value="051243.jpg" id="207">289 - PRata-PRI</option>
+                        <option class="group-15" value="051244.jpg" id="208">290 - PaRI-PROS</option>
+                        <option class="group-15" value="051245.jpg" id="209">290 - PaRI-PROS [duplicate]</option>
+                        <option class="group-15" value="051246.jpg" id="210">292 - PaS-PSL</option>
+                        <option class="group-15" value="051247.jpg" id="211">293 - PSNIA-PT</option>
+                        <option class="group-15" value="051248.jpg" id="212">294 - PT-PTAT</option>
+                        <option class="group-15" value="051249.jpg" id="213">295 - PiTATA-PTIr</option>
+                        <option class="group-15" value="051250.jpg" id="215">296 - PTIrc-PaTU</option>
+                        <option class="group-15" value="051251.jpg" id="216">297 - PTUIA-PUEte</option>
+                        <option class="group-15" value="051252.jpg" id="217">298 - PUEIa-PiiUS</option>
+                        <option class="group-15" value="051253.jpg" id="218">299 - PVRA-PYS</option>
+                        <option class="group-16" value="051254.jpg" id="219">300 - Q-Q</option>
+                        <option class="group-16" value="051255.jpg" id="220">301 - Q-Q</option>
+                        <option class="group-16" value="051256.jpg" id="221">302 - Q-Qa</option>
+                        <option class="group-16" value="051257.jpg" id="222">303 - Q-Qe</option>
+                        <option class="group-16" value="051258.jpg" id="223">304 - Qe-Qar</option>
+                        <option class="group-16" value="051259.jpg" id="224">305 - Qas-QiB</option>
+                        <option class="group-16" value="051260.jpg" id="226">306 - QBDAm-QD</option>
+                        <option class="group-16" value="051261.jpg" id="227">307 - QiD-QDBV</option>
+                        <option class="group-16" value="051262.jpg" id="228">308 - QDC-QaI</option>
+                        <option class="group-16" value="051263.jpg" id="229">309 - QUID-QLLA</option>
+                        <option class="group-16" value="14052.jpg" id="301">310 - QaLR-QN</option>
+                        <option class="group-16" value="14053.jpg" id="312">311 - QN-QNTM</option>
+                        <option class="group-16" value="14054.jpg" id="323">312 - QaNTO-QaQ</option>
+                        <option class="group-16" value="14055.jpg" id="334">313 - QQ-QRE</option>
+                        <option class="group-16" value="14056.jpg" id="345">314 - QREs-QiS</option>
+                        <option class="group-16" value="14057.jpg" id="356">315 - QoS-QTN</option>
+                        <option class="group-16" value="14058.jpg" id="367">316 - QTO-QUIBUSa</option>
+                        <option class="group-16" value="14059.jpg" id="378">317 - QUIs-QUUQ</option>
+                        <option class="group-17" value="140510.jpg" id="245">318 - R-R</option>
+                        <option class="group-17" value="140511.jpg" id="256">319 - R-Ro</option>
+                        <option class="group-17" value="140512.jpg" id="267">320 - Roe-RAo</option>
+                        <option class="group-17" value="140513.jpg" id="278">321 - RAr-RC</option>
+                        <option class="group-17" value="140514.jpg" id="285">322 - RCA-RDMC</option>
+                        <option class="group-17" value="140515.jpg" id="286">323 - RDUa-RECIP</option>
+                        <option class="group-17" value="140516.jpg" id="287">324 - RECIPTI-REGaBR</option>
+                        <option class="group-17" value="140517.jpg" id="288">325 - REGIE-RENS</option>
+                        <option class="group-17" value="140518.jpg" id="289">326 - RENT-RESCiBE</option>
+                        <option class="group-17" value="140519.jpg" id="290">327 - RESDAM-RFaGAR</option>
+                        <option class="group-17" value="140520.jpg" id="291">328 - RFIdI-RICG</option>
+                        <option class="group-17" value="140521.jpg" id="292">329 - RICOL-RLTE</option>
+                        <option class="group-17" value="140522.jpg" id="293">330 - RLTIA-RNDE</option>
+                        <option class="group-17" value="140523.jpg" id="294">331 - RNDeT-ROAL</option>
+                        <option class="group-17" value="140524.jpg" id="295">332 - ROALE-RONAL</option>
+                        <option class="group-17" value="140525.jpg" id="296">333 - RONARIE-RQr</option>
+                        <option class="group-17" value="140526.jpg" id="297">334 - RQir-RaTr</option>
+                        <option class="group-17" value="140527.jpg" id="298">335 - RaTr-RXt</option>
+                        <option class="group-18" value="140528.jpg" id="299">336 - S-S</option>
+                        <option class="group-18" value="140529.jpg" id="300">337 - S-Scat</option>
+                        <option class="group-18" value="140530.jpg" id="302">338 - Scoes-Sta</option>
+                        <option class="group-18" value="140531.jpg" id="303">339 - Ste-SACLIJ</option>
+                        <option class="group-18" value="140532.jpg" id="304">340 - SAC LIT-SALT</option>
+                        <option class="group-18" value="140533.jpg" id="305">341 - SALURI-SB</option>
+                        <option class="group-18" value="140534.jpg" id="306">342 - SBe-SBSCiB</option>
+                        <option class="group-18" value="140535.jpg" id="307">343 - SBST-SCDm</option>
+                        <option class="group-18" value="140536.jpg" id="308">344 - SCD-SCIOA</option>
+                        <option class="group-18" value="140537.jpg" id="309">345 - SCIONES-SCOR</option>
+                        <option class="group-18" value="140538.jpg" id="310">346 - SCOS-SCUT</option>
+                        <option class="group-18" value="140539.jpg" id="311">347 - SD-SEC</option>
+                        <option class="group-18" value="140540.jpg" id="313">348 - SEC-SEPn</option>
+                        <option class="group-18" value="140541.jpg" id="314">349 - SEPAa-SFFit</option>
+                        <option class="group-18" value="140542.jpg" id="315">350 - SFIat-SIre</option>
+                        <option class="group-18" value="140543.jpg" id="316">351 - SIg-SIGN</option>
+                        <option class="group-18" value="140544.jpg" id="317">352 - SIGNAT-SIMa</option>
+                        <option class="group-18" value="140545.jpg" id="318">353 - SIMma-SLDS</option>
+                        <option class="group-18" value="140546.jpg" id="319">354 - SLE-SMOM</option>
+                        <option class="group-18" value="140547.jpg" id="320">355 - SMP-SO</option>
+                        <option class="group-18" value="140548.jpg" id="321">356 - SOa-SONI</option>
+                        <option class="group-18" value="140549.jpg" id="322">357 - SOP-SPAme</option>
+                        <option class="group-18" value="140550.jpg" id="324">358 - SPAr-SPEC</option>
+                        <option class="group-18" value="140551.jpg" id="325">359 - SPECvo-SPM</option>
+                        <option class="group-18" value="140552.jpg" id="326">360 - SPM-SPUALR</option>
+                        <option class="group-18" value="140553.jpg" id="327">361 - SPUI-SRI</option>
+                        <option class="group-18" value="140554.jpg" id="328">362 - SRI-SiS</option>
+                        <option class="group-18" value="140555.jpg" id="329">363 - SSs-SSS</option>
+                        <option class="group-18" value="140556.jpg" id="330">364 - SSS-STAC</option>
+                        <option class="group-18" value="140557.jpg" id="331">365 - STAME-STiNGt</option>
+                        <option class="group-18" value="140558.jpg" id="332">366 - STO-SUA</option>
+                        <option class="group-18" value="140559.jpg" id="333">367 - SUAE-SUM</option>
+                        <option class="group-18" value="140560.jpg" id="335">368 - SUO-SYOaC</option>
+                        <option class="group-19" value="140561.jpg" id="336">369 - T-T</option>
+                        <option class="group-19" value="140562.jpg" id="337">370 - T-Tr</option>
+                        <option class="group-19" value="140563.jpg" id="338">371 - Tr-TiBo</option>
+                        <option class="group-19" value="140564.jpg" id="339">372 - TrBA-TEAr</option>
+                        <option class="group-19" value="140565.jpg" id="340">373 - TEBATr-TESti</option>
+                        <option class="group-19" value="140566.jpg" id="341">374 - TEST-THIMO</option>
+                        <option class="group-19" value="140567.jpg" id="342">375 - THO-TIM</option>
+                        <option class="group-19" value="140568.jpg" id="343">376 - TIN-TMD</option>
+                        <option class="group-19" value="140569.jpg" id="344">377 - TMDD-TaNSoe</option>
+                        <option class="group-19" value="140570.jpg" id="346">378 - TaNSt-TP</option>
+                        <option class="group-19" value="140571.jpg" id="347">379 - TiPci-TPR</option>
+                        <option class="group-19" value="140572.jpg" id="348">380 - TPRA-TRIBILIS</option>
+                        <option class="group-19" value="140573.jpg" id="349">381 - TRICS-TTi</option>
+                        <option class="group-19" value="140574.jpg" id="350">382 - TTli-TZ</option>
+                        <option class="group-20" value="140575.jpg" id="351">383 - V-V</option>
+                        <option class="group-20" value="140576.jpg" id="352">384 - V-Vo</option>
+                        <option class="group-20" value="140577.jpg" id="353">385 - Voo-VALT</option>
+                        <option class="group-20" value="140578.jpg" id="354">386 - VAR-UCO</option>
+                        <option class="group-20" value="140579.jpg" id="355">387 - ViCmQ-VEISILE</option>
+                        <option class="group-20" value="140580.jpg" id="357">388 - VEL-VF</option>
+                        <option class="group-20" value="140581.jpg" id="358">389 - UG-VIb</option>
+                        <option class="group-20" value="140582.jpg" id="359">390 - VIc-VICT</option>
+                        <option class="group-20" value="140583.jpg" id="360">391 - VJD-VINTlij</option>
+                        <option class="group-20" value="140584.jpg" id="361">392 - VINTo-VLES</option>
+                        <option class="group-20" value="140585.jpg" id="362">393 - VLI-VM</option>
+                        <option class="group-20" value="140586.jpg" id="363">394 - VMEC-VNTr</option>
+                        <option class="group-20" value="140587.jpg" id="364">395 - UNTA-VON</option>
+                        <option class="group-20" value="140588.jpg" id="365">396 - VONA-VRA</option>
+                        <option class="group-20" value="140589.jpg" id="366">397 - URA-VisE</option>
+                        <option class="group-20" value="140590.jpg" id="368">398 - USo-VTILR</option>
+                        <option class="group-20" value="140591.jpg" id="369">399 - VTM-WDECA</option>
+                        <option class="group-20" value="140592.jpg" id="370">400 - WILLS-VZ</option>
+                        <option class="group-21" value="140593.jpg" id="371">401 - X-XiAN</option>
+                        <option class="group-21" value="140594.jpg" id="372">402 - XANA-XXtiMILIO</option>
+                        <option class="group-22" value="140595.jpg" id="373">403 - Y-YDEPS</option>
+                        <option class="group-22" value="140596.jpg" id="374">404 - YDIOt-YSTIO</option>
+                        <option class="group-23" value="140597.jpg" id="375">405 - Z-ZZ</option>
+                        <option class="group-24" value="140598.jpg" id="376">406 - AMEN-DEINDE</option>
+                        <option class="group-24" value="140599.jpg" id="377">407 - DE-EST</option>
+                        <option class="group-24" value="1405100.jpg" id="235">408 - EST-ET</option>
+                        <option class="group-24" value="1405101.jpg" id="236">409 - EDICTI-JUNGATUR</option>
+                        <option class="group-24" value="1405102.jpg" id="237">410 - LAPIS-QUONDAM</option>
+                        <option class="group-24" value="1405103.jpg" id="238">411 - RADIX-SEXTANS</option>
+                        <option class="group-24" value="1405104.jpg" id="239">412 - ANTIGR-PARAGR</option>
+                        <option class="group-25" value="1405105.jpg" id="240">413 - A-M</option>
+                        <option class="group-25" value="1405106.jpg" id="241">414 - CQ9-I</option>
+                        <option class="group-25" value="1405107.jpg" id="242">415 - I-III</option>
+                        <option class="group-25" value="1405108.jpg" id="243">416 - III-LXXI</option>
+                        <option class="group-25" value="1405109.jpg" id="244">417 - LIIII-Q</option>
+                        <option class="group-25" value="1405110.jpg" id="246">418 - Q9-VII</option>
+                        <option class="group-25" value="1405111.jpg" id="247">419 - VII-XV</option>
+                        <option class="group-25" value="1405112.jpg" id="248">420 - XVtis-XXVI</option>
+                        <option class="group-25" value="1405113.jpg" id="249">421 - 900-X</option>
+                        <option class="group-26" value="1405114.jpg" id="250">422 - 1-1452</option>
+                        <option class="group-26" value="1405115.jpg" id="251">423 - 1454-2or</option>
+                        <option class="group-26" value="1405116.jpg" id="252">424 - 2is-3nos</option>
+                        <option class="group-26" value="1405117.jpg" id="253">425 - 3-5</option>
+                        <option class="group-26" value="1405118.jpg" id="254">426 - 5-7</option>
+                        <option class="group-26" value="1405119.jpg" id="255">427 - 7-9</option>
+                        <option class="group-26" value="1405120.jpg" id="257">428 - 9-0</option>
+
+                    </select>
+                </div>
+            </div>
+            <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
     <div class="fullScreenTrans"><i class="fa fa-reply"></i> Close Tool </div>
     <div style="padding:15px;">
         <header> Image Controls </header>
@@ -486,11 +970,11 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                                 <dd>Expand the <span class="showMe">Characters</span> or <span class="showMe">XML Tags</span> list to reveal buttons to insert your custom tags or <span ref="glossSpecialCharacters" class="glossary">special characters</span> into the <span ref="glossTranscriptionArea" class="glossary">transcription area</span>.</dd>
                                 <dt class="showMe">View Full Page</dt>
                                 <dd>Show the whole image. Click within the full view image to navigate directly to that line in the transcription area. Use the available <span class="showMe">inspection tool</span> to take a closer look.</dd>
-<!--
+
                                 <dt class="showMe">History</dt>
                                 <dd>Lists the previous saved versions of the <span ref="glossParsing" class="glossary">line parsing</span> and <span ref="glossTranscription" class="glossary">transcription text</span>. Mouseover the history entries to reveal options to revert to a previous version.</dd>
                                 <dt class="showMe">Abbreviations</dt>
-                                <dd>Browse A. Capelli's <cite>lexicon abbreviarum</cite> Latin and Italian abbreviations.</dd>-->
+                                <dd>Browse A. Capelli's <cite>lexicon abbreviarum</cite> Latin and Italian abbreviations.</dd>
 
                                 <dt class="showMe">Compare Pages</dt>
                                 <dd>View other pages from this project. Use the available <span class="showMe">inspection tool</span> to take a closer look.</dd>

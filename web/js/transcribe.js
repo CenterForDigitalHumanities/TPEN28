@@ -3403,10 +3403,14 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
         });
     }
     else{ 
-        //Its because I changed the page or something, I only need to worry about the active line, everything else is GUARANTEED to be updated. There are no positional changes. 
-        var activeLineID = $(".activeLine").attr("lineid");
-        var transcriptlet = $("#transcriptlet_"+activeLineID);
-        updateLine(transcriptlet, false, false);
+        //Its because I am exiting by going to a link or something, do a batch update on the dereferenced list.
+        //Will this finish before the page exit?  This worked before with the bulk updater.  The bulk updater from T-PEN classic does not update text, and we need that here.
+        //If it does not finish, we need to write a new bulk updater for T-PEN that will work with the SQL db that includes updating the line text. . 
+        var transcriptlets = $(".transcriptlet");
+        $.each(transcriptlets, function(){
+            var line = $(this); 
+            updateLine(line, false, false);
+        });
     }
 
     //Now that all the resources are edited, update the list.

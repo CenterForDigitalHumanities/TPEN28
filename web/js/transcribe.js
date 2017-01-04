@@ -5224,7 +5224,7 @@ tpen.screen.peekZoom = function(cancel){
     $("#abbrevGroups").change(function(){
         $("#abbrevSplit").addClass("ui-state-disabled");
         $("#abbrevLabels option").remove();
-        tpen.screen.abbrevLabelsAll.children(".group"+$("#abbrevGroups option:selected").val()).clone(true).appendTo("#abbrevLabels");
+        tpen.screen.abbrevLabelsAll.children(".group-"+$("#abbrevGroups option:selected").val()).clone(true).appendTo("#abbrevLabels");
         $("#abbrevLabels").removeAttr("disabled");
         $("#abbrevSplit").removeClass("ui-state-disabled");
         $("#abbrevLabels option:first").attr("selected",true);

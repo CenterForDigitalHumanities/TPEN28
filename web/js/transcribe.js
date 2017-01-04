@@ -1165,13 +1165,9 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
     else if((canvasObj.otherContent[0] !== undefined && canvasObj.otherContent[0].resources !== undefined && canvasObj.otherContent[0].resources.length > 0)){
         //This is TPEN 2.8 using the SQL
         //This situation means we got our lines from the SQL and there is no need to query the store.
-        for (var i = 0; i < canvasObj.otherContent[0].resources.length; i++) {
-            if (isJSON(canvasObj.otherContent[0].resources[i])) {   // it is directly an annotation
-                lines.push(canvasObj.otherContent[0].resources[i]);
-            }
-        }
         tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
-        linesToScreen(lines, tool);
+        drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
+        //linesToScreen(lines, tool);
     }
     else {
         throw new Error("Your annotation data is in an unsupported format and cannot be used with this tanscription service.");

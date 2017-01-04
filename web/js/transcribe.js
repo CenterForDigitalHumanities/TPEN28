@@ -2413,7 +2413,6 @@ function fullPage(){
     if ($("#trascriptionTemplate").hasClass("ui-resizable")){
         $("#transcriptionTemplate").resizable('destroy');
     }
-    $("#splitScreenTools").removeAttr("disabled");
     $("#splitScreenTools").find('option:eq(0)').prop("selected", true);
     $("#transcriptionCanvas").css("width", "100%");
     $("#transcriptionCanvas").css("height", "auto"); //Need a real height here, it can't be auto.  It needs to be the height of the image.
@@ -2497,7 +2496,6 @@ function splitPage(event, tool) {
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
-    $("#splitScreenTools").attr("disabled", "disabled");
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
     if(tool)
     $("#transcriptionCanvas").css({

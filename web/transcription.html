@@ -706,6 +706,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
          $("#splitScreenTools").on("change",function(event){
             var a = $(this).find("option:selected");
             var b = a.attr("splitter");
+            fullPage();
             splitPage(event,b);
         });
 

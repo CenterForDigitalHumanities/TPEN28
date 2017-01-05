@@ -2419,7 +2419,6 @@ function fullPage(){
     if ($("#trascriptionTemplate").hasClass("ui-resizable")){
         $("#transcriptionTemplate").resizable('destroy');
     }
-    $("#splitScreenTools").removeAttr("disabled");
     $("#splitScreenTools").find('option:eq(0)').prop("selected", true);
     $("#transcriptionCanvas").css("width", "100%");
     $("#transcriptionCanvas").css("height", "auto"); //Need a real height here, it can't be auto.  It needs to be the height of the image.
@@ -2504,7 +2503,6 @@ function splitPage(event, tool) {
     }
     
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
-    $("#splitScreenTools").attr("disabled", "disabled");
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
     if(tool)
     $("#transcriptionCanvas").css({
@@ -5703,6 +5701,20 @@ tpen.screen.peekZoom = function(cancel){
         }
     }
 }
+    tpen.screen.abbrevLabelsAll = $("#abbrevLabels").clone();
+    $("#abbrevGroups").change(function(){
+        $("#abbrevSplit").addClass("ui-state-disabled");
+        $("#abbrevLabels option").remove();
+        tpen.screen.abbrevLabelsAll.children(".group-"+$("#abbrevGroups option:selected").val()).clone(true).appendTo("#abbrevLabels");
+        $("#abbrevLabels").removeAttr("disabled");
+        $("#abbrevSplit").removeClass("ui-state-disabled");
+        $("#abbrevLabels option:first").attr("selected",true);
+        $("#abbrevLabels").change();
+    });
+    $("#abbrevLabels").change(function(){
+        $("#abbrevImg").attr("src","//t-pen.org/images/cappelli/"+$(this).val());
+    });
+
 
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?

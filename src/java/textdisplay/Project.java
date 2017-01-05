@@ -467,7 +467,7 @@ public class Project {
       String toret = new Metadata(this.projectID).getTitle();
  //     System.out.println("metadata from project "+this.projectID+". title must have a value or it will use project name: "+toret);
       if (toret.compareTo("") == 0) {
-          System.out.println("non title, gotta get name: "+this.projectName);
+          //System.out.println("non title, gotta get name: "+this.projectName);
          toret = this.projectName;
          if (toret == null || toret.compareTo("") == 0) {
             toret = "unknown project";
@@ -678,7 +678,7 @@ public class Project {
       //if (containsUserUploadedManuscript()) {
       //   throw new Exception("Cannot copy a project with user uploaded images!");
       //}
-      System.out.println("Creating a project template from "+projectName);
+      //System.out.println("Creating a project template from "+projectName);
       Group g = new Group(conn, projectName, leaderUID);
       int groupID = this.getGroupID();
       //find group leaders from template group, and if they are not in the new group, add them into new group. 
@@ -696,8 +696,8 @@ public class Project {
       p.copyButtonsFromProject(conn, this);
       p.copyHotkeysFromProject(conn, this);
       p.setSchemaURL(conn, getSchemaURL());
-      System.out.println("Done.  What is the ID:  "+p.projectID);
-      System.out.println("Get project id method: "+p.getProjectID());
+      //System.out.println("Done.  What is the ID:  "+p.projectID);
+      //System.out.println("Get project id method: "+p.getProjectID());
 
       try (PreparedStatement selectStmt = conn.prepareStatement("select * from transcription where projectID=?")) {
          selectStmt.setInt(1, projectID);
@@ -904,7 +904,7 @@ public class Project {
       String query = "select remainingText  from linebreakingtext where projectID=?";
       Connection j = null;
       PreparedStatement ps = null;
-      System.out.println("Get linebreaking text for "+projectID+"!");
+      //System.out.println("Get linebreaking text for "+projectID+"!");
       try {
          j = DatabaseWrapper.getConnection();
          ps = j.prepareStatement(query);
@@ -915,8 +915,8 @@ public class Project {
             if (toret.length() > this.linebreakCharacterLimit) {
                return ESAPI.encoder().encodeForHTML(toret.substring(0, this.linebreakCharacterLimit));
             }
-            System.out.println("Found linebreaking text!");
-            System.out.println(toret);
+            //System.out.println("Found linebreaking text!");
+            //System.out.println(toret);
             return toret;
          } else {
              System.out.println("No linebreaking text found");

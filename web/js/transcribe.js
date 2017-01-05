@@ -115,15 +115,21 @@ function scrubNav(){
 
 /* Load the interface to the first page of the manifest. */
 function firstFolio () {
-    Data.saveTranscription(""); //Are we sure we need this here?  It should already be updated and saved....
+    //By updating the active line, we have GUARANTEED everything is saved.  No batch update necessary.
     tpen.screen.currentFolio = 0;
+    var activeLineID = $(".activeLine").attr("lineid");
+    var transcriptlet = $("#transcriptlet_"+activeLineID);
+    updateLine(transcriptlet, false, false);
     redraw("");
 }
 
 /* Load the interface to the last page of the manifest. */
 function lastFolio(){
-    Data.saveTranscription(""); //Are we sure we need this here?  It should already be updated and saved....
+    //By updating the active line, we have GUARANTEED everything is saved.  No batch update necessary.
     tpen.screen.currentFolio = tpen.manifest.sequences[0].canvases.length - 1;
+    var activeLineID = $(".activeLine").attr("lineid");
+    var transcriptlet = $("#transcriptlet_"+activeLineID);
+    updateLine(transcriptlet, false, false);
     redraw("");
 }
 /* Load the interface to the previous page from the one you are on. */
@@ -131,17 +137,22 @@ function previousFolio (parsing) {
     if (tpen.screen.currentFolio === 0) {
         throw new Error("You are already on the first page.");
     }
-    //Data.saveTranscription(); //Are we sure we need this here?  It should already be updated and saved....
-    tpen.screen.currentFolio--;
+    //By updating the active line, we have GUARANTEED everything is saved.  No batch update necessary.
+    var activeLineID = $(".activeLine").attr("lineid");
+    var transcriptlet = $("#transcriptlet_"+activeLineID);
+    updateLine(transcriptlet, false, false);
     redraw("");
 }
 
 /* Load the interface to the next page from the one you are on. */
-function nextFolio (parsing) {
+function nextFolio(parsing) {
+    //By updating the active line, we have GUARANTEED everything is saved.  No batch update necessary.
     if (tpen.screen.currentFolio >= tpen.manifest.sequences[0].canvases.length - 1) {
         throw new Error("That page is beyond the last page.");
     }
-    //Data.saveTranscription(); //Are we sure we need this here?  It should already be updated and saved....
+    var activeLineID = $(".activeLine").attr("lineid");
+    var transcriptlet = $("#transcriptlet_"+activeLineID);
+    updateLine(transcriptlet, false, false);
     tpen.screen.currentFolio++;
     redraw("");
 }
@@ -1117,78 +1128,123 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
 /*
  * @paran canvasObj  A canvas object to extract transcription lines from and draw to the interface.
  * @param parsing boolean if parsing is live tool
+ * Here, we are planning to draw the lines to the transcription canvas.  We must checking which version of the project this is for.  
+ * Some versions check an SQL DB, some hit the annotation store.  We know which version it is by where the lines are with the canvas.
  */
-function drawLinesToCanvas (canvasObj, parsing, tool) {
+function drawLinesToCanvas(canvasObj, parsing, tool) {
     var lines = [];
-    var currentFolio = parseInt(tpen.screen.currentFolio);
-    if (canvasObj.resources !== undefined
-        && canvasObj.resources.length > 0) {
-        for (var i = 0; i < canvasObj.resources.length; i++) {
-            if (isJSON(canvasObj.resources[i])) {   // it is directly an annotation
-                lines.push(canvasObj.resources[i]);
-            }
-        }
-        linesToScreen(lines, tool);
+//    var currentFolio = parseInt(tpen.screen.currentFolio);
+    if ((canvasObj.resources !== undefined && canvasObj.resources.length > 0)) {
+        //This situation means we got our lines from the SQL and there is no need to query the store.  This is TPEN 1.0
+//        for (var i = 0; i < canvasObj.resources.length; i++) {
+//            if (isJSON(canvasObj.resources[i])) {   // it is directly an annotation
+//                lines.push(canvasObj.resources[i]);
+//            }
+//        }
+//        tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
+//        linesToScreen(lines, tool);
+        throw new Error("Your annotation data is in an unsupported format and cannot be used with this tanscription service.");
+        //TODO what should we do with the interface?  Is this OK?
+        $("#transTemplateLoading")
+            .hide();
+        $("#transcriptionTemplate")
+            .show();
+        $('#transcriptionCanvas')
+            .css('height', $("#imgTop img")
+                .height() + "px");
+        $('.lineColIndicatorArea')
+            .css('height', $("#imgTop img")
+                .height() + "px");
+        $("#imgTop")
+            .css("height", "0%");
+        $("#imgBottom img")
+            .css("top", "0px");
+        $("#imgBottom")
+            .css("height", "inherit");
+    }
+    else if((canvasObj.otherContent[0] !== undefined && canvasObj.otherContent[0].resources !== undefined && canvasObj.otherContent[0].resources.length > 0)){
+        //This is TPEN 2.8 using the SQL
+        //This situation means we got our lines from the SQL and there is no need to query the store.
+        tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
+        drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
+        //linesToScreen(lines, tool);
     }
     else {
+        throw new Error("Your annotation data is in an unsupported format and cannot be used with this tanscription service.");
+        //TODO what should we do with the interface?  Is this OK?
+        $("#transTemplateLoading")
+            .hide();
+        $("#transcriptionTemplate")
+            .show();
+        $('#transcriptionCanvas')
+            .css('height', $("#imgTop img")
+                .height() + "px");
+        $('.lineColIndicatorArea')
+            .css('height', $("#imgTop img")
+                .height() + "px");
+        $("#imgTop")
+            .css("height", "0%");
+        $("#imgBottom img")
+            .css("top", "0px");
+        $("#imgBottom")
+            .css("height", "inherit");
         // we have the anno list for this canvas (potentially), so query for it.
-        // If not found, then consider this an empty canvas.
-        var annosURL = "getAnno";
-        var onValue = canvasObj["@id"];
-        var properties = {
-            "@type": "sc:AnnotationList", "on": onValue, proj: tpen.project.id
-        };
-        var paramOBJ = {
-            "content": JSON.stringify(properties)
-        };
-        if ($.type(canvasObj.otherContent) === "string") {
-            $.post(annosURL, paramOBJ, function (annoList) {
-                if (!tpen.manifest.sequences[0].canvases[currentFolio]) {
-                    throw new Error("Missing canvas:" + currentFolio);
-                }
-                if (!tpen.manifest.sequences[0].canvases[currentFolio].otherContent) {
-                    tpen.manifest.sequences[0].canvases[currentFolio].otherContent = new Array();
-                }
-                //FIXME: The line below throws a JSON error sometimes, especially on first load.
-                var annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent = tpen.manifest.sequences[0].canvases[currentFolio].otherContent.concat(JSON.parse(annoList));
-                var currentList = {};
-            updateURL("p");
-                if (annoList.length > 0) {
-                    // Scrub resolved lists that are already present.
-                    //tpen.screen.currentAnnoListID = annoList[0]; //There should always just be one that matches because of proj, default to first in array if more
-                    lines = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], true, parsing, tool);
-                }
-                else {
-                    // couldnt get list.  one should always exist, even if empty.
-                    // We will say no list and changes will be stored locally to the canvas.
-                    if (parsing !== "parsing") {
-                        $("#noLineWarning")
-                            .show();
-                    }
-                    $("#transTemplateLoading")
-                        .hide();
-                    $("#transcriptionTemplate")
-                        .show();
-                    $('#transcriptionCanvas')
-                        .css('height', $("#imgTop img")
-                            .height() + "px");
-                    $('.lineColIndicatorArea')
-                        .css('height', $("#imgTop img")
-                            .height() + "px");
-                    $("#imgTop")
-                        .css("height", "0%");
-                    $("#imgBottom img")
-                        .css("top", "0px");
-                    $("#imgBottom")
-                        .css("height", "inherit");
-                    $("#parsingBtn")
-                        .css("box-shadow", "0px 0px 6px 5px yellow");
-                }
-            });
-        } else if (canvasObj.otherContent && canvasObj.otherContent[0] && canvasObj.otherContent[0].resources) {
-            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0];
-            drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
-        }
+        // This is TPEN 2.8, using the annotation store. 
+//        var annosURL = "getAnno";
+//        var onValue = canvasObj["@id"];
+//        var properties = {
+//            "@type": "sc:AnnotationList", "on": onValue, proj: tpen.project.id
+//        };
+//        var paramOBJ = {
+//            "content": JSON.stringify(properties)
+//        };
+//        if ($.type(canvasObj.otherContent) === "string") {
+//            $.post(annosURL, paramOBJ, function (annoList) {
+//                if (!tpen.manifest.sequences[0].canvases[currentFolio]) {
+//                    throw new Error("Missing canvas:" + currentFolio);
+//                }
+//                if (!tpen.manifest.sequences[0].canvases[currentFolio].otherContent) {
+//                    tpen.manifest.sequences[0].canvases[currentFolio].otherContent = new Array();
+//                }
+//                //FIXME: The line below throws a JSON error sometimes, especially on first load.
+//                var annoList = tpen.manifest.sequences[0].canvases[currentFolio].otherContent = tpen.manifest.sequences[0].canvases[currentFolio].otherContent.concat(JSON.parse(annoList));
+//                var currentList = {};
+//                updateURL("p");
+//                if (annoList.length > 0) {
+//                    // Scrub resolved lists that are already present.
+//                    lines = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], true, parsing, tool);
+//                }
+//                else {
+//                    // couldnt get list.  one should always exist, even if empty.
+//                    // We will say no list and changes will be stored locally to the canvas.
+//                    if (parsing !== "parsing") {
+//                        $("#noLineWarning")
+//                            .show();
+//                    }
+//                    $("#transTemplateLoading")
+//                        .hide();
+//                    $("#transcriptionTemplate")
+//                        .show();
+//                    $('#transcriptionCanvas')
+//                        .css('height', $("#imgTop img")
+//                            .height() + "px");
+//                    $('.lineColIndicatorArea')
+//                        .css('height', $("#imgTop img")
+//                            .height() + "px");
+//                    $("#imgTop")
+//                        .css("height", "0%");
+//                    $("#imgBottom img")
+//                        .css("top", "0px");
+//                    $("#imgBottom")
+//                        .css("height", "inherit");
+//                    $("#parsingBtn")
+//                        .css("box-shadow", "0px 0px 6px 5px yellow");
+//                }
+//            });
+//        } else if (canvasObj.otherContent && canvasObj.otherContent[0] && canvasObj.otherContent[0].resources) {
+//            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0];
+//            drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
+//        }
     }
     tpen.screen.textSize();
 }
@@ -1461,6 +1517,7 @@ function linesToScreen(lines, tool){
             }
 
     });
+    $("#transTemplateLoading").hide(); //if we drew the lines, this can disappear.  
 }
 
 /* Make the transcription interface focus to the transcriptlet passed in as the parameter. */
@@ -3190,7 +3247,7 @@ function pageJump(page, parsing){
     var canvasToJumpTo = parseInt(page);; //0,1,2...
     if (tpen.screen.currentFolio !== canvasToJumpTo && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio
         console.log("Jumping to a dif page!");
-        Data.saveTranscription("");
+        //Data.saveTranscription("");
         tpen.screen.currentFolio = canvasToJumpTo;
         if (parsing === "parsing"){
             $(".pageTurnCover").show();
@@ -3284,81 +3341,94 @@ function updateLinesInColumn(column){
     if (startLineID !== endLineID){ //push the last line, so long as it was also not the first line
         linesToUpdate.push($(".parsing[lineserverid='" + endLineID + "']")); //push last line
     }
-    batchLineUpdate(linesToUpdate);
+    batchLineUpdate(linesToUpdate, "", true);
 }
 
 /* Bulk update for lines in a column.  Also updates annotation list those lines are in with the new anno data. */
-function batchLineUpdate(linesInColumn, relocate){
+function batchLineUpdate(linesInColumn, relocate, parsing){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
-    var currentAnnoListID = tpen.screen.currentAnnoListID;
-    var currentAnnoListResources = [];
+    //var currentAnnoListID = tpen.screen.currentAnnoListID;
+    //var currentAnnoListResources = [];
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2; //Can I use tpen.screen.originalCanvasHeight and Width?
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
         //Go over each line from the column resize.
-    $.each(linesInColumn, function(){
-        var line = $(this);
-        lineTop = parseFloat(line.attr("linetop")) * 10;
-        lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
-        lineWidth = parseFloat(line.attr("linewidth")) * (10 * ratio);
-        lineHeight = parseFloat(line.attr("lineheight")) * 10;
-        //round up.
-        lineTop = Math.round(lineTop, 0);
-        lineLeft = Math.round(lineLeft, 0);
-        lineWidth = Math.round(lineWidth, 0);
-        lineHeight = Math.round(lineHeight, 0);
-        line.css("width", line.attr("linewidth") + "%");
-        var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
-        var currentLineServerID = line.attr('lineserverid');
-        var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
-        var lineNote = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".notes").val();
-        var dbLine = {
-            "@id" : currentLineServerID,
-            "@type" : "oa:Annotation",
-            "motivation" : "sc:painting",
-            "resource" : {
-                "@type" : "cnt:ContentAsText",
-                "cnt:chars" : currentLineText
-            },
-            "on" : onCanvas + "#xywh=" + lineString,
-            "otherContent" : [],
-            "forProject": tpen.manifest['@id'],
-            "_tpen_note" : lineNote,
-            "testing":"TPEN28"
-        };
-        var index = - 1;
-        //find the line in the anno list resources and replace its position with the new line resource.
-        $.each(currentAnnoList, function(){
-            index++;
-            if (this["@id"] == currentLineServerID){
-                currentAnnoList[index] = dbLine;
-                return false;
-            }
+    if(parsing){
+        $.each(linesInColumn, function(){
+            var line = $(this);
+            lineTop = parseFloat(line.attr("linetop")) * 10;
+            lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
+            lineWidth = parseFloat(line.attr("linewidth")) * (10 * ratio);
+            lineHeight = parseFloat(line.attr("lineheight")) * 10;
+            //round up.
+            lineTop = Math.round(lineTop, 0);
+            lineLeft = Math.round(lineLeft, 0);
+            lineWidth = Math.round(lineWidth, 0);
+            lineHeight = Math.round(lineHeight, 0);
+            line.css("width", line.attr("linewidth") + "%");
+            var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
+            var currentLineServerID = line.attr('lineserverid');
+            var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find("textarea").val();
+            var lineNote = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".notes").val();
+            var dbLine = {
+                "@id" : currentLineServerID,
+                "@type" : "oa:Annotation",
+                "motivation" : "sc:painting",
+                "resource" : {
+                    "@type" : "cnt:ContentAsText",
+                    "cnt:chars" : currentLineText
+                },
+                "on" : onCanvas + "#xywh=" + lineString,
+                "otherContent" : [],
+                "forProject": tpen.manifest['@id'],
+                "_tpen_note" : lineNote,
+                "testing":"TPEN28"
+            };
+            var index = - 1;
+            //find the line in the anno list resources and replace its position with the new line resource.
+            $.each(currentAnnoList, function(){
+                index++;
+                if (this["@id"] == currentLineServerID){
+                    currentAnnoList[index] = dbLine;
+                    return false;
+                }
+            });
+            updateLine(line, false, false);
         });
-    });
-    //Now that all the resources are edited, update the list.
-    tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
-    var url = "updateAnnoList";
-    var paramObj = {
-        "@id":currentAnnoListID,
-        "resources": currentAnnoList
-    };
-    var url2 = "bulkUpdateAnnos";
-    var paramObj2 = {"annos":currentAnnoList};
-    var params2 = {"content":JSON.stringify(paramObj2)};
+    }
+    else{ 
+        //Its because I am exiting by going to a link or something, do a batch update on the dereferenced list.
+        //Will this finish before the page exit?  This worked before with the bulk updater.  The bulk updater from T-PEN classic does not update text, and we need that here.
+        //If it does not finish, we need to write a new bulk updater for T-PEN that will work with the SQL db that includes updating the line text. . 
+        var transcriptlets = $(".transcriptlet");
+        $.each(transcriptlets, function(){
+            var line = $(this); 
+            updateLine(line, false, false);
+        });
+    }
 
-    $.post(url2, params2, function(data){ //update individual annotations
-        var params = {"content":JSON.stringify(paramObj)};
-        $.post(url, params, function(data2){ //update annotation list
-            if(relocate){
-                document.location = relocate;
-            }
-        });
-    });
+    //Now that all the resources are edited, update the list.
+//    tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
+//    var url = "updateAnnoList";
+//    var paramObj = {
+//        "@id":currentAnnoListID,
+//        "resources": currentAnnoList
+//    };
+//    var url2 = "bulkUpdateAnnos";
+//    var paramObj2 = {"annos":currentAnnoList};
+//    var params2 = {"content":JSON.stringify(paramObj2)};
+//
+//    $.post(url2, params2, function(data){ //update individual annotations
+//        var params = {"content":JSON.stringify(paramObj)};
+//        $.post(url, params, function(data2){ //update annotation list
+//            if(relocate){
+//                document.location = relocate;
+//            }
+//        });
+//    });
 
 
 }
-
 
     function drawLinesOnCanvas(lines, parsing, tool){
         if (lines.length > 0){
@@ -3665,11 +3735,14 @@ function saveNewLine(lineBefore, newLine){
         {name:"newx",value:newLineLeft},
         {name:"newwidth",value:newLineWidth},
         {name:"newheight",value:newLineHeight},
-        {name:"new",value:true}
+        {name:"new",value:true},
+        {name:'submitted',value:true},
+        {name:'folio',value:tpen.project.folios[tpen.screen.currentFolio].folioNumber},
+        {name:'projectID',value:tpen.project.id}
     );
     if (onCanvas !== undefined && onCanvas !== ""){
         $.post(url, params, function(data){
-            data = JSON.parse(data);
+            //data = JSON.parse(data);
             dbLine["@id"] = data;
             newLine.attr("lineserverid", data); //data["@id"]
             $("div[newcol='" + true + "']").attr({
@@ -3695,8 +3768,12 @@ function saveNewLine(lineBefore, newLine){
                 currentFolio = parseInt(currentFolio);
                 //Write back to db to update list
                 tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList; //@cubap this is why the FIXMEs above
-                updateLine(lineBefore, false, false); //This will update the line on the server.
-                $("#parsingCover").hide();
+                if(lineBefore){
+                    updateLine(lineBefore, false, false); //This will update the line on the server.
+                }
+                else{
+                    $("#parsingCover").hide();
+                }
 //                var url1 = "updateAnnoList";
 //                var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
 //                var params1 = {"content":JSON.stringify(paramObj1)};
@@ -3909,7 +3986,8 @@ function removeLine(e, columnDelete){
             }).addClass("newDiv").attr({
                 "lineheight":   convertedNewLineHeight
             });
-        } else if ($(e).hasClass("deletable")){
+        } 
+        else if ($(e).hasClass("deletable")){
             var cfrm = confirm("Removing this line will remove any data contained as well.\n\nContinue?");
             if (!cfrm){
                 $("#parsingCover").hide();
@@ -3936,50 +4014,65 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     $("#parsingCover").show();
     var updateText = "";
     var removeNextLine = false;
-    if (lineid !== updatedLineID){
-        removeNextLine = true;
-        var updatedLine = $(".parsing[lineserverid='" + updatedLineID + "']");
-        var removedLine1 = $(".parsing[lineserverid='" + lineid + "']");
-        var removedLine2 = $(".transcriptlet[lineserverid='" + lineid + "']");
-        var toUpdate = $(".transcriptlet[lineserverid='" + updatedLineID + "']");
-        var removedText = $(".transcriptlet[lineserverid='" + lineid + "']").find("textarea").val();
-        toUpdate.find("textarea").val(function(){
-            var thisValue = $(this).val();
-            if (removedText !== undefined){
-                if (removedText !== "") thisValue += (" " + removedText);
-                updateText = thisValue;
-            }
-            return thisValue;
-        });
-        var lineHeightForUpdate = parseFloat(toUpdate.attr("lineheight")) + parseFloat(removedLine2.attr("lineheight"));
-        toUpdate.attr("lineheight", lineHeightForUpdate);
-    }
-    else {
-    }
+    var index = 0;
+    var toUpdate = $(".transcriptlet[lineserverid='" + updatedLineID + "']");
+    var removedLine2 = $(".transcriptlet[lineserverid='" + lineid + "']");
+    var removedText = $(".transcriptlet[lineserverid='" + lineid + "']").find(".theText").val();
+    var params = new Array({name:'submitted',value:true},{name:'projectID',value:tpen.project.id});
     var currentFolio = parseInt(tpen.screen.currentFolio);
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+    var url = "updateLinePositions";
+    var lineIDToRemove = parseInt(lineid.replace("line/", ""));
+    params.push({name:"remove", value:lineIDToRemove});
+    if (lineid !== updatedLineID){ 
+        //we need to make sure the height and text of the next line is updated ocrrectly
+        removeNextLine = true;
+        var lineAfterText = toUpdate.find("textarea").val();
+        updateText = removedText + " " +lineAfterText;
+        toUpdate.find(".theText").val(updateText);
+//        (function(){
+//            var thisValue = $(this).val();
+//            if (removedText !== undefined){
+//                if (removedText !== "") thisValue += (" " + removedText);
+//                updateText = thisValue;
+//            }
+//            return thisValue;
+//        });
+        var lineHeightForUpdate = parseFloat(toUpdate.attr("lineheight")) + parseFloat(removedLine2.attr("lineheight"));
+        toUpdate.attr("lineheight", lineHeightForUpdate);
+//        tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
+//                var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
+//                var params = {"content":JSON.stringify(paramObj)};
+        
+    }
+    var lineIDToCheck = "";
+    if (removeNextLine){
+        lineIDToCheck = lineid;
+        removedLine2.remove(); //remove the transcriptlet from UI
+    }
+    else{
+        lineIDToCheck = updatedLineID;
+        //console.log("just a remove: "+lineIDToCheck);
+    }
     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
         $.each(currentAnnoList, function(index){
-            var lineIDToCheck = "";
-            if (removeNextLine){
-                lineIDToCheck = lineid;
-                removedLine2.remove(); //remove the transcriptlet from UI
-            }
-            else{
-                lineIDToCheck = updatedLineID;
-            }
-            if (this["@id"] === lineIDToCheck){
+            
+            if (this.tpen_line_id === lineIDToCheck){
+                //console.log("Got a match in the cached list: "+this.tpen_line_id);
                 currentAnnoList.splice(index, 1);
-                var url = "updateAnnoList";
-                tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio] = currentAnnoList;
-                var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
-                var params = {"content":JSON.stringify(paramObj)};
+                //var url = "updateAnnoList";
+                tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
+//                var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
+//                var params = {"content":JSON.stringify(paramObj)};
                 $.post(url, params, function(data){
                     if (!removeNextLine){
+                        //we only had to remove a line, we are done
                         $("#parsingCover").hide();
                     }
                     else {
-                        updateLine(toUpdate, false, false); //put $(#parsingCover).hide() in updateLine(), but may just need it here for this scenario.
+                        //we removed a line, but the line after that line needs to absorb its text and height, so we need an update.  The line after is named toUpdate.
+                        //console.log("Here is that update I warned about.");
+                        updateLine(toUpdate, false, false); 
                     }
                 });
             }
@@ -3989,6 +4082,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
         throw new Error("There is no anno list assosiated with this anno.  This is an error.");
     }
     else { // If it is classic T-PEN, we need to update canvas resources
+        cosnole.warn("Detected a classic object");
         currentFolio = parseInt(currentFolio);
         $.each(tpen.manifest.sequences[0].canvases[currentFolio - 1].resources, function(){
             index++;
@@ -4006,34 +4100,51 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
 function removeColumnTranscriptlets(lines, recurse){
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
     $("#parsingCover").show();
+   // console.log("Remove column transcriptlets... "+lines.length);
     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
         // if it IIIF, we need to update the list
             for (var l = lines.length - 1; l >= 0; l--){
+                console.log("remove line "+l);
                 var theLine = $(lines[l]);
-                for(var k=0; k<currentAnnoList.length; k++){
-                    var currentResource = currentAnnoList[k];
-                    if (currentResource["@id"] == theLine.attr("lineserverid")){
-                        currentAnnoList.splice(k, 1);
-                        theLine.remove();
-                    }
-                }
+                removeTranscriptlet(theLine.attr("lineserverid"), theLine.attr("lineserverid"), true, "");
+//                for(var k=0; k<currentAnnoList.length; k++){
+//                    var currentResource = currentAnnoList[k];
+//                    if (currentResource["@id"] == theLine.attr("lineserverid")){
+//                        console.log("remove this line");
+//                        currentAnnoList.splice(k, 1);
+//                        removeTranscriptlet(theLine.attr("lineserverid"), theLine.attr("lineserverid"), true, "");
+//                    }
+//                }
                 if (l === 0){
-                    var url = "updateAnnoList";
-                    var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
-                    var params = {"content":JSON.stringify(paramObj)};
-                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio] = currentAnnoList;
-                    $.post(url, params, function(data){
-                        if (recurse){
-                            tpen.screen.nextColumnToRemove.remove();
-                            // FIXME: I cannot find this object always?
-                            destroyPage();
-                        }
-                        else{
-                            cleanupTranscriptlets(true);
-                            tpen.screen.nextColumnToRemove.remove();
-                            $("#parsingCover").hide();
-                        }
-                    });
+                    console.log("They have all been removed.  make sure to update the cached list of resources.");
+                    //removeTranscriptlet should be updating tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources, but we can do it here too.
+//                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
+//                    var url = "updateAnnoList";
+//                    var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
+//                    var params = {"content":JSON.stringify(paramObj)};
+//                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio] = currentAnnoList;
+                    if (recurse){
+                        tpen.screen.nextColumnToRemove.remove();
+                        // FIXME: I cannot find this object always?
+                        destroyPage();
+                    }
+                    else{
+                        cleanupTranscriptlets(true);
+                        tpen.screen.nextColumnToRemove.remove();
+                        $("#parsingCover").hide();
+                    }
+//                    $.post(url, params, function(data){
+//                        if (recurse){
+//                            tpen.screen.nextColumnToRemove.remove();
+//                            // FIXME: I cannot find this object always?
+//                            destroyPage();
+//                        }
+//                        else{
+//                            cleanupTranscriptlets(true);
+//                            tpen.screen.nextColumnToRemove.remove();
+//                            $("#parsingCover").hide();
+//                        }
+//                    });
                 }
             }
     }
@@ -4458,7 +4569,7 @@ var Data = {
     /* Save all lines on the canvas */
     saveTranscription:function(relocate){
         var linesAsJSONArray = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
-        batchLineUpdate(linesAsJSONArray, relocate);
+        batchLineUpdate(linesAsJSONArray, relocate, false);
     }
 }
 

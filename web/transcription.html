@@ -65,13 +65,15 @@
             </span>
             <span class="trimSection">
                 <span id="trimPage"></span>
-                <a class="exitPage" id="prevCanvas" onclick="previousFolio();" title="Previous Page">
+                <!-- DO NOT add class exitPage.  It will try to fire the bulk update, which is not needed and will break the interface. -->
+                <a class="" id="prevCanvas" onclick="previousFolio();" title="Previous Page">
                     <i class="fa fa-caret-left fa-2x"></i>
                 </a>
                 <select id="pageJump">
                     <option id="activePage" folioNum="0">Jump to Page</option>
                 </select>
-                <a class="exitPage" id="nextCanvas" title="Next Page" onclick="nextFolio();">
+                <!-- DO NOT add class exitPage.  It will try to fire the bulk update, which is not needed and will break the interface. -->
+                <a class="" id="nextCanvas" title="Next Page" onclick="nextFolio();">
                     <i class="fa fa-caret-right fa-2x"></i>
                 </a>
             </span>
@@ -1401,7 +1403,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
 
 
-            $(".parsingToolButtons").children("span").click(function(event){
+            $("#parseOptions .tpenButton").click(function(event){
 
                 var show = $(this).attr("show");
                 $("#imgTop").unbind("mousemove");

@@ -169,25 +169,28 @@
                         </div>
                     </div>
                     <div class="flex-container flex-stretch buttons">
-                        <select id="splitScreenTools" >
+                        <select id="splitScreenTools" class="let">
                             <option selected>Splitscreen Tools</option>
                         </select>
                         <button id="canvasControls" title="Page Tools" onclick="splitPage(event,'controls');">
+                            Page Tools
                             <i class="fa fa-file-image-o"></i>
-                            Page Tools</button>
-                        <button id="magnify1" class="magnifyBtn" magnifyImg="trans" title="Inspect Transcription Image" >
+                        </button>
+                        <button id="magnify1" class="magnifyBtn let" magnifyImg="trans" title="Inspect Transcription Image" >
+                            Inspect
                             <i class="fa fa-search-plus"></i>
-                            Inspect</button> <!--Page event on the listener for this class in js.-->
+                        </button> <!--Page event on the listener for this class in js.-->
                         <button id="toggleChars" title="Move Transcription Image" onclick="toggleSpecialChars(event);">
+                            Characters
                             <i class="fa fa-keyboard-o"></i>
-                            Characters</button>
-                        <button id="toggleXML" title="Move Transcription Image" onclick="toggleXMLTags(event);">
-                            <i class="fa fa-code"></i>
-                            XML Tags</button>
+                        </button>
+                        <button id="toggleXML" class="let" title="Move Transcription Image" onclick="toggleXMLTags(event);">
+                            XML Tags
+                        </button>
                     </div>
                     <div class="flex-container flex-stretch" style="flex-wrap: wrap; justify-content: space-around;">
-                        <div id="specialCharsFloat" class="flex-container specialCharactered">
-                            <a title="Edit Special Characters" class="pull-left lookLikeButtons editButtons" href="buttons.jsp">
+                        <div id="specialCharsFloat" class="flex-container special-charactered">
+                            <a title="Edit Special Characters" class="lookLikeButtons editButtons" href="buttons.jsp">
                             <i class="fa fa-edit"></i>
                         </a>
                             <!--                        <div class="closeBtn" onclick="$('#toggleChars').click();">
@@ -196,8 +199,8 @@
 <div id="charactersPopin" class="specialCharacters"  title="Special Characters" >
                         </div>
                     </div>
-                    <div id="xmlTagFloat" class="flex-container xmlTagged">
-                        <a title="Edit XML Tags" class="pull-left lookLikeButtons editButtons exitPage" href="buttons.jsp">
+                        <div id="xmlTagFloat" class="flex-container xml-tagged">
+                            <a title="Edit XML Tags" class="lookLikeButtons editButtons exitPage" href="buttons.jsp">
                             <i class="fa fa-edit"></i>
                         </a>
                         <!--                        <div class="closeBtn" onclick="$('#toggleXML').click();">

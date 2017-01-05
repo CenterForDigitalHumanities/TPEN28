@@ -261,9 +261,9 @@ body{
     margin: 2px 0;
 }
 .flex-bookend {
-    width: 4em;
+    width: 8em;
     text-align: center;
-    padding: 0 1em;
+    padding: 0 .25em;
     position: relative;
 }
 .flex-wide, .flex-wide div {
@@ -1281,41 +1281,16 @@ kbd {
 }
 #prevLine,#nextLine,#toggleNotes,#nextPage,#prevPage{
     position: relative;
-    height:auto;
-    border: 1px solid #69acc9;
-    background: #a8d2e4;
-    color: #226683;
-    transition: .5s;
-    line-height: 2;
-    white-space: nowrap;
-    width:9em;
+    line-height:2em;
+    width:100%;
     padding: 0 .5em;
     margin: .25em 0;
-    left: -3.5em;
-    text-align: right;
 }
 #toggleNotes {
     margin-top:0;
 }
 #nextPage,#prevPage{
     background-color: #993333;
-    color: #DDD;
-}
-#prevLine:hover,#nextLine:hover{
-    box-shadow: 0 0 3px rgba(0,0,0,.5);
-    background: #BBB;
-}
-#prevLine {
-    right: -3.5em; left:auto;
-    text-align: left;
-}
-#prevLine:hover,#nextLine:hover,#toggleNotes:hover {
-    box-shadow: 1px 1px 2px rgba(0,0,0,.5);
-    background: #c8f2f4;
-    left:-1.5em;
-}
-#prevLine:hover {
-    left:auto;right:-1.5em;
 }
 #pageControls {
     margin-right: 2px;

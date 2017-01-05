@@ -1058,6 +1058,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 tpen.screen.originalCanvasHeight = $("#imgTop img").height();
                 tpen.screen.originalCanvasWidth =  $("#imgTop img").width();
                 drawLinesToCanvas(canvasObj, parsing, tool);
+                getHistory(); //Do we need to call this later down the stack?  It could be moved into drawLinesToCanvas()
                 $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
                 $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
                 $("#parseOptions").find(".tpenButton").removeAttr("disabled");

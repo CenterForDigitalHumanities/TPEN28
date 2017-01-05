@@ -41,20 +41,20 @@ public class tagTracker extends HttpServlet {
     throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        System.out.println("TAG TRACKA!");
+        //System.out.println("TAG TRACKA!");
         try {
             int projectID=0;
 
         if(request.getParameter("projectID")!=null)
         {
-            System.out.println("Got the project ID");
+            //System.out.println("Got the project ID");
             projectID=Integer.parseInt(request.getParameter("projectID"));
         }
             Project thisProject=new Project(projectID);
         if(request.getParameter("addTag")!=null)
         {
             //request to add a tag to the open tag list
-            System.out.println("add tag flag");
+            //System.out.println("add tag flag");
             OpenTagTracker t=new OpenTagTracker(thisProject);
             String tag=request.getParameter("tag");
             int folio=Integer.parseInt(request.getParameter("folio"));
@@ -66,7 +66,7 @@ public class tagTracker extends HttpServlet {
         //request to remove a tag from the tag list
         if(request.getParameter("removeTag")!=null)
         {
-            System.out.println("remove tag flag");
+            //System.out.println("remove tag flag");
             OpenTagTracker t=new OpenTagTracker(thisProject);
             try{
             t.removeTag(Integer.parseInt(request.getParameter("id")));
@@ -82,7 +82,7 @@ public class tagTracker extends HttpServlet {
         //request to list all tags after folio in the Project
         if(request.getParameter("listTags")!=null)
         {
-            System.out.println("list all tags flag");
+            //System.out.println("list all tags flag");
             int folio=0;
             if(request.getParameter("folio")!=null)
             {
@@ -100,7 +100,7 @@ public class tagTracker extends HttpServlet {
         }
             if(request.getParameter("checkTags")!=null)
             {
-                System.out.println("check tags flag");
+                //System.out.println("check tags flag");
                 int folio=0;
                 if(request.getParameter("folio")!=null)
                 {

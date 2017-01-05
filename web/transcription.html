@@ -436,7 +436,7 @@
                 </div>
                 <div id="fullPageSplitCanvas"><img id="fullPageImg" src="" /></div>
             </div>
-            <div id="historySplit" class="ui-widget">
+            <div id="historySplit" class="split" class="ui-widget">
                 <div class="toolLinks">
                     <a href="#" >Parsing Only</a>
                     <a href="#" >Text Only</a>
@@ -1357,7 +1357,31 @@
 //            if (leftovers != undefined)
 //              Linebreak.saveLeftovers(escape(leftovers));
         });
-
+        
+        
+        $("#historyListing").on({
+            mouseenter: function(){
+                History.adjustBookmark($(this));
+                $(this).children(".historyOptions").fadeIn("fast");
+            },
+            mouseleave: function(){
+                $("#historyBookmark").css({"box-shadow":"box-shadow:0 0 30px black","border":"solid thin blue"}).add(".historyDims").empty();
+                $(this).children(".historyOptions").fadeOut("fast");
+            }
+        },".historyEntry");
+        
+        $("#historyListing").on({
+            mouseenter: function(){
+                var dims = $(this).parents(".historyEntry").children(".historyRevert");
+                dims.html($(this).attr("title")).show();
+            }, 
+            mouseleave: function(){
+                $(this).parents(".historyEntry").children(".historyRevert").html("").hide();
+            },
+            click: function(){
+                History.revert(this);
+            }
+        },".historyOptions span");
 
     });
 

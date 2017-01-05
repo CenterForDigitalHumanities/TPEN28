@@ -1051,6 +1051,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
                 $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
                 populateCompareSplit(tpen.screen.currentFolio);
+                populateHistorySplit(tpen.screen.currentFolio);
                 //FIXME At some point I had to track tpen.screen.originalCanvasHeight differently.  Not sure that
                 //I need to anymore, test making these tpen.screen.* and see what happens.
                 originalCanvasHeight2 = $("#imgTop img").height();
@@ -2497,6 +2498,7 @@ function splitPage(event, tool) {
         $("#controlsSplit").show();
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }
+    
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
     $("#splitScreenTools").attr("disabled", "disabled");
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
@@ -2566,6 +2568,12 @@ function splitPage(event, tool) {
             'max-width': $(".split:visible")
                 .width() + "px"
         });
+    if(tool==="history"){
+        $("#historyBookmark").empty();
+        var splitSrc = $(".transcriptionImg:first").attr("src");
+        $("#historyViewer").find("img").attr("src", splitSrc);
+        History.showLine(tpen.screen.focusItem[1].attr("lineserverid"));
+    }
 
 }
 
@@ -2589,6 +2597,13 @@ function populateCompareSplit(folioIndex){
     var compareSrc = tpen.manifest.sequences[0].canvases[folioIndex].images[0].resource["@id"];
     var currentCompareSrc = $(".compareImage").attr("src");
     if (currentCompareSrc !== compareSrc) $(".compareImage").attr("src", compareSrc);
+}
+
+function populateHistorySplit(folioIndex){
+    var historySrc = tpen.manifest.sequences[0].canvases[folioIndex].images[0].resource["@id"];
+    var currentHistorySrc = $("#historyViewer").find("img").attr("src");
+    if (currentHistorySrc !== historySrc) $("#historyViewer").find("img").attr("src", historySrc);
+    
 }
 
 /*
@@ -3124,7 +3139,7 @@ function reparseColumns(){
         var currentFolioLocation = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
         tpen.screen.focusItem[1].find("div.tags").each(function(){
             tagFolioLocation = parseInt($(this).attr("data-folio"),10);
-            tagIndex = $(".transcriptlet[data-lineid='"+$(this).attr("data-line")+"']").index();
+            tagIndex = $(".transcriptlet[lineserverid='"+$(this).attr("data-line")+"']").index();
             if (tagFolioLocation == currentFolioLocation && tagIndex > currentLineLocation) {
             // tag is from this page, but a later line
                 $(this).hide();
@@ -5011,7 +5026,7 @@ var Help = {
      */
     remoteSave: function(button,saveLineID,focusFolio){
         if(!isMember && !permitModify)return false;
-        var saveLine = $(".previewLineNumber[data-lineid='"+saveLineID+"']").parent(".previewLine");
+        var saveLine = $(".previewLineNumber[lineserverid='"+saveLineID+"']").parent(".previewLine");
         var saveText = saveLine.find(".previewText").text();
         var saveComment = saveLine.find(".previewNotes").text();
         Data.saveLine(saveText, saveComment, saveLineID, focusFolio);
@@ -5051,8 +5066,8 @@ var Help = {
             }
             newPage.push("<div class='previewLine' data-linenumber='",
                     (index+1),"'>",
-                "<span class='previewLineNumber' data-lineid='",
-                    $(this).attr("data-lineid"),"' data-linenumber='",
+                "<span class='previewLineNumber' lineserverid='",
+                    $(this).attr("lineserverid"),"' data-linenumber='",
                     (index+1),"' data-linenumber='",
                     String.fromCharCode(columnValue),"' data-lineofcolumn='",
                     (index+1-columnLineShift),"'>",
@@ -5334,6 +5349,335 @@ tpen.screen.peekZoom = function(cancel){
         });
 
     }
+    
+    var History = {
+    /**
+     *  Displays the image of the line in the history tool.
+     *  
+     *  @param x int left position of history entry
+     *  @param y int top position of the history entry
+     *  @param h height of the history entry
+     *  @param w width of the history entry
+     */
+    showImage: function(x,y,h,w){
+        console.log("Show the image, set the bookmark...");
+        console.log(x,y,h,w);
+        var buffer = 30; //even is better
+        var hView = $("#historyViewer");
+        var hImg = hView.find("img");
+        var hBookmark = $("#historyBookmark");
+        var historyRatio = hImg.height()/1000;
+        hImg.css({
+            "top" :-y *historyRatio +buffer/2 +"px"
+        });
+        hView.css({
+            "height" :h *historyRatio +buffer +"px"
+        });
+//        hBookmark.css({
+//            "top"   : buffer/2 +"px",
+//            "left"  :x *historyRatio +"px",
+//            "width" :w *historyRatio +"px",
+//            "height":h *historyRatio +"px"
+//        });
+
+        hBookmark.css({
+            "top"   : y,
+            "left"  : x,
+            "width" : w,
+            "height": h
+        });
+
+        // size listings for balance of page for scrolling
+        $("#historyListing").height(Page.height()-hView.height()-22); 
+    
+    },
+    /**
+     *  Updates the display when hovering over an entry in the history tool.
+     *  
+     *  @param lineid int id of the targeted line
+     */
+    showLine: function(lineid){
+        console.log("show the line, then show the image");
+        var lineidHist = lineid.replace("line/", "");
+        $("#historyBookmark").empty();
+        $("#history"+lineidHist).show(0,function(){
+            // persist history options
+            $("#historySplit .ui-state-active").each(function(){
+                $(this).removeClass("ui-state-active").click();
+            });            
+        }).siblings(".historyLine").hide();
+        var refLine = $(".transcriptlet[lineserverid='"+lineid+"']");
+        History.showImage(parseFloat(refLine.attr("lineleft")),
+            parseFloat(refLine.attr("linetop")),
+            parseFloat(refLine.attr("lineheight")),
+            parseFloat(refLine.attr("linewidth"))
+        );
+    },
+    /**
+     *  Replaces empty entries with an indicator.
+     */
+    scrubHistory: function(){
+        $(".historyText,.historyNote").html(function(){
+            if($(this).html().length === 0){
+                return "<span style='color:silver;'> - empty - </span>";
+            } else {
+                return $(this).html();
+            }
+        })
+    },
+    /**
+     *  Shows the changes to parsing when hovering over a history entry.
+     */
+    adjustBookmark: function(archive){
+        console.log("Gotta adjust the bookmark in history");
+        var buffer = 30; //even is better
+        var hView = $("#historyViewer");
+        var hImg = hView.find("img");
+        var historyRatio = hImg.height()/1000;
+        var historyDims = [];
+        
+        var archiveDims = {
+            x:  parseInt(archive.attr("lineleft")),
+            y:  parseInt(archive.attr("linetop")),
+            w:  parseInt(archive.attr("linewidth")),
+            h:  parseInt(archive.attr("lineheight"))
+        };
+        
+        var dims = {
+            x:  parseInt(tpen.screen.focusItem[1].attr("lineleft")),
+            y:  parseInt(tpen.screen.focusItem[1].attr("lineiop")),
+            w:  parseInt(tpen.screen.focusItem[1].attr("linewidth")),
+            h:  parseInt(tpen.screen.focusItem[1].attr("lineheight"))
+        };
+        
+        var delta = {
+            x:  archiveDims.x - dims.x,
+            y:  archiveDims.y - dims.y,
+            w:  archiveDims.w - dims.w,
+            h:  archiveDims.h - dims.h
+        };
+//compare and build new dimensions for box
+        //if (Math.abs(delta.x < 1)) delta.x = 0;
+        //if (Math.abs(delta.y < 1)) delta.y = 0;
+        $("#historyBookmark").css("border","solid thin transparent").clone().appendTo("#historyBookmark");
+        $("#historyBookmark").children().css({
+            "top"   : delta.y *historyRatio +"px",
+            "left"  : delta.x *historyRatio +"px",
+            "width" : archiveDims.w *historyRatio +"px",
+            "height": archiveDims.h *historyRatio +"px",
+            "box-shadow": "0 0 0 transparent",
+            "border": "solid thin red"
+        });
+        if (Math.abs(delta.x) > 1) historyDims.push("left: ",  Math.round(archiveDims.x/dims.x*100),"%");
+        if (Math.abs(delta.y) > 1) historyDims.push("top: ",   Math.round(archiveDims.y/dims.y*100),"%");
+        if (Math.abs(delta.w) > 1) historyDims.push("width: ", Math.round(archiveDims.w/dims.w*100),"%");
+        if (Math.abs(delta.h) > 1) historyDims.push("height: ",Math.round(archiveDims.h/dims.h*100),"%");
+        archive.find(".historyDims").html(historyDims.join(" "));
+    },
+    /**
+     *  Show only the text changes in the history tool.
+     *  
+     *  @param button jQuery object, clicked button
+     */
+    textOnly: function(button){
+        //toggle
+        console.log("Toggle text only");
+        if (button.hasClass("ui-state-active")){
+            button.removeClass("ui-state-active");
+            $(".historyEntry").slideDown();
+        } else {
+            button.addClass("ui-state-active");
+            $(".historyText").each(function(index){
+                var collection = $(".historyText");
+                var thisOne = $(this).html();
+                var previousOne = (index>0) ? collection.eq(index-1).html() : "";
+                if((thisOne === previousOne) || (thisOne.length === 0)){
+                    // hide duplicate or empty fields
+                    $(this).parent(".historyEntry").slideUp();
+                }
+            });
+        }
+        return false;
+    },
+    /**
+     *  Show only parsing changes in the history tool.
+     *  
+     *  @param button jQuery object, clicked button
+     */
+    parsingOnly: function(button) {
+        //toggle
+        console.log("toggle parsing only");
+        if (button.hasClass("ui-state-active")){
+            button.removeClass("ui-state-active");
+            $(".historyEntry").slideDown();
+        } else {
+            button.addClass("ui-state-active");
+            $(".historyEntry").each(function(index){
+                var collection = $(".historyEntry");
+                var thisOne = [$(this).attr("linewidth"),$(this).attr("lineheight"),$(this).attr("lineleft"),$(this).attr("linetop")];
+                var previousOne = (index>0) ? [collection.eq(index-1).attr("linewidth"),collection.eq(index-1).attr("lineheight"),collection.eq(index-1).attr("lineleft"),collection.eq(index-1).attr("linetop")] : ["0","0","0","0"];
+                if(thisOne.join("|")==previousOne.join("|")){
+                    // hide duplicate or empty fields
+                    $(this).slideUp();
+                }
+            });
+        }
+        return false;
+    },
+    /**
+     *  Show notes as well in the history tool.
+     *  
+     *  @param button jQuery object, clicked button
+     */
+    showNotes: function(button) {
+        //toggle
+        console.log("Toggle notes");
+        if (button.hasClass("ui-state-active")){
+            button.removeClass("ui-state-active").html("Show Notes");
+            $(".historyNote").slideUp();
+        } else {
+            button.addClass("ui-state-active").html("Hide Notes");
+            $(".historyNote").slideDown();
+        }
+        return false;
+    },
+    /**
+     *  Revert only the text value from the history entry.
+     *  
+     *  @param entry jQuery object, clicked history entry
+     */
+    revertText: function(entry){
+        //if(!isMember && !permitModify)return false;
+        var historyText = entry.find(".historyText").text();
+        var historyNotes = entry.find(".historyNote").text();
+        if (historyText.indexOf("- empty -") !== -1) historyText = "";
+        if (historyNotes.indexOf("- empty -") !== -1) historyNotes = "";
+        var lineid = entry.parent(".historyLine").attr("id").substr(7);
+        var pair = $(".transcriptlet[lineserverid='"+lineid+"']");
+        pair.addClass("isUnsaved").find(".theText").val(historyText);
+        pair.find(".notes").val(historyNotes);
+        updateLine($(".transcriptlet[lineserverid='"+lineid+"']"), false, false);
+    },
+    /**
+     *  Revert only the parsing value from the history entry.
+     *  
+     *  @param entry jQuery object, clicked history entry
+     */
+    revertParsing: function(entry){
+        var lineid = entry.parent(".historyLine").attr("id").substr(7);
+        var dims = {
+            width   : parseInt(entry.attr("linewidth")),
+            height   : parseInt(entry.attr("lineheight")),
+            left   : parseInt(entry.attr("lineleft")),
+            top   : parseInt(entry.attr("linetop"))
+        }
+        var thisTranscriptlet = $(".transcriptlet[lineserverid='"+lineid+"']");
+        var dummyBuild = ["<div id='dummy' style='display:none'",
+        " lineserverid='",lineid,     "'",
+        " lineleft='",   dims.left,  "'",
+        " linetop='",    dims.top,   "'",
+        " linewidth='",  dims.width, "'",
+        " lineheight='", dims.height,"'",
+        "></div>"];
+        var dummy = dummyBuild.join("");
+        if (thisTranscriptlet.find(".lineLeft").val() !== $(dummy).attr("lineleft")){
+            //moved out of column
+            var cfrm = confirm("This revision will remove this line from the column it is in.\n\nConfirm or click 'Cancel' to leave the column intact and adjust other dimensions only.");
+            if (cfrm) thisTranscriptlet.find(".lineLeft").val($(dummy).attr("lineleft")).end();
+        thisTranscriptlet
+            .attr("lineTop", $(dummy).attr("linetop")).end()
+            .attr("lineWidth" ,(dummy).attr("linewidth")).end()
+            .attr("lineHeight",$(dummy).attr("lineheight"));
+        } else {
+        thisTranscriptlet
+            .attr("lineTop",$(dummy).attr("linetop")).end()
+            .attr("lineWidth", $(dummy).attr("linewidth")).end()
+            .attr("lineHeight", $(dummy).attr("lineheight"));
+        }
+        updateLine(dummy, false, false); //Not sure this will work...
+    },
+    /**
+     *  Reverts to values from the history entry.
+     *  
+     *  @param entry jQuery object, clicked history entry
+     */
+    revertAll: function(entry){
+        this.revertText(entry);
+        this.revertParsing(entry);
+    },
+    /**
+     *  Revert only the text value from the history entry.
+     *  
+     *  @param h element, clicked history tool
+     */
+    revert: function(h){
+        var entry = $(h).parents(".historyEntry");
+        // decide which was clicked
+        if($(h).hasClass("ui-icon-arrowreturnthick-1-n")){
+            // revert all
+            History.revertAll(entry);
+        } else if($(h).hasClass("ui-icon-pencil")){
+            // revert text
+            History.revertText(entry);
+        } else if($(h).hasClass("ui-icon-image")){
+            // revert parsing
+            History.revertParsing(entry);
+        } else {
+            // bad click capture
+            console.log(h);
+        }
+    },
+    /**
+     *  Adds a history entry to the top of the tool when a line is changed.
+     *  
+     *  @param lineid int unique id to attach to aded entry
+     */
+    prependEntry: function(lineid){
+        var lineidHist = lineid.replace("line/", "");
+        var updated = $(".transcriptlet[lineserverid='"+lineid+"']");
+        var firstEntry = $("#history"+lineidHist).find(".historyEntry").eq(0);
+        var newEntry = null;
+        if (firstEntry.length < 1){
+            // No previous versions, add a new entry entirely
+            var firstEntry = ["<div id='newEntry' class='historyEntry ui-corner-all' linewidth='' lineheight='' lineleft='' linetop=''>",
+                "<div class='historyDate'></div><div class='historyCreator'></div>",
+                "<div class='right historyRevert'></div><div class='right loud historyDims'></div>",
+                "<div class='historyText'></div><div class='historyNote'></div>",
+                "<div class='historyOptions' style='display: none;'>",
+                    "<span title='Revert image parsing only' class='ui-icon ui-icon-image right'></span>",
+                    "<span title='Revert text only' class='ui-icon ui-icon-pencil right'></span>",
+                    "<span title='Revert to this version' class='ui-icon ui-icon-arrowreturnthick-1-n right'></span>",
+                "</div></div>"].join("");
+            $("#history"+lineidHist).html(firstEntry);
+            newEntry = $("#newEntry");
+            newEntry.attr("id", "");
+        } else {
+            newEntry = firstEntry.clone();
+        }
+        newEntry.attr({
+            "linewidth" : updated.attr("lineWidth"),
+            "lineheight" : updated.attr("lineHeight"),
+            "lineleft" : updated.attr("lineLeft"),
+            "linetop" : updated.attr("lineTop")
+        }).find(".historyDate").html("<span class='quiet' title='History will update when the page reloads'>new entry</span>")
+        .siblings(".historyCreator").html("<span class='quiet' title='History will update when the page reloads'>Local User</span>")
+        .siblings(".historyText").text(updated.find(".theText").val())
+        .siblings(".historyNote").text(updated.find(".notes").val())
+        .siblings(".historyOptions").find("span").click(function(){History.revert(this)});
+        newEntry.insertBefore(firstEntry);
+    },
+    /**
+     *  Attaches the credit for the most recent edit to the main interface.
+     */
+    contribution: function(){
+        $("#contribution").html($("#history"+tpen.screen.focusItem[1].attr('lineserverid')).find('.historyCreator').eq(0).text());
+        if ($("#contribution").html().length == 0){
+            $("#contribution").hide();
+        } else {
+            $("#contribution").show();
+        }
+    }
+}
 
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?

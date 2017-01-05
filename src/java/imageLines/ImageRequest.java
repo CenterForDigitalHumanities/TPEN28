@@ -48,7 +48,7 @@ public class ImageRequest {
     * @throws SQLException
     */
    public ImageRequest(int folioNumber, int UID) throws SQLException {
-      System.out.print("saving record for " + folioNumber + " " + UID + "\n");
+      //System.out.print("saving record for " + folioNumber + " " + UID + "\n");
       startTime = System.currentTimeMillis();
       Folio f = new Folio(folioNumber);
       cacheHit = f.isCached();

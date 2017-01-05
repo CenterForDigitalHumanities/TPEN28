@@ -1501,7 +1501,7 @@ function linesToScreen(lines, tool){
                 typingTimer = setTimeout(function(){
                     console.log("timer update");
                     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
-                    var idToCheckFor = lineToUpdate.attr("lineserverid");
+                    var idToCheckFor = lineToUpdate.attr("lineserverid").replace("line/", "");
                     var newText = lineToUpdate.find(".theText").val();
                     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
                     // if it IIIF, we need to update the list
@@ -1589,6 +1589,9 @@ function updatePresentation(transcriptlet) {
     } else {
         $("#nextLine").show();
         $("#nextPage").hide();
+    }
+    if(tpen.screen.liveTool === "history"){
+        History.showLine(transcriptlet.attr("lineserverid"));
     }
 };
 
@@ -1838,6 +1841,7 @@ function nextTranscriptlet() {
             setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
             setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText1); }, 1500);
         }
+        
     }
     else { //blink a caption warning
         var captionText = $("#captionsText").html();
@@ -3604,6 +3608,11 @@ function updateLine(line, cleanup, updateList){
         else{
             updatePositions = false;
         }
+        
+        if(tpen.screen.liveTool !== "parsing"){
+            //Only update positions if parsing is active, it is the only place to change position information at this point. alt+ arrow has been removed from interface.
+            updatePositions = false;
+        }
         //isDestroyingLine = false;
 //        if(currentLineServerID.startsWith("http")){ //@cubap FIXME: do we need this check anymore?
         var url = "updateLinePositions"; //updateAnnoList
@@ -5360,18 +5369,18 @@ tpen.screen.peekZoom = function(cancel){
      *  @param w width of the history entry
      */
     showImage: function(x,y,h,w){
-        console.log("Show the image, set the bookmark...");
-        console.log(x,y,h,w);
         var buffer = 30; //even is better
         var hView = $("#historyViewer");
         var hImg = hView.find("img");
         var hBookmark = $("#historyBookmark");
-        var historyRatio = hImg.height()/1000;
+        //var historyRatio = hImg.height()/hImg.width();
+        var historyViewHeightAdjustment = ($("#imgTop").height() / $("#transcriptionCanvas").height()) * hImg.height();
+        var topAdjustment = (parseFloat($(".lineColIndicatorArea:first").css("top")) / $(".lineColIndicatorArea:first").height())  * hImg.height();
         hImg.css({
-            "top" :-y *historyRatio +buffer/2 +"px"
+            "top" :topAdjustment +"px"
         });
         hView.css({
-            "height" :h *historyRatio +buffer +"px"
+            "height" : historyViewHeightAdjustment + "px" 
         });
 //        hBookmark.css({
 //            "top"   : buffer/2 +"px",
@@ -5379,7 +5388,16 @@ tpen.screen.peekZoom = function(cancel){
 //            "width" :w *historyRatio +"px",
 //            "height":h *historyRatio +"px"
 //        });
-
+        y = buffer/2;
+        x = x / 100;
+        w = w / 100;
+        h = h / 100;
+         
+        //y = y * hImg.height();
+        h = h * hImg.height();
+        w = w * hImg.width();
+        x = x * hImg.width();
+        
         hBookmark.css({
             "top"   : y,
             "left"  : x,
@@ -5397,7 +5415,6 @@ tpen.screen.peekZoom = function(cancel){
      *  @param lineid int id of the targeted line
      */
     showLine: function(lineid){
-        console.log("show the line, then show the image");
         var lineidHist = lineid.replace("line/", "");
         $("#historyBookmark").empty();
         $("#history"+lineidHist).show(0,function(){
@@ -5407,7 +5424,8 @@ tpen.screen.peekZoom = function(cancel){
             });            
         }).siblings(".historyLine").hide();
         var refLine = $(".transcriptlet[lineserverid='"+lineid+"']");
-        History.showImage(parseFloat(refLine.attr("lineleft")),
+        History.showImage(
+            parseFloat(refLine.attr("lineleft")),
             parseFloat(refLine.attr("linetop")),
             parseFloat(refLine.attr("lineheight")),
             parseFloat(refLine.attr("linewidth"))
@@ -5433,9 +5451,10 @@ tpen.screen.peekZoom = function(cancel){
         var buffer = 30; //even is better
         var hView = $("#historyViewer");
         var hImg = hView.find("img");
-        var historyRatio = hImg.height()/1000;
+        var historyRatio = hImg.height()/1000; //hImg.height()?
         var historyDims = [];
         
+        //Coming from the database, these are already in pixel value, but are they correct? 
         var archiveDims = {
             x:  parseInt(archive.attr("lineleft")),
             y:  parseInt(archive.attr("linetop")),
@@ -5443,31 +5462,37 @@ tpen.screen.peekZoom = function(cancel){
             h:  parseInt(archive.attr("lineheight"))
         };
         
+        //We have the correct values for these on the #xywh= for this line in the manifest, that is where we need to gather our values.
+        var JSONline = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources[$(".activeLine").attr("lineid")];
+        var onProp = JSONline.on;
+        var lineXYWH = onProp.slice(onProp.indexOf("#xywh=") + 6);
+        var lineXYWHArray = lineXYWH.split(",");
         var dims = {
-            x:  parseInt(tpen.screen.focusItem[1].attr("lineleft")),
-            y:  parseInt(tpen.screen.focusItem[1].attr("lineiop")),
-            w:  parseInt(tpen.screen.focusItem[1].attr("linewidth")),
-            h:  parseInt(tpen.screen.focusItem[1].attr("lineheight"))
+            x:  lineXYWHArray[0],
+            y:  lineXYWHArray[1],
+            w:  lineXYWHArray[2],
+            h:  lineXYWHArray[3]
         };
-        
+
         var delta = {
             x:  archiveDims.x - dims.x,
             y:  archiveDims.y - dims.y,
             w:  archiveDims.w - dims.w,
             h:  archiveDims.h - dims.h
         };
-//compare and build new dimensions for box
-        //if (Math.abs(delta.x < 1)) delta.x = 0;
-        //if (Math.abs(delta.y < 1)) delta.y = 0;
+        //compare and build new dimensions for box
+        
+        //Just want to show the archiveDims location for the box
         $("#historyBookmark").css("border","solid thin transparent").clone().appendTo("#historyBookmark");
         $("#historyBookmark").children().css({
-            "top"   : delta.y *historyRatio +"px",
-            "left"  : delta.x *historyRatio +"px",
-            "width" : archiveDims.w *historyRatio +"px",
-            "height": archiveDims.h *historyRatio +"px",
+            "top"   : delta.y, 
+            "left"  : delta.x,
+            "width" : archiveDims.w * historyRatio,
+            "height": archiveDims.h * historyRatio, 
             "box-shadow": "0 0 0 transparent",
             "border": "solid thin red"
         });
+        //TODO: are these correct?
         if (Math.abs(delta.x) > 1) historyDims.push("left: ",  Math.round(archiveDims.x/dims.x*100),"%");
         if (Math.abs(delta.y) > 1) historyDims.push("top: ",   Math.round(archiveDims.y/dims.y*100),"%");
         if (Math.abs(delta.w) > 1) historyDims.push("width: ", Math.round(archiveDims.w/dims.w*100),"%");

@@ -79,6 +79,7 @@ public class updateLinePositions extends HttpServlet {
 
                if (request.getParameter("remove") != null) {
                   textdisplay.Transcription t = new textdisplay.Transcription(request.getParameter("remove"));
+                  System.out.println("archive removed line");
                   t.archive();
                   t.remove();
                }

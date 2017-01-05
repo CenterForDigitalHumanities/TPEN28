@@ -318,47 +318,45 @@
          </div>
 
 <!--                    Linebreaking Tool-->
-           <div id="linebreakSplit" class="ui-widget ui-widget-content split">
+            <div id="linebreakSplit" class="ui-widget ui-widget-content split">
                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
                <h3>Linebreak Existing Transcription</h3>
                 <div id="linebreakTextContainer">
                     <!-- visible if text is saved -->
-           <div>
-               This project has text stored for linebreaking:
-               <div id="linebreakText">
-                   <span id="lbText"> no text stored </span>
-                   <!--                   <div id='charLimit' class='ui-corner-all ui-state-error-text small clear'>More characters stored than shown here
-                                        If thisProject.getLinebreakCharacterLimit() is available in the project object, this can be more specific
-                                      </div>-->
-               </div>
-               <div id="linebreakOptions">
-                   <div id="useText" onclick="Linebreak.useText()" class="tpenButton block" title="Insert this text at the current line">Insert Text Here</div>
-                   <a id="newText" class="tpenButton block" title="Upload a new file to linebreak">Upload New File</a>
-                   <div id="linebreakStringBtn" class="tpenButton block" title="Attempt linebreaking using this string">Preview Automatic Linebreaks
-                       <!--                   TODO replace value with stored value once it is stored-->
-                       <input name="linebreakString" id="linebreakString" type="text" placeholder="<lb />" value="" />
-                   </div>
-                   <div id="useLinebreakText" onclick="Linebreak.useLinebreakText()" class="tpenButton block" style="display:none;" title="Automatically linebreak this page">Use Automatic Linebreaking
-                       <span id="linesDetected"></span>
-                   </div>
-               </div>
-                   <ol class="pull-left">
-                       <li>Navigate to a line to start;</li>
-                       <li><span class="loud">Insert Text</span> as a block; or</li>
-                       <li>Enter a linebreak string to attempt automatic linebreaking; and</li>
-                       <li>Press Enter to move all text following the cursor down to the next line.</li>
-                   </ol>
-                   <span class="small">*At the end of the page, the remaining text will be saved for use on the next page.</span>
-           </div>
-       </div>
-       <div id="linebreakNoTextContainer">
-<!-- no text saved -->
-Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to linebreak
-       </div>
+                    <div>
+                        This project has text stored for linebreaking:
+                        <div id="linebreakText">
+                            <span id="lbText"> no text stored </span>
+                            <!--                   <div id='charLimit' class='ui-corner-all ui-state-error-text small clear'>More characters stored than shown here
+                                                 If thisProject.getLinebreakCharacterLimit() is available in the project object, this can be more specific
+                                               </div>-->
+                        </div>
+                        <div id="linebreakOptions">
+                            <div id="useText" onclick="Linebreak.useText()" class="tpenButton block" title="Insert this text at the current line">Insert Text Here</div>
+                            <a id="newText" class="tpenButton block" title="Upload a new file to linebreak">Upload New File</a>
+                            <div id="linebreakStringBtn" class="tpenButton block" title="Attempt linebreaking using this string">Preview Automatic Linebreaks
+                                <!--                   TODO replace value with stored value once it is stored-->
+                                <input name="linebreakString" id="linebreakString" type="text" placeholder="<lb />" value="" />
+                            </div>
+                            <div id="useLinebreakText" onclick="Linebreak.useLinebreakText()" class="tpenButton block" style="display:none;" title="Automatically linebreak this page">Use Automatic Linebreaking
+                                <span id="linesDetected"></span>
+                            </div>
+                        </div>
+                            <ol class="pull-left">
+                                <li>Navigate to a line to start;</li>
+                                <li><span class="loud">Insert Text</span> as a block; or</li>
+                                <li>Enter a linebreak string to attempt automatic linebreaking; and</li>
+                                <li>Press Enter to move all text following the cursor down to the next line.</li>
+                            </ol>
+                            <span class="small">*At the end of the page, the remaining text will be saved for use on the next page.</span>
+                    </div>
+                </div>
+                <div id="linebreakNoTextContainer">
+                <!-- no text saved -->
+                    Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to linebreak
+                </div>
 
-
-
-                       </div>
+            </div>
             <div id="compareSplit" class="split">
                 <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
                 <div class="toolLinks">
@@ -372,7 +370,27 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 
                 <img class="compareImage" folioNum="1"></img>
             </div>
-<div id="abbreviationSplit" class="split">
+
+            <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
+                <div class="fullScreenTrans"><i class="fa fa-reply"></i> Close Tool </div>
+                <div style="padding:15px;">
+                    <header> Image Controls </header>
+                    <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
+                    <i class="fa fa-picture-o" style="color: #999;background: #DDD;border-radius: 2px;"></i>
+                    Grayscale</button>
+                    <button which="invert" class="block" onclick="toggleFilter('invert');">
+                    <i class="fa fa-picture-o" style="background: #FFF;border-radius: 2px;color: #000;"></i>
+                    Invert</button>
+                    <div id="imageToolSliders" class="imgTool">
+                        <i class="fa fa-sun-o"></i> Brightness
+                        <div id="brightnessSlider"></div>
+                        <i class="fa fa-adjust"></i> Contrast
+                        <div id="contrastSlider"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="abbreviationSplit" class="split">
     <!--                        Image is loaded in Data.postLoader()-->
                 <img id="abbrevImg" alt="abbreviation page" src="//t-pen.org/images/cappelli/Scan0064.jpg" style="height: 100%; width: auto;">
                 <div id="abbreviations">
@@ -873,30 +891,31 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
             <div id="contrastSlider"></div>
         </div>
 
-        <header> Column Controls</header>
-        <button role="button" class="block" onclick="$(this).toggleClass('selected')">
-            <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" >
-        </button>
-        <button role="button" class=" block" onclick="$(this).toggleClass('selected')">
-            <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
-        </button>
-        <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
-        <button role="button" id="parsingBtn" title="Redraw the lines on this page" class='block'>
-            <i class="fa fa-barcode fa-rotate-90"></i>
-            Edit Columns</button>
 
-        <header>
-            Keyboard Shortcuts
-        </header>
-        <div>
-            <strong>View/Move Image</strong>
-            <kbd>CTRL</kbd>+<kbd>ALT</kbd>: hold to temporarily hide the workspace and drag around your page image
-        </div>
-        <div>
-            <strong>Peek-Zoom</strong>
-            <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>: peek-zoom into the current line of transcription
-        </div>
-    </div>
+                    <header> Column Controls</header>
+                    <button role="button" class="block" onclick="$(this).toggleClass('selected')">
+                        <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" >
+                    </button>
+                    <button role="button" class=" block" onclick="$(this).toggleClass('selected')">
+                        <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
+                    </button>
+                    <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
+                    <button role="button" id="parsingBtn" title="Redraw the lines on this page" class='block'>
+                        <i class="fa fa-barcode fa-rotate-90"></i>
+                        Edit Columns</button>
+
+                    <header>
+                        Keyboard Shortcuts
+                    </header>
+                    <div>
+                        <strong>View/Move Image</strong>
+                        <kbd>CTRL</kbd>+<kbd>ALT</kbd>: hold to temporarily hide the workspace and drag around your page image
+                    </div>
+                    <div>
+                        <strong>Peek-Zoom</strong>
+                        <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>: peek-zoom into the current line of transcription
+                    </div>
+                </div>
 <!--     <button id="moveImage" title="Move Transcription Image" class="block" onclick="startMoveImg();">
         <i class="fa fa-hand-paper-o"></i>
         Move Img</button>
@@ -905,7 +924,7 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
     </p> -->
 
 
-</div>
+            </div>
             <div id="previewSplit" class="split">
                 <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
                 <div class="toolLinks">
@@ -925,6 +944,22 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 </div>
                 <div id="fullPageSplitCanvas"><img id="fullPageImg" src="" /></div>
             </div>
+            <div id="historySplit" class="split" class="ui-widget">
+                <div class="toolLinks">
+                    <a href="#" >Parsing Only</a>
+                    <a href="#" >Text Only</a>
+                    <a href="#" >Show Notes</a>
+                </div>
+                <div id="historyDiv" class="ui-corner-all ui-widget-content">
+                    <div id="historyViewer">
+                        <div id="historyBookmark" class="historyBookmark"></div>
+                        <img alt="historyViewerImg" class="preloadImage" src="css/custom-theme/images/loadingImg.gif" />
+                    </div>
+                    <div id="historyListing">
+                        
+                    </div>
+            </div>
+        </div>
         <div id="zoomDiv" class="ui-corner-all"></div>
         <div id="ruler1"></div><div id="ruler2"></div>
 
@@ -1087,34 +1122,47 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
                 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
                 <script type="text/javascript" src="js/transcribe.js"></script>
                 <script src="https://use.fontawesome.com/4ae676603d.js"></script>
-                <script type="text/javascript">
-                    var leftovers = tpen.project.remainingText;
-                    // get from StringEscapeUtils.escapeJavaScript(thisProject.getLinebreakText())
-                    if(leftovers && leftovers.length){
-                        $("#lbText").html(unescape(leftovers));
-                        $("#linebreakNoTextContainer").hide();
-                    } else {
-                        $("#linebreakTextContainer").hide();
-                        $("#linebreakNoTextContainer").show();
-                    }
-                function initLinks(){
-                    var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
-                    +"&projectID="+tpen.project.id;
-                    $("#uploadText").addClass("exitPage").add("#newText").attr("href",uploadLocation);
-
-                    // add projectID to buttons.jsp links
-                    $(".editButtons").addClass("exitPage").attr("href","buttons.jsp?p="
-                        + tpen.project.folios[tpen.screen.currentFolio].folioNumber
-                        + "&projectID=" + tpen.project.id+"#tabs-1");
-                    $(".editXMLs").addClass("exitPage").attr("href","buttons.jsp?p="
-                        + tpen.project.folios[tpen.screen.currentFolio].folioNumber
-                        + "&projectID=" + tpen.project.id+"#tabs-2");
-                }
-                </script>
 
                 <script>
 
+    var leftovers = tpen.project.remainingText;
+        // get from StringEscapeUtils.escapeJavaScript(thisProject.getLinebreakText())
+    if(leftovers && leftovers.length){
+        $("#lbText").html(unescape(leftovers));
+        $("#linebreakNoTextContainer").hide();
+    } else {
+        $("#linebreakTextContainer").hide();
+        $("#linebreakNoTextContainer").show();
+    }
+    function initLinks(){
+        var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
+        +"&projectID="+tpen.project.id;
+        $("#uploadText").addClass("exitPage").add("#newText").attr("href",uploadLocation);
 
+        // add projectID to buttons.jsp links
+        $(".editButtons").addClass("exitPage").attr("href","buttons.jsp?p="
+            + tpen.project.folios[tpen.screen.currentFolio].folioNumber
+            + "&projectID=" + tpen.project.id+"#tabs-1");
+        $(".editXMLs").addClass("exitPage").attr("href","buttons.jsp?p="
+            + tpen.project.folios[tpen.screen.currentFolio].folioNumber
+            + "&projectID=" + tpen.project.id+"#tabs-2");
+    }
+    
+    function getHistory(){
+        var url = "getHistory";
+        var folioNum = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
+        var params = {projectID: tpen.project.id, p:folioNum};
+        $.post(url, params)
+            .success(function(data){
+                $("#historyListing").empty();
+                var historyElem = $(data);
+                $("#historyListing").append(historyElem);
+            })
+            .fail(function(data){
+                $("#historyListing").empty(); //? good nuf for now?
+                //TODO: Should we populate history with something informing failure?
+            });
+    }
 
 
 
@@ -1818,7 +1866,31 @@ Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to l
 //            if (leftovers != undefined)
 //              Linebreak.saveLeftovers(escape(leftovers));
         });
-
+        
+        
+        $("#historyListing").on({
+            mouseenter: function(){
+                History.adjustBookmark($(this));
+                $(this).children(".historyOptions").fadeIn("fast");
+            },
+            mouseleave: function(){
+                $("#historyBookmark").css({"box-shadow":"box-shadow:0 0 30px black","border":"solid thin blue"}).add(".historyDims").empty();
+                $(this).children(".historyOptions").fadeOut("fast");
+            }
+        },".historyEntry");
+        
+        $("#historyListing").on({
+            mouseenter: function(){
+                var dims = $(this).parents(".historyEntry").children(".historyRevert");
+                dims.html($(this).attr("title")).show();
+            }, 
+            mouseleave: function(){
+                $(this).parents(".historyEntry").children(".historyRevert").html("").hide();
+            },
+            click: function(){
+                History.revert(this);
+            }
+        },".historyOptions span");
 
     });
 

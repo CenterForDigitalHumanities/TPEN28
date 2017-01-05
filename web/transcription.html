@@ -110,6 +110,11 @@
         <div id="transTemplateLoading">
             <p class="turnMsg">Please wait while we load the transcription interface.</p>
             <div class="turnLoader transLoader"><img src="images/loading2.gif" /></div>
+            <p>
+                <i class="fa fa-info-circle"></i>
+                <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>
+                Use Peek-Zoom to get a closer look at the line you are on.
+            </p>
         </div>
         <div id="transcriptionTemplate">
             <div id="templateResizeBar"></div>
@@ -956,7 +961,7 @@
                         <img alt="historyViewerImg" class="preloadImage" src="css/custom-theme/images/loadingImg.gif" />
                     </div>
                     <div id="historyListing">
-                        
+
                     </div>
             </div>
         </div>
@@ -1147,7 +1152,7 @@
             + tpen.project.folios[tpen.screen.currentFolio].folioNumber
             + "&projectID=" + tpen.project.id+"#tabs-2");
     }
-    
+
     function getHistory(){
         var url = "getHistory";
         var folioNum = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
@@ -1866,8 +1871,8 @@
 //            if (leftovers != undefined)
 //              Linebreak.saveLeftovers(escape(leftovers));
         });
-        
-        
+
+
         $("#historyListing").on({
             mouseenter: function(){
                 History.adjustBookmark($(this));
@@ -1878,12 +1883,12 @@
                 $(this).children(".historyOptions").fadeOut("fast");
             }
         },".historyEntry");
-        
+
         $("#historyListing").on({
             mouseenter: function(){
                 var dims = $(this).parents(".historyEntry").children(".historyRevert");
                 dims.html($(this).attr("title")).show();
-            }, 
+            },
             mouseleave: function(){
                 $(this).parents(".historyEntry").children(".historyRevert").html("").hide();
             },

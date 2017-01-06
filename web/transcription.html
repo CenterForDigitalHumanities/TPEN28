@@ -887,6 +887,9 @@
             <i class="fa fa-adjust"></i> Contrast
             <div id="contrastSlider"></div>
         </div>
+        <button class="" onclick="resetFilters();">
+            Reset
+        </button>
 
 
                     <header> Column Controls</header>
@@ -953,7 +956,7 @@
                         <img alt="historyViewerImg" class="preloadImage" src="css/custom-theme/images/loadingImg.gif" />
                     </div>
                     <div id="historyListing">
-                        
+
                     </div>
             </div>
         </div>
@@ -1144,7 +1147,7 @@
             + tpen.project.folios[tpen.screen.currentFolio].folioNumber
             + "&projectID=" + tpen.project.id+"#tabs-2");
     }
-    
+
     function getHistory(){
         var url = "getHistory";
         var folioNum = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
@@ -1863,8 +1866,8 @@
 //            if (leftovers != undefined)
 //              Linebreak.saveLeftovers(escape(leftovers));
         });
-        
-        
+
+
         $("#historyListing").on({
             mouseenter: function(){
                 History.adjustBookmark($(this));
@@ -1875,12 +1878,12 @@
                 $(this).children(".historyOptions").fadeOut("fast");
             }
         },".historyEntry");
-        
+
         $("#historyListing").on({
             mouseenter: function(){
                 var dims = $(this).parents(".historyEntry").children(".historyRevert");
                 dims.html($(this).attr("title")).show();
-            }, 
+            },
             mouseleave: function(){
                 $(this).parents(".historyEntry").children(".historyRevert").html("").hide();
             },
@@ -1888,8 +1891,8 @@
                 History.revert(this);
             }
         },".historyOptions span");
-        
-        //After 10 seconds of being on the page, we want to start preloading images. 
+
+        //After 10 seconds of being on the page, we want to start preloading images.
         window.setTimeout(function(){
             console.log("It is now 15 seconds after page load.  Lets get the images");
             preloadFolioImages();

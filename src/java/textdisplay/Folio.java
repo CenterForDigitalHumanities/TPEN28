@@ -645,7 +645,8 @@ public class Folio {
     * @throws SQLException
     */
    public String getImageURLResize() throws SQLException {
-      return getImageURLResize(1000);
+      return getImageURLResize(2000);
+      //This was set to 1000 because we use 1000 as a constant in the math.  This affects quality, we will always go for 2000 instead.  1/2017
    }
 
    /**

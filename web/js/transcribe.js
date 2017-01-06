@@ -3073,6 +3073,7 @@ function reparseColumns(){
                 myField.focus();
                 sel = document.selection.createRange();
                 sel.text = unescape(myValue);
+                sel.setSelectionRange(sel.selectionStart, sel.selectionStart);
                 updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
@@ -3083,6 +3084,7 @@ function reparseColumns(){
                 currentValue = currentValue.slice(0, startPosChar) + unescape(myValue) + currentValue.slice(startPosChar);
                 myField.value = currentValue;
                 myField.focus();
+                myField.setSelectionRange(startPosChar, startPosChar);
                 updateLine($(myField).parent(), false, true);
             }
         }
@@ -3094,6 +3096,7 @@ function reparseColumns(){
                 myField.focus();
                 sel = document.selection.createRange();
                 sel.text = unescape(fullTag);
+                sel.setSelectionRange(sel.selectionStart, sel.selectionStart);
                 updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
@@ -3130,10 +3133,12 @@ function reparseColumns(){
                     closeAddedTag(myValue, fullTag);
                     //return startPos+unescape(fullTag).length;
                 }
+                myField.setSelectionRange(startPos, startPos);
             }
             else {
                 myField.value += unescape(fullTag);
                 myField.focus();
+                myField.setSelectionRange(myField.selectionStart);
                 updateLine($(myField).parent(), false, true);
                 closeAddedTag(myValue, fullTag);
                 //return myField.length;

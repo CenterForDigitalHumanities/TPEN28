@@ -3207,20 +3207,10 @@ function reparseColumns(){
             destroyClosingTag(this);
         });
         $(".tags").mouseenter(function(){
-            $(this).css({
-                "padding": "4px",
-                "margin": "-3px -4px -2px -3px",
-                "z-index": 21
-            })
-            .append("<span onclick='destroyClosingTag(this.parentNode);' class='destroyTag ui-icon ui-icon-closethick right'></span>");
+            $(this).append("<span onclick='destroyClosingTag(this.parentNode);' class='destroyTag ui-icon ui-icon-closethick right'></span>");
         });
         $(".tags").mouseleave(function(){
-            $(this).css({
-                "padding": "1px",
-                "margin": "0px -1px 1px 0px",
-                "z-index": 20
-            })
-            .find(".destroyTag").remove();
+            $(this).find(".destroyTag").remove();
         });
     }
 
@@ -4313,13 +4303,21 @@ function toggleLineControls(event){
 }
 
 function toggleXMLTags(event){
-    $("#xmlTagFloat").fadeToggle();
-    $("#toggleXML").toggleClass('xmlTagged');
+    if($("#xmlTagFloat").is(":visible")){
+        $("#xmlTagFloat").fadeOut();
+    } else {
+        $("#xmlTagFloat").css("display","flex").fadeIn();
+    }
+    $("#toggleXML").toggleClass('xml-tagged');
 }
 
 function toggleSpecialChars(event){
-    $("#specialCharsFloat").fadeToggle();
-    $("#toggleChars").toggleClass('specialCharactered');
+    if($("#specialCharsFloat").is(":visible")){
+        $("#specialCharsFloat").fadeOut();
+    } else {
+        $("#specialCharsFloat").css("display","flex").fadeIn();
+    }
+    $("#toggleChars").toggleClass('special-charactered');
 }
 
 /* Control the hiding and showing of the image tools in the transcription interface. Depricated

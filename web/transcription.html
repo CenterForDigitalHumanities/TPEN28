@@ -5,7 +5,8 @@
         <title>T-PEN Transcription</title>
         <link type="text/css" href="css/custom-theme/jQuery.css" rel="Stylesheet" />
         <link type="text/css" href="css/transcribeSkin.css" rel="Stylesheet" />
-    <style>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        <style>
         p{
             padding: 0px 10px;
         }
@@ -110,6 +111,11 @@
         <div id="transTemplateLoading">
             <p class="turnMsg">Please wait while we load the transcription interface.</p>
             <div class="turnLoader transLoader"><img src="images/loading2.gif" /></div>
+            <p>
+                <i class="fa fa-info-circle"></i>
+                <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>
+                Use Peek-Zoom to get a closer look at the line you are on.
+            </p>
         </div>
         <div id="transcriptionTemplate">
             <div id="templateResizeBar"></div>
@@ -127,9 +133,10 @@
                 <div id="transWorkspace">
                     <div title="Slide Workspace" class="workspaceHandle slideHandleLeft"><i class="fa fa-bars"></i><i class="fa fa-arrows-v"></i></div><div title="Slide Workspace" class="workspaceHandle slideHandleRight"><i class="fa fa-arrows-v"></i><i class="fa fa-bars"></i></div>
                     <div class="flex-container flex-stretch">
-                        <div class="flex-bookend"></div>
+                        <div class="flex-bookend">
+                            <div title="Previous Line" class="pull-right" id="prevColLine"></div>
+                        </div>
                         <div class="flex-stretch">
-                            <div title="Previous Line" id="prevColLine"></div>
                         </div>
                         <div id="captions" class="flex-wide">
                             <div id="captionsText"></div>
@@ -141,20 +148,16 @@
                     </div>
                     <div class="flex-container flex-stretch">
                         <div class="flex-bookend">
-                            <button id="prevLine" title="Previous Line" onclick="previousTranscriptlet();">
-                                <i class="fa fa-chevron-left fa-2x"></i><br>
-                                Previous Line
+                            <button id="prevLine" class="pull-right" title="Prev" onclick="previousTranscriptlet();">
+                                <i class="fa fa-chevron-left"></i> Prev
                             </button>
                             <button id="prevPage" title="Previous Page" onclick="previousFolio();">
-                                <i class="fa fa-backward fa-2x"></i><br>
+                                <i class="fa fa-caret-left fa-2x"></i>
                                 Previous Page
                             </button>
                         </div>
                         <div class="flex-stretch">
                             <div title="Current Line" id="currentColLine"></div>
-                            <button id='toggleNotes' role="button" onclick="$('.notes').fadeToggle('slow')" title='Toggle Notes'>
-                                <i class="fa fa-comment"></i>
-                            </button>
                         </div>
                         <div id="transcriptletArea" class="flex-wide">
                             <div class="xmlClosingTags"></div>
@@ -162,54 +165,61 @@
                         </div>
 
                         <div class="flex-bookend">
-                            <button id="nextLine" title="Next Line" onclick="nextTranscriptlet();">
-                                <i class="fa fa-chevron-right fa-2x"></i><br>
-                                Next Line
+                            <button class="pull-left" id="nextLine" title="Next Line" onclick="nextTranscriptlet();">
+                                Next <i class="fa fa-chevron-right"></i>
                             </button>
                             <button id="nextPage" title="Next Page" onclick="nextFolio();">
-                                <i class="fa fa-forward fa-2x"></i><br>
+                                <i class="fa fa-forward fa-2x"></i>
                                 Next Page
+                            </button>
+                            <button id="toggleNotes" class="pull-left" role="button" onclick="$('.notes').fadeToggle('slow')" title="Toggle Notes">
+                                Notes <i class="fa fa-comment"></i>
                             </button>
                         </div>
                     </div>
                     <div class="flex-container flex-stretch buttons">
-                        <select id="splitScreenTools" >
+                        <select id="splitScreenTools" class="let">
                             <option selected>Splitscreen Tools</option>
                         </select>
                         <button id="canvasControls" title="Page Tools" onclick="splitPage(event,'controls');">
+                            Page Tools
                             <i class="fa fa-file-image-o"></i>
-                            Page Tools</button>
-                        <button id="magnify1" class="magnifyBtn" magnifyImg="trans" title="Inspect Transcription Image" >
+                        </button>
+                        <button id="magnify1" class="magnifyBtn let" magnifyImg="trans" title="Inspect Transcription Image" >
+                            Inspect
                             <i class="fa fa-search-plus"></i>
-                            Inspect</button> <!--Page event on the listener for this class in js.-->
+                        </button> <!--Page event on the listener for this class in js.-->
                         <button id="toggleChars" title="Move Transcription Image" onclick="toggleSpecialChars(event);">
+                            Characters
                             <i class="fa fa-keyboard-o"></i>
-                            Characters</button>
-                        <button id="toggleXML" title="Move Transcription Image" onclick="toggleXMLTags(event);">
+                        </button>
+                        <button id="toggleXML" class="let" title="Move Transcription Image" onclick="toggleXMLTags(event);">
+                            XML Tags
                             <i class="fa fa-code"></i>
-                            XML Tags</button>
+                        </button>
                     </div>
-                    <div id="specialCharsFloat" class="flex-container flex-stretch specialCharactered">
-                        <a title="Edit Special Characters" class="pull-left lookLikeButtons editButtons exitPage" href="buttons.jsp">
+                    <div class="flex-container flex-stretch" style="flex-wrap: wrap; justify-content: space-around;">
+                        <div id="specialCharsFloat" class="flex-container special-charactered">
+                            <a title="Edit Special Characters" class="lookLikeButtons editButtons" href="buttons.jsp">
                             <i class="fa fa-edit"></i>
                         </a>
-                        <div class="closeBtn" onclick="$('#toggleChars').click();">
-                            <i class="fa fa-close"></i>
-                        </div>
-                        <div id="charactersPopin" class="specialCharacters"  title="Special Characters" >
+                            <!--                        <div class="closeBtn" onclick="$('#toggleChars').click();">
+                                                        <i class="fa fa-close"></i>
+                                                    </div>-->
+<div id="charactersPopin" class="specialCharacters"  title="Special Characters" >
                         </div>
                     </div>
-                    <div id="xmlTagFloat" class="flex-container flex-stretch xmlTagged">
-                        <a title="Edit XML Tags" class="pull-left lookLikeButtons editXMLs exitPage" href="buttons.jsp">
+                        <div id="xmlTagFloat" class="flex-container xml-tagged">
+                            <a title="Edit XML Tags" class="lookLikeButtons editButtons exitPage" href="buttons.jsp">
                             <i class="fa fa-edit"></i>
                         </a>
-                        <div class="closeBtn" onclick="$('#toggleXML').click();">
-                            <i class="fa fa-close"></i>
-                        </div>
-                        <div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
+                        <!--                        <div class="closeBtn" onclick="$('#toggleXML').click();">
+                                                    <i class="fa fa-close"></i>
+                                                </div>-->
+<div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
                         </div>
                     </div>
-
+                    </div>
                 </div>
                 <div id="imgBottom">
                 <img class="transcriptionImage" />
@@ -371,6 +381,7 @@
             <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
                 <div class="fullScreenTrans"><i class="fa fa-reply"></i> Close Tool </div>
                 <div style="padding:15px;">
+
                     <header> Image Controls </header>
                     <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
                     <i class="fa fa-picture-o" style="color: #999;background: #DDD;border-radius: 2px;"></i>
@@ -383,6 +394,29 @@
                         <div id="brightnessSlider"></div>
                         <i class="fa fa-adjust"></i> Contrast
                         <div id="contrastSlider"></div>
+                    </div>
+                    <header> Column Controls</header>
+                    <button role="button" class="block" onclick="$(this).toggleClass('selected')">
+                        <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" >
+                    </button>
+                    <button role="button" class=" block" onclick="$(this).toggleClass('selected')">
+                        <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
+                    </button>
+                    <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
+                    <button role="button" id="parsingBtn" title="Redraw the lines on this page" class='block'>
+                        <i class="fa fa-barcode fa-rotate-90"></i>
+                        Edit Columns</button>
+
+                    <header>
+                        Keyboard Shortcuts
+                    </header>
+                    <div>
+                        <strong>View/Move Image</strong>
+                        <kbd>CTRL</kbd>+<kbd>ALT</kbd>: hold to temporarily hide the workspace and drag around your page image
+                    </div>
+                    <div>
+                        <strong>Peek-Zoom</strong>
+                        <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>: peek-zoom into the current line of transcription
                     </div>
                 </div>
             </div>
@@ -872,8 +906,8 @@
                 </div>
             </div>
             <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
-    <div class="fullScreenTrans"><i class="fa fa-reply"></i> Close Tool </div>
-    <div style="padding:15px;">
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool </div>
+                <div style="padding:15px;">
         <header> Image Controls </header>
         <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
         <i class="fa fa-picture-o" style="color: #999;background: #DDD;border-radius: 2px;"></i>

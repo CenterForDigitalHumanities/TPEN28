@@ -112,22 +112,18 @@ body{
     opacity: 1 !important;
     border-radius: 2px;
 }
-.lookLikeButtons{
-    /*    font-family: "Open Sans","Helvetica Neue",sans-serif;*/
-    /*font-weight: bold;*/
+.lookLikeButtons, button{
+    font-family: "Open Sans","Helvetica Neue",sans-serif;
     color: #FFF;
-    border-radius: 4px;
+    border-radius: 2px;
     height: 26px;
-    background-clip: border-box;
-    background-origin: padding-box;
     cursor: pointer;
-    background-color: #D14836;
+    background-color: #005a8c;
     position: relative;
     margin: 0px 3px;
     padding: 4px 6px;
     margin: 3px 2px;
-    line-height: 26px;
-    background-color: #272727;
+    border:none;
 }
 
 .destroyPage{
@@ -258,22 +254,21 @@ body{
     width: auto;
     z-index: 3;
     height: auto;
-    padding: 7px;
+    padding: .25em;
 }
 .flex-container{
     display: flex;
     margin: 2px 0;
 }
 .flex-bookend {
-    width: 4em;
+    width: 8em;
     text-align: center;
-    padding: 0 1em;
+    padding: 0 .25em;
     position: relative;
 }
 .flex-wide, .flex-wide div {
     display:flex;
     flex-grow:8;
-    padding-left: .25em;
 }
 .flex-stretch{
     flex-align: stretch;
@@ -387,6 +382,9 @@ body{
     visibility: visible;
     max-width: 40em;
 }
+div#transcriptletArea {
+    margin-bottom: 0.25em;
+}
 #pageLabel{
     top: 3px !important;
     position: relative;
@@ -418,31 +416,19 @@ body{
     width: auto;
     height: 0px;
 }
-#toggleNotes{
-    border-radius: 4px;
-    width: 30px;
-    text-align: center;
-    background: #999;
-}
 
 #prevColLine, #currentColLine{
-    border-radius: 4px;
-    height: 30px;
-    width: 30px;
+    border-radius: 2px;
     text-align: center;
-    line-height: 30px;
-    cursor: default;
     color: #002a5c;
     /*font-weight: bold;*/
-    font-size: 11pt;
     position: relative;
     display: block; /* We may still want these, but they are wildly out of position right now. */
-    opacity: .5;
+    padding:.25em;
+    float: right;
 }
-#prevColLine:hover, #currentColLine:hover{
-    opacity: 1;
-}
-#captionsColLine{
+
+#captionsColLine {
     display: inline-block;
     height: 30px;
     width: 30px;
@@ -455,11 +441,13 @@ body{
     position: relative;
     color:wheat;
 }
-#prevColLine{
+#prevColLine {
     background-color: wheat;
 }
-#currentColLine{
-    background-color: rgba(0,0,0,.15);
+#currentColLine {
+    background: #ffebb9;
+    border: 1px solid #69acc9;
+    color: #226683;
 }
 #zoomDiv {
     display: none;
@@ -487,7 +475,7 @@ body{
     cursor:url(custom-theme/images/grabbing.gif),move;
 }
 
-#pageLabel1{
+#pageLabel1 {
     left: 35%;
     position: absolute;
 }
@@ -726,7 +714,7 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
         width: auto;
         height: auto;
 }
-.tags {font-size: 80%; padding: 1px;margin: 0px -1px 1px 0px;display: inline-block;z-index: 20;cursor: pointer;position: relative;}
+.tags {font-size: 80%; padding: 0 .5em;margin: 2px;border-radius: 1em;z-index: 20;cursor: pointer;position: relative;}
 .destroyTag {position:absolute;top:-15px;right:0;}
 .loadingStatus {position:absolute;color: white; top:25%;left:30%;font-family: 'Nova Cut',sans-serif;font-size: 24px;text-shadow:0px 1px 0 #69ACC9;}
 #loadingCompare {position:relative;}
@@ -983,13 +971,12 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     text-align: center;
 }
 #splitScreenTools{
-    border: 2px solid #000;
-    height: auto;
-    font-size: 1rem;
+    border: 2px solid #005a8c;
+    font-size: .8em;
     border-radius: 2px;
     cursor: pointer;
     flex:2 1 auto;
-    max-width: 9em;
+    max-width: 12em;
 }
 #magnifyTools{
     position: absolute;
@@ -1052,15 +1039,44 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     min-width: 2em;
     display: inline-block;
     text-align: center;
-    line-height: 35px;
+    height: 35px;
     padding: 0 4px !important;
     font-size: 1em;
 }
+.xmlTag, .character {
+    line-height: 1.25;
+    min-width: 1em;
+    margin: 0 .25em;
+    counter-increment: hotkey;
+}
+.character::after, .editButtons::after, .editXMLs::after {
+    content: "CTRL+" counter(hotkey);
+    position: absolute;
+    color: #999;
+    font-size: .75em;
+    bottom: 0;
+    left: 0;
+    font-family: monospace;
+    width: 100%;
+    text-align: center;
+}
 .character{
     font-family:'Junicode','Georgia', serif;
+    min-width: 2em;
+    line-height: 1.5;
+}
+.editButtons::after, a.editXMLs::after {
+    content: "edit";
+}
+a.editButtons, a.editXMLs {
+    line-height: 1.5;
+    float: left;
 }
 .lookLikeButtons:hover {
-    background-color: #d14836 !important;
+    background-color: #829aac !important;
+}
+.lookLikeButtons:hover::after {
+    color: #ffffff !important;
 }
 
 #parse,#linebreak,#moveimg{
@@ -1071,7 +1087,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     display: none;
     position:relative;
     width:43%;
-    height:100%;
+    height:100vh;
     overflow: hidden;
     float: right;
     background-color: rgba(1,51,90,.5);
@@ -1136,7 +1152,7 @@ button.imgTool{
     background-color: rgb(209,72,54);
 }
 .split header {
-    margin: 0;
+    margin: 0 -15px;
     text-align: center;
     background: #6d6e71;
     color: #e1f4fe;
@@ -1257,28 +1273,29 @@ kbd {
     position: relative;
     display: none;
 }
-.toolLinks{
+.toolLinks {
     position: relative;
     width: 100%;
     background-color: rgba(1,51,90,.5);
     padding: 5px 0px;
 }
-#prevLine, #nextLine,#nextPage,#prevPage{
+#prevLine,#nextLine,#toggleNotes,#nextPage,#prevPage{
     position: relative;
-    height:auto;
-    background: #999;
-    color: #333;
-    transition: .5s;
+    line-height:2em;
+    width:5.5em;
+    padding: 0 .5em;
+    margin: .25em 0;
+}
+#nextPage,#prevPage{
+    width:100%;
+}
+#toggleNotes {
+    margin-top:0;
 }
 #nextPage,#prevPage{
     background-color: #993333;
-    color: #DDD;
 }
-#prevLine:hover,#nextLine:hover{
-    box-shadow: 0 0 3px rgba(0,0,0,.5);
-    background: #BBB;
-}
-#pageControls{
+#pageControls {
     margin-right: 2px;
 }
 #pageControls,#lineControls{
@@ -1301,12 +1318,6 @@ kbd {
 }
 #ruler1,#ruler2 {display: none;background: black;position: absolute;z-index: 6;}
 
-
-
-/*
-* Paleography Site Skinning
-*
-*/
 html{
     overflow: hidden;
 }
@@ -1317,26 +1328,21 @@ body{
     height: 100vh;
 }
 button, #uploadText, .lookLikeButtons {
-    /*font-weight: bold;*/
     color:white;
     border-radius: 2px;
     padding: 4px 6px;
     height: 35px;
-    background-clip: border-box;
-    background-origin: padding-box;
     cursor: pointer;
-    background-color: #272727;
+    background-color: #005a8c;
     border: none;
 }
 button:hover{
-    background-color: #d14836;
+    background-color: #829aac;
 }
 button.active {
     background-color: #618797;
 }
-p{
-    /*font-family: 'Open Sans','Helvetica Neue',sans-serif;*/
-}
+
 .handl{
     background-image: url("../images/grabber.png");
     width:30px;
@@ -1440,7 +1446,7 @@ a{
     cursor: default !important;
 }
 
-/* *********************** 2.8 fixes ********************* */
+/* 2.8 fixes */
 
 .ui-resizable:not(.ui-resizable-disabled),.noTransition,.lineColIndicatorArea {
     -webkit-transition: all 0s !important;
@@ -1465,19 +1471,7 @@ body {
 .navigation {
     color: white;
     background: rgb(166,65,41); /* Old browsers */
-    background: -moz-linear-gradient(top,  rgba(166,65,41,1) 0%, rgba(244,150,129,1) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(166,65,41,1)), color-stop(100%,rgba(244,150,129,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  rgba(166,65,41,1) 0%,rgba(244,150,129,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  rgba(166,65,41,1) 0%,rgba(244,150,129,1) 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  rgba(166,65,41,1) 0%,rgba(244,150,129,1) 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  rgba(166,65,41,1) 0%,rgba(244,150,129,1) 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', endColorstr='#f49681',GradientType=0 ); /* IE6-9 */
 }
-.navigation .ui-icon {
-    background-image: url(css/custom-theme/images/ui-icons_ffffff_256x240.png);            }
-a.navigation:hover .ui-icon {
-    background-image: url(css/custom-theme/images/ui-icons_a64129_256x240.png);
-    border-color: #a64129;}
 a.navigation {
     border-color: white;
 }
@@ -1497,30 +1491,38 @@ a.navigation {
     position: relative;
     display: none;
     padding:.25em;
-    border:thin solid #999;
     counter-reset: hotkey;
+    flex-grow: 1;
 }
-.specialCharactered{
-    background-color: rgba(0,0,0,.25);
+.special-charactered{
+    background-color: #ddd;
 }
-.xmlTagged {
-    background: rgba(0,0,0,.4);
+.xml-tagged {
+    background: #999;
 }
 .xmlTag, .character {
-    background: #666;
     line-height: 1.25;
     min-width: 1em;
     margin: 0 .25em;
     counter-increment: hotkey;
+    height: 1.8em;
 }
-.xmlTag{
-    height:auto;
+.xmlTag::after{
+    content: attr(title);
+    position: absolute;
+    color: #999;
+    font-size: .75em;
+    bottom: 0;
+    left: 0;
+    font-family: monospace;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
 }
 .character {
     min-width: 2em;
-    line-height: 1.5;
 }
-.character::after,.editButtons::after,.editXMLs::after {
+.character::after,.editButtons::after {
     content: "CTRL+" counter(hotkey);
     position: absolute;
     color: #999;
@@ -1531,31 +1533,25 @@ a.navigation {
     width: 100%;
     text-align: center;
 }
-a.editButtons,a.editXMLs {
-    line-height: 1.5;
+.let {
+    margin-right:2% !important;
+}
+a.editButtons {
     float: left;
+    height: 1.8em;
 }
-.editButtons::after,a.editXMLs::after{
+.editButtons::after{
     content: "edit";
-}
-a.editXMLs {
-    line-height: 1.25;
-    height: auto;
-}
-.editXMLs::after{
-    position:relative;
 }
 
 .manController{
     text-decoration: underline;
 }
 
-.compareImage, #fullPageImg{
+.compareImage, #fullPageImg {
     left: 0;
     right: 0;
     margin: 0 auto;
     position: absolute;
     max-height: 98%;
 }
-
-/* Help area in transcription.html */

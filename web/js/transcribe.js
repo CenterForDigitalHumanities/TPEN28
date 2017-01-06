@@ -11,6 +11,7 @@ var tpen = {
         permissions: [],
         metadata: [],
         folios: [],
+        folioImages: [],
         user_list: [],
         leader_list: [],
         projectName: "",
@@ -141,6 +142,7 @@ function previousFolio (parsing) {
     var activeLineID = $(".activeLine").attr("lineid");
     var transcriptlet = $("#transcriptlet_"+activeLineID);
     updateLine(transcriptlet, false, false);
+    tpen.screen.currentFolio--;
     redraw("");
 }
 
@@ -408,6 +410,14 @@ function setTPENObjectData(data){
         }
         if(data.ls_fs){
             tpen.project.folios = JSON.parse(data.ls_fs);
+            for(var i=0; i<tpen.project.folios.length; i++){
+                var preloadObj = {
+                    "preloaded" : false,
+                    "folioNum" : tpen.project.folios[i].folioNumber,
+                    "image" : null
+                };
+                tpen.project.folioImages[i] = preloadObj;
+            }
         }
         if(data.projectName){
             tpen.project.projectName = data.projectName;
@@ -1039,9 +1049,16 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
     $("#parsingButton").removeAttr('disabled');
     //Move up all image annos
     var cnt = - 1;
-    if (canvasObj.images[0].resource['@id'] !== undefined
-        && canvasObj.images[0].resource['@id'] !== ""){ //Only one image
-        var image = new Image();
+    if (canvasObj.images[0].resource['@id'] !== undefined && canvasObj.images[0].resource['@id'] !== ""){ //Only one image
+        var image = null;
+        //Check to see if we can use a preloaded image...
+        if(tpen.project.folioImages[tpen.screen.currentFolio].image){
+            image = tpen.project.folioImages[tpen.screen.currentFolio].image;
+            tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //We know it is preloaded, ensure the flag is correct.
+        }
+        else{
+            image = new Image();
+        }
         $(image)
         .on("load", function() {
             $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
@@ -1068,6 +1085,10 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 if(!ipr_agreement){
                     $('#iprAccept').show();
                     $(".trexHead").show();
+                }
+                if(!tpen.project.folioImages[tpen.screen.currentFolio].preloaded){
+                    tpen.project.folioImages[tpen.screen.currentFolio].image = image;
+                    tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //It is now preloaded.  
                 }
             }
             else{
@@ -4244,6 +4265,29 @@ function loadIframes(){
         var src = $(this).attr("data_src");
         $(this).attr("src", src);
     });
+}
+
+function preloadFolioImages(){
+    for(var i=0; i<tpen.manifest.sequences[0].canvases.length; i++){
+        var folioImageToGet = tpen.manifest.sequences[0].canvases[i].images[0].resource["@id"];
+        if(tpen.project.folioImages[i].image === null || !tpen.project.folioImages[i].preloaded ){
+            tpen.project.folioImages[i].image = new Image();
+            tpen.project.folioImages[i].image.onload = function() {
+                //the problem here is that we cannot rely on i, so we cannot set the preloaded flag here.  This is done during loadTranscriptionCanvas() instead.  
+                try{
+                    //tpen.project.folioImages[i].preloaded = true;
+                    //console.log("Finished preloading an image");
+                }
+                catch(err){
+                    console.warn("Could not load an image during preload.");
+                }
+            };
+            tpen.project.folioImages[i].image.src = folioImageToGet;
+        }
+        else{
+            //console.log("Folio "+i+" already preloaded");
+        }
+    }
 }
 
 function toggleImgTools(event){

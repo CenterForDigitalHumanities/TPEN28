@@ -3038,6 +3038,19 @@ function reparseColumns(){
                     "data-tagID":   tagID
                 }).text("/" + tagName);
                 $(".xmlClosingTags").append(closeTag); //tpen.screen.focusItem[1].children(".xmlClosingTags").append(closeTag)
+                $(closeTag).click(function(event){
+            //we could detect if tag is in this line.
+                    if(event.target != this){return true;}
+                    //makeUnsaved();
+                    addchar("<" + $(this).text() + ">"); //there's an extra / somehow...
+                    destroyClosingTag(this);
+                });
+                $(closeTag).mouseenter(function(){
+                    $(this).append("<span onclick='destroyClosingTag(this.parentNode);' class='destroyTag ui-icon ui-icon-closethick right'></span>");
+                });
+                $(closeTag).mouseleave(function(){
+                    $(this).find(".destroyTag").remove();
+                });
             }
         );
     }

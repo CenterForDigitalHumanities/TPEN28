@@ -2205,6 +2205,8 @@ var Interaction = {
      *  disruption will result in loss of ability to save edits.
      */
     heartbeat: function(){
+        return true;
+        // 2015-11-30 cubap: heartbeat is failing in Chrome, but seems to not affect other saving.
        $.ajax({
             url:"heartbeat",
             type:"POST",

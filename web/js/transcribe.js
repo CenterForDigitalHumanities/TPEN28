@@ -1271,10 +1271,10 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
     }
     tpen.screen.textSize();
 }
-function updateURL(piece){
+function updateURL(piece, classic){
     var toAddressBar = document.location.href;
     //If nothing is passed in, just ensure the projectID is there.
-    console.log("does URL contain projectID?        "+getURLVariable("projectID"));
+    //console.log("does URL contain projectID?        "+getURLVariable("projectID"));
     if(!getURLVariable("projectID")){
         toAddressBar = "?projectID="+tpen.project.id;
     }
@@ -1292,6 +1292,13 @@ function updateURL(piece){
     console.log("push this into history and URL");
     console.log(toAddressBar);
     window.history.pushState("", "T-PEN Transcription", toAddressBar);
+}
+
+/* Go to the transcription.jsp interface, which is the classic version */
+function switchToClassicTranscription(){
+    //Make sure the exitPage functionality goes with this.
+    var newURL = "transcription.jsp?projectID="+getURLVariable('projectID')+"&p="+getURLVariable('p');
+    document.location.href = newURL;
 }
 /* Take line data, turn it into HTML elements and put them to the DOM */
 function linesToScreen(lines, tool){

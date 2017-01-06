@@ -5,7 +5,8 @@
         <title>T-PEN Transcription</title>
         <link type="text/css" href="css/custom-theme/jQuery.css" rel="Stylesheet" />
         <link type="text/css" href="css/transcribeSkin.css" rel="Stylesheet" />
-    <style>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        <style>
         p{
             padding: 0px 10px;
         }
@@ -1897,8 +1898,8 @@
                 History.revert(this);
             }
         },".historyOptions span");
-        
-        //After 10 seconds of being on the page, we want to start preloading images. 
+
+        //After 10 seconds of being on the page, we want to start preloading images.
         window.setTimeout(function(){
             console.log("It is now 15 seconds after page load.  Lets get the images");
             preloadFolioImages();

@@ -972,7 +972,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 }
 #splitScreenTools{
     border: 2px solid #005a8c;
-    font-size: 1rem;
+    font-size: .8em;
     border-radius: 2px;
     cursor: pointer;
     flex:2 1 auto;

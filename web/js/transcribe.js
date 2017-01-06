@@ -1088,7 +1088,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 }
                 if(!tpen.project.folioImages[tpen.screen.currentFolio].preloaded){
                     tpen.project.folioImages[tpen.screen.currentFolio].image = image;
-                    tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //It is now preloaded.  
+                    tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //It is now preloaded.
                 }
             }
             else{
@@ -3207,20 +3207,10 @@ function reparseColumns(){
             destroyClosingTag(this);
         });
         $(".tags").mouseenter(function(){
-            $(this).css({
-                "padding": "4px",
-                "margin": "-3px -4px -2px -3px",
-                "z-index": 21
-            })
-            .append("<span onclick='destroyClosingTag(this.parentNode);' class='destroyTag ui-icon ui-icon-closethick right'></span>");
+            $(this).append("<span onclick='destroyClosingTag(this.parentNode);' class='destroyTag ui-icon ui-icon-closethick right'></span>");
         });
         $(".tags").mouseleave(function(){
-            $(this).css({
-                "padding": "",
-                "margin": "",
-                "z-index": ""
-            })
-            .find(".destroyTag").remove();
+            $(this).find(".destroyTag").remove();
         });
     }
 
@@ -4273,7 +4263,7 @@ function preloadFolioImages(){
         if(tpen.project.folioImages[i].image === null || !tpen.project.folioImages[i].preloaded ){
             tpen.project.folioImages[i].image = new Image();
             tpen.project.folioImages[i].image.onload = function() {
-                //the problem here is that we cannot rely on i, so we cannot set the preloaded flag here.  This is done during loadTranscriptionCanvas() instead.  
+                //the problem here is that we cannot rely on i, so we cannot set the preloaded flag here.  This is done during loadTranscriptionCanvas() instead.
                 try{
                     //tpen.project.folioImages[i].preloaded = true;
                     //console.log("Finished preloading an image");

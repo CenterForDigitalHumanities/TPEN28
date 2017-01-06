@@ -714,7 +714,7 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
         width: auto;
         height: auto;
 }
-.tags {font-size: 80%; padding: 1px;margin: 0px -1px 1px 0px;display: inline-block;z-index: 20;cursor: pointer;position: relative;}
+.tags {font-size: 80%; padding: 0 .5em;margin: 2px;border-radius: 1em;z-index: 20;cursor: pointer;position: relative;}
 .destroyTag {position:absolute;top:-15px;right:0;}
 .loadingStatus {position:absolute;color: white; top:25%;left:30%;font-family: 'Nova Cut',sans-serif;font-size: 24px;text-shadow:0px 1px 0 #69ACC9;}
 #loadingCompare {position:relative;}
@@ -1282,9 +1282,12 @@ kbd {
 #prevLine,#nextLine,#toggleNotes,#nextPage,#prevPage{
     position: relative;
     line-height:2em;
-    width:100%;
+    width:5em;
     padding: 0 .5em;
     margin: .25em 0;
+}
+#nextPage,#prevPage{
+    width:100%;
 }
 #toggleNotes {
     margin-top:0;

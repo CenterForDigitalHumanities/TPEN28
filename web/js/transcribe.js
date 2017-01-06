@@ -1130,7 +1130,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
 /*
  * @paran canvasObj  A canvas object to extract transcription lines from and draw to the interface.
  * @param parsing boolean if parsing is live tool
- * Here, we are planning to draw the lines to the transcription canvas.  We must checking which version of the project this is for.  
+ * Here, we are planning to draw the lines to the transcription canvas.  We must checking which version of the project this is for.
  * Some versions check an SQL DB, some hit the annotation store.  We know which version it is by where the lines are with the canvas.
  */
 function drawLinesToCanvas(canvasObj, parsing, tool) {
@@ -1191,7 +1191,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
         $("#imgBottom")
             .css("height", "inherit");
         // we have the anno list for this canvas (potentially), so query for it.
-        // This is TPEN 2.8, using the annotation store. 
+        // This is TPEN 2.8, using the annotation store.
 //        var annosURL = "getAnno";
 //        var onValue = canvasObj["@id"];
 //        var properties = {
@@ -1519,7 +1519,7 @@ function linesToScreen(lines, tool){
             }
 
     });
-    $("#transTemplateLoading").hide(); //if we drew the lines, this can disappear.  
+    $("#transTemplateLoading").hide(); //if we drew the lines, this can disappear.
 }
 
 /* Make the transcription interface focus to the transcriptlet passed in as the parameter. */
@@ -1841,7 +1841,7 @@ function nextTranscriptlet() {
             setTimeout(function(){ $('#captionsText').css("background-color", 'red'); }, 1000);
             setTimeout(function(){ $('#captionsText').css("background-color", '#E6E7E8'); $("#captionsText").html(captionText1); }, 1500);
         }
-        
+
     }
     else { //blink a caption warning
         var captionText = $("#captionsText").html();
@@ -2501,7 +2501,7 @@ function splitPage(event, tool) {
         $("#controlsSplit").show();
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }
-    
+
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
     if(tool)
@@ -2605,7 +2605,7 @@ function populateHistorySplit(folioIndex){
     var historySrc = tpen.manifest.sequences[0].canvases[folioIndex].images[0].resource["@id"];
     var currentHistorySrc = $("#historyViewer").find("img").attr("src");
     if (currentHistorySrc !== historySrc) $("#historyViewer").find("img").attr("src", historySrc);
-    
+
 }
 
 /*
@@ -3195,9 +3195,9 @@ function reparseColumns(){
         });
         $(".tags").mouseleave(function(){
             $(this).css({
-                "padding": "1px",
-                "margin": "0px -1px 1px 0px",
-                "z-index": 20
+                "padding": "",
+                "margin": "",
+                "z-index": ""
             })
             .find(".destroyTag").remove();
         });
@@ -3416,13 +3416,13 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
             updateLine(line, false, false);
         });
     }
-    else{ 
+    else{
         //Its because I am exiting by going to a link or something, do a batch update on the dereferenced list.
         //Will this finish before the page exit?  This worked before with the bulk updater.  The bulk updater from T-PEN classic does not update text, and we need that here.
-        //If it does not finish, we need to write a new bulk updater for T-PEN that will work with the SQL db that includes updating the line text. . 
+        //If it does not finish, we need to write a new bulk updater for T-PEN that will work with the SQL db that includes updating the line text. .
         var transcriptlets = $(".transcriptlet");
         $.each(transcriptlets, function(){
-            var line = $(this); 
+            var line = $(this);
             updateLine(line, false, false);
         });
     }
@@ -3606,7 +3606,7 @@ function updateLine(line, cleanup, updateList){
         else{
             updatePositions = false;
         }
-        
+
         if(tpen.screen.liveTool !== "parsing"){
             //Only update positions if parsing is active, it is the only place to change position information at this point. alt+ arrow has been removed from interface.
             updatePositions = false;
@@ -4011,7 +4011,7 @@ function removeLine(e, columnDelete){
             }).addClass("newDiv").attr({
                 "lineheight":   convertedNewLineHeight
             });
-        } 
+        }
         else if ($(e).hasClass("deletable")){
             var cfrm = confirm("Removing this line will remove any data contained as well.\n\nContinue?");
             if (!cfrm){
@@ -4049,7 +4049,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     var url = "updateLinePositions";
     var lineIDToRemove = parseInt(lineid.replace("line/", ""));
     params.push({name:"remove", value:lineIDToRemove});
-    if (lineid !== updatedLineID){ 
+    if (lineid !== updatedLineID){
         //we need to make sure the height and text of the next line is updated ocrrectly
         removeNextLine = true;
         var lineAfterText = toUpdate.find("textarea").val();
@@ -4068,7 +4068,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
 //        tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
 //                var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
 //                var params = {"content":JSON.stringify(paramObj)};
-        
+
     }
     var lineIDToCheck = "";
     if (removeNextLine){
@@ -4081,7 +4081,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     }
     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
         $.each(currentAnnoList, function(index){
-            
+
             if (this.tpen_line_id === lineIDToCheck){
                 //console.log("Got a match in the cached list: "+this.tpen_line_id);
                 currentAnnoList.splice(index, 1);
@@ -4097,7 +4097,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
                     else {
                         //we removed a line, but the line after that line needs to absorb its text and height, so we need an update.  The line after is named toUpdate.
                         //console.log("Here is that update I warned about.");
-                        updateLine(toUpdate, false, false); 
+                        updateLine(toUpdate, false, false);
                     }
                 });
             }
@@ -5364,11 +5364,11 @@ tpen.screen.peekZoom = function(cancel){
         });
 
     }
-    
+
     var History = {
     /**
      *  Displays the image of the line in the history tool.
-     *  
+     *
      *  @param x int left position of history entry
      *  @param y int top position of the history entry
      *  @param h height of the history entry
@@ -5386,7 +5386,7 @@ tpen.screen.peekZoom = function(cancel){
             "top" :topAdjustment +"px"
         });
         hView.css({
-            "height" : historyViewHeightAdjustment + "px" 
+            "height" : historyViewHeightAdjustment + "px"
         });
 //        hBookmark.css({
 //            "top"   : buffer/2 +"px",
@@ -5398,12 +5398,12 @@ tpen.screen.peekZoom = function(cancel){
         x = x / 100;
         w = w / 100;
         h = h / 100;
-         
+
         //y = y * hImg.height();
         h = h * hImg.height();
         w = w * hImg.width();
         x = x * hImg.width();
-        
+
         hBookmark.css({
             "top"   : y,
             "left"  : x,
@@ -5412,12 +5412,12 @@ tpen.screen.peekZoom = function(cancel){
         });
 
         // size listings for balance of page for scrolling
-        $("#historyListing").height(Page.height()-hView.height()-22); 
-    
+        $("#historyListing").height(Page.height()-hView.height()-22);
+
     },
     /**
      *  Updates the display when hovering over an entry in the history tool.
-     *  
+     *
      *  @param lineid int id of the targeted line
      */
     showLine: function(lineid){
@@ -5427,7 +5427,7 @@ tpen.screen.peekZoom = function(cancel){
             // persist history options
             $("#historySplit .ui-state-active").each(function(){
                 $(this).removeClass("ui-state-active").click();
-            });            
+            });
         }).siblings(".historyLine").hide();
         var refLine = $(".transcriptlet[lineserverid='"+lineid+"']");
         History.showImage(
@@ -5459,15 +5459,15 @@ tpen.screen.peekZoom = function(cancel){
         var hImg = hView.find("img");
         var historyRatio = hImg.height()/1000; //hImg.height()?
         var historyDims = [];
-        
-        //Coming from the database, these are already in pixel value, but are they correct? 
+
+        //Coming from the database, these are already in pixel value, but are they correct?
         var archiveDims = {
             x:  parseInt(archive.attr("lineleft")),
             y:  parseInt(archive.attr("linetop")),
             w:  parseInt(archive.attr("linewidth")),
             h:  parseInt(archive.attr("lineheight"))
         };
-        
+
         //We have the correct values for these on the #xywh= for this line in the manifest, that is where we need to gather our values.
         var JSONline = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources[$(".activeLine").attr("lineid")];
         var onProp = JSONline.on;
@@ -5487,14 +5487,14 @@ tpen.screen.peekZoom = function(cancel){
             h:  archiveDims.h - dims.h
         };
         //compare and build new dimensions for box
-        
+
         //Just want to show the archiveDims location for the box
         $("#historyBookmark").css("border","solid thin transparent").clone().appendTo("#historyBookmark");
         $("#historyBookmark").children().css({
-            "top"   : delta.y, 
+            "top"   : delta.y,
             "left"  : delta.x,
             "width" : archiveDims.w * historyRatio,
-            "height": archiveDims.h * historyRatio, 
+            "height": archiveDims.h * historyRatio,
             "box-shadow": "0 0 0 transparent",
             "border": "solid thin red"
         });
@@ -5507,7 +5507,7 @@ tpen.screen.peekZoom = function(cancel){
     },
     /**
      *  Show only the text changes in the history tool.
-     *  
+     *
      *  @param button jQuery object, clicked button
      */
     textOnly: function(button){
@@ -5532,7 +5532,7 @@ tpen.screen.peekZoom = function(cancel){
     },
     /**
      *  Show only parsing changes in the history tool.
-     *  
+     *
      *  @param button jQuery object, clicked button
      */
     parsingOnly: function(button) {
@@ -5557,7 +5557,7 @@ tpen.screen.peekZoom = function(cancel){
     },
     /**
      *  Show notes as well in the history tool.
-     *  
+     *
      *  @param button jQuery object, clicked button
      */
     showNotes: function(button) {
@@ -5574,7 +5574,7 @@ tpen.screen.peekZoom = function(cancel){
     },
     /**
      *  Revert only the text value from the history entry.
-     *  
+     *
      *  @param entry jQuery object, clicked history entry
      */
     revertText: function(entry){
@@ -5591,7 +5591,7 @@ tpen.screen.peekZoom = function(cancel){
     },
     /**
      *  Revert only the parsing value from the history entry.
-     *  
+     *
      *  @param entry jQuery object, clicked history entry
      */
     revertParsing: function(entry){
@@ -5629,7 +5629,7 @@ tpen.screen.peekZoom = function(cancel){
     },
     /**
      *  Reverts to values from the history entry.
-     *  
+     *
      *  @param entry jQuery object, clicked history entry
      */
     revertAll: function(entry){
@@ -5638,7 +5638,7 @@ tpen.screen.peekZoom = function(cancel){
     },
     /**
      *  Revert only the text value from the history entry.
-     *  
+     *
      *  @param h element, clicked history tool
      */
     revert: function(h){
@@ -5660,7 +5660,7 @@ tpen.screen.peekZoom = function(cancel){
     },
     /**
      *  Adds a history entry to the top of the tool when a line is changed.
-     *  
+     *
      *  @param lineid int unique id to attach to aded entry
      */
     prependEntry: function(lineid){

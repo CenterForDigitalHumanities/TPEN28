@@ -976,7 +976,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     border-radius: 2px;
     cursor: pointer;
     flex:2 1 auto;
-    max-width: 9em;
+    max-width: 12em;
 }
 #magnifyTools{
     position: absolute;
@@ -1152,7 +1152,7 @@ button.imgTool{
     background-color: rgb(209,72,54);
 }
 .split header {
-    margin: 0;
+    margin: 0 -15px;
     text-align: center;
     background: #6d6e71;
     color: #e1f4fe;
@@ -1282,7 +1282,7 @@ kbd {
 #prevLine,#nextLine,#toggleNotes,#nextPage,#prevPage{
     position: relative;
     line-height:2em;
-    width:5em;
+    width:5.5em;
     padding: 0 .5em;
     margin: .25em 0;
 }

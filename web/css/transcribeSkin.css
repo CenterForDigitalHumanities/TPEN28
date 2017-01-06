@@ -380,6 +380,7 @@ body{
     position: relative;
     z-index: 3;
     visibility: visible;
+    overflow: hidden;
     max-width: 40em;
 }
 div#transcriptletArea {
@@ -566,6 +567,25 @@ div#transcriptletArea {
 }
 #parsingBtn[disabled]:hover{
     background-color: red;
+}
+.fa-grayscale {
+    border-radius: 50%;
+    height: 1em;
+    width: 1em;
+    background: #959595;
+    background: -moz-linear-gradient(-45deg, #959595 0%, #777777 27%, #dddddd 51%, #4e4e4e 77%, #efefef 100%);
+    background: -webkit-linear-gradient(-45deg, #959595 0%,#777777 27%,#dddddd 51%,#4e4e4e 77%,#efefef 100%);
+    background: linear-gradient(135deg, #959595 0%,#777777 27%,#dddddd 51%,#4e4e4e 77%,#efefef 100%);
+    bottom: -2px;position:relative;
+}
+.fa-labels {
+    border: thin white solid;
+    font-style: normal;
+    height: 1em;width:1em;
+    bottom: -2px;position:relative;
+}
+.fa-labels::after {
+    content("A3");
 }
 .fa-reparse:before,.fa-square-o:before {
     content: url(../css/custom-theme/images/reparse30.png);

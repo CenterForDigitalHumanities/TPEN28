@@ -2205,12 +2205,13 @@ var Interaction = {
      *  disruption will result in loss of ability to save edits.
      */
     heartbeat: function(){
-       $.ajax({
-            url:"heartbeat",
-            type:"POST",
-            success:Interaction.ping(),
-            error:function(){}
-        });
+        return true;
+//       $.ajax({
+//            url:"heartbeat",
+//            type:"POST",
+//            success:Interaction.ping(),
+//            error:function(){}
+//        });
     },
     /**
      *  Pings server.

@@ -32,16 +32,17 @@ public class heartbeat extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session=request.getSession();
         PrintWriter out = response.getWriter();
         try {
             if (session.getAttribute("UID") == null) {
-        response.sendError(403);
-        return;
-    } else {
-    int UID = Integer.parseInt(session.getAttribute("UID").toString());
+                response.sendError(403);
+                return;
+            } 
+            else {
+                int UID = Integer.parseInt(session.getAttribute("UID").toString());
                 try {
                     user.User thisUser = new user.User(UID);
                     thisUser.updateLastActive();

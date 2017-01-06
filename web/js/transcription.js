@@ -2206,12 +2206,13 @@ var Interaction = {
      */
     heartbeat: function(){
         return true;
-//       $.ajax({
-//            url:"heartbeat",
-//            type:"POST",
-//            success:Interaction.ping(),
-//            error:function(){}
-//        });
+        // 2015-11-30 cubap: heartbeat is failing in Chrome, but seems to not affect other saving.
+       $.ajax({
+            url:"heartbeat",
+            type:"POST",
+            success:Interaction.ping(),
+            error:function(){}
+        });
     },
     /**
      *  Pings server.

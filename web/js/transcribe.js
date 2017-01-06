@@ -1520,9 +1520,11 @@ function linesToScreen(lines, tool){
         .keydown(function(e){
         //user has begun typing, clear the wait for an update
         clearTimeout(typingTimer);
+        markLineUnsaved($(e.target).parent());
+        
     })
         .keyup(function(e){
-            Preview.updateLine(this);
+            //Preview.updateLine(this);
             var lineToUpdate = $(this).parent();
             clearTimeout(typingTimer);
             //when a user stops typing for 2 seconds, fire an update to get the new text.
@@ -1535,7 +1537,8 @@ function linesToScreen(lines, tool){
                     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
                     // if it IIIF, we need to update the list
                         $.each(currentAnnoList, function(index, data){
-                            if(data["@id"] == idToCheckFor){
+                            var dataLineID = data.tpen_line_id.replace("line/", "");
+                            if(dataLineID == idToCheckFor){
                                 currentAnnoList[index].resource["cnt:chars"] = newText;
                                 tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
                                 updateLine(lineToUpdate, false, true);
@@ -3705,6 +3708,8 @@ function updateLine(line, cleanup, updateList){
             if(updatePositions){
                 $.post(url,params,function(){
                     line.attr("hasError",null);
+                    markLineSaved(line);
+                    
                     $("#parsingCover").hide();
                     // success
                 }).fail(function(err){
@@ -3715,12 +3720,16 @@ function updateLine(line, cleanup, updateList){
             if(updateContent){
                 $.post(url2,params2,function(){
                     line.attr("hasError",null);
+                    markLineSaved(line);
                     $("#parsingCover").hide();
                     // success
                 }).fail(function(err){
                     line.attr("hasError","Saving Failed "+err.status);
                     throw err;
                 });
+            }
+            if(!updateContent && !updatePositions){
+                markLineSaved(line);
             }
 //        } else {
 //            throw new Error("No good. The ID could not be dereferenced. Maybe this is a new annotation?");
@@ -5795,7 +5804,13 @@ tpen.screen.peekZoom = function(cancel){
         $("#abbrevImg").attr("src","//t-pen.org/images/cappelli/"+$(this).val());
     });
 
+function markLineUnsaved(line){
+    line.addClass("isUnsaved"); //mark on the transcriptlet.  You can find the drawn line on the screen and do something to.
+}
 
+function markLineSaved(line){
+    line.removeClass("isUnsaved");
+}
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?
 if (!window.console) window.console = {};

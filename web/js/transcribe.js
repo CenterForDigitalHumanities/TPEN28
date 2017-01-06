@@ -4274,7 +4274,7 @@ function toggleXMLTags(event){
     } else {
         $("#xmlTagFloat").css("display","flex").fadeIn();
     }
-    $("#toggleXML").toggleClass('xmlTagged');
+    $("#toggleXML").toggleClass('xml-tagged');
 }
 
 function toggleSpecialChars(event){
@@ -4283,7 +4283,7 @@ function toggleSpecialChars(event){
     } else {
         $("#specialCharsFloat").css("display","flex").fadeIn();
     }
-    $("#toggleChars").toggleClass('specialCharactered');
+    $("#toggleChars").toggleClass('special-charactered');
 }
 
 /* Control the hiding and showing of the image tools in the transcription interface. Depricated

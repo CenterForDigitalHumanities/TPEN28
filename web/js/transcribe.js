@@ -4504,6 +4504,19 @@ function bumpLine(direction, activeLine){
           $("button[which='"+which+"']").addClass("selected");
         }
     }
+    function resetFilters(){
+        $("button[which]")
+            .removeClass("selected");
+        $(".transcriptionImage")
+            .removeClass("grayscaleFilter invertFilter");
+        $(".ui-slider")
+            .each(function () {
+                var options = $(this)
+                    .slider('option');
+                $(this)
+                    .slider('values', [options.min, options.max]);
+        });
+    }
 
     //Make sure the value entered into the area that allows a user to define a custom ruler color is a valida color string.
     function validTextColour(stringToTest) {

@@ -638,8 +638,12 @@ div#transcriptletArea {
     color:#bf1e2d;
 }
 
-#parsingSplit {max-width:20em;    position: fixed;
-               min-width: 15em;}
+#parsingSplit {
+    max-width:20em;    
+    position: fixed;
+    min-width: 15em;
+    overflow-y: auto;
+}
 #overlay{
     display: none;
     z-index: 10;

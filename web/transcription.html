@@ -120,6 +120,7 @@
                 Use Peek-Zoom to get a closer look at the line you are on.
             </p>
         </div>
+        <div class="centerInterface">
         <div id="transcriptionTemplate">
             <div id="templateResizeBar"></div>
             <div id="parsingCover"></div>
@@ -209,19 +210,19 @@
                             <!--                        <div class="closeBtn" onclick="$('#toggleChars').click();">
                                                         <i class="fa fa-close"></i>
                                                     </div>-->
-<div id="charactersPopin" class="specialCharacters"  title="Special Characters" >
+                        <div id="charactersPopin" class="specialCharacters"  title="Special Characters" >
                         </div>
-                    </div>
+                        </div>
                         <div id="xmlTagFloat" class="flex-container xml-tagged">
                             <a title="Edit XML Tags" class="lookLikeButtons editButtons exitPage" href="buttons.jsp">
-                            <i class="fa fa-edit"></i>
-                        </a>
-                        <!--                        <div class="closeBtn" onclick="$('#toggleXML').click();">
-                                                    <i class="fa fa-close"></i>
-                                                </div>-->
-<div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <!--                        <div class="closeBtn" onclick="$('#toggleXML').click();">
+                                                        <i class="fa fa-close"></i>
+                                                    </div>-->
+                            <div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
                 <div id="imgBottom">
@@ -230,7 +231,7 @@
               </div><br>
             </div>
         </div>
-         <div id="parsingSplit" class="split" >
+        <div id="parsingSplit" class="split" >
              <div class="fullScreenTrans">
                  <div class="lookLikeButtons caps insetBtn">
                      <i class="fa fa-reply fa-flip-vertical"></i> Return to Transcription</div>
@@ -911,22 +912,22 @@
             <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
                 <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool </div>
                 <div style="padding:15px;">
-        <header> Image Controls </header>
-        <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
-        <i class="fa fa-picture-o" style="color: #999;background: #DDD;border-radius: 2px;"></i>
-        Grayscale</button>
-        <button which="invert" class="block" onclick="toggleFilter('invert');">
-        <i class="fa fa-picture-o" style="background: #FFF;border-radius: 2px;color: #000;"></i>
-        Invert</button>
-        <div id="imageToolSliders" class="imgTool">
-            <i class="fa fa-sun-o"></i> Brightness
-            <div id="brightnessSlider"></div>
-            <i class="fa fa-adjust"></i> Contrast
-            <div id="contrastSlider"></div>
-        </div>
-        <button class="" onclick="resetFilters();">
-            Reset
-        </button>
+                <header> Image Controls </header>
+                <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
+                <i class="fa fa-picture-o" style="color: #999;background: #DDD;border-radius: 2px;"></i>
+                Grayscale</button>
+                <button which="invert" class="block" onclick="toggleFilter('invert');">
+                <i class="fa fa-picture-o" style="background: #FFF;border-radius: 2px;color: #000;"></i>
+                Invert</button>
+                <div id="imageToolSliders" class="imgTool">
+                    <i class="fa fa-sun-o"></i> Brightness
+                    <div id="brightnessSlider"></div>
+                    <i class="fa fa-adjust"></i> Contrast
+                    <div id="contrastSlider"></div>
+                </div>
+                <button class="" onclick="resetFilters();">
+                    Reset
+                </button>
 
 
                     <header> Column Controls</header>
@@ -996,6 +997,7 @@
 
                     </div>
             </div>
+        </div>
         </div>
         <div id="zoomDiv" class="ui-corner-all"></div>
         <div id="ruler1"></div><div id="ruler2"></div>

@@ -65,13 +65,12 @@ var typingTimer;
  *
  * @return {undefined}
 */
-function redraw() {
+function redraw(parsing) {
     tpen.screen.focusItem = [null, null];
     var canvas = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio];
     if (tpen.screen.currentFolio > - 1) {
-        if (tpen.screen.liveTool === "parsing") {
+        if (parsing === "parsing" || tpen.screen.liveTool === "parsing") {
             $(".pageTurnCover").show();
-            //fullPage();
             tpen.screen.currentFolio = parseInt(tpen.screen.currentFolio);
             if (!canvas) {
                 canvas = tpen.manifest.sequences[0].canvases[0];
@@ -143,7 +142,7 @@ function previousFolio (parsing) {
     var transcriptlet = $("#transcriptlet_"+activeLineID);
     updateLine(transcriptlet, false, false);
     tpen.screen.currentFolio--;
-    redraw("");
+    redraw(parsing);
 }
 
 /* Load the interface to the next page from the one you are on. */
@@ -156,7 +155,7 @@ function nextFolio(parsing) {
     var transcriptlet = $("#transcriptlet_"+activeLineID);
     updateLine(transcriptlet, false, false);
     tpen.screen.currentFolio++;
-    redraw("");
+    redraw(parsing);
 }
 
 /** Test if a given string can be parsed into a valid JSON object.
@@ -1026,6 +1025,7 @@ function checkIPRagreement(id){
  * Load a canvas from the manifest to the transcription interface.
  */
 function loadTranscriptionCanvas(canvasObj, parsing, tool){
+    console.log("Load T canvas ()");
     var noLines = true;
     var canvasAnnoList = "";
     var canvasURI = canvasObj["@id"];
@@ -1075,6 +1075,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 originalCanvasWidth2 = $("#imgTop img").width();
                 tpen.screen.originalCanvasHeight = $("#imgTop img").height();
                 tpen.screen.originalCanvasWidth =  $("#imgTop img").width();
+                console.log("Canvas image loaded.  Draw "+canvasObj.otherContent[0].resources.length+" lines to the canvas, on load");
                 drawLinesToCanvas(canvasObj, parsing, tool);
                 getHistory(); //Do we need to call this later down the stack?  It could be moved into drawLinesToCanvas()
                 $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
@@ -1116,7 +1117,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 .attr("src", "images/missingImage.png");
             }
 
-        })
+        }()) // the extra () ensures this only runs once.
         .on("error", function(){
             var image2 = new Image();
             $(image2)
@@ -1188,6 +1189,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
     else if((canvasObj.otherContent[0] !== undefined && canvasObj.otherContent[0].resources !== undefined && canvasObj.otherContent[0].resources.length > 0)){
         //This is TPEN 2.8 using the SQL
         //This situation means we got our lines from the SQL and there is no need to query the store.
+        console.log("draw "+canvasObj.otherContent[0].resources.length+" lines on the canvas");
         tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
         drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
         //linesToScreen(lines, tool);
@@ -1324,6 +1326,7 @@ function linesToScreen(lines, tool){
     var ratio = 0;
     //should be the same as originalCanvasWidth2/originalCanvasHeight2
     ratio = theWidth / theHeight;
+    console.log(lines.length+" lines to screen");
     for (var i = 0; i < lines.length; i++){
         var line = lines[i];
         var lastLine = {};
@@ -2353,7 +2356,10 @@ function hideWorkspaceForParsing(){
         $("#imgTop").css("height", $("#imgTop img").height());
         $("#transcriptionCanvas").css("display", "block");
         tpen.screen.imgTopSizeRatio = $("#imgTop img").width() / $("#imgTop img").height();
-        $("#templateResizeBar").show();
+        //$("#templateResizeBar").show();
+        
+        $(".centerInterface").css("text-align", "center").css("background-color", "#e1f4fe");
+        $("#transcriptionTemplate").css("width","auto");
     }, 500);
     window.setTimeout(function(){
         //in here we can control what interface loads up.  writeLines
@@ -2461,6 +2467,7 @@ function fullPage(){
     $("#transcriptionTemplate").css("display", "inline-block");
     $('.lineColIndicatorArea').css("max-height","none");
     $('.lineColIndicatorArea').show();
+    $(".centerInterface").css("text-align", "left").css("background-color", "white");
     $("#help").css({"left":"100%"}).fadeOut(1000);
     $("#fullScreenBtn").fadeOut(250);
     tpen.screen.isZoomed = false;
@@ -2504,6 +2511,8 @@ function fullPage(){
     if(tpen.screen.liveTool === "parsing"){
         $("#transcriptionTemplate").hide();
         $("#transTemplateLoading").show();
+        console.log("remove transcriptlets cuz of parsing");
+        $(".transcriptlet").remove(); //we are about to redraw these, if we dont remove them, then the transcriptlets repeat. 
         setTimeout(function(){
             redraw("");
         }, 1000);
@@ -2531,6 +2540,9 @@ function splitPage(event, tool) {
         newCanvasWidth = Page.width()-200;
         $("#controlsSplit").show();
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
+    }
+    if(tool === "parsing"){
+        resize=false;
     }
 
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
@@ -3308,7 +3320,7 @@ function pageJump(page, parsing){
         console.log("Jumping to a dif page!");
         //Data.saveTranscription("");
         tpen.screen.currentFolio = canvasToJumpTo;
-        if (parsing === "parsing"){
+        if (parsing === "parsing" || tpen.screen.liveTool === "parsing"){
             $(".pageTurnCover").show();
             fullPage();
             tpen.screen.focusItem = [null, null];

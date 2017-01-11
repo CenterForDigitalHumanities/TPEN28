@@ -171,6 +171,7 @@ public class Canvas {
         JSONObject parameter = new JSONObject();
         JSONObject annotationList = new JSONObject();
         JSONArray resources_array = new JSONArray();
+        String dateString = "";
         annotationList.element("@type", "sc:AnnotationList");
         annotationList.element("label", canvasID+" List");
         annotationList.element("proj", projectID);
@@ -187,7 +188,8 @@ public class Canvas {
         int numberOfLines = lines.length;
         List<Object> resources = new ArrayList<>();
         for (int i = 0; i < numberOfLines; i++) {
-            if (lines[i] != null) {    
+            if (lines[i] != null) {   
+                dateString = "";
                 int lineID = lines[i].getLineID();
                 Map<String, Object> lineAnnot = new LinkedHashMap<>();
                 String lineURI = "line/" + lineID;
@@ -199,7 +201,12 @@ public class Canvas {
                 lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight())); 
                 lineAnnot.put("_tpen_note", lines[i].getComment());
                 lineAnnot.put("_tpen_creator",lines[i].getCreator());
-                lineAnnot.put("modified", lines[i].getDate());
+//                System.out.println("What is the date for this line?");
+//                System.out.println(lines[i].getDate());
+//                System.out.println(lines[i].getDate().toString());
+//                System.out.println(lines[i].getDate().getTime());
+                dateString = lines[i].getDate().toString();
+                lineAnnot.put("modified", dateString);
                 resources.add(lineAnnot);
             }
         }

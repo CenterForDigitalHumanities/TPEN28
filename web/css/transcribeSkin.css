@@ -266,7 +266,7 @@ body{
     padding: 0 .25em;
     position: relative;
 }
-.flex-wide, .flex-wide div {
+.flex-wide, #transcriptletArea div {
     display:flex;
     flex-grow:8;
 }
@@ -757,36 +757,25 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
 .previewSave {position: absolute; right:0;font-size: 80%;cursor: pointer;z-index: 4;}
 .previewTag {color:#488AC7;display:inline-block;}
 #saveReport,#contribution {
-    position: relative;
+    position: absolute;
     z-index: 4;
-    width: 100%;
-    cursor: pointer;
+    width: 18em;
+    background: white url(../images/linen.png);
+    font-size: small;
     color: #999;
     text-transform: capitalize;
-    max-height: 18px;
+    padding: .15em;
+    max-height: 1.2em;
     overflow: hidden;
-    text-align: left;
+    bottom:0;
+    right:0;
 }
-#contribution {right:auto;left:0;}
 #contribution:before {content:'Last edit by: '}
 .saveLog:first-child {color:#618797;}
-.saveLog{
-    display: block;
-}
 #saveReport:hover {
        box-shadow: -4px -4px 8px -4px #666666;overflow:auto;
-       /* IE10 */
-       background-image: -ms-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
-       /* Mozilla Firefox */
-       background-image: -moz-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
-       /* Opera */
-       background-image: -o-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
-       /* Webkit (Safari/Chrome 10) */
-       background-image: -webkit-gradient(linear, left top, left bottom, color-stop(.25, whitesmoke), color-stop(1, rgba(255,255,255,0)));
-       /* Webkit (Chrome 11+) */
-       background-image: -webkit-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
-       /* Proposed W3C Markup */
-       background-image: linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
+       background:#ccc;
+       max-height: none;
 }
 #clickDivs {position: relative;height:auto;clear:both;}
 .parsing,.adjustable {z-index: 5;opacity:.3;position: absolute;border:solid 1px black;}

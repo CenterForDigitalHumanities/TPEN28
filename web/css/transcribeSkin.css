@@ -1472,7 +1472,8 @@ a{
 }
 
 .selected{
-    background-color: #618797;
+/*    background-color: #618797;*/
+    background-color: rgb(189, 35, 49);
 }
 
 .nohover:hover{

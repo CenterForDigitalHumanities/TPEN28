@@ -4624,7 +4624,7 @@ function bumpLine(direction, activeLine){
                 });
                 $('#ruler1').show().css({
                     left: myLeft,
-                    top: e.pageY,
+                    top: e.pageY + 4, //if you hover over the line, the background color of .parsing flashes
                     height:'1px',
                     width:myWidth, //e.pageX-myLeft-7
 //                    background:"green"

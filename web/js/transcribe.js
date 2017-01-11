@@ -2197,8 +2197,14 @@ tpen.screen.toggleMoveImage = function (event) {
         $(".lineColIndicatorArea").hide();
         fullTopImage();
         $("#imgTop")
-            .mousedown(moveImg);
+            .mousedown(moveImg)
+            .keyup(function(event){
+            if(!event.altKey||!(event.ctrlKey||event.metaKey)){
+                tpen.screen.toggleMoveImage(false);
+            }
+    });;
     } else {
+        $("#imgTop").trigger('mouseup');
         updatePresentation(tpen.screen.focusItem[1]);
         $(".lineColIndicatorArea").show();
         $("#imgTop, #imgBottom").css("cursor", "");

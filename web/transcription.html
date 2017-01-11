@@ -137,16 +137,23 @@
                     <div title="Slide Workspace" class="workspaceHandle slideHandleLeft"><i class="fa fa-bars"></i><i class="fa fa-arrows-v"></i></div><div title="Slide Workspace" class="workspaceHandle slideHandleRight"><i class="fa fa-arrows-v"></i><i class="fa fa-bars"></i></div>
                     <div class="flex-container flex-stretch">
                         <div class="flex-bookend">
-                            <div title="Previous Line" class="pull-right" id="prevColLine"></div>
                         </div>
-                        <div class="flex-stretch">
+                        <div class="flex-wide" style="position:relative;height:1em;">
+                            <div id="contribution"></div>
+                            <div id="saveReport"></div>
+                        </div>
+                        <div class="flex-bookend">
+                        </div>
+                    </div>
+                    <div class="flex-container flex-stretch">
+                        <div class="flex-bookend">
                         </div>
                         <div id="captions" class="flex-wide">
+                            <div title="Previous Line" class="pull-right" id="prevColLine"></div>
                             <div id="captionsText"></div>
                             <span id="notes" class="quiet">&nbsp;</span>
                         </div>
                         <div class="flex-bookend">
-                            <div id="saveReport" class="ui-corner-top"></div>
                         </div>
                     </div>
                     <div class="flex-container flex-stretch">
@@ -159,12 +166,9 @@
                                 Previous Page
                             </button>
                         </div>
-                        <div class="flex-stretch">
-                            <div title="Current Line" id="currentColLine"></div>
-                        </div>
                         <div id="transcriptletArea" class="flex-wide">
+                            <div title="Current Line" id="currentColLine"></div>
                             <div class="xmlClosingTags"></div>
-
                         </div>
 
                         <div class="flex-bookend">
@@ -913,11 +917,13 @@
                 <div style="padding:15px;">
         <header> Image Controls </header>
         <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
-        <i class="fa fa-picture-o" style="color: #999;background: #DDD;border-radius: 2px;"></i>
-        Grayscale</button>
+            Grayscale
+            <i class="fa fa-grayscale" style="color: #999;background: #DDD;border-radius: 2px;"></i>
+        </button>
         <button which="invert" class="block" onclick="toggleFilter('invert');">
-        <i class="fa fa-picture-o" style="background: #FFF;border-radius: 2px;color: #000;"></i>
-        Invert</button>
+            Invert
+            <i class="fa fa-picture-o" style="background: #FFF;border-radius: 2px;color: #000;"></i>
+        </button>
         <div id="imageToolSliders" class="imgTool">
             <i class="fa fa-sun-o"></i> Brightness
             <div id="brightnessSlider"></div>
@@ -931,10 +937,13 @@
 
                     <header> Column Controls</header>
                     <button role="button" class="block" onclick="$(this).toggleClass('selected')">
-                        <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" >
+                        <label for="lineToggle" title="Toggle Entire Lines">Show Column</label>
+                        <input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" >
+                        <i class="fa fa-bars"></i>
                     </button>
                     <button role="button" class=" block" onclick="$(this).toggleClass('selected')">
                         <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
+                        <i class="fa fa-labels"></i>
                     </button>
                     <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
                     <button role="button" id="parsingBtn" title="Redraw the lines on this page" class='block'>

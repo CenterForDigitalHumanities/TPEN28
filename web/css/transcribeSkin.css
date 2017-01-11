@@ -599,6 +599,11 @@ div#transcriptletArea {
     display: block;
     margin: .25em 1em;
 }
+.icon-panel button img{
+    height: 26px;
+    width: 24px;
+    background-color: white;
+}
 .icon-panel button {
     padding: 0;
     margin: 0;
@@ -619,9 +624,31 @@ div#transcriptletArea {
     background: #bf1e2d;
     color:#fff;
 }
+.customRulerArea{
+    background-color: rgb(242, 242, 243);
+}
+#parseOptions{
+    margin-bottom: 15px;
+}
+.blockOpen{
+    transform: rotate(240deg);
+}
+.blockStatusClosed{
+    position: absolute;
+    /*bottom: 10px;*/
+    right: 10px;
+}
+.splitBlock .tpenButton img{
+    height: 26px;
+    width: 24px;
+    background-color: white;
+    position: absolute;
+    right: 6px;
+    top: 3px;
+}
 .splitBlock .tpenButton {
     display: block;
-    padding-right: 32px;
+    padding-right: 43px;
     padding-left: 1em;
     height: 32px;
     font-size: 90%;
@@ -630,9 +657,12 @@ div#transcriptletArea {
     line-height: 1.5em;
     margin: 0 auto;
     position: relative;
+    background-color:rgb(0,90,138);
+    color: white;
 }
 .splitBlock small {
     display:block;
+    text-align:left;
 }
 .splitBlock small.danger {
     color:#bf1e2d;

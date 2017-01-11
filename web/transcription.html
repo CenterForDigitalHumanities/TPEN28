@@ -238,25 +238,31 @@
              </div>
              <div class="toolLinks icon-panel">
                  <div class="icon-panel">
+                    <button>
+                        <img src="css/custom-theme/images/new8.png" alt="reparse" height="30px" />
+                    </button>
                      <button>
-                         <img src="css/custom-theme/images/reparse.png" alt="reparse" height="30px" />
-                     </button>
-                     <button>
-                         <img src="css/custom-theme/images/reparse30.png" alt="reparse" />
-                 </button>
-                 <button>
-                     <img src="css/custom-theme/images/reparse.png" alt="reparse" height="30px" />
-                 </button>
+                         <img src="css/custom-theme/images/new1.png" alt="reparse" />
+                    </button>
+                    <button>
+                        <img src="css/custom-theme/images/new3.png" alt="reparse" height="30px" />
+                    </button>
+                    <button>
+                        <img src="css/custom-theme/images/reparse30.png" alt="reparse" />
+                    </button>
                  </div>
                  <div class="icon-panel">
                      <button>
-                         <img src="css/custom-theme/images/reparse30.png" alt="reparse" />
+                         <img src="css/custom-theme/images/new2.png" alt="reparse" height="30px" />
                      </button>
                      <button>
-                         <img src="css/custom-theme/images/reparse.png" alt="reparse" height="30px" />
+                         <img src="css/custom-theme/images/new7.png" alt="reparse" />
                      </button>
                      <button>
-                         <img src="css/custom-theme/images/reparse30.png" alt="reparse" />
+                        <img src="css/custom-theme/images/new6.png" alt="reparse" />
+                    </button>
+                     <button>
+                         <img src="css/custom-theme/images/new4.png" alt="reparse" />
                      </button>
                  </div>
              </div>
@@ -267,36 +273,59 @@
                         <div class="splitBlock">
                             <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
                                 Create Column
-                                <i class="fa fa-reparse"></i>
+                                <!--<i class="fa fa-reparse"></i>-->
+                                <img src="css/custom-theme/images/new8.png" alt="reparse" />
                             </button>
+                            <i class="fa fa-caret-left blockStatusClosed"></i>
                             <small>Click and drag to place</small>
                         </div>
                         <div class="splitBlock">
                             <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
                                 Adjust Columns
-                                <i class="fa fa-reparse"></i>
+                                <img src="css/custom-theme/images/new1.png" alt="reparse" />
+                                <!--<i class="fa fa-reparse"></i>-->
                             </button>
+                            <i class="fa fa-caret-left blockStatusClosed"></i>
                             <small>Drag the edges of an existing column.</small>
-                            <small><i class="fa fa-info-circle"></i> This method does not remove any <acronym title="text, markup, and notes">transcription information</acronym>.</small>
+                            <!--<small><i class="fa fa-info-circle"></i> This method does not remove any <acronym title="text, markup, and notes">transcription information</acronym>.</small>-->
                         </div>
                         <div class="splitBlock danger">
                             <button id="destroyColumn" class="tpenButton" title="Remove an entire column and its data with a click">
                                 Destroy Column
-                                <i class="fa fa-reparse"></i>
+                                <img src="css/custom-theme/images/new3.png" alt="reparse" />
+<!--                                <i class="fa fa-reparse"></i>-->
                             </button>
+                            <i class="fa fa-caret-left blockStatusClosed"></i>
                             <small>Click a column to remove all its lines and transcription data.</small>
                             <small class="danger"><i class="fa fa-warning"></i> This is a destructive process and cannot be undone.</small>
                             <!-- Reparsing is not enabled yet <button>-->
                         </div>
-                            <header id="ctrlLines" title="Make adjustments at the line level">Edit Lines</header>
-                            <div class="splitBlock">
+                        <div class="splitBlock danger">
+                            <button id="clearColumns" class="tpenButton" title="Remove all columns and let the autoparser reparse the page">
+                                Re-parse Page
+                                <i class="fa fa-reparse"></i>
+                                <!--<i class="fa fa-reparse"></i>-->
+                            </button>
+                            <i class="fa fa-caret-left blockStatusClosed"></i>
+                            <small class="danger">
+                                <i class="fa fa-warning"></i> 
+                                Click to remove all transcription data and lines from this page.
+                                The page will then be automatically re-parsed, which will create new columns.
+                            </small>
+                            <!-- Reparsing is not enabled yet <button>-->
+                        </div>
+                        <header id="ctrlLines" title="Make adjustments at the line level">Edit Lines</header>
+                        <div class="splitBlock">
                             <button id="addLines" class="tpenButton" title="Split lines to create new ones in a column">
                                 Add Line
-                                <i class="fa fa-reparse"></i>
+                                <img src="css/custom-theme/images/new2.png" alt="reparse" />
+                                <!--<i class="fa fa-reparse"></i>-->
                             </button>
+                            <i class="fa fa-caret-left blockStatusClosed"></i>
                                 <small>Click within the shaded area to define the bottom of the new line.</small>
-                                <small><i class="fa fa-info-circle"></i> Any <acronym title="text, markup, and notes">transcription information</acronym> will remain with the line above where you click.</small>
-                                <small>
+                                <!--<small><i class="fa fa-info-circle"></i> Any <acronym title="text, markup, and notes">transcription information</acronym> will remain with the line above where you click.</small>-->
+                                <br>
+                                <small class="customRulerArea">
                                     Trouble seeing the ruler? Change the color below.
                                     <span id="sampleRuler"></span>
                                     <label for="black"><input onclick="rulerColor('black');" CHECKED type="radio" value="black" name="rulerColor"/>Black</label>
@@ -307,26 +336,43 @@
                                                type="text" id="customRuler" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
                                     </label>
                                 </small>
+                                
                             </div>
                             <div class="splitBlock">
-                            <button id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines">
-                                Adjust Lines
-                                <i class="fa fa-reparse"></i>
-                            </button>
+                                <button id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines">
+                                    Adjust Lines
+                                    <img src="css/custom-theme/images/new7.png" alt="reparse" />
+                                    <!--<i class="fa fa-reparse"></i>-->
+                                </button>
                                 <small>Click and drag the right side of the line to contain the line accurately.</small>
                                 <small><i class="fa fa-info-circle"></i> Only the right boundary can be moved in this tool.</small>
+                                <i class="fa fa-caret-left blockStatusClosed"></i>
                             </div>
                             <div class="splitBlock">
-                            <button id="removeLines" class="tpenButton" title="Merge two lines in a column">
-                                Merge Lines
-                                <i class="fa fa-reparse"></i>
-                            </button>
+<!--                                <button id="removeLines" class="tpenButton" title="Merge two lines in a column">-->
+                                <button id="mergeLines" class="tpenButton" title="Merge two lines in a column">
+                                    Merge Lines
+                                    <img src="css/custom-theme/images/new6.png" alt="reparse" />
+                                    <!--<i class="fa fa-reparse"></i>-->
+                                </button>
+                                <i class="fa fa-caret-left blockStatusClosed"></i>
                                 <small>Click within the shaded area to merge the highlighted lines.</small>
                                 <small><i class="fa fa-info-circle"></i> This method combines your transcription information into the new line.</small>
                             </div>
+                             <div class="splitBlock">
+                                <!--<button id="removeLines" class="tpenButton" title="Delete the last line of a column.">-->
+                                <button id="removeLine" class="tpenButton" title="Delete the last line of a column.">
+                                    Delete Line
+                                    <img src="css/custom-theme/images/new4.png" alt="reparse" />
+                                    <!--<i class="fa fa-reparse"></i>-->
+                                </button>
+                                <i class="fa fa-caret-left blockStatusClosed"></i>
+                                <small>Click within the shaded area to delete the last line of a column.</small>
+                                <small><i class="fa fa-info-circle"></i> Deleting a line also removes its associated transcription information..</small>
+                            </div>
                     </div>
                 </div>
-         </div>
+            </div>
 
 <!--                    Linebreaking Tool-->
             <div id="linebreakSplit" class="ui-widget ui-widget-content split">
@@ -400,10 +446,10 @@
                         <div id="contrastSlider"></div>
                     </div>
                     <header> Column Controls</header>
-                    <button role="button" class="block" onclick="$(this).toggleClass('selected')">
+                    <button role="button" class="block" onclick="toggleSelected($(this));">
                         <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" >
                     </button>
-                    <button role="button" class=" block" onclick="$(this).toggleClass('selected')">
+                    <button role="button" class=" block" onclick="toggleSelected($(this));">
                         <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
                     </button>
                     <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
@@ -912,29 +958,27 @@
             <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
                 <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool </div>
                 <div style="padding:15px;">
-                <header> Image Controls </header>
-                <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
-                <i class="fa fa-picture-o" style="color: #999;background: #DDD;border-radius: 2px;"></i>
-                Grayscale</button>
-                <button which="invert" class="block" onclick="toggleFilter('invert');">
-                <i class="fa fa-picture-o" style="background: #FFF;border-radius: 2px;color: #000;"></i>
-                Invert</button>
-                <div id="imageToolSliders" class="imgTool">
-                    <i class="fa fa-sun-o"></i> Brightness
-                    <div id="brightnessSlider"></div>
-                    <i class="fa fa-adjust"></i> Contrast
-                    <div id="contrastSlider"></div>
-                </div>
-                <button class="" onclick="resetFilters();">
-                    Reset
-                </button>
-
-
+                    <header> Image Controls </header>
+                    <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
+                    <i class="fa fa-picture-o" style="color: #999;background: #DDD;border-radius: 2px;"></i>
+                    Grayscale</button>
+                    <button which="invert" class="block" onclick="toggleFilter('invert');">
+                    <i class="fa fa-picture-o" style="background: #FFF;border-radius: 2px;color: #000;"></i>
+                    Invert</button>
+                    <div id="imageToolSliders" class="imgTool">
+                        <i class="fa fa-sun-o"></i> Brightness
+                        <div id="brightnessSlider"></div>
+                        <i class="fa fa-adjust"></i> Contrast
+                        <div id="contrastSlider"></div>
+                    </div>
+                    <button class="" onclick="resetFilters();">
+                        Reset
+                    </button>
                     <header> Column Controls</header>
-                    <button role="button" class="block" onclick="$(this).toggleClass('selected')">
+                    <button role="button" class="block" onclick="toggleSelected($(this));">
                         <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" >
                     </button>
-                    <button role="button" class=" block" onclick="$(this).toggleClass('selected')">
+                    <button role="button" class=" block" onclick="toggleSelected($(this));">
                         <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
                     </button>
                     <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
@@ -1511,7 +1555,8 @@
                 $(this).addClass("selected");
                 if (thisID == "createColumn" || thisID == "destroyColumn" || thisID=="clearColumns") {
                     $("#addLines").removeClass("active");
-                    $("#removeLines").removeClass("active");
+                    $("#mergeLines").removeClass("active");
+                    $("#removeLine").removeClass("active");
                     $("#ctrlColumnsInst").find(".startHide").hide();
                     $("#"+show).fadeIn(800);
                     $("#ctrlColumnsInst").find(".activeParsingTool").fadeIn(800);
@@ -1664,7 +1709,7 @@
                             .bind('click', function(){destroyPage();})
                     }
                 }
-                else if (thisID == "addLines" || thisID == "removeLines" || thisID == "adjustLines") {
+                else if (thisID == "addLines" || thisID == "mergeLines" || thisID==="deleteLine" || thisID == "adjustLines") {
                     $("#ctrlLinesInst").find(".startHide").hide();
                     $("#"+show).fadeIn(800);
                     $("#ctrlColumnsInst").find(".activeParsingTool").fadeOut(800);
@@ -1675,8 +1720,10 @@
                     $(".parsing").css('cursor','default');
                     $(".parsingColumn").remove();
                     if (thisID == "adjustLines") {
+                        $("#adjustLine").addClass("active");
                         $("#addLines").removeClass("active");
-                        $("#removeLines").removeClass("active");
+                        $("#mergeLines").removeClass("active");
+                        $("#removeLine").removeClass("active");
                         //prep for adjustment
                         $("#ruler1").hide();
                         $("#ruler2").hide();
@@ -1719,7 +1766,9 @@
                     }
                     if (thisID == "addLines"){
                         $("#addLines").addClass("active");
-                        $("#removeLines").removeClass("active");
+                        $("#mergeLines").removeClass("active");
+                        $("#adjustLines").removeClass("active");
+                        $("#removeLine").removeClass("active");
                         tpen.screen.isAddingLines = true;
                         $("#imgTop").children(".line").addClass("parsing").removeClass("line");
                         $(".parsing").bind({
@@ -1730,14 +1779,16 @@
                                 removeRuler($(this));
                             },
                             click: function(event){
-                                lineChange($(this), event);
+                                lineChange($(this), event, false);
                             }
                         });
 
                     }
-                    if (thisID == "removeLines"){
-                        $("#removeLines").addClass("active");
+                    if (thisID == "mergeLines"){
+                        $("#mergeLines").addClass("active");
                         $("#addLines").removeClass("active");
+                        $("#adjustLines").removeClass("active");
+                        $("#removeLine").removeClass("active");
                         //prep for column adjustment
                         tpen.screen.isAddingLines = false;
                         $(".parsing").bind({
@@ -1748,7 +1799,28 @@
                                 removeRuler($(this));
                             },
                             click: function(event){
-                                lineChange($(this), event);
+                                lineChange($(this), event, false);
+                            }
+                        });
+                        $("#imgTop").children(".line").addClass("parsing").removeClass("line");
+                    }
+                    if (thisID == "removeLine"){
+                        $("#removeLine").addClass("active");
+                        $("#addLines").removeClass("active");
+                        $("#mergeLines").removeClass("active");
+                        $("#adjustLines").removeClass("active");
+                        //prep for column adjustment
+                        tpen.screen.isAddingLines = false;
+                        activateLastLineRemoval();
+                        $(".parsing").bind({
+                            mouseenter: function(){
+                                applyRuler($(this));
+                            },
+                            mouseleave: function(){
+                                removeRuler($(this));
+                            },
+                            click: function(event){
+                                lineChange($(this), event, true);
                             }
                         });
                         $("#imgTop").children(".line").addClass("parsing").removeClass("line");
@@ -2141,69 +2213,65 @@
         $("#sampleRuler").css("color", color).css("background", color);
     }
 
-    //Turn the ruler on
-    function applyRuler(line){
-            //var sRCbkp = selectRulerColor; //select Ruler Color backup
-            $("#imageTip").html("Add a Line");
-            if(!tpen.screen.isAddingLines){
-                if (line.attr("lineleft") == line.next("div").attr("lineleft")) {
-                    line.next("div").addClass('deletable');
-                }
-                line.addClass('deletable');
-                if($(".deletable").size()>1){
-                    $(".deletable").addClass("mergeable");
-                    $("#imageTip").html("Merge Line");
-                } else {
-                    $("#imageTip").html("Delete Line");
-                }
-               //sRCbkp = 'transparent';
-            }
-            line.css('cursor','crosshair').bind('mousemove', function(e){
-                var myLeft = line.position().left;
-                var myWidth = line.width();
-                $('#imageTip').show().css({
-                    left:e.pageX,
-                    top:e.pageY+20
-                });
-                $('#ruler1').show().css({
-                    left: myLeft,
-                    top: e.pageY,
-                    height:'1px',
-                    width:e.pageX-myLeft-7,
-                    //background:"red"
-                });
-                $('#ruler2').show().css({
-                    left: e.pageX+7,
-                    top: e.pageY,
-                    width:myWidth+myLeft-e.pageX-7,
-                    height:'1px',
-                   // background:"red"
-                });
-            });
-
-    }
+//    //Turn the ruler on
+//    function applyRuler(line){
+//            //var sRCbkp = selectRulerColor; //select Ruler Color backup
+//            $("#imageTip").html("Add a Line");
+//            if(!tpen.screen.isAddingLines){
+//                if (line.attr("lineleft") == line.next("div").attr("lineleft")) {
+//                    line.next("div").addClass('deletable');
+//                }
+//                line.addClass('deletable');
+//                if($(".deletable").size()>1){
+//                    $(".deletable").addClass("mergeable");
+//                    $("#imageTip").html("Merge Line");
+//                } else {
+//                    $("#imageTip").html("Delete Line");
+//                }
+//               //sRCbkp = 'transparent';
+//            }
+//            line.css('cursor','crosshair').bind('mousemove', function(e){
+//                var myLeft = line.position().left;
+//                var myWidth = line.width();
+//                $('#imageTip').show().css({
+//                    left:e.pageX,
+//                    top:e.pageY+20
+//                });
+//                $('#ruler1').show().css({
+//                    left: myLeft,
+//                    top: e.pageY,
+//                    height:'1px',
+//                    width:e.pageX-myLeft-7,
+//                    //background:"red"
+//                });
+//                $('#ruler2').show().css({
+//                    left: e.pageX+7,
+//                    top: e.pageY,
+//                    width:myWidth+myLeft-e.pageX-7,
+//                    height:'1px',
+//                   // background:"red"
+//                });
+//            });
+//
+//    }
     /**
      * Hides ruler within parsing tool. Called on mouseleave .parsing.
      */
-    function removeRuler(line){
-        if(!tpen.screen.isAddingLines){$(".deletable").removeClass('deletable mergeable');}
-        //line.unbind('mousemove');
-        $('#imageTip').hide();
-        $('#ruler1').hide();
-        $('#ruler2').hide();
-    }
-
-    //Triggered when a user alters a line to either create a new one or destroy one.
-    function lineChange(e,event){
-        $("#parsingCover").show();
-        if(tpen.screen.isAddingLines){
-            splitLine(e,event);
-        }
-        else{
-            //merge the line you clicked with the line below.  Delete the line below and grow this line by that lines height.
-            removeLine(e);
-        }
-
+//    function removeRuler(line){
+//        if(!tpen.screen.isAddingLines){$(".deletable").removeClass('deletable mergeable');}
+//        //line.unbind('mousemove');
+//        $('#imageTip').hide();
+//        $('#ruler1').hide();
+//        $('#ruler2').hide();
+//    }
+    
+    function toggleSelected($btn){
+        var area = $btn.parent();
+        var unselectArea = area.parent();
+        unselectArea.find(".selected").removeClass("selected"); //don't want to leave any of the others selected. 
+        unselectArea.find(".blockOpen").removeClass("blockOpen"); //don't want to leave any of the others selected. 
+        area.addClass("selected");
+        area.find(".blockStatusClosed").addClass("blockOpen");
     }
 
 </script>

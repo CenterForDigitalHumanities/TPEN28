@@ -1564,30 +1564,28 @@ function updatePresentation(transcriptlet) {
         $("#imgBottom").css("height", "inherit");
         return false;
     }
-    var nextCol = transcriptlet.attr("col");
-    var nextLineNum = parseInt(transcriptlet.attr("collinenum"));
+    var currentCol = transcriptlet.attr("col");
+    var currentColLineNum = parseInt(transcriptlet.attr("collinenum"));
     var transcriptletBefore = $(transcriptlet.prev());
-    var nextColLine = nextCol + "" + nextLineNum;
-    $("#currentColLine").html(nextColLine);
-    if (parseInt(nextLineNum) >= 1){
+    var currentColLine = currentCol + "" + currentColLineNum;
+    $("#currentColLine").html(currentColLine);
+    if (parseInt(currentColLineNum) >= 1){
         if (transcriptletBefore.length > 0){
-        var currentTranscriptletNum = parseInt(transcriptletBefore.attr("collinenum"));
-            if (transcriptletBefore.length > 0){ }
-            else{ }
+            var prevColLineNum = parseInt(transcriptletBefore.attr("collinenum"));
             var prevLineCol = transcriptletBefore.attr("col");
             var prevLineText = unescape(transcriptletBefore.attr("data-answer"));
             var prevLineNote = unescape(transcriptletBefore.find(".notes").attr("data-answer"));
-            $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","");
+            $("#prevColLine").html(prevLineCol + "" + prevColLineNum).css("visibility","");
             $("#captionsText").text((prevLineText.length && prevLineText) || "This line is not transcribed.").attr("title",prevLineText)
                 .next().html(prevLineNote).attr("title",prevLineNote);
         }
-        else { //this is a problem
-            $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
+        else { //there is no previous line
+            $("#prevColLine").html(prevLineCol + "" + prevColLineNum).css("visibility","hidden");
             $("#captionsText").html("You are on the first line.").next().html("");
         }
     }
-    else { //there is no previous line
-        $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
+    else { //this is a problem
+        $("#prevColLine").html(currentCol + "" + currentColLineNum-1).css("visibility","hidden");
         $("#captionsText").html("ERROR.  NUMBERS ARE OFF").next().html("");
     }
     tpen.screen.focusItem[0] = tpen.screen.focusItem[1];
@@ -2304,47 +2302,47 @@ function hideWorkspaceForParsing(){
     $("#transcriptionCanvas").css("width", topImg.width());
 
     //the width and max-width here may need to be played with a bit.
-    if ($("#trascriptionTemplate").hasClass("ui-resizable")){
-        $("#transcriptionTemplate").resizable('destroy');
-    }
-    $("#transcriptionTemplate").resizable({
-        disabled:false,
-        minWidth: window.innerWidth / 2,
-        maxWidth: window.innerWidth * .55,
-        start: function(event, ui){
-            detachWindowResize();
-        },
-        resize: function(event, ui) {
-            console.log("resize 1");
-            var width = ui.size.width;
-            var height = 1 / ratio * width;
-            newCanvasWidth = 1/ratio*height;
-            if (height > PAGEHEIGHT){
-                height = PAGEHEIGHT;
-                newCanvasWidth = 1/ratio*height;
-            }
-//            console.log(originalCanvasHeight, originalCanvasWidth, height, newCanvasWidth, originalRatio );
-            //$(".lineColIndicatorArea").css("height", height + "px");
-            var splitWidth = Page.width() - (width + 35) + "px";
-            $(".split img").css("max-width", splitWidth);
-            $(".split:visible").css("width", splitWidth);
-            $("#transcriptionCanvas").css("height", height + "px");//.css("width", newCanvasWidth + "px")
-            $("#imgTop img").css({
-                'height': height + "px",
-                'top': "0px"
-//                'width' : $("#imgTop img").width()
-            });
-            $("#imgTop").css({ //This width will not change when the area is expanded, but does when it is shrunk.  We need to do the math to grow it.
-                'height': $("#imgTop img").height(),
-                'width': tpen.screen.imgTopSizeRatio * $("#imgTop img").height() + "px" //This locks up and does not change.
-            });
-            tpen.screen.textSize();
-        },
-        stop: function(event, ui){
-            attachWindowResize();
-            //$(".lineColIndicator .lineColOnLine").css("line-height", $(this).height()+"px");
-        }
-    });
+//    if ($("#trascriptionTemplate").hasClass("ui-resizable")){
+//        $("#transcriptionTemplate").resizable('destroy');
+//    }
+//    $("#transcriptionTemplate").resizable({
+//        disabled:false,
+//        minWidth: window.innerWidth / 2,
+//        maxWidth: window.innerWidth * .55,
+//        start: function(event, ui){
+//            detachWindowResize();
+//        },
+//        resize: function(event, ui) {
+//            console.log("resize 1");
+//            var width = ui.size.width;
+//            var height = 1 / ratio * width;
+//            newCanvasWidth = 1/ratio*height;
+//            if (height > PAGEHEIGHT){
+//                height = PAGEHEIGHT;
+//                newCanvasWidth = 1/ratio*height;
+//            }
+////            console.log(originalCanvasHeight, originalCanvasWidth, height, newCanvasWidth, originalRatio );
+//            //$(".lineColIndicatorArea").css("height", height + "px");
+//            var splitWidth = Page.width() - (width + 35) + "px";
+//            $(".split img").css("max-width", splitWidth);
+//            $(".split:visible").css("width", splitWidth);
+//            $("#transcriptionCanvas").css("height", height + "px");//.css("width", newCanvasWidth + "px")
+//            $("#imgTop img").css({
+//                'height': height + "px",
+//                'top': "0px"
+////                'width' : $("#imgTop img").width()
+//            });
+//            $("#imgTop").css({ //This width will not change when the area is expanded, but does when it is shrunk.  We need to do the math to grow it.
+//                'height': $("#imgTop img").height(),
+//                'width': tpen.screen.imgTopSizeRatio * $("#imgTop img").height() + "px" //This locks up and does not change.
+//            });
+//            tpen.screen.textSize();
+//        },
+//        stop: function(event, ui){
+//            attachWindowResize();
+//            //$(".lineColIndicator .lineColOnLine").css("line-height", $(this).height()+"px");
+//        }
+//    });
     $("#transWorkspace,#imgBottom").hide();
     $("#noLineWarning").hide();
     window.setTimeout(function(){
@@ -2882,7 +2880,7 @@ function adjustColumn(event){
                     var newTopLine = startLine;
                     do {
                         newTopLine = startLine.next('.parsing');
-                        removeLine(startLine, true);
+                        removeLine(startLine, true, false);
                         removeTranscriptlet(startLine.attr("lineserverid"), startLine.attr("lineserverid"), true);
                         startLine = newTopLine;
                         oldHeight = parseFloat(startLine.attr("lineheight"));
@@ -2927,7 +2925,7 @@ function adjustColumn(event){
                     oldTop = parseFloat(endLine.attr("linetop"));
                     var nextline = endLine.prev(".parsing");
                     endLine.remove();
-                    removeLine(endLine, true);
+                    removeLine(endLine, true, false);
                     removeTranscriptlet(endLine.attr("lineserverid"), endLine.attr("lineserverid"), true);
                     endLine = nextline;
                 } while (parseFloat(endLine.attr("linetop")) > actualBottom);
@@ -2995,17 +2993,17 @@ function adjustColumn(event){
  * Alerts 'unknown click' if all fails. Calls lineChange(e,event) for
  * parsing tool. Jumps to transcriptlet for full page tool.
  */
-function clickedLine(e, event) {
-    //Stop ability to make a new line until the update from this process is complete.
-    if ($(e).hasClass("parsing")){
-        if ($("#addLines").hasClass('active') || $("#removeLines").hasClass('active')){
-        $("#parsingCover").show();
-            lineChange(e, event);
-        }
-    }
-    else {
-    }
-}
+//function clickedLine(e, event) {
+//    //Stop ability to make a new line until the update from this process is complete.
+//    if ($(e).hasClass("parsing")){
+//        if ($("#addLines").hasClass('active') || $("#removeLines").hasClass('active')){
+//        $("#parsingCover").show();
+//            lineChange(e, event);
+//        }
+//    }
+//    else {
+//    }
+//}
 
 function reparseColumns(){
     $.each($('.parsingColumn'), function(){
@@ -3016,7 +3014,7 @@ function reparseColumns(){
         var linesSize = lines.size();
         // delete from the end, alerting for any deleted data
         for (var i = linesSize; i > 0; i--){
-            removeLine(lines[i], true);
+            removeLine(lines[i], true, false);
         }
     });
 }
@@ -4047,7 +4045,7 @@ function splitLine(e, event){
  * @see lineChange(e)
  * @see saveNewLine(e)
  */
-function removeLine(e, columnDelete){
+function removeLine(e, columnDelete, deleteOnly){
     $("#imageTip").hide();
     var removedLine = $(e);
     if (columnDelete){
@@ -4056,20 +4054,22 @@ function removeLine(e, columnDelete){
         return false;
     }
     else {
-        if ($(e).attr("lineleft") == $(e).next(".parsing").attr("lineleft")) {
-            removedLine = $(e).next();
-            var removedLineHeight = removedLine.height();
-            var currentLineHeight = $(e).height();
-            var newLineHeight = removedLineHeight + currentLineHeight;
-            var convertedNewLineHeight = newLineHeight / $("#imgTop").height() * 100;
-            $(e).css({
-                "height" :  convertedNewLineHeight + "%",
-                "top" :     $(e).css("top")
-            }).addClass("newDiv").attr({
-                "lineheight":   convertedNewLineHeight
-            });
+        if ($(e).attr("lineleft") == $(e).next(".parsing").attr("lineleft")) { //merge
+            if(!deleteOnly){ //if user clicked to remove a line, then do not allow merging.  Only delete the last line. 
+                removedLine = $(e).next();
+                var removedLineHeight = removedLine.height();
+                var currentLineHeight = $(e).height();
+                var newLineHeight = removedLineHeight + currentLineHeight;
+                var convertedNewLineHeight = newLineHeight / $("#imgTop").height() * 100;
+                $(e).css({
+                    "height" :  convertedNewLineHeight + "%",
+                    "top" :     $(e).css("top")
+                }).addClass("newDiv").attr({
+                    "lineheight":   convertedNewLineHeight
+                });
+            }
         }
-        else if ($(e).hasClass("deletable")){
+        else if ($(e).hasClass("deletable")){ // delete
             var cfrm = confirm("Removing this line will remove any data contained as well.\n\nContinue?");
             if (!cfrm){
                 $("#parsingCover").hide();
@@ -4593,10 +4593,10 @@ function bumpLine(direction, activeLine){
 
         }
         $("#ruler1").css("color", color).css("background", color);
-        $("#ruler2").css("color", color).css("background", color);
+//        $("#ruler2").css("color", color).css("background", color);
         $("#sampleRuler").css("color", color).css("background", color);
     }
-
+    
     //Turn the ruler on
     function applyRuler(line){
             //var sRCbkp = selectRulerColor; //select Ruler Color backup
@@ -4615,7 +4615,8 @@ function bumpLine(direction, activeLine){
                //sRCbkp = 'transparent';
             }
             line.css('cursor','crosshair').bind('mousemove', function(e){
-                var myLeft = line.position().left;
+                var imgTopOffset = $("#imgTop").offset().left; //helps because we can center the interface with this and it will still work. 
+                var myLeft = line.position().left + imgTopOffset;
                 var myWidth = line.width();
                 $('#imageTip').show().css({
                     left:e.pageX,
@@ -4625,16 +4626,16 @@ function bumpLine(direction, activeLine){
                     left: myLeft,
                     top: e.pageY,
                     height:'1px',
-                    width:e.pageX-myLeft-7,
-                    //background:"red"
+                    width:myWidth, //e.pageX-myLeft-7
+//                    background:"green"
                 });
-                $('#ruler2').show().css({
-                    left: e.pageX+7,
-                    top: e.pageY,
-                    width:myWidth+myLeft-e.pageX-7,
-                    height:'1px',
-                   // background:"red"
-                });
+//                $('#ruler2').show().css({
+//                    left: e.pageX+7,
+//                    top: e.pageY + 6,
+//                    width: myWidth, //myWidth+myLeft-e.pageX-7
+//                    height:'1px',
+//                    background:"red"
+//                });
             });
 
     }
@@ -4646,18 +4647,18 @@ function bumpLine(direction, activeLine){
         //line.unbind('mousemove');
         $('#imageTip').hide();
         $('#ruler1').hide();
-        $('#ruler2').hide();
+//        $('#ruler2').hide();
     }
 
     //Triggered when a user alters a line to either create a new one or destroy one.
-    function lineChange(e,event){
+    function lineChange(e,event,deleteOnly){
         $("#parsingCover").show();
         if(tpen.screen.isAddingLines){
             splitLine(e,event);
         }
         else{
             //merge the line you clicked with the line below.  Delete the line below and grow this line by that lines height.
-            removeLine(e);
+            removeLine(e, false, deleteOnly);
         }
 
     }

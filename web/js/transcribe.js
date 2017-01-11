@@ -1021,6 +1021,30 @@ function checkIPRagreement(id){
     }
     return agreed;
 }
+/**
+ * Look for the line to start on.
+ * If none, suggest parsing; if *xxxxxx first x; else last modifed.
+ * @returns undefined
+ */
+function focusOnLastModifed(){
+    var lines = tpen.screen.dereferencedLists[tpen.screen.currentFolio];
+    var focusOn = lines[0];
+    var scribedLines = lines.filter(function(){
+        return this.resource
+            && this.resource["cnt:chars"]
+            && this.resource["cnt:chars"].length > 0;
+    });
+    if(scribedLines.length!==lines.length)    {
+        var i;
+        for (i=1;i<lines.length;i++){
+            if (lines[i].modified > focusOn.modified) {
+                focusOn.modified = lines[i].modified;
+            }
+        }
+    }
+    var line = $("[lineserverid]='"+focusOn.tpen_line_id+"'");
+    updatePresentation(line);
+};
 
 /*
  * Load a canvas from the manifest to the transcription interface.
@@ -1090,6 +1114,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                     tpen.project.folioImages[tpen.screen.currentFolio].image = image;
                     tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //It is now preloaded.
                 }
+                focusOnLastModifed();
             }
             else{
                 $('#requestAccessContainer').show();

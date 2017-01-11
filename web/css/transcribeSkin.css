@@ -580,7 +580,7 @@ div#transcriptletArea {
     bottom: -2px;position:relative;
 }
 .fa-labels::after {
-    content("A3");
+    content:"A3";
 }
 .fa-reparse:before,.fa-square-o:before {
     content: url(../css/custom-theme/images/reparse30.png);

@@ -1488,7 +1488,7 @@ function linesToScreen(lines, tool){
                 lineHeight: height,
                 counter: counter
         });
-        
+
         //$("#transcriptletArea").append(newAnno);
         $(".xmlClosingTags").before(newAnno);
         var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter
@@ -1521,7 +1521,7 @@ function linesToScreen(lines, tool){
         //user has begun typing, clear the wait for an update
         clearTimeout(typingTimer);
         markLineUnsaved($(e.target).parent());
-        
+
     })
         .keyup(function(e){
             //Preview.updateLine(this);
@@ -1591,6 +1591,7 @@ function updatePresentation(transcriptlet) {
         || (tpen.screen.focusItem[0].attr("id") !== tpen.screen.focusItem[1].attr("id"))) {
         adjustImgs(setPositions());
         swapTranscriptlet();
+        History.contribution();
         // show previous line transcription
         $('#captions').css({
             opacity: 1
@@ -3682,7 +3683,7 @@ function updateLine(line, cleanup, updateList){
                 updateContent = false;
                 $("#saveReport")
                 .stop(true,true).animate({"color":"red"}, 400)
-                .prepend("<div class='noChange'>No changes made</div>")//
+                .append("<div class='noChange'>No changes made</div>")//
                 .animate({"color":"#618797"}, 1600,function(){$("#saveReport").find(".noChange").remove();});
                 $("#saveReport").find(".nochanges").show().fadeOut(2000);
             }
@@ -3695,7 +3696,7 @@ function updateLine(line, cleanup, updateList){
                 var date=new Date();
                 $("#saveReport")
                 .stop(true,true).animate({"color":"green"}, 400)
-                .prepend("<div class='saveLog'>"+columnMark + '&nbsp;saved&nbsp;at&nbsp;'+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+"</div>")//+", "+Data.dateFormat(date.getDate())+" "+month[date.getMonth()]+" "+date.getFullYear())
+                .append("<div class='saveLog'>"+columnMark + '&nbsp;saved&nbsp;at&nbsp;'+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+"</div>")//+", "+Data.dateFormat(date.getDate())+" "+month[date.getMonth()]+" "+date.getFullYear())
                 .animate({"color":"#618797"}, 600);
             }
             line.attr("data-answer", currentLineText);
@@ -3707,7 +3708,7 @@ function updateLine(line, cleanup, updateList){
                 $.post(url,params,function(){
                     line.attr("hasError",null);
                     markLineSaved(line);
-                    
+
                     $("#parsingCover").hide();
                     // success
                 }).fail(function(err){
@@ -5780,7 +5781,8 @@ tpen.screen.peekZoom = function(cancel){
      *  Attaches the credit for the most recent edit to the main interface.
      */
     contribution: function(){
-        $("#contribution").html($("#history"+tpen.screen.focusItem[1].attr('lineserverid')).find('.historyCreator').eq(0).text());
+        var lineid = tpen.screen.focusItem[1].attr('lineserverid').split("/")[1];
+        $("#contribution").html($("#history"+lineid).find('.historyCreator').eq(0).text());
         if ($("#contribution").html().length == 0){
             $("#contribution").hide();
         } else {

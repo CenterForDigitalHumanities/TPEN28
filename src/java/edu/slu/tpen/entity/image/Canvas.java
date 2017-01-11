@@ -199,6 +199,7 @@ public class Canvas {
                 lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight())); 
                 lineAnnot.put("_tpen_note", lines[i].getComment());
                 lineAnnot.put("_tpen_creator",lines[i].getCreator());
+                lineAnnot.put("modified", lines[i].getDate());
                 resources.add(lineAnnot);
             }
         }

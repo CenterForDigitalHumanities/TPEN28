@@ -1561,30 +1561,28 @@ function updatePresentation(transcriptlet) {
         $("#imgBottom").css("height", "inherit");
         return false;
     }
-    var nextCol = transcriptlet.attr("col");
-    var nextLineNum = parseInt(transcriptlet.attr("collinenum"));
+    var currentCol = transcriptlet.attr("col");
+    var currentColLineNum = parseInt(transcriptlet.attr("collinenum"));
     var transcriptletBefore = $(transcriptlet.prev());
-    var nextColLine = nextCol + "" + nextLineNum;
-    $("#currentColLine").html(nextColLine);
-    if (parseInt(nextLineNum) >= 1){
+    var currentColLine = currentCol + "" + currentColLineNum;
+    $("#currentColLine").html(currentColLine);
+    if (parseInt(currentColLineNum) >= 1){
         if (transcriptletBefore.length > 0){
-        var currentTranscriptletNum = parseInt(transcriptletBefore.attr("collinenum"));
-            if (transcriptletBefore.length > 0){ }
-            else{ }
+            var prevColLineNum = parseInt(transcriptletBefore.attr("collinenum"));
             var prevLineCol = transcriptletBefore.attr("col");
             var prevLineText = unescape(transcriptletBefore.attr("data-answer"));
             var prevLineNote = unescape(transcriptletBefore.find(".notes").attr("data-answer"));
-            $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","");
+            $("#prevColLine").html(prevLineCol + "" + prevColLineNum).css("visibility","");
             $("#captionsText").text((prevLineText.length && prevLineText) || "This line is not transcribed.").attr("title",prevLineText)
                 .next().html(prevLineNote).attr("title",prevLineNote);
         }
-        else { //this is a problem
-            $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
+        else { //there is no previous line
+            $("#prevColLine").html(prevLineCol + "" + prevColLineNum).css("visibility","hidden");
             $("#captionsText").html("You are on the first line.").next().html("");
         }
     }
-    else { //there is no previous line
-        $("#prevColLine").html(prevLineCol + "" + currentTranscriptletNum).css("visibility","hidden");
+    else { //this is a problem
+        $("#prevColLine").html(currentCol + "" + currentColLineNum-1).css("visibility","hidden");
         $("#captionsText").html("ERROR.  NUMBERS ARE OFF").next().html("");
     }
     tpen.screen.focusItem[0] = tpen.screen.focusItem[1];

@@ -680,13 +680,30 @@ div#transcriptletArea {
     overflow: visible;
 }
 #templateResizeBar{
-    height: 100%;
-    right: -10px;
+    right: -15px;
     position: absolute;
     background-color: blue;
     cursor: ew-resize;
     display: none;
-    width: 10px;
+    z-index: 4;
+    height: 100vh;
+    width: 16px;
+    top: 0;
+    -moz-box-shadow: 4px 0 10px 0px black;
+    -webkit-box-shadow: 4px 0 10px 0px black;
+    box-shadow: 4px 0 10px 0px black;
+    background: rgb(171,183,188);
+    background: -moz-linear-gradient(left, rgba(171,183,188,1) 0%, rgba(232,233,234,1) 100%);
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(171,183,188,1)), color-stop(100%,rgba(232,233,234,1)));
+    background: -webkit-linear-gradient(left, rgba(171,183,188,1) 0%,rgba(232,233,234,1) 100%);
+    background: -o-linear-gradient(left, rgba(171,183,188,1) 0%,rgba(232,233,234,1) 100%);
+    background: -ms-linear-gradient(left, rgba(171,183,188,1) 0%,rgba(232,233,234,1) 100%);
+    background: linear-gradient(left, rgba(171,183,188,1) 0%,rgba(232,233,234,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#abb7bc', endColorstr='#e8e9ea',GradientType=1 );
+    -moz-transition: all .5s;
+    -webkit-transition: all .5s;
+    -o-transition: all .5s;
+    transition: all .5s;
 }
 .ui-widget-overlay{}
 #parsingDiv{overflow: auto;width: auto;}
@@ -765,7 +782,7 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
     color: #999;
     text-transform: capitalize;
     padding: .15em;
-    max-height: 1.2em;
+    max-height: 1.5em;
     overflow: hidden;
     bottom:0;
     right:0;
@@ -1064,13 +1081,6 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     font-family:'Junicode','Georgia', serif;
     min-width: 2em;
     line-height: 1.5;
-}
-.editButtons::after, a.editXMLs::after {
-    content: "edit";
-}
-a.editButtons, a.editXMLs {
-    line-height: 1.5;
-    float: left;
 }
 .lookLikeButtons:hover {
     background-color: #829aac !important;
@@ -1539,9 +1549,11 @@ a.navigation {
 a.editButtons {
     float: left;
     height: 1.8em;
+    white-space: nowrap;
+    min-width: 4em;
 }
 .editButtons::after{
-    content: "edit";
+    content: "";
 }
 
 .manController{

@@ -765,7 +765,7 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
     color: #999;
     text-transform: capitalize;
     padding: .15em;
-    max-height: 1.2em;
+    max-height: 1.5em;
     overflow: hidden;
     bottom:0;
     right:0;
@@ -1064,13 +1064,6 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     font-family:'Junicode','Georgia', serif;
     min-width: 2em;
     line-height: 1.5;
-}
-.editButtons::after, a.editXMLs::after {
-    content: "edit";
-}
-a.editButtons, a.editXMLs {
-    line-height: 1.5;
-    float: left;
 }
 .lookLikeButtons:hover {
     background-color: #829aac !important;
@@ -1539,9 +1532,11 @@ a.navigation {
 a.editButtons {
     float: left;
     height: 1.8em;
+    white-space: nowrap;
+    width: 4em;
 }
 .editButtons::after{
-    content: "edit";
+    content: "";
 }
 
 .manController{

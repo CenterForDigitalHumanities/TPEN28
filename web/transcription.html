@@ -134,16 +134,22 @@
                     <div title="Slide Workspace" class="workspaceHandle slideHandleLeft"><i class="fa fa-bars"></i><i class="fa fa-arrows-v"></i></div><div title="Slide Workspace" class="workspaceHandle slideHandleRight"><i class="fa fa-arrows-v"></i><i class="fa fa-bars"></i></div>
                     <div class="flex-container flex-stretch">
                         <div class="flex-bookend">
-                            <div title="Previous Line" class="pull-right" id="prevColLine"></div>
                         </div>
-                        <div class="flex-stretch">
+                        <div class="flex-wide" style="position:relative;height:1em;">
+                            <div id="saveReport"></div>
+                        </div>
+                        <div class="flex-bookend">
+                        </div>
+                    </div>
+                    <div class="flex-container flex-stretch">
+                        <div class="flex-bookend">
                         </div>
                         <div id="captions" class="flex-wide">
+                            <div title="Previous Line" class="pull-right" id="prevColLine"></div>
                             <div id="captionsText"></div>
                             <span id="notes" class="quiet">&nbsp;</span>
                         </div>
                         <div class="flex-bookend">
-                            <div id="saveReport" class="ui-corner-top"></div>
                         </div>
                     </div>
                     <div class="flex-container flex-stretch">
@@ -156,12 +162,9 @@
                                 Previous Page
                             </button>
                         </div>
-                        <div class="flex-stretch">
-                            <div title="Current Line" id="currentColLine"></div>
-                        </div>
                         <div id="transcriptletArea" class="flex-wide">
+                            <div title="Current Line" id="currentColLine"></div>
                             <div class="xmlClosingTags"></div>
-
                         </div>
 
                         <div class="flex-bookend">

@@ -288,23 +288,22 @@ body{
     display: none;
 }
 #captions {
-    min-height: 2em;
-    position: relative;
     color: #002a5c;
+    line-height: 1.25;
     -webkit-transition: opacity .25s;
     -moz-transition: opacity .25s;
     -o-transition: opacity .25s;
     transition: opacity .25s;
+    background: #ddd;
+    bottom: -2px;
 }
 #captionsText,#notes {
     display: inline-block;
     font-family: "Junicode","Cambria","Georgia", serif;
-    font-size: 16px;
     text-overflow: ellipsis;
     width: 100%;
     position: relative;
     white-space: nowrap;
-    top: 3px;
     overflow: hidden;
 
 }
@@ -419,14 +418,13 @@ div#transcriptletArea {
 }
 
 #prevColLine, #currentColLine{
-    border-radius: 2px;
+    font-weight: bold;
     text-align: center;
-    color: #002a5c;
-    /*font-weight: bold;*/
-    position: relative;
-    display: block; /* We may still want these, but they are wildly out of position right now. */
-    padding:.25em;
-    float: right;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    position: absolute;
+    padding: 0 .25em;
+    right: 0;
+    z-index: 6;
 }
 
 #captionsColLine {
@@ -437,18 +435,15 @@ div#transcriptletArea {
     line-height: 30px;
     cursor: default;
     color: #002a5c;
-    font-weight: bold;
     font-size: 11pt;
     position: relative;
     color:wheat;
 }
 #prevColLine {
-    background-color: wheat;
+    background-color: #ddd;
 }
 #currentColLine {
-    background: #ffebb9;
-    border: 1px solid #69acc9;
-    color: #226683;
+    background: #999;
 }
 #zoomDiv {
     display: none;
@@ -762,18 +757,14 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
 .previewSave {position: absolute; right:0;font-size: 80%;cursor: pointer;z-index: 4;}
 .previewTag {color:#488AC7;display:inline-block;}
 #saveReport,#contribution {
-    position: absolute;
+    position: relative;
     z-index: 4;
-    width: 18em;
+    width: 100%;
     cursor: pointer;
-    bottom: 0;
-    color: #226683;
+    color: #999;
     text-transform: capitalize;
-    padding: 1px;
-    margin: 0px;
     max-height: 18px;
     overflow: hidden;
-    display: block;
     text-align: left;
 }
 #contribution {right:auto;left:0;}
@@ -783,7 +774,7 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
     display: block;
 }
 #saveReport:hover {
-       box-shadow: -4px -4px 8px -4px #666666;max-height: 95px;overflow:auto;
+       box-shadow: -4px -4px 8px -4px #666666;overflow:auto;
        /* IE10 */
        background-image: -ms-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
        /* Mozilla Firefox */

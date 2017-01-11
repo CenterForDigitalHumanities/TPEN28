@@ -147,6 +147,21 @@
             #customHeader {margin: 1em;background-color: rgba(255,255,255,.5);padding: .5em;display: block;color: gray;border:thin solid gray;overflow: auto;text-overflow:ellipsis;max-height: 300px;font-size: smaller;}
             #projectOrdering {position: fixed !important;width:50% !important;right:auto !important;} /* battling weird Chrome bug */ 
             .metadataInfo{height: 235px;}
+            #copyingNotice{
+                position: relative;
+                height: auto;
+                width: auto;
+                display: none;
+            }
+            .copyLoader{
+                top: -15px;
+                position: relative;
+            }
+            .copyLoader img{
+                height: 100px;
+                left: 48px;
+                position: relative;
+            }
         </style>
         <%
             String projectAppend = "";
@@ -629,14 +644,19 @@
                                <p>Button management is restricted to group members on this public project. The current button pallete is displayed to the right.</p>
                            <%}
                            if ((isMember || permitCopy) && !thisProject.containsUserUploadedManuscript()){
-         %>
-                                <a id="copyProjectBtn" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create an Empty Copy</a>
-                                <p>Create a new project with the same set of images and buttons.  This copy will not include any transcription data, just project data.
-                                    Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p><br>
-                                
-                                <a id="copyProjectAndAnnosBtn" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create a Copy</a>
-                                <p>Create a new project with the same set of images, transcriptions, and buttons. Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p>
-                               <%}%>
+         %>                     <div class="hideWhileCopying">
+                                    <a id="copyProjectBtn" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create an Empty Copy</a>
+                                    <p>Create a new project with the same set of images and buttons.  This copy will not include any transcription data, just project data.
+                                        Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p><br>
+
+                                    <a id="copyProjectAndAnnosBtn" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create a Copy</a>
+                                    <p>Create a new project with the same set of images, transcriptions, and buttons. Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p>
+                                </div>
+                                <%}%>
+                                <div id="copyingNotice">
+                                    <div class="copyMsg"> Please be patient while we copy the information into a new project.</div>
+                                    <div class="copyLoader"><img src="images/loading2.gif" /></div>
+                                </div>
                             </li>
                             <li class="left ui-widget-content ui-corner-tr ui-corner-bl tall">
                                 <h3>Current Button Summary</h3>
@@ -1418,6 +1438,8 @@ $("#samplePreview").hover(function(){
                                         $("#addingTools").fadeOut();
                                     }
                                     function copyProject(projID, transData){
+                                        $(".hideWhileCopying").hide();
+                                        $("#copyingNotice").show();
                                         var url = "copyProject";
                                         var withAnnos = "WithAnnotations";
                                         var params = {"projectID":projID};
@@ -1426,7 +1448,8 @@ $("#samplePreview").hover(function(){
                                         }
                                         //Need to have a UI so the users knows a copy is taking place / completed / failed.
                                         $.post(url, params, function(data){
-                                            
+                                            $(".hideWhileCopying").show();
+                                            $("#copyingNotice").hide();
                                         });
                                     }
                 </script>

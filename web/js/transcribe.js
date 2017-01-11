@@ -1271,10 +1271,10 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
     }
     tpen.screen.textSize();
 }
-function updateURL(piece){
+function updateURL(piece, classic){
     var toAddressBar = document.location.href;
     //If nothing is passed in, just ensure the projectID is there.
-    console.log("does URL contain projectID?        "+getURLVariable("projectID"));
+    //console.log("does URL contain projectID?        "+getURLVariable("projectID"));
     if(!getURLVariable("projectID")){
         toAddressBar = "?projectID="+tpen.project.id;
     }
@@ -1293,6 +1293,13 @@ function updateURL(piece){
     console.log(toAddressBar);
     window.history.pushState("", "T-PEN Transcription", toAddressBar);
 }
+
+/* Go to the transcription.jsp interface, which is the classic version */
+function switchToClassicTranscription(){
+    //Make sure the exitPage functionality goes with this.
+    var newURL = "transcription.jsp?projectID="+getURLVariable('projectID')+"&p="+getURLVariable('p');
+    document.location.href = newURL;
+}
 /* Take line data, turn it into HTML elements and put them to the DOM */
 function linesToScreen(lines, tool){
     $("#noLineWarning").hide();
@@ -1307,7 +1314,7 @@ function linesToScreen(lines, tool){
     var thisNote = "";
     var thisPlaceholder = "Enter a line transcription";
     var counter = -1;
-    var colCounter = 0;
+    var colCounter = 1;
     var image = $('#imgTop img');
     var theHeight = image.height();
     var theWidth = image.width();
@@ -1417,7 +1424,7 @@ function linesToScreen(lines, tool){
                         else { //we are in a new column, column indicator needs to increase.
                             letterIndex++;
                             col = letters[letterIndex];
-                            colCounter = 0; //Reset line counter so that when the column changes the line# restarts
+                            colCounter = 1; //Reset line counter so that when the column changes the line# restarts
                         }
                     }
                     else {
@@ -1481,7 +1488,7 @@ function linesToScreen(lines, tool){
                 lineHeight: height,
                 counter: counter
         });
-        colCounter++;
+        
         //$("#transcriptletArea").append(newAnno);
         $(".xmlClosingTags").before(newAnno);
         var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter
@@ -1499,6 +1506,7 @@ function linesToScreen(lines, tool){
         //Put to the DOM
         $(".lineColIndicatorArea").append(lineColumnIndicator);
         $("#fullPageSplitCanvas").append(fullPageLineColumnIndicator);
+        colCounter++;
     }
     if (update && $(".transcriptlet").eq(0).length > 0){
         updatePresentation($(".transcriptlet").eq(0));
@@ -1512,9 +1520,11 @@ function linesToScreen(lines, tool){
         .keydown(function(e){
         //user has begun typing, clear the wait for an update
         clearTimeout(typingTimer);
+        markLineUnsaved($(e.target).parent());
+        
     })
         .keyup(function(e){
-            Preview.updateLine(this);
+            //Preview.updateLine(this);
             var lineToUpdate = $(this).parent();
             clearTimeout(typingTimer);
             //when a user stops typing for 2 seconds, fire an update to get the new text.
@@ -1527,7 +1537,8 @@ function linesToScreen(lines, tool){
                     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
                     // if it IIIF, we need to update the list
                         $.each(currentAnnoList, function(index, data){
-                            if(data["@id"] == idToCheckFor){
+                            var dataLineID = data.tpen_line_id.replace("line/", "");
+                            if(dataLineID == idToCheckFor){
                                 currentAnnoList[index].resource["cnt:chars"] = newText;
                                 tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
                                 updateLine(lineToUpdate, false, true);
@@ -1551,13 +1562,13 @@ function updatePresentation(transcriptlet) {
         return false;
     }
     var nextCol = transcriptlet.attr("col");
-    var nextLineNum = parseInt(transcriptlet.attr("collinenum")) + 1;
+    var nextLineNum = parseInt(transcriptlet.attr("collinenum"));
     var transcriptletBefore = $(transcriptlet.prev());
     var nextColLine = nextCol + "" + nextLineNum;
     $("#currentColLine").html(nextColLine);
     if (parseInt(nextLineNum) >= 1){
         if (transcriptletBefore.length > 0){
-        var currentTranscriptletNum = parseInt(transcriptletBefore.attr("collinenum")) + 1;
+        var currentTranscriptletNum = parseInt(transcriptletBefore.attr("collinenum"));
             if (transcriptletBefore.length > 0){ }
             else{ }
             var prevLineCol = transcriptletBefore.attr("col");
@@ -1623,7 +1634,6 @@ function setPositions() {
     if (tpen.screen.focusItem[1].attr("lineHeight") !== null) {
         var pairForBookmarkCol = tpen.screen.focusItem[1].attr('col');
         var pairForBookmarkLine = parseInt(tpen.screen.focusItem[1].attr('collinenum'));
-        pairForBookmarkLine++;
         var pairForBookmark = pairForBookmarkCol + pairForBookmarkLine;
         var currentLineHeight = parseFloat(tpen.screen.focusItem[1].attr("lineHeight"));
         var currentLineTop = parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
@@ -3031,6 +3041,19 @@ function reparseColumns(){
                     "data-tagID":   tagID
                 }).text("/" + tagName);
                 $(".xmlClosingTags").append(closeTag); //tpen.screen.focusItem[1].children(".xmlClosingTags").append(closeTag)
+                $(closeTag).click(function(event){
+            //we could detect if tag is in this line.
+                    if(event.target != this){return true;}
+                    //makeUnsaved();
+                    addchar("<" + $(this).text() + ">"); //there's an extra / somehow...
+                    destroyClosingTag(this);
+                });
+                $(closeTag).mouseenter(function(){
+                    $(this).append("<span onclick='destroyClosingTag(this.parentNode);' class='destroyTag ui-icon ui-icon-closethick right'></span>");
+                });
+                $(closeTag).mouseleave(function(){
+                    $(this).find(".destroyTag").remove();
+                });
             }
         );
     }
@@ -3053,6 +3076,7 @@ function reparseColumns(){
                 myField.focus();
                 sel = document.selection.createRange();
                 sel.text = unescape(myValue);
+                sel.setSelectionRange(sel.selectionStart, sel.selectionStart);
                 updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
@@ -3063,6 +3087,7 @@ function reparseColumns(){
                 currentValue = currentValue.slice(0, startPosChar) + unescape(myValue) + currentValue.slice(startPosChar);
                 myField.value = currentValue;
                 myField.focus();
+                myField.setSelectionRange(startPosChar, startPosChar);
                 updateLine($(myField).parent(), false, true);
             }
         }
@@ -3074,6 +3099,7 @@ function reparseColumns(){
                 myField.focus();
                 sel = document.selection.createRange();
                 sel.text = unescape(fullTag);
+                sel.setSelectionRange(sel.selectionStart, sel.selectionStart);
                 updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
@@ -3110,10 +3136,12 @@ function reparseColumns(){
                     closeAddedTag(myValue, fullTag);
                     //return startPos+unescape(fullTag).length;
                 }
+                myField.setSelectionRange(startPos, startPos);
             }
             else {
                 myField.value += unescape(fullTag);
                 myField.focus();
+                myField.setSelectionRange(myField.selectionStart);
                 updateLine($(myField).parent(), false, true);
                 closeAddedTag(myValue, fullTag);
                 //return myField.length;
@@ -3680,6 +3708,8 @@ function updateLine(line, cleanup, updateList){
             if(updatePositions){
                 $.post(url,params,function(){
                     line.attr("hasError",null);
+                    markLineSaved(line);
+                    
                     $("#parsingCover").hide();
                     // success
                 }).fail(function(err){
@@ -3690,12 +3720,16 @@ function updateLine(line, cleanup, updateList){
             if(updateContent){
                 $.post(url2,params2,function(){
                     line.attr("hasError",null);
+                    markLineSaved(line);
                     $("#parsingCover").hide();
                     // success
                 }).fail(function(err){
                     line.attr("hasError","Saving Failed "+err.status);
                     throw err;
                 });
+            }
+            if(!updateContent && !updatePositions){
+                markLineSaved(line);
             }
 //        } else {
 //            throw new Error("No good. The ID could not be dereferenced. Maybe this is a new annotation?");
@@ -5770,7 +5804,13 @@ tpen.screen.peekZoom = function(cancel){
         $("#abbrevImg").attr("src","//t-pen.org/images/cappelli/"+$(this).val());
     });
 
+function markLineUnsaved(line){
+    line.addClass("isUnsaved"); //mark on the transcriptlet.  You can find the drawn line on the screen and do something to.
+}
 
+function markLineSaved(line){
+    line.removeClass("isUnsaved");
+}
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?
 if (!window.console) window.console = {};

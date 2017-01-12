@@ -2558,6 +2558,16 @@ function splitPage(event, tool) {
         $("#controlsSplit").show();
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }
+    if(tool==="help"){
+        if($("#helpSplit").is(":visible")){
+            return fullPage();
+        }
+        $("#transcriptionCanvas").css("width", Page.width()-500 + "px");
+        $("#transcriptionTemplate").css("width", Page.width()-500 + "px");
+        newCanvasWidth = Page.width()-500;
+        $("#helpSplitSplit").show();
+        resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
+    }
     if(tool === "parsing"){
         resize=false;
     }
@@ -4915,26 +4925,8 @@ var Help = {
     /**
      *  Shows the help interface.
      */
-    revealHelp: function(){
-        if($("#closeHelp").is(":visible")){
-            $("#closeHelp:visible").click(); // close if open
-            return false;
-        }
-
-        var workspaceHeight = $("#transWorkspace").height();
-        var imgTopHeight = $("#imgTop").height() + workspaceHeight;
-        //Screen.maintainWorkspace();
-        $(".helpPanel").height(imgTopHeight);
-        $(".helpPanel").css("width", "20%");
-        $("#helpPanels").width('500%').height(imgTopHeight);
-        $("#help").show().css({
-            "left":"0px",
-            "top":"32px",
-            "width":"100%"
-        });
-        $(".helpContents").eq(0).click();
-        $("#bookmark").hide();
-        $("#closeHelp").show();
+    revealHelp: function(event){
+       splitPage(event, "help");
     },
     /**
      *  Adjusts the position of the help panels to reveal the selected section.

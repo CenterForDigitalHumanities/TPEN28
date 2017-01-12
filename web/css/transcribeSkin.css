@@ -1611,3 +1611,48 @@ a.editButtons {
     position: absolute;
     max-height: 98%;
 }
+
+/* The new help area CSS @cubap */
+#helpSplit{
+    width: 500px;
+    max-width: 500px;
+    overflow-y: scroll;
+    background-color: #e1f4fe;
+}
+#helpHeaders{
+    padding: 18px 0px;
+    text-align: center;
+}
+.helpHeader{
+    display: inline-block;
+    border: 2px solid black;
+    padding: 3px;
+    text-transform: uppercase;
+    color: gray;
+}
+
+.helpHeader a{
+   color: gray;
+}
+.helpLine{
+    display: block;
+    margin: 2px 0px;
+}
+.helpHeading{
+    font-style: italic;
+}
+.helpSubsection{
+    margin: 2px 0px;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-decoration: underline;
+    padding-bottom: 6px;
+}
+.helpSection{
+    min-height: 100%;
+    padding: 0px 45px;
+    color: black;
+}
+.helpBlock{
+    margin-bottom: 25px;
+}

@@ -344,7 +344,7 @@
                                     <label style="margin-left: 10px; margin-right: 3px;" for="customRuler">
                                         Custom
                                         <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown."
-                                               type="text" id="customRuler" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
+                                            type="text" id="customRuler" onfocus="$('input[name=\'rulerColor\']').removeAttr('checked');" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
                                     </label>
                                 </small>
 

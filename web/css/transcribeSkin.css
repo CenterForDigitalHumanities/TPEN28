@@ -1143,6 +1143,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     float: right;
     background-color: rgba(1,51,90,.5);
     background-color: #e1f4fe;
+    z-index: 3;
 }
 /*#activeImageTool{
     padding: 4px 6px;

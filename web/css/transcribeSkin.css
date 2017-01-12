@@ -266,7 +266,7 @@ body{
     padding: 0 .25em;
     position: relative;
 }
-.flex-wide, .flex-wide div {
+.flex-wide, #transcriptletArea div {
     display:flex;
     flex-grow:8;
 }
@@ -288,23 +288,22 @@ body{
     display: none;
 }
 #captions {
-    min-height: 2em;
-    position: relative;
     color: #002a5c;
+    line-height: 1.25;
     -webkit-transition: opacity .25s;
     -moz-transition: opacity .25s;
     -o-transition: opacity .25s;
     transition: opacity .25s;
+    background: #ddd;
+    bottom: -2px;
 }
 #captionsText,#notes {
     display: inline-block;
     font-family: "Junicode","Cambria","Georgia", serif;
-    font-size: 16px;
     text-overflow: ellipsis;
     width: 100%;
     position: relative;
     white-space: nowrap;
-    top: 3px;
     overflow: hidden;
 
 }
@@ -380,6 +379,7 @@ body{
     position: relative;
     z-index: 3;
     visibility: visible;
+    overflow: hidden;
     max-width: 40em;
 }
 div#transcriptletArea {
@@ -418,14 +418,13 @@ div#transcriptletArea {
 }
 
 #prevColLine, #currentColLine{
-    border-radius: 2px;
+    font-weight: bold;
     text-align: center;
-    color: #002a5c;
-    /*font-weight: bold;*/
-    position: relative;
-    display: block; /* We may still want these, but they are wildly out of position right now. */
-    padding:.25em;
-    float: right;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    position: absolute;
+    padding: 0 .25em;
+    right: 0;
+    z-index: 6;
 }
 
 #captionsColLine {
@@ -436,18 +435,15 @@ div#transcriptletArea {
     line-height: 30px;
     cursor: default;
     color: #002a5c;
-    font-weight: bold;
     font-size: 11pt;
     position: relative;
     color:wheat;
 }
 #prevColLine {
-    background-color: wheat;
+    background-color: #ddd;
 }
 #currentColLine {
-    background: #ffebb9;
-    border: 1px solid #69acc9;
-    color: #226683;
+    background: #999;
 }
 #zoomDiv {
     display: none;
@@ -566,6 +562,25 @@ div#transcriptletArea {
 }
 #parsingBtn[disabled]:hover{
     background-color: red;
+}
+.fa-grayscale {
+    border-radius: 50%;
+    height: 1em;
+    width: 1em;
+    background: #959595;
+    background: -moz-linear-gradient(-45deg, #959595 0%, #777777 27%, #dddddd 51%, #4e4e4e 77%, #efefef 100%);
+    background: -webkit-linear-gradient(-45deg, #959595 0%,#777777 27%,#dddddd 51%,#4e4e4e 77%,#efefef 100%);
+    background: linear-gradient(135deg, #959595 0%,#777777 27%,#dddddd 51%,#4e4e4e 77%,#efefef 100%);
+    bottom: -2px;position:relative;
+}
+.fa-labels {
+    border: thin white solid;
+    font-style: normal;
+    height: 1em;width:1em;
+    bottom: -2px;position:relative;
+}
+.fa-labels::after {
+    content:"A3";
 }
 .fa-reparse:before,.fa-square-o:before {
     content: url(../css/custom-theme/images/reparse30.png);
@@ -705,13 +720,30 @@ div#transcriptletArea {
     overflow: visible;
 }
 #templateResizeBar{
-    height: 100%;
-    right: -10px;
+    right: -15px;
     position: absolute;
     background-color: blue;
     cursor: ew-resize;
     display: none;
-    width: 10px;
+    z-index: 4;
+    height: 100vh;
+    width: 16px;
+    top: 0;
+    -moz-box-shadow: 4px 0 10px 0px black;
+    -webkit-box-shadow: 4px 0 10px 0px black;
+    box-shadow: 4px 0 10px 0px black;
+    background: rgb(171,183,188);
+    background: -moz-linear-gradient(left, rgba(171,183,188,1) 0%, rgba(232,233,234,1) 100%);
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(171,183,188,1)), color-stop(100%,rgba(232,233,234,1)));
+    background: -webkit-linear-gradient(left, rgba(171,183,188,1) 0%,rgba(232,233,234,1) 100%);
+    background: -o-linear-gradient(left, rgba(171,183,188,1) 0%,rgba(232,233,234,1) 100%);
+    background: -ms-linear-gradient(left, rgba(171,183,188,1) 0%,rgba(232,233,234,1) 100%);
+    background: linear-gradient(left, rgba(171,183,188,1) 0%,rgba(232,233,234,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#abb7bc', endColorstr='#e8e9ea',GradientType=1 );
+    -moz-transition: all .5s;
+    -webkit-transition: all .5s;
+    -o-transition: all .5s;
+    transition: all .5s;
 }
 .ui-widget-overlay{}
 #parsingDiv{overflow: auto;width: auto;}
@@ -785,37 +817,22 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
     position: absolute;
     z-index: 4;
     width: 18em;
-    cursor: pointer;
-    bottom: 0;
-    color: #226683;
+    background: white url(../images/linen.png);
+    font-size: small;
+    color: #999;
     text-transform: capitalize;
-    padding: 1px;
-    margin: 0px;
-    max-height: 18px;
+    padding: .15em;
+    max-height: 1.5em;
     overflow: hidden;
-    display: block;
-    text-align: left;
+    bottom:0;
+    right:0;
 }
-#contribution {right:auto;left:0;}
 #contribution:before {content:'Last edit by: '}
 .saveLog:first-child {color:#618797;}
-.saveLog{
-    display: block;
-}
 #saveReport:hover {
-       box-shadow: -4px -4px 8px -4px #666666;max-height: 95px;overflow:auto;
-       /* IE10 */
-       background-image: -ms-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
-       /* Mozilla Firefox */
-       background-image: -moz-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
-       /* Opera */
-       background-image: -o-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
-       /* Webkit (Safari/Chrome 10) */
-       background-image: -webkit-gradient(linear, left top, left bottom, color-stop(.25, whitesmoke), color-stop(1, rgba(255,255,255,0)));
-       /* Webkit (Chrome 11+) */
-       background-image: -webkit-linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
-       /* Proposed W3C Markup */
-       background-image: linear-gradient(top, whitesmoke 25%, rgba(255,255,255,0) 100%);
+       box-shadow: -4px -4px 8px -4px #666666;overflow:auto;
+       background:#ccc;
+       max-height: none;
 }
 #clickDivs {position: relative;height:auto;clear:both;}
 .parsing,.adjustable {z-index: 5;opacity:.3;position: absolute;border:solid 1px black;}
@@ -1105,13 +1122,6 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     font-family:'Junicode','Georgia', serif;
     min-width: 2em;
     line-height: 1.5;
-}
-.editButtons::after, a.editXMLs::after {
-    content: "edit";
-}
-a.editButtons, a.editXMLs {
-    line-height: 1.5;
-    float: left;
 }
 .lookLikeButtons:hover {
     background-color: #829aac !important;
@@ -1582,9 +1592,11 @@ a.navigation {
 a.editButtons {
     float: left;
     height: 1.8em;
+    white-space: nowrap;
+    min-width: 4em;
 }
 .editButtons::after{
-    content: "edit";
+    content: "";
 }
 
 .manController{

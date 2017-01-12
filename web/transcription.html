@@ -138,16 +138,23 @@
                     <div title="Slide Workspace" class="workspaceHandle slideHandleLeft"><i class="fa fa-bars"></i><i class="fa fa-arrows-v"></i></div><div title="Slide Workspace" class="workspaceHandle slideHandleRight"><i class="fa fa-arrows-v"></i><i class="fa fa-bars"></i></div>
                     <div class="flex-container flex-stretch">
                         <div class="flex-bookend">
-                            <div title="Previous Line" class="pull-right" id="prevColLine"></div>
                         </div>
-                        <div class="flex-stretch">
+                        <div class="flex-wide" style="position:relative;height:1em;">
+                            <div id="contribution"></div>
+                            <div id="saveReport"></div>
+                        </div>
+                        <div class="flex-bookend">
+                        </div>
+                    </div>
+                    <div class="flex-container flex-stretch">
+                        <div class="flex-bookend">
                         </div>
                         <div id="captions" class="flex-wide">
+                            <div title="Previous Line" class="pull-right" id="prevColLine"></div>
                             <div id="captionsText"></div>
                             <span id="notes" class="quiet">&nbsp;</span>
                         </div>
                         <div class="flex-bookend">
-                            <div id="saveReport" class="ui-corner-top"></div>
                         </div>
                     </div>
                     <div class="flex-container flex-stretch">
@@ -160,12 +167,9 @@
                                 Previous Page
                             </button>
                         </div>
-                        <div class="flex-stretch">
-                            <div title="Current Line" id="currentColLine"></div>
-                        </div>
                         <div id="transcriptletArea" class="flex-wide">
+                            <div title="Current Line" id="currentColLine"></div>
                             <div class="xmlClosingTags"></div>
-
                         </div>
 
                         <div class="flex-bookend">
@@ -205,8 +209,8 @@
                     <div class="flex-container flex-stretch" style="flex-wrap: wrap; justify-content: space-around;">
                         <div id="specialCharsFloat" class="flex-container special-charactered">
                             <a title="Edit Special Characters" class="lookLikeButtons editButtons" href="buttons.jsp">
-                            <i class="fa fa-edit"></i>
-                        </a>
+                                Edit <i class="fa fa-edit"></i>
+                            </a>
                             <!--                        <div class="closeBtn" onclick="$('#toggleChars').click();">
                                                         <i class="fa fa-close"></i>
                                                     </div>-->
@@ -215,13 +219,14 @@
                         </div>
                         <div id="xmlTagFloat" class="flex-container xml-tagged">
                             <a title="Edit XML Tags" class="lookLikeButtons editButtons exitPage" href="buttons.jsp">
-                                <i class="fa fa-edit"></i>
-                            </a>
-                            <!--                        <div class="closeBtn" onclick="$('#toggleXML').click();">
-                                                        <i class="fa fa-close"></i>
-                                                    </div>-->
                             <div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
                             </div>
+                                Edit <i class="fa fa-edit"></i>
+                            </a>
+                        <!--                        <div class="closeBtn" onclick="$('#toggleXML').click();">
+                                                    <i class="fa fa-close"></i>
+                                                </div>-->
+                        <div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
                         </div>
                     </div>
                 </div>
@@ -958,49 +963,57 @@
                     </select>
                 </div>
             </div>
-            <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
-                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool </div>
-                <div style="padding:15px;">
-                    <header> Image Controls </header>
-                    <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
-                    <i class="fa fa-picture-o" style="color: #999;background: #DDD;border-radius: 2px;"></i>
-                    Grayscale</button>
-                    <button which="invert" class="block" onclick="toggleFilter('invert');">
-                    <i class="fa fa-picture-o" style="background: #FFF;border-radius: 2px;color: #000;"></i>
-                    Invert</button>
-                    <div id="imageToolSliders" class="imgTool">
-                        <i class="fa fa-sun-o"></i> Brightness
-                        <div id="brightnessSlider"></div>
-                        <i class="fa fa-adjust"></i> Contrast
-                        <div id="contrastSlider"></div>
-                    </div>
-                    <button class="" onclick="resetFilters();">
-                        Reset
-                    </button>
-                    <header> Column Controls</header>
-                    <button role="button" class="block" onclick="$(this).addClass('selected');">
-                        <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" >
-                    </button>
-                    <button role="button" class=" block" onclick="$(this).addClass('selected');">
-                        <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
-                    </button>
-                    <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
-                    <button role="button" id="parsingBtn" title="Redraw the lines on this page" class='block'>
-                        <i class="fa fa-barcode fa-rotate-90"></i>
-                        Edit Columns</button>
+        <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
+            <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool </div>
+            <div style="padding:15px;">
 
-                    <header>
-                        Keyboard Shortcuts
-                    </header>
-                    <div>
-                        <strong>View/Move Image</strong>
-                        <kbd>CTRL</kbd>+<kbd>ALT</kbd>: hold to temporarily hide the workspace and drag around your page image
-                    </div>
-                    <div>
-                        <strong>Peek-Zoom</strong>
-                        <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>: peek-zoom into the current line of transcription
-                    </div>
-                </div>
+        <header> Image Controls </header>
+        <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
+            Grayscale
+            <i class="fa fa-grayscale" style="color: #999;background: #DDD;border-radius: 2px;"></i>
+        </button>
+        <button which="invert" class="block" onclick="toggleFilter('invert');">
+            Invert
+            <i class="fa fa-picture-o" style="background: #FFF;border-radius: 2px;color: #000;"></i>
+        </button>
+        <div id="imageToolSliders" class="imgTool">
+            <i class="fa fa-sun-o"></i> Brightness
+            <div id="brightnessSlider"></div>
+            <i class="fa fa-adjust"></i> Contrast
+            <div id="contrastSlider"></div>
+        </div>
+        <button class="" onclick="resetFilters();">
+            Reset
+        </button>
+
+
+        <header> Column Controls</header>
+        <button role="button" class="block" onclick="$(this).toggleClass('selected')">
+            <label for="lineToggle" title="Toggle Entire Lines">Show Column</label>
+            <input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" >
+            <i class="fa fa-bars"></i>
+        </button>
+        <button role="button" class=" block" onclick="$(this).addClass('selected');">
+            <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
+            <i class="fa fa-labels"></i>
+        </button>
+        <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
+        <button role="button" id="parsingBtn" title="Redraw the lines on this page" class='block'>
+            <i class="fa fa-barcode fa-rotate-90"></i>
+            Edit Columns</button>
+
+        <header>
+            Keyboard Shortcuts
+        </header>
+        <div>
+            <strong>View/Move Image</strong>
+            <kbd>CTRL</kbd>+<kbd>ALT</kbd>: hold to temporarily hide the workspace and drag around your page image
+        </div>
+        <div>
+            <strong>Peek-Zoom</strong>
+            <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>: peek-zoom into the current line of transcription
+        </div>
+    </div>
 <!--     <button id="moveImage" title="Move Transcription Image" class="block" onclick="startMoveImg();">
         <i class="fa fa-hand-paper-o"></i>
         Move Img</button>

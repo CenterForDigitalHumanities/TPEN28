@@ -5881,7 +5881,7 @@ function dailyTip() {
         "Visit the blog for news on TPEN3!"
     ];
     var thisTip = tips[Math.floor(Math.random()*tips.length)];
-    $("#tips").html(thisTip);
+    $("#tip").html(thisTip);
 }
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?

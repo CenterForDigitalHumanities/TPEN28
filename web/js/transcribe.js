@@ -1598,7 +1598,7 @@ function updatePresentation(transcriptlet) {
     var currentColLine = currentCol + "" + currentColLineNum;
     $("#currentColLine").html(currentColLine);
     if (parseInt(currentColLineNum) >= 1){
-        if (transcriptletBefore.length > 0){
+        if (transcriptletBefore.hasClass("transcriptlet")){
             var prevColLineNum = parseInt(transcriptletBefore.attr("collinenum"));
             var prevLineCol = transcriptletBefore.attr("col");
             var prevLineText = unescape(transcriptletBefore.attr("data-answer"));

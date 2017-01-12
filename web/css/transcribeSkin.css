@@ -746,7 +746,7 @@ div#transcriptletArea {
     transition: all .5s;
 }
 .ui-widget-overlay{}
-#parsingDiv{overflow: auto;width: auto;}
+#parsingDiv{overflow: hidden;width: auto; margin-bottom: 50px;}
 #linebreakDiv {height:100%; overflow: auto;width:auto;}
 #parseOptions > span, #linebreakOptions > span, #columnOptions > span, #allColumnOptions > span, .destroyPage, #reparseColumn {width:100%;height:38px;float:left;padding-top:8px;z-index: 2;}
 #columnOptions > span, #allColumnOptions > span {width: 50%;}

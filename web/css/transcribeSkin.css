@@ -659,7 +659,7 @@ div#transcriptletArea {
     margin-bottom: 15px;
 }
 .blockOpen{
-    transform: rotate(240deg);
+    transform: rotate(270deg);
 }
 .blockStatusClosed{
     position: absolute;

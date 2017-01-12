@@ -1025,7 +1025,7 @@ function checkIPRagreement(id){
  * If none, suggest parsing; if *xxxxxx first x; else last modifed.
  * @returns undefined
  */
-function focusOnLastModifed(){
+function focusOnLastModified(){
     var lines = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
     var focusOn = lines[0];
     var scribedLines = lines.filter(function(){
@@ -1041,7 +1041,7 @@ function focusOnLastModifed(){
             }
         }
     }
-    var line = $("[lineserverid='"+focusOn.tpen_line_id+"]'");
+    var line = $(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']");
     updatePresentation(line);
 };
 
@@ -1116,7 +1116,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                     tpen.project.folioImages[tpen.screen.currentFolio].image = image;
                     tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //It is now preloaded.
                 }
-                focusOnLastModifed();
+                focusOnLastModified();
             }
             else{
                 $('#requestAccessContainer').show();
@@ -1539,7 +1539,8 @@ function linesToScreen(lines, tool){
         colCounter++;
     }
     if (update && $(".transcriptlet").eq(0).length > 0){
-        updatePresentation($(".transcriptlet").eq(0));
+        //updatePresentation($(".transcriptlet").eq(0));
+        focusOnLastModified();
         activateTool(tool);
     }
     else{

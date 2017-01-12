@@ -1028,10 +1028,10 @@ function checkIPRagreement(id){
 function focusOnLastModified(){
     var lines = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
     var focusOn = lines[0];
-    var scribedLines = lines.filter(function(){
-        return this.resource
-            && this.resource["cnt:chars"]
-            && this.resource["cnt:chars"].length > 0;
+    var scribedLines = lines.filter(function(l){
+        return l.resource
+            && l.resource["cnt:chars"]
+            && l.resource["cnt:chars"].length > 0;
     });
     if(scribedLines.length!==lines.length)    {
         var i;

@@ -27,6 +27,7 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.hp.hpl.jena.rdf.model.*;
+import java.sql.Timestamp;
 import org.owasp.esapi.ESAPI;
 
 
@@ -43,7 +44,7 @@ public class Transcription {
 
    private int folio;
    private int line;
-   private Date date;
+   private Timestamp date;
    private String timestamp;
    public int UID;//should use a user object rather than the user id?
    private int projectID = -1;
@@ -246,7 +247,7 @@ public class Transcription {
       return timestamp;
    }
 
-   public Date getDate() {
+   public Timestamp getDate() {
       return date;
    }
 
@@ -380,7 +381,7 @@ public class Transcription {
             height = rs.getInt("height");
             this.projectID = rs.getInt("projectID");
             this.folio = rs.getInt("folio");
-            date = rs.getDate("date");
+            date = rs.getTimestamp("date");
          }
       } finally {
          DatabaseWrapper.closeDBConnection(j);

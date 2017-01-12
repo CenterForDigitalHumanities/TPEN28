@@ -43,7 +43,6 @@ public class GetHistory extends HttpServlet {
      * @throws java.sql.SQLException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-        System.out.println("HIstory!!");
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         StringBuilder historyHTML = new StringBuilder("");
@@ -59,8 +58,6 @@ public class GetHistory extends HttpServlet {
         int pageno = 0;
         projectID = Integer.parseInt(request.getParameter("projectID"));
         pageno = Integer.parseInt(request.getParameter("p"));
-        System.out.println("MUST have projectID and p");
-        System.out.println(projectID + " AND "+ pageno);
         Map<Integer, List<ArchivedTranscription>> pageHistory = ArchivedTranscription.getAllVersionsForPage(projectID, pageno);
         Project thisProject = new Project(projectID);
         if (pageno < 0) pageno = thisProject.firstPage();
@@ -68,7 +65,6 @@ public class GetHistory extends HttpServlet {
         int i = -1;
         for (Transcription t: thisText) {
             i++;
-            System.out.println("Line "+i);
             List<ArchivedTranscription> history = pageHistory.get(t.getLineID());
             if (history == null){
                 historyHTML.append("<div class='historyLine' id='history").append(t.getLineID()).append("' linewidth='").append(t.getWidth()).append("' lineheight='").append(t.getHeight()).append("' lineleft='").append(t.getX()).append("' linetop='").append(t.getY()).append("'>No previous versions</div>");
@@ -115,7 +111,6 @@ public class GetHistory extends HttpServlet {
                 historyHTML.append("</div>");
             }
         }
-        System.out.println("Send out the HTML string");
         out.print(historyHTML.toString());
     }
 

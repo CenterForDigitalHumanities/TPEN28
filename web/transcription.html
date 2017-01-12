@@ -238,31 +238,31 @@
              </div>
              <div class="toolLinks icon-panel">
                  <div class="icon-panel">
-                    <button>
-                        <img src="css/custom-theme/images/new8.png" alt="reparse" height="30px" />
+                    <button onclick='$("#createColumn").click();'>
+                        <img src="css/custom-theme/images/create_column_md.png" alt="reparse" height="30px" />
                     </button>
-                     <button>
-                         <img src="css/custom-theme/images/new1.png" alt="reparse" />
+                     <button onclick='$("#adjustColumn").click();'>
+                         <img src="css/custom-theme/images/adjust_column_md.png" alt="reparse" />
                     </button>
-                    <button>
-                        <img src="css/custom-theme/images/new3.png" alt="reparse" height="30px" />
+                    <button onclick='$("#destroyColumn").click();'>
+                        <img src="css/custom-theme/images/destroy_column_md.png" alt="reparse" height="30px" />
                     </button>
-                    <button>
-                        <img src="css/custom-theme/images/reparse30.png" alt="reparse" />
+                    <button onclick='$("#clearColumns").click();'>
+                        <img src="css/custom-theme/images/reparse_md.png" alt="reparse" />
                     </button>
                  </div>
                  <div class="icon-panel">
-                     <button>
-                         <img src="css/custom-theme/images/new2.png" alt="reparse" height="30px" />
+                     <button onclick='$("#addLines").click();'>
+                         <img src="css/custom-theme/images/add_line_md.png" alt="reparse" height="30px" />
                      </button>
-                     <button>
-                         <img src="css/custom-theme/images/new7.png" alt="reparse" />
+                     <button onclick='$("#adjustLines").click();'>
+                         <img src="css/custom-theme/images/merge_lines_md.png" alt="reparse" />
                      </button>
-                     <button>
-                        <img src="css/custom-theme/images/new6.png" alt="reparse" />
+                     <button onclick='$("#mergeLines").click();'>
+                        <img src="css/custom-theme/images/adjust_lines_md.png" alt="reparse" />
                     </button>
-                     <button>
-                         <img src="css/custom-theme/images/new4.png" alt="reparse" />
+                     <button onclick='$("#removeLine").click();'>
+                         <img src="css/custom-theme/images/delete_line_md.png" alt="reparse" />
                      </button>
                  </div>
              </div>
@@ -274,7 +274,7 @@
                             <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
                                 Create Column
                                 <!--<i class="fa fa-reparse"></i>-->
-                                <img src="css/custom-theme/images/new8.png" alt="reparse" />
+                                <img src="css/custom-theme/images/create_column_sm.png" alt="reparse" />
                             </button>
                             <i class="fa fa-caret-left blockStatusClosed"></i>
                             <small>Click and drag to place</small>
@@ -282,7 +282,7 @@
                         <div class="splitBlock">
                             <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
                                 Adjust Columns
-                                <img src="css/custom-theme/images/new1.png" alt="reparse" />
+                                <img src="css/custom-theme/images/adjust_column_sm.png" alt="reparse" />
                                 <!--<i class="fa fa-reparse"></i>-->
                             </button>
                             <i class="fa fa-caret-left blockStatusClosed"></i>
@@ -292,7 +292,7 @@
                         <div class="splitBlock danger">
                             <button id="destroyColumn" class="tpenButton" title="Remove an entire column and its data with a click">
                                 Destroy Column
-                                <img src="css/custom-theme/images/new3.png" alt="reparse" />
+                                <img src="css/custom-theme/images/destroy_column_sm.png" alt="reparse" />
 <!--                                <i class="fa fa-reparse"></i>-->
                             </button>
                             <i class="fa fa-caret-left blockStatusClosed"></i>
@@ -303,7 +303,8 @@
                         <div class="splitBlock danger">
                             <button id="clearColumns" class="tpenButton" title="Remove all columns and let the autoparser reparse the page">
                                 Re-parse Page
-                                <i class="fa fa-reparse"></i>
+                                <img src="css/custom-theme/images/reparse_sm.png" alt="reparse" />
+                                <!--<i class="fa fa-reparse"></i>-->
                                 <!--<i class="fa fa-reparse"></i>-->
                             </button>
                             <i class="fa fa-caret-left blockStatusClosed"></i>
@@ -318,7 +319,7 @@
                         <div class="splitBlock">
                             <button id="addLines" class="tpenButton" title="Split lines to create new ones in a column">
                                 Add Line
-                                <img src="css/custom-theme/images/new2.png" alt="reparse" />
+                                <img src="css/custom-theme/images/add_line_sm.png" alt="reparse" />
                                 <!--<i class="fa fa-reparse"></i>-->
                             </button>
                             <i class="fa fa-caret-left blockStatusClosed"></i>
@@ -327,9 +328,11 @@
                                 <br>
                                 <small class="customRulerArea">
                                     Trouble seeing the ruler? Change the color below.
+                                    <br>
                                     <span id="sampleRuler"></span>
                                     <label for="black"><input onclick="rulerColor('black');" CHECKED type="radio" value="black" name="rulerColor"/>Black</label>
                                     <label for="white"><input onclick='rulerColor("white");' id="white" type="radio" value="white" name="rulerColor"/>White</label>
+                                    
                                     <label style="margin-left: 10px; margin-right: 3px;" for="customRuler">
                                         Custom
                                         <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown."
@@ -341,7 +344,7 @@
                             <div class="splitBlock">
                                 <button id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines">
                                     Adjust Lines
-                                    <img src="css/custom-theme/images/new7.png" alt="reparse" />
+                                    <img src="css/custom-theme/images/adjust_lines_sm.png" alt="reparse" />
                                     <!--<i class="fa fa-reparse"></i>-->
                                 </button>
                                 <small>Click and drag the right side of the line to contain the line accurately.</small>
@@ -352,7 +355,7 @@
 <!--                                <button id="removeLines" class="tpenButton" title="Merge two lines in a column">-->
                                 <button id="mergeLines" class="tpenButton" title="Merge two lines in a column">
                                     Merge Lines
-                                    <img src="css/custom-theme/images/new6.png" alt="reparse" />
+                                    <img src="css/custom-theme/images/merge_lines_sm.png" alt="reparse" />
                                     <!--<i class="fa fa-reparse"></i>-->
                                 </button>
                                 <i class="fa fa-caret-left blockStatusClosed"></i>
@@ -363,7 +366,7 @@
                                 <!--<button id="removeLines" class="tpenButton" title="Delete the last line of a column.">-->
                                 <button id="removeLine" class="tpenButton" title="Delete the last line of a column.">
                                     Delete Line
-                                    <img src="css/custom-theme/images/new4.png" alt="reparse" />
+                                    <img src="css/custom-theme/images/delete_line_sm.png" alt="reparse" />
                                     <!--<i class="fa fa-reparse"></i>-->
                                 </button>
                                 <i class="fa fa-caret-left blockStatusClosed"></i>

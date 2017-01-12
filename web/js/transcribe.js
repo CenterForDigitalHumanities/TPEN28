@@ -1053,14 +1053,15 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
         var image = null;
         //Check to see if we can use a preloaded image...
         if(tpen.project.folioImages[tpen.screen.currentFolio].image){
+            console.log("Get preloaded image");
             image = tpen.project.folioImages[tpen.screen.currentFolio].image;
             tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //We know it is preloaded, ensure the flag is correct.
         }
         else{
+            console.log("make new image");
             image = new Image();
         }
-        $(image)
-        .on("load", function() {
+        image.onload = function() {
             $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
             $("#imgTop img, #imgBottom img").css("width", "100%");
             $("#imgBottom").css("height", "inherit");
@@ -1097,8 +1098,8 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 $(".trexHead").show();
                 //handle the background
                 var image2 = new Image();
-                $(image2)
-                .on("load", function(){
+                image2
+                .onload = function(){
                     $("#noLineWarning").hide();
                     $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
                     $("#imgTop img, #imgBottom img").css("width", "100%");
@@ -1113,15 +1114,15 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                     $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
                     $("#parsingBtn").attr("disabled", "disabled");
                     $("#transTemplateLoading").hide();
-                })
-                .attr("src", "images/missingImage.png");
+                };
+                image2.src = "images/missingImage.png";
             }
 
-        }()) // the extra () ensures this only runs once.
-        .on("error", function(){
+        }; // the extra () ensures this only runs once.
+        image.onerror =function(){
             var image2 = new Image();
-            $(image2)
-            .on("load", function(){
+            image2
+            .onload = function(){
                 $("#noLineWarning").hide();
                 $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
                 $("#imgTop img, #imgBottom img").css("width", "100%");
@@ -1137,10 +1138,10 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
                 $("#parsingBtn").attr("disabled", "disabled");
                 $("#transTemplateLoading").hide();
-            })
-            .attr("src", "images/missingImage.png");
-        })
-        .attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
+            };
+            image2.src = "images/missingImage.png";
+        };
+        image.src = canvasObj.images[0].resource['@id'].replace('amp;', '');
     }
     else {
         $('.transcriptionImage').attr('src', "images/missingImage.png");
@@ -1174,11 +1175,9 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
         $("#transcriptionTemplate")
             .show();
         $('#transcriptionCanvas')
-            .css('height', $("#imgTop img")
-                .height() + "px");
+            .css('height', tpen.screen.originalCanvasHeight +"px");
         $('.lineColIndicatorArea')
-            .css('height', $("#imgTop img")
-                .height() + "px");
+            .css('height', tpen.screen.originalCanvasHeight +"px");
         $("#imgTop")
             .css("height", "0%");
         $("#imgBottom img")
@@ -1320,8 +1319,11 @@ function linesToScreen(lines, tool){
     var image = $('#imgTop img');
     var theHeight = image.height();
     var theWidth = image.width();
-    $('#transcriptionCanvas').css('height', originalCanvasHeight2 + "px");
-    $('.lineColIndicatorArea').css('height', originalCanvasHeight2 + "px");
+    console.log("Original height 2: "+tpen.screen.originalCanvasHeight)
+    $('#transcriptionCanvas').css('height', tpen.screen.originalCanvasHeight + "px");
+    $('.lineColIndicatorArea').css('height', tpen.screen.originalCanvasHeight + "px");
+//    $('#transcriptionCanvas').css('height', originalCanvasHeight2 + "px");
+//    $('.lineColIndicatorArea').css('height', originalCanvasHeight2 + "px");
     //can i use tpen.screen.originalCanvasHeight here?
     var ratio = 0;
     //should be the same as originalCanvasWidth2/originalCanvasHeight2
@@ -2474,10 +2476,9 @@ function fullPage(){
     restoreWorkspace();
     $("#splitScreenTools").show();
     var screenWidth = $(window).width();
-    var adjustedHeightForFullscreen = (tpen.screen.originalCanvasHeight / tpen.screen.originalCanvasWidth) * screenWidth;
+    console.log("Original height 2: "+tpen.screen.originalCanvasHeight);
     $("#transcriptionCanvas").css("height", tpen.screen.originalCanvasHeight + "px");
     $(".lineColIndicatorArea").css("height", tpen.screen.originalCanvasHeight + "px");
-    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
 //     $("#imgTop").hover(
 //        function(){
 //             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
@@ -3511,8 +3512,8 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
             }
             $("#transTemplateLoading").hide();
             $("#transcriptionTemplate").show();
-            $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
-            $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
+            $('#transcriptionCanvas').css('height', tpen.screen.originalCanvasHeight + "px");
+            $('.lineColIndicatorArea').css('height', tpen.screen.originalCanvasHeight + "px");
             $("#imgTop").css("height", $("#imgTop img").height() + "px");
             $("#imgTop img").css("top", "0px");
             $("#imgBottom").css("height", "inherit");

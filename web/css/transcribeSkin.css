@@ -595,22 +595,35 @@ div#transcriptletArea {
 .splitBlock {
     padding: .68em;
 }
+#parsingSplit .fullScreenTrans{
+    background-color: transparent;
+    box-shadow: none;
+}
 .icon-panel {
     display: block;
-    margin: .25em 1em;
+    /*margin: .25em 1em;*/
 }
 .icon-panel button img{
-    height: 26px;
-    width: 24px;
-    background-color: white;
+    height: 45px;
+    width: 45px;
+    background-color: rgb(0,90,138);
+}
+.splitBlock .tpenButton img{
+    height: 36px;
+    width: 36px;
+    background-color: transparent;
+    position: absolute;
+    right: 3px;
+    top: -2px;
 }
 .icon-panel button {
     padding: 0;
-    margin: 0;
+    margin: 0px 8px;
     line-height: 0;
-    height: 30px;width:30px;
-    border: 1px solid #000;
-    background-color: #FFF;
+    height: 45px;
+    width:  45px;
+    /*border: 1px solid #000;*/
+    background-color: transparent;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
@@ -638,14 +651,7 @@ div#transcriptletArea {
     /*bottom: 10px;*/
     right: 10px;
 }
-.splitBlock .tpenButton img{
-    height: 26px;
-    width: 24px;
-    background-color: white;
-    position: absolute;
-    right: 6px;
-    top: 3px;
-}
+
 .splitBlock .tpenButton {
     display: block;
     padding-right: 43px;
@@ -1074,6 +1080,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     display: inline-block;
     text-align: center;
     height: 35px;
+    line-height: 35px;
     padding: 0 4px !important;
     font-size: 1em;
 }
@@ -1310,8 +1317,9 @@ kbd {
 .toolLinks {
     position: relative;
     width: 100%;
-    background-color: rgba(1,51,90,.5);
+    background-color: rgb(225, 244, 254);
     padding: 5px 0px;
+    margin-top: .7em;
 }
 #prevLine,#nextLine,#toggleNotes,#nextPage,#prevPage{
     position: relative;

@@ -2552,9 +2552,9 @@ function splitPage(event, tool) {
         if($("#controlsSplit").is(":visible")){
             return fullPage();
         }
-        $("#transcriptionCanvas").css("width", Page.width()-215 + "px");
-        $("#transcriptionTemplate").css("width", Page.width()-215 + "px");
-        newCanvasWidth = Page.width()-215;
+        $("#transcriptionCanvas").css("width", Page.width()-200 + "px");
+        $("#transcriptionTemplate").css("width", Page.width()-200 + "px");
+        newCanvasWidth = Page.width()-200;
         $("#controlsSplit").show();
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }
@@ -2614,6 +2614,8 @@ function splitPage(event, tool) {
                 });
             }
         });
+    } else {
+        $("#templateResizeBar").hide();
     }
     $("#fullScreenBtn")
         .fadeIn(250);

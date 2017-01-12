@@ -1049,7 +1049,6 @@ function focusOnLastModified(){
  * Load a canvas from the manifest to the transcription interface.
  */
 function loadTranscriptionCanvas(canvasObj, parsing, tool){
-    console.log("Load T canvas ()");
     var noLines = true;
     var canvasAnnoList = "";
     var canvasURI = canvasObj["@id"];
@@ -1077,12 +1076,10 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
         var image = null;
         //Check to see if we can use a preloaded image...
         if(tpen.project.folioImages[tpen.screen.currentFolio].image){
-            console.log("Get preloaded image");
             image = tpen.project.folioImages[tpen.screen.currentFolio].image;
             tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //We know it is preloaded, ensure the flag is correct.
         }
         else{
-            console.log("make new image");
             image = new Image();
         }
         image.onload = function() {
@@ -1100,7 +1097,6 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 originalCanvasWidth2 = $("#imgTop img").width();
                 tpen.screen.originalCanvasHeight = $("#imgTop img").height();
                 tpen.screen.originalCanvasWidth =  $("#imgTop img").width();
-                console.log("Canvas image loaded.  Draw "+canvasObj.otherContent[0].resources.length+" lines to the canvas, on load");
                 drawLinesToCanvas(canvasObj, parsing, tool);
                 getHistory(); //Do we need to call this later down the stack?  It could be moved into drawLinesToCanvas()
                 $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
@@ -1213,7 +1209,6 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
     else if((canvasObj.otherContent[0] !== undefined && canvasObj.otherContent[0].resources !== undefined && canvasObj.otherContent[0].resources.length > 0)){
         //This is TPEN 2.8 using the SQL
         //This situation means we got our lines from the SQL and there is no need to query the store.
-        console.log("draw "+canvasObj.otherContent[0].resources.length+" lines on the canvas");
         tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
         drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
         //linesToScreen(lines, tool);
@@ -1307,16 +1302,12 @@ function updateURL(piece, classic){
     //Any other variable will need to be replaced with its new value
     if(piece === "p"){
         if(!getURLVariable("p")){
-            console.log("Gotta add P var");
             toAddressBar += "&p=" + tpen.project.folios[tpen.screen.currentFolio].folioNumber;
         }
         else{
-            console.log("Gotta update P var");
             toAddressBar = replaceURLVariable("p", tpen.project.folios[tpen.screen.currentFolio].folioNumber);
         }
-    }
-    console.log("push this into history and URL");
-    console.log(toAddressBar);
+    };
     window.history.pushState("", "T-PEN Transcription", toAddressBar);
 }
 
@@ -1344,7 +1335,6 @@ function linesToScreen(lines, tool){
     var image = $('#imgTop img');
     var theHeight = image.height();
     var theWidth = image.width();
-    console.log("Original height 2: "+tpen.screen.originalCanvasHeight)
     $('#transcriptionCanvas').css('height', tpen.screen.originalCanvasHeight + "px");
     $('.lineColIndicatorArea').css('height', tpen.screen.originalCanvasHeight + "px");
 //    $('#transcriptionCanvas').css('height', originalCanvasHeight2 + "px");
@@ -1353,7 +1343,6 @@ function linesToScreen(lines, tool){
     var ratio = 0;
     //should be the same as originalCanvasWidth2/originalCanvasHeight2
     ratio = theWidth / theHeight;
-    console.log(lines.length+" lines to screen");
     for (var i = 0; i < lines.length; i++){
         var line = lines[i];
         var lastLine = {};
@@ -1561,7 +1550,6 @@ function linesToScreen(lines, tool){
             //when a user stops typing for 2 seconds, fire an update to get the new text.
             if(e.which !== 18){
                 typingTimer = setTimeout(function(){
-                    console.log("timer update");
                     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
                     var idToCheckFor = lineToUpdate.attr("lineserverid").replace("line/", "");
                     var newText = lineToUpdate.find(".theText").val();
@@ -2509,7 +2497,6 @@ function fullPage(){
     restoreWorkspace();
     $("#splitScreenTools").show();
     var screenWidth = $(window).width();
-    console.log("Original height 2: "+tpen.screen.originalCanvasHeight);
     $("#transcriptionCanvas").css("height", tpen.screen.originalCanvasHeight + "px");
     $(".lineColIndicatorArea").css("height", tpen.screen.originalCanvasHeight + "px");
 //     $("#imgTop").hover(
@@ -2543,7 +2530,6 @@ function fullPage(){
     if(tpen.screen.liveTool === "parsing"){
         $("#transcriptionTemplate").hide();
         $("#transTemplateLoading").show();
-        console.log("remove transcriptlets cuz of parsing");
         $(".transcriptlet").remove(); //we are about to redraw these, if we dont remove them, then the transcriptlets repeat.
         setTimeout(function(){
             redraw("");
@@ -2566,7 +2552,6 @@ function splitPage(event, tool) {
         if($("#controlsSplit").is(":visible")){
             return fullPage();
         }
-        console.log("Do not attach resizable from splitPage");
         $("#transcriptionCanvas").css("width", Page.width()-200 + "px");
         $("#transcriptionTemplate").css("width", Page.width()-200 + "px");
         newCanvasWidth = Page.width()-200;
@@ -2603,7 +2588,6 @@ function splitPage(event, tool) {
                 detachWindowResize();
             },
             resize: function(event, ui) {
-                console.log("resize 2");
                 var width = ui.size.width;
                 var height = 1 / originalRatio * width;
                 $("#transcriptionCanvas").css("height", height + "px").css("width", width + "px");
@@ -3349,7 +3333,6 @@ function togglePageJump(){
 function pageJump(page, parsing){
     var canvasToJumpTo = parseInt(page);; //0,1,2...
     if (tpen.screen.currentFolio !== canvasToJumpTo && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio
-        console.log("Jumping to a dif page!");
         //Data.saveTranscription("");
         tpen.screen.currentFolio = canvasToJumpTo;
         if (parsing === "parsing" || tpen.screen.liveTool === "parsing"){
@@ -5371,9 +5354,7 @@ tpen.screen.peekZoom = function(cancel){
 
     /* Clear the resize function attached to the window element. */
     function detachWindowResize(){
-        console.log("window resize detached");
         window.onresize = function(event, ui){
-            console.log("detach");
         };
     }
 
@@ -5383,16 +5364,13 @@ tpen.screen.peekZoom = function(cancel){
     //FIXME: Gets in the way of transcriptionTemplate resizing.
     //with resizing because the img top position puts it up off screen a little.
     function attachWindowResize(){
-        console.log("window resize attached");
         window.onresize = function(event, ui) {
-            console.log("window resize detected.  "+tpen.screen.liveTool+" is active tool.");
             var newImgBtmTop = "0px";
             var newImgTopTop = "0px";
     //        if(tpen.screen.liveTool === "controls"){ //the width is different for this one
     //
     //        }
             if(tpen.screen.liveTool === 'parsing'){ //apply to all split tools?
-                console.log("Tool active, resize, parsing.");
                 var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
                 var newCanvasWidth = tpen.screen.originalCanvasWidth * .57;
                 //Can I use tpen.screen.originalCanvasWidth?
@@ -5418,7 +5396,6 @@ tpen.screen.peekZoom = function(cancel){
 
             }
             else if(tpen.screen.liveTool !== "" && tpen.screen.liveTool!=="none"){
-                console.log("Tool active, resize found, not parsing.");
                 var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
                 var newCanvasWidth = Page.width() * .55;
                 var splitWidth = window.innerWidth - (newCanvasWidth + 35) + "px";
@@ -5433,7 +5410,6 @@ tpen.screen.peekZoom = function(cancel){
 //                    newCanvasHeight = PAGEHEIGHT;
 //                    newCanvasWidth = ratio*newCanvasHeight;
 //                }
-                console.log("W, h, sw "+newCanvasWidth, newCanvasHeight, splitWidth);
                 $(".split img").css("max-width", splitWidth);
                 $(".split:visible").css("width", splitWidth);
                 $("#transcriptionTemplate").css("width", newCanvasWidth + "px");
@@ -5581,7 +5557,6 @@ tpen.screen.peekZoom = function(cancel){
      *  Shows the changes to parsing when hovering over a history entry.
      */
     adjustBookmark: function(archive){
-        console.log("Gotta adjust the bookmark in history");
         var buffer = 30; //even is better
         var hView = $("#historyViewer");
         var hImg = hView.find("img");
@@ -5640,7 +5615,6 @@ tpen.screen.peekZoom = function(cancel){
      */
     textOnly: function(button){
         //toggle
-        console.log("Toggle text only");
         if (button.hasClass("ui-state-active")){
             button.removeClass("ui-state-active");
             $(".historyEntry").slideDown();
@@ -5665,7 +5639,6 @@ tpen.screen.peekZoom = function(cancel){
      */
     parsingOnly: function(button) {
         //toggle
-        console.log("toggle parsing only");
         if (button.hasClass("ui-state-active")){
             button.removeClass("ui-state-active");
             $(".historyEntry").slideDown();
@@ -5690,7 +5663,6 @@ tpen.screen.peekZoom = function(cancel){
      */
     showNotes: function(button) {
         //toggle
-        console.log("Toggle notes");
         if (button.hasClass("ui-state-active")){
             button.removeClass("ui-state-active").html("Show Notes");
             $(".historyNote").slideUp();

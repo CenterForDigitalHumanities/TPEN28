@@ -978,10 +978,10 @@
                         Reset
                     </button>
                     <header> Column Controls</header>
-                    <button role="button" class="block" onclick="toggleSelected($(this));">
+                    <button role="button" class="block" onclick="$(this).addClass('selected');">
                         <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" >
                     </button>
-                    <button role="button" class=" block" onclick="toggleSelected($(this));">
+                    <button role="button" class=" block" onclick="$(this).addClass('selected');">
                         <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
                     </button>
                     <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
@@ -1552,10 +1552,9 @@
                 $(".parsing").unbind('mousemove');
                 $("#ruler1").hide();
                 $("#ruler2").hide();
-
                 var thisID = $(this).attr("id");
                 $(".parsingToolButtons").find(".tpenButton").removeClass("selected");
-                $(this).addClass("selected");
+                toggleSelected($(this).parent());
                 if (thisID == "createColumn" || thisID == "destroyColumn" || thisID=="clearColumns") {
                     $("#addLines").removeClass("active");
                     $("#mergeLines").removeClass("active");
@@ -2268,13 +2267,12 @@
 //        $('#ruler2').hide();
 //    }
     
-    function toggleSelected($btn){
-        var area = $btn.parent();
-        var unselectArea = area.parent();
-        unselectArea.find(".selected").removeClass("selected"); //don't want to leave any of the others selected. 
-        unselectArea.find(".blockOpen").removeClass("blockOpen"); //don't want to leave any of the others selected. 
-        area.addClass("selected");
-        area.find(".blockStatusClosed").addClass("blockOpen");
+    function toggleSelected($area){
+        var $unselectArea = $area.parent();
+        $unselectArea.find(".selected").removeClass("selected"); //don't want to leave any of the others selected. 
+        $unselectArea.find(".blockOpen").removeClass("blockOpen"); //don't want to leave any of the others selected. 
+        $area.addClass("selected");
+        $area.find(".blockStatusClosed").addClass("blockOpen");
     }
 
 </script>

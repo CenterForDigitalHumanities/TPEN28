@@ -4208,7 +4208,7 @@ function removeColumnTranscriptlets(lines, recurse){
 //                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio] = currentAnnoList;
                     if (recurse){
                         tpen.screen.nextColumnToRemove.remove();
-                        // FIXME: I cannot find this object always?
+                        // FIXME: I cannot find this object always? BH confirmed.  Not sure why, it doesn't always remove it.  Should we pass it in as an argument?
                         destroyPage();
                     }
                     else{

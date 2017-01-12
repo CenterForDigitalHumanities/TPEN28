@@ -1041,7 +1041,7 @@ function focusOnLastModifed(){
             }
         }
     }
-    var line = $("[lineserverid]='"+focusOn.tpen_line_id+"'");
+    var line = $("[lineserverid='"+focusOn.tpen_line_id+"]'");
     updatePresentation(line);
 };
 
@@ -2389,7 +2389,7 @@ function hideWorkspaceForParsing(){
         $("#transcriptionCanvas").css("display", "block");
         tpen.screen.imgTopSizeRatio = $("#imgTop img").width() / $("#imgTop img").height();
         //$("#templateResizeBar").show();
-        
+
         $(".centerInterface").css("text-align", "center").css("background-color", "#e1f4fe");
         $("#transcriptionTemplate").css("width","auto");
     }, 500);
@@ -2543,7 +2543,7 @@ function fullPage(){
         $("#transcriptionTemplate").hide();
         $("#transTemplateLoading").show();
         console.log("remove transcriptlets cuz of parsing");
-        $(".transcriptlet").remove(); //we are about to redraw these, if we dont remove them, then the transcriptlets repeat. 
+        $(".transcriptlet").remove(); //we are about to redraw these, if we dont remove them, then the transcriptlets repeat.
         setTimeout(function(){
             redraw("");
         }, 1000);
@@ -4088,7 +4088,7 @@ function removeLine(e, columnDelete, deleteOnly){
     }
     else {
         if ($(e).attr("lineleft") == $(e).next(".parsing").attr("lineleft")) { //merge
-            if(!deleteOnly){ //if user clicked to remove a line, then do not allow merging.  Only delete the last line. 
+            if(!deleteOnly){ //if user clicked to remove a line, then do not allow merging.  Only delete the last line.
                 removedLine = $(e).next();
                 var removedLineHeight = removedLine.height();
                 var currentLineHeight = $(e).height();
@@ -4629,7 +4629,7 @@ function bumpLine(direction, activeLine){
 //        $("#ruler2").css("color", color).css("background", color);
         $("#sampleRuler").css("color", color).css("background", color);
     }
-    
+
     //Turn the ruler on
     function applyRuler(line){
             //var sRCbkp = selectRulerColor; //select Ruler Color backup
@@ -4648,7 +4648,7 @@ function bumpLine(direction, activeLine){
                //sRCbkp = 'transparent';
             }
             line.css('cursor','crosshair').bind('mousemove', function(e){
-                var imgTopOffset = $("#imgTop").offset().left; //helps because we can center the interface with this and it will still work. 
+                var imgTopOffset = $("#imgTop").offset().left; //helps because we can center the interface with this and it will still work.
                 var myLeft = line.position().left + imgTopOffset;
                 var myWidth = line.width();
                 $('#imageTip').show().css({
@@ -5857,6 +5857,30 @@ function markLineUnsaved(line){
 
 function markLineSaved(line){
     line.removeClass("isUnsaved");
+}
+
+function dailyTip() {
+    var tips = [
+        "<kbd>CTRL</kbd>+<kbd>SHIFT</kbd> Use Peek-Zoom to get a closer look at the line you are on.",
+        "<kbd>CTRL</kbd>+<kbd>1-9</kbd> Insert the corresponding special character at the cursor location.",
+        "<kbd>CTRL</kbd>+<kbd>HOME</kbd> Jump to the first line of the current page.",
+        "<kbd>CTRL</kbd>+<kbd>ALT</kbd> Hide the workspace and move the image around for a better look.",
+        "<kbd>TAB</kbd> or <kbd>ALT</kbd>+<kbd>&darr;</kbd> Move forward through lines of transcription.",
+        "<kbd>SHIFT</kbd>+<kbd>TAB</kbd> or <kbd>ALT</kbd>+<kbd>&uarr;</kbd> Move backward through lines of transcription.",
+        "<kbd>ESC</kbd> Close any open tool & return to fullscreen transcription.",
+        "<kbd>F1</kbd> Open the help tool.",
+        "<kbd>+</kbd> or <kbd>-</kbd> Change the magnification while Inspecting<i class='fa fa-zoom-plus'></i>.",
+        "<i class='fa fa-code'></i> Highlight your text before clicking an XML tag to wrap it.",
+        "Press <kbd>ENTER</kbd> to push any text after the cursor to the next line.",
+        "Change what tools appear in the transcription interface in the project settings.",
+        "Add new tools in an iframe in the project settings.",
+        "Attempt something against your permissions and you will see the T-PEN t-rex.",
+        "Export your project as a SharedCanvas Manifest to use it in other great IIIF tools.",
+        "The Walter J. Ong, SJ Center for Digital Humanities at Saint Louis University thanks you for using T-PEN.",
+        "Visit the blog for news on TPEN3!"
+    ];
+    var thisTip = tips[Math.floor(Math.random()*tips.length)];
+    $("#tips").html(thisTip);
 }
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?

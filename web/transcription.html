@@ -112,13 +112,15 @@
 
         <button id="loadBtn" class="hideme" onclick="loadTranscription();"> Load Transcription </button>
         <div id="transTemplateLoading">
-            <p class="turnMsg">Please wait while we load the transcription interface.</p>
-            <div class="turnLoader transLoader"><img src="images/loading2.gif" /></div>
             <p>
                 <i class="fa fa-info-circle"></i>
-                <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>
-                Use Peek-Zoom to get a closer look at the line you are on.
+                <span id="#tip">
+                    <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>
+                    Use Peek-Zoom to get a closer look at the line you are on.
+                </span>
             </p>
+            <p class="turnMsg">Please wait while we load the transcription interface.</p>
+            <div class="turnLoader transLoader"><img src="images/loading2.gif" /></div>
         </div>
         <div class="centerInterface">
         <div id="transcriptionTemplate">
@@ -314,7 +316,7 @@
                             </button>
                             <i class="fa fa-caret-left blockStatusClosed"></i>
                             <small class="danger">
-                                <i class="fa fa-warning"></i> 
+                                <i class="fa fa-warning"></i>
                                 Click to remove all transcription data and lines from this page.
                                 The page will then be automatically re-parsed, which will create new columns.
                             </small>
@@ -337,14 +339,14 @@
                                     <span id="sampleRuler"></span>
                                     <label for="black"><input onclick="rulerColor('black');" CHECKED type="radio" value="black" name="rulerColor"/>Black</label>
                                     <label for="white"><input onclick='rulerColor("white");' id="white" type="radio" value="white" name="rulerColor"/>White</label>
-                                    
+
                                     <label style="margin-left: 10px; margin-right: 3px;" for="customRuler">
                                         Custom
                                         <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown."
                                                type="text" id="customRuler" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
                                     </label>
                                 </small>
-                                
+
                             </div>
                             <div class="splitBlock">
                                 <button id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines">
@@ -1267,6 +1269,7 @@
 
     //Page load event triggers and attached here.
     $(document).ready(function(){
+        dailyTip();
         attachWindowResize();
         $("#imgTop, #imgBottom").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("height", "400px");
@@ -2279,11 +2282,11 @@
 //        $('#ruler1').hide();
 //        $('#ruler2').hide();
 //    }
-    
+
     function toggleSelected($area){
         var $unselectArea = $area.parent();
-        $unselectArea.find(".selected").removeClass("selected"); //don't want to leave any of the others selected. 
-        $unselectArea.find(".blockOpen").removeClass("blockOpen"); //don't want to leave any of the others selected. 
+        $unselectArea.find(".selected").removeClass("selected"); //don't want to leave any of the others selected.
+        $unselectArea.find(".blockOpen").removeClass("blockOpen"); //don't want to leave any of the others selected.
         $area.addClass("selected");
         $area.find(".blockStatusClosed").addClass("blockOpen");
     }

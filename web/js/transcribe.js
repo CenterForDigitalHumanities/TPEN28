@@ -2554,7 +2554,7 @@ function splitPage(event, tool) {
         }
         $("#transcriptionCanvas").css("width", Page.width()-215 + "px");
         $("#transcriptionTemplate").css("width", Page.width()-215 + "px");
-        newCanvasWidth = Page.width()-200;
+        newCanvasWidth = Page.width()-215;
         $("#controlsSplit").show();
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }

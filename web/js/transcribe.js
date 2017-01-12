@@ -1026,7 +1026,7 @@ function checkIPRagreement(id){
  * @returns undefined
  */
 function focusOnLastModifed(){
-    var lines = tpen.screen.dereferencedLists[tpen.screen.currentFolio];
+    var lines = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
     var focusOn = lines[0];
     var scribedLines = lines.filter(function(){
         return this.resource

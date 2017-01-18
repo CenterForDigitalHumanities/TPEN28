@@ -690,7 +690,7 @@ div#transcriptletArea {
 }
 
 #parsingSplit {
-    max-width:20em;    
+    max-width:20em;
     position: fixed;
     min-width: 15em;
     overflow-y: auto;
@@ -1548,10 +1548,25 @@ a.navigation {
     counter-reset: hotkey;
     flex-grow: 1;
 }
-.special-charactered{
-    background-color: #ddd;
+.special-charactered {
+    background-color: #bbb;
+    color:#333;
+}
+#charactersPopin,#xmlTagPopin {
+    background: #ddd;
+    margin: -4px;
+    padding: 4px 1px;
+    margin-right: 4px;
+    flex-grow:2;
 }
 .xml-tagged {
+    background: #999;
+    background: #777;
+}
+.special-charactered, .xml-tagged {
+    margin-right: .5em;
+}
+#xmlTagPopin {
     background: #999;
 }
 .xmlTag, .character {
@@ -1591,10 +1606,11 @@ a.navigation {
     margin-right:2% !important;
 }
 a.editButtons {
-    float: left;
-    height: 1.8em;
+    height: 1.4em;
     white-space: nowrap;
     min-width: 4em;
+    font-size: small;
+    line-height: 1.4;
 }
 .editButtons::after{
     content: "";

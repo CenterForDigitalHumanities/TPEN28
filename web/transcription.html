@@ -88,7 +88,7 @@
                     <a id="helpContact" href="admin.jsp#aboutTab" target="_blank" class="wBtn ui-state-default ui-button">Contact <span class="fa fa-comment"></span></a>
                 </span>
                 <span class="trimSection">
-                    <a id="helpMe" onclick="Help.revealHelp(event);" class="ui-state-default ui-button">Help<i class="fa fa-question" style="margin-left:8px" aria-hidden="true"></i></a>
+                    <a id="helpMe" class="ui-state-default ui-button">Help<i class="fa fa-question" style="margin-left:8px" aria-hidden="true"></i></a>
                 </span>
                 <span class="trimSection">
                     <a id="classicSwitch" onclick="switchToClassicTranscription();" class="ui-state-default ui-button exitPage">Classic<i class="fa fa-beer" style="margin-left:8px" aria-hidden="true"></i></a>
@@ -221,8 +221,6 @@
                         </div>
                         <div id="xmlTagFloat" class="flex-container xml-tagged">
                             <a title="Edit XML Tags" class="lookLikeButtons editButtons exitPage" href="buttons.jsp">
-                            <div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
-                            </div>
                                 Edit <i class="fa fa-edit"></i>
                             </a>
                         <!--                        <div class="closeBtn" onclick="$('#toggleXML').click();">
@@ -239,287 +237,221 @@
                 </div><br>
             </div>
         </div>
-            <!-- The new help split @cubap -->
-            <!-- All the text is in here and classed out, all you should have to do and alter the classes to get it to look exactly right. -->
             <!-- scrollHelpTo() is not written.  Help.revealHelp() has been rewritten to work with splitPage() -->
             <!-- SHOW ON SCREEN text below needs to be connected to the old help functionality that shows where the thing is. -->
         <div id="helpSplit" class="split">
+            <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
             <div id="helpHeaders">
-                <div class="helpHeader" onclick="scrollHelpTo('helpGlossary');"> glossary </div>
-                <div class="helpHeader" onclick="scrollHelpTo('helpShortcuts');"> shortcuts </div>
-                <div class="helpHeader" onclick="scrollHelpTo('helpTools');"> tools </div>
-                <div class="helpHeader" onclick="scrollHelpTo('helpNavigation');"> >navigation </div>
+                <a href='#helpGlossary'> glossary </a>
+                <a href='#helpShortcuts'> shortcuts </a>
+                <a href='#helpTools'> tools </a>
+                <a href='#helpNavigation'> navigation </a>
             </div>
-            <div id="helpGlossary" class="helpSection">
-                <div class="helpBlock">
-                    <div class="helpLine">Commonly used terms in this application</div>
-                </div>
-                    
-                <div class="helpBlock">
-                    <div class="helpHeading">Page</div>
-                    <div class="helpLine">A single image and supporting interface. Some source images may contain partial or multiple folios.</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Project</div>
-                    <div class="helpLine">Collection of images designated for a specific group of users. Defaults to all images within a selected manuscript, but may be altered.</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Manuscript</div>
-                    <div class="helpLine">Collection of images on a repository. Often, but not necessarily exemplary of the artifact document.</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Group</div>
-                    <div class="helpLine">Collection of users associated with a single project. Group membership is controlled by a Group Leader.</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">User</div>
-                    <div class="helpLine">Entity intended to represent the human connected to a T‑PEN account. 
+            <div id="helpContainer">
+                <div id="helpGlossary" class="helpSection">
+
+                <p>Commonly used terms in this application</p>
+                <dl>
+                    <dt>Page</dt>
+                    <dd>A single image and supporting interface. Some source images may contain partial or multiple folios.</dd>
+
+                    <dt>Project</dt>
+                    <dd>Collection of images designated for a specific group of users. Defaults to all images within a selected manuscript, but may be altered.</dd>
+
+                    <dt>Manuscript</dt>
+                    <dd>Collection of images on a repository. Often, but not necessarily exemplary of the artifact document.</dd>
+
+                    <dt>Group</dt>
+                    <dd>Collection of users associated with a single project. Group membership is controlled by a Group Leader.</dd>
+
+                    <dt>User</dt>
+                    <dd>Entity intended to represent the human connected to a T‑PEN account.
                         Users login with the e-mail address associated with the T‑PEN account and are displayed to others by a first initial and last name.
-                    </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Transcription</div>
-                    <div class="helpLine">Usually referring to the textual data associated with an image region. Transcription metadata include specific location,
-                        date of creation, and associated image data.</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Transcription Area</div>
-                    <div class="helpLine">Refers to the white textarea region where the user enters transcription text.</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Parsing/Column Editing</div>
-                    <div class="helpLine">Describes the automatic or manual process of logically splitting a page into rectangular regions to 
-                    designate individual lines for transcribing. Changes to parsing are saved in the history of a transcription.</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">History</div>
-                    <div class="helpLine">Previous versions of transcriptions. Changes made to textual and parsing data are recorded.</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Special Characters</div>
-                    <div class="helpLine">Custom-coded buttons that automatically enter a unicode character 
-                    (typically one not included on the user's keyboard) into the transcription area.
-                    </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Buttons</div>
-                    <div class="helpLine">Typically refers to XML Tag objects customized on the Button Management page. 
-                        May also refer to Special Character objects in the same location. 
+
+                    <dt>Transcription</dt>
+                    <dd>Usually referring to the textual data associated with an image region. Transcription metadata include specific location,
+                        date of creation, and associated image data.</dd>
+
+                    <dt>Transcription Area</dt>
+                    <dd>Refers to the white textarea region where the user enters transcription text.</dd>
+
+                    <dt>Parsing/Column Editing</dt>
+                    <dd>Describes the automatic or manual process of logically splitting a page into rectangular regions to
+                        designate individual lines for transcribing. Changes to parsing are saved in the history of a transcription.</dd>
+
+                    <dt>History</dt>
+                    <dd>Previous versions of transcriptions. Changes made to textual and parsing data are recorded.</dd>
+
+                    <dt>Special Characters</dt>
+                    <dd>Custom-coded buttons that automatically enter a unicode character
+                        (typically one not included on the user's keyboard) into the transcription area.
+
+                    <dt>Buttons</dt>
+                    <dd>Typically refers to XML Tag objects customized on the Button Management page.
+                        May also refer to Special Character objects in the same location.
                         "Buttons" may also used in the generic sense to refer to a graphically distinct, clickable region which invokes an expected action.
-                    </div>
-                </div>
+                    </dd>
+                    </dl>
             </div>
             <div id="helpShortcuts" class="helpSection">
-                <div class="helpBlock">
-                    <div class="helpLine">Support for most browsers includes the following simple shortcuts:</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Insert the corresponding special character at the cursor location.</div>
-                    <div class="helpLine">CTRL + 1-9</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Jump to the first line of the current page.</div>
-                    <div class="helpLine">CTRL + HOME</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Move forward through lines of transcription.</div>
-                    <div class="helpLine">TAB</div>
-                    <div class="helpLine">ALT + DOWN ARROW</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Move backward through lines of transcription.</div>
-                    <div class="helpLine">SHIFT + TAB</div>
-                    <div class="helpLine">ALT + UP ARROW</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Close any open tool & return to fullscreen transcription.</div>
-                    <div class="helpLine">ESC</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Help</div>
-                    <div class="helpLine">F1</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Peek-zoom</div>
-                    <div class="helpLine">ALT + CTRL</div>
-                    <div class="helpLine">Hold both to use the peek-zoom, which scales the bounded area to fit your screen and increases the quality of the image, if possible.</div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">While magnifying</div>
-                    <div class="helpLine">+ or -</div>
-                    <div class="helpLine">Each keystroke will adjust the magnification of the tool by .4x to fine tune the image result.</div>
-                </div>
+
+                <p>Support for most browsers includes the following simple shortcuts:</p>
+                <dl>
+
+                        <dt>Insert the corresponding special character at the cursor location.</dt>
+                        <dd><kbd>CTRL</kbd>+<kbd>1-9</kbd></dd>
+
+                    <dt>Jump to the first line of the current page.</dt>
+                    <dd><kbd>CTRL</kbd>+<kbd>HOME</kbd></dd>
+
+                    <dt>Move forward through lines of transcription.</dt>
+                    <dd><kbd>TAB</kbd></dd>
+                    <dd><kbd>ALT</kbd>+<kbd>&dArr;</kbd></dd>
+
+                    <dt>Move backward through lines of transcription.</dt>
+                    <dd><kbd>SHIFT</kbd>+<kbd>TAB</kbd></dd>
+                    <dd><kbd>ALT</kbd>+<kbd>&uArr;</kbd></dd>
+
+                    <dt>Top of Page</dt>
+                    <dd><kbd>CTRL</kbd>+<kbd>HOME</kbd></dd>
+                    <dd>Quickly jump to the first line of the current page.</dd>
+
+                    <dt>Close any open tool & return to fullscreen transcription.</dt>
+                    <dd><kbd>ESC</kbd></dd>
+
+                    <dt>Peek-Zoom</dt>
+                    <dd><kbd>ALT</kbd>+<kbd>CTRL</kbd></dd>
+                    <dd>Hold both to use the peek-zoom, which scales the bounded area to fill the screen.</dd>
+
+                    <dt>While Inspecting</dt>
+                    <dd>+ or -</dd>
+                    <dd>Each keystroke will adjust the magnification of the tool by .4x to fine tune the image result.</dd>
+
+                    <dt>Help</dt>
+                    <dd><kbd>F1</kbd></dd>
+
+                    <dt>Browser Fullscreen</dt>
+                    <dd><kbd>F11</kbd></dd>
+                    <dd>Toggle fullscreen, eliminating browser and desktop toolbars.</dd>
+                </dl>
             </div>
             <div id="helpTools" class="helpSection">
                 <div class="helpSubsection">custom characters and XML tags</div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Custom Character Entry </div>
-                    <div class="helpLine">To use Custom Characters </div>
-                    <div class="helpLine">1. Expand the Characters tray SHOW ON SCREEN </div>
-                    <div class="helpLine">2.Click on the desired character to insert it on the text field. </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Edit the Custom Characters </div>
-                    <div class="helpLine">Click the Edit button on the expanded Custom Characters drawer SHOW ON SCREEN </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">XML Tag Entry </div>
-                    <div class="helpLine">XML tags can always be hand-encoded by the user as they transcribe but XML Tags can be set up for ease of insertion. </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpLine">To use XML Tags </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpLine">Expand the XML Tag drawer SHOW ON SCREEN </div>
-                    <div class="helpLine">There are two ways to add the tag </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpLine">Click and drag in the text to select the desired section of the line and click the desired XML tag button in the XML Tag tray.
-                    This will insert the opening and closing tag either side of text selection.
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpLine">Or for multi-line tagging </div>
-                </div>
-                    
-                <div class="helpBlock">
-                    <div class="helpLine">Place the cursor before the first character of the section desired. 
-                        This will insert the opening tag and put a closing tag flag in the bottom right of the transcription text entry box. 
-                        To close the tag at any time just Place the cursor at the desired end point and click the flag in the bottom right of the transcription text box. 
-                        This will insert the corresponding end tag.
-                    </div>
-                </div>    
-                    
+
+                <dl>
+                    <dt>Custom Character Entry </dt>
+                    <dd>To use Custom Characters
+                        <ol>
+                            <li>Expand the Characters tray SHOW ON SCREEN</li>
+                            <li>Click on the desired character to insert it on the text field.</li>
+                        </ol>
+                    </dd>
+
+                    <dt>Edit the Custom Characters </dt>
+                    <dd>Click the Edit button on the expanded Custom Characters drawer SHOW ON SCREEN </dd>
+
+                    <dt>XML Tag Entry </dt>
+                    <dd>XML tags can always be hand-encoded by the user as they transcribe but XML Tags can be set up for ease of insertion. </dd>
+
+                    <dt>To use XML Tags </dt>
+
+                    <dd>Expand the XML Tag drawer SHOW ON SCREEN </dd>
+                    <dd>Highlight the text and click the desired XML tag button in the XML Tag tray to wrap the tag around the selection.</dd>
+                    <dd>Insert as you type by clicking the XML tag button, adding the opening tag at the cursor
+                        and put a closing tag <span class="tags ui-corner-all right ui-state-error">reminder</span>
+                        in the bottom right of the transcription text entry box.
+                    </dd>
+                    <dd>
+                        To close the tag, place the cursor at the desired end point and click the reminder. Use the "x" to dismiss unwanted reminders.
+                    </dd>
+                </dl>
+
                 <div class="helpSubsection">viewing options SHOW ON SCREEN</div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">View the page image. </div>
-                    <div class="helpLine">The are several options for view the image </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpLine">1. To view the page with out he tool bar use the key shortcut -XXXX . Releasing the keys will return the tool bar. </div>
-                    <div class="helpLine">2. To view the image and inspect parts of the image under magnification Click the inspect button. SHOW ON SCREEN. 
-                        Once in the inspect view you can use the ‘+’ and ‘-’ keys to zoom in and out in the magnifier. use the ESC key to return to the transcription view.
-                    </div>
-                    <div class="helpLine">3.To quickly zoom in on the line being transcribed use the key shortcut - COMMAND-SHIFT(Mac) or CONTROL-SHIFT (PC). 
-                        This will enlarge the line being transcribed to fill the viewing window above the tool bar. 
-                    </div>
-                </div>
-                
+
+                <dl>
+                    <dt>View the page image </dt>
+                    <dd>To hide the work space to see the image hold <kbd>ALT</kbd>+<kbd>CTRL</kbd>.
+                        While viewing, you can drag the image around with your mouse.
+                        Release the keys to restore the screen. </dd>
+                    <dt>Inspect</dt>
+                    <dd>To view parts of the image under magnification click the Inspect button. SHOW ON SCREEN.
+                        Once in the inspect view you can use <kbd>+</kbd> and <kbd>-</kbd> to change the magnification.
+                        Press <kbd>ESC</kbd> to return to the transcription view.</dd>
+                    <dt>Peek-Zoom</dt>
+                    <dd>To quickly fill the screen with the line being transcribed hold <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>.
+                        This will enlarge the line being transcribed to fill the viewing window above the tool bar.
+                        Release the keys to restore the screen. </dd>
+                </dl>
+
                 <div class="helpSubsection"> split screen tools </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Import Text </div>
-                    <div class="helpLine">Linebreak </div>
-                    <div class="helpLine">Upload a file for manual or automatic linebreaking. </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Line History </div>
-                    <div class="helpLine">Lists the previous saved versions of the line parsing and transcription text. 
+
+                <dl>
+                    <dt>Import Text </dt>
+                    <dd>Upload a file for manual or automatic linebreaking. </dd>
+
+                    <dt>Line History </dt>
+                    <dd>Lists the previous saved versions of the line boundaries and transcription text.
                         Mouseover the history entries to reveal options to revert to a previous version.
-                    </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Preview Transcription </div>
-                    <div class="helpLine">Reveal the transcription text on the previous, current, and following pages. Make changes to text on other pages within the tool. </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Compare Pages </div>
-                    <div class="helpLine">View other pages from this project. Use the available magnify tool more to take a closer look. </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Capelli Abbreviations </div>
-                    <div class="helpLine">A. Capelli's lexicon abbreviarum Latin and Italian abbreviations. </div>
-                </div>
+                    </dd>
+
+                    <dt>Preview Transcription </dt>
+                    <dd>Reveal the transcription text on the previous, current, and following pages.
+                        Edit text in the transcription workspace or within the tool. </dd>
+
+                    <dt>Compare Pages </dt>
+                    <dd>View other pages from this project. Use the inspection tool to take a closer look. </dd>
+
+                    <dt>Capelli Abbreviations </dt>
+                    <dd>A. Capelli's <cite>Lexicon Abbreviaturarum</cite> for Latin and Italian abbreviations. </dd>
+                </dl>
 
                 <div class="helpSubsection">page tools SHOW ON SCREEN </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Image Controls </div>
-                    <div class="helpLine">These tools are designed to allow the user to manipulate the image to facilitate legibility. 
-                        All these adjustments are temporary and the image will revert if the page is change or the transcription session is ended. 
-                    </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Grayscale </div>
-                    <div class="helpLine">Presents the image as a grayscale image </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Invert </div>
-                    <div class="helpLine">Presents the image with its color inverted. </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Brightness </div>
-                    <div class="helpLine">A slider tool to raise and lower the brightness of the image. Note: this functionality is not supported by Safari. </div>
-                </div>
+                <dl>
+                    <dt>Image Controls </dt>
+                    <dd>These tools are designed to allow the user to manipulate the image to facilitate legibility.
+                        All these adjustments are superficial and will not persist.</dd>
 
-                <div class="helpBlock">
-                    <div class="helpHeading">Contrast </div>
-                    <div class="helpLine">A slider tool to raise and lower the contrast of the image. Note: this functionality is not supported by Safari. </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpSubsection">column controls</div>
-                    <div class="helpHeading">Show Lines </div>
-                    <div class="helpLine">This allows the user to toggle the text column lines on and off as desired. </div>
-                </div>
+                    <dt>Grayscale </dt>
+                    <dd>Presents the image as a grayscale image </dd>
 
-                <div class="helpBlock">
-                    <div class="helpHeading">Show Labels </div>
-                    <div class="helpLine">This allows the user to toggle the text column/line ID number shown on the page next to each line on and off as desired. </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Change Line Color </div>
-                    <div class="helpLine">This allows the user to change the color of the line and label as desired. </div>
-                </div>
-                
-                <div class="helpBlock">
-                    <div class="helpHeading">Edit column </div>
-                    <div class="helpLine">This will open the page in the column editing/parsing interface to allow the user to adjust and edit the columns and lines. </div>
-                </div>
-                
+                    <dt>Invert </dt>
+                    <dd>Presents the image with its color inverted. </dd>
+
+                    <dt>Brightness </dt>
+                    <dd>A slider tool to raise and lower the brightness of the image.
+                        <small>Note: not supported by Safari.</small> </dd>
+
+                    <dt>Contrast </dt>
+                    <dd>A slider tool to raise and lower the contrast of the image.
+                        <small>Note: not supported by Safari.</small> </dd>
+                </dl>
+
+
+                <div class="helpSubsection">column controls</div>
+                <dl>
+                    <dt>Show Lines </dt>
+                    <dd>Toggle the text column lines on and off. </dd>
+
+                    <dt>Show Labels </dt>
+                    <dd>Toggle the text letter/number labels next to each line on and off. </dd>
+
+                    <dt>Change Line Color </dt>
+                    <dd>Click to change the color of the lines and labels to improve visibility. </dd>
+
+                    <dt>Edit Columns </dt>
+                    <dd>Open the column editing/parsing interface to adjust and edit the columns and lines. </dd>
+                    </dl>
+
             </div>
             <div id="helpNavigation" class="helpSection">
-                <div class="helpBlock">
-                    <div class="helpHeading">Text still needed.</div>
-                    <div class="helpLine">Have donal come up with something for this.</div>
-                </div>
+                <dl>
+                    <dt>Text still needed.</dt>
+                    <dd> TODO: @Donal</dd>
+                </dl>
+            </div>
             </div>
         </div>
-            <div id="parsingSplit" class="split" >
+        <div id="parsingSplit" class="split" >
              <div class="fullScreenTrans">
                  <div class="lookLikeButtons caps insetBtn">
                      <i class="fa fa-reply fa-flip-vertical"></i> Return to Transcription</div>
@@ -1282,7 +1214,7 @@
             </div>
         </div>
 <!--                    Linebreaking Tool-->
-            
+
         <div id="zoomDiv" class="ui-corner-all"></div>
         <div id="ruler1"></div><div id="ruler2"></div>
 
@@ -1313,7 +1245,7 @@
             </div>
         </div>
 
-        
+
         <div id="overlay" class="ui-widget-overlay">
             <div id="overlayNote">Click the page to return</div>
         </div>
@@ -1499,7 +1431,7 @@
                 magnify($(this).attr("magnifyImg"),event);
             }
         });
-        
+
         $("#canvasControls").click(function(event){
             splitPage(event,"controls");
         });

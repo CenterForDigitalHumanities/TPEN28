@@ -2070,7 +2070,15 @@
             console.log("It is now 15 seconds after page load.  Lets get the images");
             preloadFolioImages();
         }, 15000);
-
+        $("#helpHeaders a").click(function(e){
+            // fix scrolling from maybe center div? #290 on github
+            e.preventDefault();
+            var targ = $(this).attr("href");
+            $(targ)[0].scrollIntoView();
+            $("#helpSplit").scrollTop(0);
+            $("#transcriptionCanvas").height("");
+            $("#transcriptionCanvas").height($(".transcriptionImage").height());
+        });
     });
 
     /* Allows users to slightly adjust a line within a column while within the transcription interface. */

@@ -2564,7 +2564,7 @@ function splitPage(event, tool) {
         $("#transcriptionCanvas").css("width", Page.width()-500 + "px");
         $("#transcriptionTemplate").css("width", Page.width()-500 + "px");
         newCanvasWidth = Page.width()-500;
-        $("#helpSplit").show().height(Page.height()-$("#helpSplit").offset().top); // header space
+        $("#helpSplit").show().height(Page.height()-$("#helpSplit").offset().top).scrollTop(0); // header space
         $("#helpContainer").height(Page.height()-$("#helpContainer").offset().top);
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }

@@ -596,8 +596,7 @@ function loadTranscription(pid, tool){
                     var toolLabel = this.name;
                     var toolSource = this.url;
                     var splitTool = $('<div toolName="' + toolLabel
-                        + '" class="split iTool"><div class="fullScreenTrans"><i class="fa fa-reply"></i>'
-                        + 'Full Screen Transcription</div></div>');
+                        + '" class="split iTool"><div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical fa-2x"></i></div></div>');
                     var splitToolIframe = $('<iframe style="height:' + splitHeight
                         + ';" src="' + toolSource + '"></iframe>');
                     var splitToolSelector = $('<option splitter="' + toolLabel
@@ -605,7 +604,7 @@ function loadTranscription(pid, tool){
                     splitTool.append(splitToolIframe);
                     $("#splitScreenTools")
                     .append(splitToolSelector);
-                    $(".iTool:last")
+                    $(".split:last")
                     .after(splitTool);
                 });
                 if (tpen.project.specialChars) {
@@ -777,7 +776,7 @@ function loadTranscription(pid, tool){
                             var splitHeight = window.innerHeight + "px";
                             var toolLabel = this.name;
                             var toolSource = this.url;
-                            var splitTool = $('<div toolName="' + toolLabel
+                            var splitTool = $('<div toolname="' + toolLabel
                                 + '" class="split iTool"><div class="fullScreenTrans"><i class="fa fa-reply"></i>'
                                 + 'Full Screen Transcription</div></div>');
                             var splitToolIframe = $('<iframe style="height:' + splitHeight
@@ -787,7 +786,7 @@ function loadTranscription(pid, tool){
                             splitTool.append(splitToolIframe);
                             $("#splitScreenTools")
                                 .append(splitToolSelector);
-                            $(".iTool:last")
+                            $(".split:last")
                                 .after(splitTool);
                         });
                         }
@@ -2632,7 +2631,8 @@ function splitPage(event, tool) {
         $('.split').hide();
     //show/manipulate whichever split tool is activated.
     //This is a user added iframe tool.  tool is toolID= attribute of the tool div to show.
-    var splitScreen = $("#" + tool + "Split") || $('div[toolName="' + tool + '"]');
+    var splitScreen = $("#" + tool + "Split");
+    if(!splitScreen.size()) splitScreen = $('div[toolname="' + tool + '"]');
     splitScreen.css("display", "block");
     $(".split:visible")
         .find('img')

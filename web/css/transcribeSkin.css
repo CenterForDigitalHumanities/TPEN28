@@ -610,10 +610,6 @@ div#transcriptletArea {
 .splitBlock {
     padding: .68em;
 }
-#parsingSplit .fullScreenTrans{
-    background-color: transparent;
-    box-shadow: none;
-}
 .icon-panel {
     display: block;
     /*margin: .25em 1em;*/
@@ -777,7 +773,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
                 -webkit-box-shadow: 0 0 5px #A64129;
                 box-shadow:0 0 5px #A64129;}
 #abbreviations select {width:100%;}
-iframe {background: url('../images/linen.png') white scroll repeat; position: relative;width: 100%;height:100%; margin-top:32px;}
+iframe {background: url('../images/linen.png') white scroll repeat; position: relative;width: 100%;height:100%;}
 .xmlClosingTags {
         position: absolute;
         bottom: 0px;
@@ -1211,22 +1207,40 @@ button.imgTool{
     text-transform: uppercase;
     line-height: 1.5;
 }
-.fullScreenTrans{
-    width: 100%;
+.fullScreenTrans::before {
+    content: "Close ";
+    font-size: .8rem;
+    text-transform: uppercase;
+    top: -.5rem;
     position: relative;
-    color: #272727;
-    background-color: white;
+}
+.fullScreenTrans::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    height: 100%;
+    z-index: -1;
+}
+#parsingSplit .fullScreenTrans::before{
+    content:"Return to Transcription "
+}
+.fullScreenTrans {
+    width: auto;
+    color: #fff;
+    background-color: #005a8c;
     cursor: pointer;
-    margin: .25em 0px 0px 0px;
-    padding: .25em;
-    box-shadow: 0 0 .2em;
-    box-sizing: border-box;
+    margin: .5rem auto;
+    padding: 0 .25rem;
+    display: table;
     text-align: center;
+    font-size: 2rem;
 }
 
 .fullScreenTrans:hover{
-    background-color: #CCC;
-    color: #000;
+    background-color: #829aac;
 }
 
 kbd {

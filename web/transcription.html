@@ -239,7 +239,7 @@
         </div>
             <!-- scrollHelpTo() is not written.  Help.revealHelp() has been rewritten to work with splitPage() -->
         <div id="helpSplit" class="split">
-            <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
+            <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
             <div id="helpHeaders">
                 <a href='#helpGlossary'> glossary </a>
                 <a href='#helpShortcuts'> shortcuts </a>
@@ -457,8 +457,7 @@
         </div>
         <div id="parsingSplit" class="split" >
              <div class="fullScreenTrans">
-                 <div class="lookLikeButtons caps insetBtn">
-                     <i class="fa fa-reply fa-flip-vertical"></i> Return to Transcription</div>
+                     <i class="fa fa-reply fa-flip-vertical"></i>
              </div>
              <div class="toolLinks icon-panel">
                  <div class="icon-panel">
@@ -601,8 +600,8 @@
                 </div>
             </div>
         <div id="linebreakSplit" class="ui-widget ui-widget-content split">
-               <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
-               <h3>Linebreak Existing Transcription</h3>
+            <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
+            <h3>Linebreak Existing Transcription</h3>
                 <div id="linebreakTextContainer">
                     <!-- visible if text is saved -->
                     <div>
@@ -640,7 +639,7 @@
 
             </div>
             <div id="compareSplit" class="split">
-                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
                 <div class="toolLinks">
                     <select id="compareJump" class="lookLikeButtons">
                         <option folioNum="0">Compare To</option>
@@ -654,8 +653,8 @@
             </div>
 
             <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
-                <div class="fullScreenTrans"><i class="fa fa-reply"></i> Close Tool </div>
-                <div style="padding:15px;">
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
+                <div style="padding:0 15px;">
 
                     <header> Image Controls </header>
                     <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
@@ -697,7 +696,8 @@
             </div>
 
             <div id="abbreviationSplit" class="split">
-    <!--                        Image is loaded in Data.postLoader()-->
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
+                <!--                        Image is loaded in Data.postLoader()-->
                 <img id="abbrevImg" alt="abbreviation page" src="//t-pen.org/images/cappelli/Scan0064.jpg" style="height: 100%; width: auto;">
                 <div id="abbreviations">
                     <select id="abbrevGroups">
@@ -1182,7 +1182,7 @@
             </div>
 
             <div id="previewSplit" class="split">
-                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
                 <div class="toolLinks">
                     <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
@@ -1192,7 +1192,7 @@
                 </div>
             </div>
             <div id="fullPageSplit" class="split">
-                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
                 <div class="toolLinks">
                     <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
@@ -1201,6 +1201,7 @@
                 <div id="fullPageSplitCanvas"><img id="fullPageImg" src="" /></div>
             </div>
             <div id="historySplit" class="split" class="ui-widget">
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
                 <div class="toolLinks">
                     <a href="#" >Parsing Only</a>
                     <a href="#" >Text Only</a>
@@ -1399,9 +1400,7 @@
             reader.readAsText(selectedFile);
         });
 
-        $(".fullScreenTrans").click(function(){
-            fullPage();
-        });
+$(document).on("click",".fullScreenTrans",fullPage);
 
 //        $("#closeHelp").click(function(){
 //            //fullPage();

@@ -5441,8 +5441,6 @@ tpen.screen.peekZoom = function(cancel){
                 $("#transcriptionCanvas").css("height",newHeight+"px");
                 $(".lineColIndicatorArea").css("height",newHeight+"px");
             }
-// 01/19/17 cubap: This is clumsy, but this function is kind of a mess. There is a bunch of stuff breaking because the height is uncontrolled.
-            $("#transcriptionCanvas").height(Page.height()-32); // less the header
             $.each($(".lineColOnLine"),function(){
                 $(this).css("line-height", $(this).height()+"px");
             });

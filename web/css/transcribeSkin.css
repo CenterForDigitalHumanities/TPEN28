@@ -159,7 +159,6 @@ body{
     display: inline-block;
     display: none;
     /*    margin-top:35px;*/
-    overflow: visible;
 }
 #transTemplateLoading{
     width: 100%;
@@ -348,7 +347,6 @@ body{
     height:inherit;
     width: 100%;
     background-color: rgba(1,51,90,.5);
-    overflow: visible;
 }
 
 .instructions{

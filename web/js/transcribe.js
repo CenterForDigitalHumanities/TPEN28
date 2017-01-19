@@ -1085,7 +1085,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
         image.onload = function() {
             $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
 // 01/19/17 cubap: This is clumsy, but this function is kind of a mess. There is a bunch of stuff breaking because the height is uncontrolled.
-            $("#transcriptionTemplate").height(Page.height()-32); // less the header
+            $("#transcriptionCanvas,#transcriptionTemplate").height(Page.height()-32); // less the header
             $("#imgTop img, #imgBottom img").css("width", "100%");
             $("#imgBottom").css("height", "inherit");
             if(permissionForImage){
@@ -1200,7 +1200,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
         $('#transcriptionCanvas')
             .css('height', tpen.screen.originalCanvasHeight +"px");
 // 01/19/17 cubap: This is clumsy, but this function is kind of a mess. There is a bunch of stuff breaking because the height is uncontrolled.
-            $("#transcriptionTemplate").height(Page.height()-32); // less the header
+            $("#transcriptionCanvas,#transcriptionTemplate").height(Page.height()-32); // less the header
         $('.lineColIndicatorArea')
             .css('height', tpen.screen.originalCanvasHeight +"px");
         $("#imgTop")
@@ -1341,7 +1341,7 @@ function linesToScreen(lines, tool){
     var theWidth = image.width();
     $('#transcriptionCanvas').css('height', tpen.screen.originalCanvasHeight + "px");
 // 01/19/17 cubap: This is clumsy, but this function is kind of a mess. There is a bunch of stuff breaking because the height is uncontrolled.
-            $("#transcriptionTemplate").height(Page.height()-32); // less the header
+            $("#transcriptionCanvas,#transcriptionTemplate").height(Page.height()-32); // less the header
     $('.lineColIndicatorArea').css('height', tpen.screen.originalCanvasHeight + "px");
 //    $('#transcriptionCanvas').css('height', originalCanvasHeight2 + "px");
 //    $('.lineColIndicatorArea').css('height', originalCanvasHeight2 + "px");
@@ -2303,7 +2303,7 @@ function hideWorkspaceForParsing(){
     $("#transcriptionCanvas").css("height", newCanvasHeight);
     //$("#transcriptionCanvas").css("width", newCanvasWidth);
 // 01/19/17 cubap: This is clumsy, but this function is kind of a mess. There is a bunch of stuff breaking because the height is uncontrolled.
-            $("#transcriptionTemplate").height(Page.height()-32); // less the header
+            $("#transcriptionCanvas,#transcriptionTemplate").height(Page.height()-32); // less the header
 
     $("#prevCanvas").attr("onclick", "");
     $("#nextCanvas").attr("onclick", "");
@@ -2494,7 +2494,7 @@ function fullPage(){
     $("#transcriptionTemplate").css("max-height", "none");
     $("#transcriptionTemplate").css("height", "auto");
 // 01/19/17 cubap: This is clumsy, but this function is kind of a mess. There is a bunch of stuff breaking because the height is uncontrolled.
-            $("#transcriptionTemplate").height(Page.height()-32); // less the header
+            $("#transcriptionCanvas,#transcriptionTemplate").height(Page.height()-32); // less the header
     $("#transcriptionTemplate").css("display", "inline-block");
     $('.lineColIndicatorArea').css("max-height","none");
     $('.lineColIndicatorArea').show();
@@ -2508,7 +2508,7 @@ function fullPage(){
     var screenWidth = $(window).width();
     $("#transcriptionCanvas").css("height", tpen.screen.originalCanvasHeight + "px");
 // 01/19/17 cubap: This is clumsy, but this function is kind of a mess. There is a bunch of stuff breaking because the height is uncontrolled.
-            $("#transcriptionTemplate").height(Page.height()-32); // less the header
+            $("#transcriptionCanvas,#transcriptionTemplate").height(Page.height()-32); // less the header
     $(".lineColIndicatorArea").css("height", tpen.screen.originalCanvasHeight + "px");
 //     $("#imgTop").hover(
 //        function(){
@@ -2592,7 +2592,7 @@ function splitPage(event, tool) {
         "height"   :   newCanvasHeight + "px"
     });
 // 01/19/17 cubap: This is clumsy, but this function is kind of a mess. There is a bunch of stuff breaking because the height is uncontrolled.
-            $("#transcriptionTemplate").height(Page.height()-32); // less the header
+            $("#transcriptionCanvas,#transcriptionTemplate").height(Page.height()-32); // less the header
     var newImgBtmTop = tpen.screen.imgBottomPositionRatio * newCanvasHeight;
     var newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
     //$(".lineColIndicatorArea").css("max-height", newCanvasHeight + "px");
@@ -2616,7 +2616,7 @@ function splitPage(event, tool) {
                 var height = 1 / originalRatio * width;
                 $("#transcriptionCanvas").css("height", height + "px").css("width", width + "px");
 // 01/19/17 cubap: This is clumsy, but this function is kind of a mess. There is a bunch of stuff breaking because the height is uncontrolled.
-            $("#transcriptionTemplate").height(Page.height()-32); // less the header
+            $("#transcriptionCanvas,#transcriptionTemplate").height(Page.height()-32); // less the header
                 $(".lineColIndicatorArea").css("height", height + "px");
                 var splitWidth = window.innerWidth - (width + 35) + "px";
                 $(".split img").css("max-width", splitWidth);
@@ -3558,7 +3558,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
             $("#transcriptionTemplate").show();
             $('#transcriptionCanvas').css('height', tpen.screen.originalCanvasHeight + "px");
 // 01/19/17 cubap: This is clumsy, but this function is kind of a mess. There is a bunch of stuff breaking because the height is uncontrolled.
-            $("#transcriptionTemplate").height(Page.height()-32); // less the header
+            $("#transcriptionCanvas,#transcriptionTemplate").height(Page.height()-32); // less the header
             $('.lineColIndicatorArea').css('height', tpen.screen.originalCanvasHeight + "px");
             $("#imgTop").css("height", $("#imgTop img").height() + "px");
             $("#imgTop img").css("top", "0px");
@@ -5401,7 +5401,7 @@ tpen.screen.peekZoom = function(cancel){
                 $(".split:visible").css("width", splitWidth);
                 $("#transcriptionCanvas").css("height", newCanvasHeight + "px");
 // 01/19/17 cubap: This is clumsy, but this function is kind of a mess. There is a bunch of stuff breaking because the height is uncontrolled.
-            $("#transcriptionTemplate").height(Page.height()-32); // less the header
+            $("#transcriptionCanvas,#transcriptionTemplate").height(Page.height()-32); // less the header
                 newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
                 $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
                 $("#imgTop .lineColIndicatorArea").css("height", newCanvasHeight + "px");
@@ -5462,7 +5462,7 @@ tpen.screen.peekZoom = function(cancel){
                 $(".lineColIndicatorArea").css("height",newHeight+"px");
             }
 // 01/19/17 cubap: This is clumsy, but this function is kind of a mess. There is a bunch of stuff breaking because the height is uncontrolled.
-            $("#transcriptionTemplate").height(Page.height()-32); // less the header
+            $("#transcriptionCanvas,#transcriptionTemplate").height(Page.height()-32); // less the header
             $.each($(".lineColOnLine"),function(){
                 $(this).css("line-height", $(this).height()+"px");
             });

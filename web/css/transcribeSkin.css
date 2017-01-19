@@ -1654,3 +1654,12 @@ a.editButtons {
     overflow: auto;
     margin-bottom: 8em;
 }
+.no-point{
+    pointer-events: none;
+}
+.reveal {
+    margin: 0;
+    padding: .25em;
+    border-radius: 2px;
+    height: auto;
+}

@@ -238,7 +238,6 @@
             </div>
         </div>
             <!-- scrollHelpTo() is not written.  Help.revealHelp() has been rewritten to work with splitPage() -->
-            <!-- SHOW ON SCREEN text below needs to be connected to the old help functionality that shows where the thing is. -->
         <div id="helpSplit" class="split">
             <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i> Close Tool</div>
             <div id="helpHeaders">
@@ -342,23 +341,23 @@
                     <dt>Custom Character Entry </dt>
                     <dd>To use Custom Characters
                         <ol>
-                            <li>Expand the Characters tray SHOW ON SCREEN</li>
+                            <li>Expand the Characters tray <button type="button" onclick="Help.lightUp('#toggleChars')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></li>
                             <li>Click on the desired character to insert it on the text field.</li>
                         </ol>
                     </dd>
 
                     <dt>Edit the Custom Characters </dt>
-                    <dd>Click the Edit button on the expanded Custom Characters drawer SHOW ON SCREEN </dd>
+                    <dd>Click the Edit button on the expanded Custom Characters drawer <button type="button" onclick="Help.lightUp('.editButtons')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </dd>
 
                     <dt>XML Tag Entry </dt>
                     <dd>XML tags can always be hand-encoded by the user as they transcribe but XML Tags can be set up for ease of insertion. </dd>
 
                     <dt>To use XML Tags </dt>
 
-                    <dd>Expand the XML Tag drawer SHOW ON SCREEN </dd>
+                    <dd>Expand the XML Tag drawer <button type="button" onclick="Help.lightUp('#toggleXML')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </dd>
                     <dd>Highlight the text and click the desired XML tag button in the XML Tag tray to wrap the tag around the selection.</dd>
                     <dd>Insert as you type by clicking the XML tag button, adding the opening tag at the cursor
-                        and put a closing tag <span class="tags ui-corner-all right ui-state-error">reminder</span>
+                        and put a closing tag <span class="tags ui-corner-all right ui-state-error no-point">reminder</span>
                         in the bottom right of the transcription text entry box.
                     </dd>
                     <dd>
@@ -366,7 +365,7 @@
                     </dd>
                 </dl>
 
-                <div class="helpSubsection">viewing options SHOW ON SCREEN</div>
+                <div class="helpSubsection">viewing options <button type="button" onclick="Help.lightUp('.buttons')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></div>
 
                 <dl>
                     <dt>View the page image </dt>
@@ -374,7 +373,7 @@
                         While viewing, you can drag the image around with your mouse.
                         Release the keys to restore the screen. </dd>
                     <dt>Inspect</dt>
-                    <dd>To view parts of the image under magnification click the Inspect button. SHOW ON SCREEN.
+                    <dd>To view parts of the image under magnification click the Inspect button. <button type="button" onclick="Help.lightUp('#magnify1')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button>
                         Once in the inspect view you can use <kbd>+</kbd> and <kbd>-</kbd> to change the magnification.
                         Press <kbd>ESC</kbd> to return to the transcription view.</dd>
                     <dt>Peek-Zoom</dt>
@@ -405,7 +404,7 @@
                     <dd>A. Capelli's <cite>Lexicon Abbreviaturarum</cite> for Latin and Italian abbreviations. </dd>
                 </dl>
 
-                <div class="helpSubsection">page tools SHOW ON SCREEN </div>
+                <div class="helpSubsection">page tools <button type="button" onclick="Help.lightUp('#canvasControls')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </div>
                 <dl>
                     <dt>Image Controls </dt>
                     <dd>These tools are designed to allow the user to manipulate the image to facilitate legibility.

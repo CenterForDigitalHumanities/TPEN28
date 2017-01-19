@@ -4942,6 +4942,10 @@ var Help = {
      *  @param refIndex int index of help button clicked
      */
     lightUp: function(refIndex){
+        if(refIndex.startsWith("#")||refIndex.startsWith(".")){
+            this.highlight($(refIndex));
+            return true;
+        }
         switch (refIndex){
             case 0  :   //Previous Line
                 this.highlight($("#prevLine"));

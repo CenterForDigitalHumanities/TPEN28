@@ -32,7 +32,7 @@ var tpen = {
         isFullscreen: true,
         isAddingLines: false,
         colorList: ["black","lime","magenta","white","#A64129"],
-        colorThisTime: "#A64129",
+        colorThisTime: "white",
         currentFolio: 0,
         currentAnnoListID: 0,
         nextColumnToRemove: null,
@@ -3384,7 +3384,7 @@ function markerColors(){
         tpen.screen.colorList = tempColorList;
     }
     var index = tpen.screen.colorList.indexOf(tpen.screen.colorThisTime);
-    if(index++>tpen.screen.colorList.length){
+    if(index++>tpen.screen.colorList.length-1){
         index = 0;
     }
     var color = tpen.screen.colorThisTime = tpen.screen.colorList[index];

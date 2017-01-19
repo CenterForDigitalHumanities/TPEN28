@@ -1627,3 +1627,55 @@ a.editButtons {
     position: absolute;
     max-height: 98%;
 }
+
+/* The help area CSS */
+#helpSplit{
+    width: 500px;
+    max-width: 500px;
+    overflow: hidden;
+    background-color: #e1f4fe;
+}
+#helpHeaders{
+    padding: 1em 0;
+    text-align: center;
+}
+#helpHeaders a{
+    display: inline-block;
+    border: 1px solid #999;
+    padding: 0 .5em;
+    text-transform: uppercase;
+    color: #999;
+}
+#helpSplit dt{
+    font-style: italic;
+    margin-top: 1em;
+}
+#helpSplit dd {
+    margin: 0;
+    font-size: .8em;
+}
+#helpSplit kbd {
+    font-size: 1rem;
+}
+.helpSubsection{
+    margin: 1em 0;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.helpSection+.helpSection{
+    border-top:2px #999 solid;
+}
+#helpContainer{
+    padding:0 2em;
+    overflow: auto;
+    margin-bottom: 8em;
+}
+.no-point{
+    pointer-events: none;
+}
+.reveal {
+    margin: 0;
+    padding: .25em;
+    border-radius: 2px;
+    height: auto;
+}

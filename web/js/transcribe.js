@@ -2492,8 +2492,7 @@ function fullPage(){
     $("#help").css({"left":"100%"}).fadeOut(1000);
     $("#fullScreenBtn").fadeOut(250);
     tpen.screen.isZoomed = false;
-    $(".split").hide();
-    $(".split").css("width", "43%");
+    $(".split").css("width", "").css("display","");
     restoreWorkspace();
     $("#splitScreenTools").show();
     var screenWidth = $(window).width();
@@ -2556,6 +2555,17 @@ function splitPage(event, tool) {
         $("#transcriptionTemplate").css("width", Page.width()-200 + "px");
         newCanvasWidth = Page.width()-200;
         $("#controlsSplit").show();
+        resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
+    }
+    if(tool==="help"){
+        if($("#helpSplit").is(":visible")){
+            return fullPage();
+        }
+        $("#transcriptionCanvas").css("width", Page.width()-500 + "px");
+        $("#transcriptionTemplate").css("width", Page.width()-500 + "px");
+        newCanvasWidth = Page.width()-500;
+        $("#helpSplit").show().height(Page.height()-$("#helpSplit").offset().top); // header space
+        $("#helpContainer").height(Page.height()-$("#helpContainer").offset().top);
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }
     if(tool === "parsing"){
@@ -4915,26 +4925,8 @@ var Help = {
     /**
      *  Shows the help interface.
      */
-    revealHelp: function(){
-        if($("#closeHelp").is(":visible")){
-            $("#closeHelp:visible").click(); // close if open
-            return false;
-        }
-
-        var workspaceHeight = $("#transWorkspace").height();
-        var imgTopHeight = $("#imgTop").height() + workspaceHeight;
-        //Screen.maintainWorkspace();
-        $(".helpPanel").height(imgTopHeight);
-        $(".helpPanel").css("width", "20%");
-        $("#helpPanels").width('500%').height(imgTopHeight);
-        $("#help").show().css({
-            "left":"0px",
-            "top":"32px",
-            "width":"100%"
-        });
-        $(".helpContents").eq(0).click();
-        $("#bookmark").hide();
-        $("#closeHelp").show();
+    revealHelp: function(event){
+       splitPage(event, "help");
     },
     /**
      *  Adjusts the position of the help panels to reveal the selected section.
@@ -4950,6 +4942,10 @@ var Help = {
      *  @param refIndex int index of help button clicked
      */
     lightUp: function(refIndex){
+        if(refIndex.startsWith("#")||refIndex.startsWith(".")){
+            this.highlight($(refIndex));
+            return true;
+        }
         switch (refIndex){
             case 0  :   //Previous Line
                 this.highlight($("#prevLine"));

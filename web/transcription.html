@@ -20,27 +20,32 @@
             border-right: 2px solid black;
         }
         .magnifyHelp{
-            position: fixed;
-            top:35px;
-            left: 0;
-            right:0;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
             margin: 0 auto;
-            border: 2px outset #002a5c;
-            background-color: #BFBFBF;
-            height: 134px;
-            width: 200px;
-            font-size: 9pt;
+            background-color: rgb(255,252,227);
             padding: 4px 6px;
-            color: #002a5c;
-            height: 140px;
+            color: #666;
+            text-align: center;
             z-index: 3;
             display: none;
+            box-shadow: 0 0 5px rgba(0,0,0,0.34);
         }
-
-        .magifyHelp button{
-            width: 35px;
+        .magnifyHelp p {
+            white-space: nowrap;
         }
-
+        #zoomat {
+            box-shadow: inset -1px -1px 6px rgba(0,0,0,.34);
+            border-radius: 50%;
+            height: 2rem;
+            width: 2rem;
+            display: inline-block;
+            line-height: 2rem;
+            text-align: center;
+            font-size: small;
+            background: #e0e9ef;
+        }
         .parsingHdr{
             margin-left: 20px;
         }
@@ -54,12 +59,6 @@
         <div class="pageTurnCover">
             <div class="turnMsg">Please wait while we load the page...</div>
             <div class="turnLoader"><img src="images/loading2.gif" /></div>
-        </div>
-        <div class="magnifyHelp">
-            <div id='magnifyHlpLabel'>Inspect Help</div>
-            <button style='margin-bottom: 3px;' class='nohover'>esc</button><span>   to quit</span><br>
-            <button style='margin-bottom: 3px;' class='nohover'>+</button><span>   or mouse wheel to zoom in</span><br>
-            <button class='nohover'>-</button><span>   or mouse wheel to zoom out</span>
         </div>
         <div class="topTrim navigation">
             <span class="trimSection"><span id="trimTitle"></span>
@@ -124,6 +123,12 @@
         </div>
         <div class="centerInterface">
         <div id="transcriptionTemplate">
+            <div class="magnifyHelp">
+                <p>Return to Transcribing: <kbd>ESC</kbd> or double-click</p>
+                <p>
+                    <span id="zoomat"></span>
+                    Zoom in: <kbd>+</kbd> Zoom out: <kbd>-</kbd> </p>
+            </div>
             <div id="templateResizeBar"></div>
             <div id="parsingCover"></div>
             <div id="transcriptionCanvas">
@@ -1472,10 +1477,17 @@ $(document).on("click",".fullScreenTrans",fullPage);
                     tpen.screen.zoomMultiplier -= .4;
                     $(document).mousemove();
                 }
+                $("#zoomat").text(Math.round(tpen.screen.zoomMultiplier*10)/10+"x");
             }
         });
 
-        $(document).keydown(function(event){
+        $(document)
+            .dblclick(function(){
+                if(tpen.screen.isMagnifying){
+                    stopMagnify();
+                }
+        })
+            .keydown(function(event){
             var ctrlDown = false,
             ctrlKey = 17,
             cmdKey = 91;
@@ -1497,6 +1509,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
                 else {
 
                 }
+                $("#zoomat").text(Math.round(tpen.screen.zoomMultiplier*10)/10+"x");
             }
             else if (event.which == 112) { //F1 for help
                 event.preventDefault();

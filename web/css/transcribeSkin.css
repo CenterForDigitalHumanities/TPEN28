@@ -650,6 +650,7 @@ div#transcriptletArea {
 }
 .customRulerArea{
     background-color: rgb(242, 242, 243);
+    color:black;
 }
 #parseOptions{
     margin-bottom: 15px;
@@ -683,6 +684,9 @@ div#transcriptletArea {
 }
 .splitBlock small.danger {
     color:#bf1e2d;
+}
+.splitBlock.selected small.danger{
+    color:#fffdd0 !important;
 }
 
 #parsingSplit {
@@ -1501,9 +1505,20 @@ a{
     margin-left: -.6em;
 }
 
-.selected{
-/*    background-color: #618797;*/
+.selected button{
+    background-color: #8198AA;
+}
+button.selected{
+    background-color: #8198AA !important;
+}
+
+.splitBlock.selected{
     background-color: rgb(189, 35, 49);
+    color:white;
+}
+.splitBlock.selected.danger{
+/*    background-color: rgb(189, 35, 49);*/
+    color:#fffdd0 !important;
 }
 
 .nohover:hover{

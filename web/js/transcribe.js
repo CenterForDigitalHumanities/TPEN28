@@ -2478,8 +2478,8 @@ function fullPage(){
     }
     $("#splitScreenTools").find('option:eq(0)').prop("selected", true);
     $("#transcriptionCanvas").css("width", "100%");
-    $("#transcriptionCanvas").css("height", "auto"); //Need a real height here, it can't be auto.  It needs to be the height of the image.
-    $("#transcriptionCanvas").css("max-height", "none"); //Need a real height here, it can't be auto.  It needs to be the height of the image.
+    $("#transcriptionCanvas").css("height", "auto"); 
+    $("#transcriptionCanvas").css("max-height", "none");
     $("#transcriptionTemplate").css("width", "100%");
     $("#transcriptionTemplate").css("max-width", "100%");
     $("#transcriptionTemplate").css("max-height", "none");
@@ -2497,29 +2497,11 @@ function fullPage(){
     var screenWidth = $(window).width();
     $("#transcriptionCanvas").css("height", tpen.screen.originalCanvasHeight + "px");
     $(".lineColIndicatorArea").css("height", tpen.screen.originalCanvasHeight + "px");
-//     $("#imgTop").hover(
-//        function(){
-//             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
-//         },
-//         function(){
-//             var lineColor2 = lineColor.replace(".9", ".4");
-//             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
-//         }
-//     );
-
-//     $("#imgBottom").hover(
-//         function(){
-//             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
-//         },
-//         function(){
-//             var lineColor2 = lineColor.replace(".9", ".4");
-//             $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
-//         }
-//     );
 
     $.each($(".lineColOnLine"), function(){
         $(this).css("line-height", $(this).height() + "px");
     });
+    
     if (tpen.screen.focusItem[0] == null
         && tpen.screen.focusItem[1] == null){
         updatePresentation($("#transcriptlet_0"));
@@ -3397,6 +3379,7 @@ function markerColors(){
 //    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9"); //make this color opacity 100
     $('.lineColIndicator').css('border', '1px solid ' + color);
     $('.lineColOnLine').css({'border-left':'1px solid ' + color, 'color':color});
+    $("#markerColors").css("color", color);
     $('.activeLine').css({
 //        'box-shadow' : '0px 0px 15px 8px ' + color,
         'box-shadow' : '0 0 15px black',
@@ -3410,10 +3393,12 @@ function toggleLineMarkers(){
         && $('.lineColIndicator:eq(1)').is(":visible")){ //see if a pair of lines are visible just in case you checked the active line first.
         $('.lineColIndicator').hide();
         $(".activeLine").show().addClass("linesHidden");
+        $("#showTheLines").removeClass("selected");
     }
     else {
         $('.lineColIndicator').show();
         $(".lineColIndicator").removeClass("linesHidden");
+        $("#showTheLines").addClass("selected");
         $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
     }
 }
@@ -3422,9 +3407,11 @@ function toggleLineMarkers(){
 function toggleLineCol(){
     if ($('.lineColOnLine:first').is(":visible")){
         $('.lineColOnLine').hide();
+        $("#showTheLabels").removeClass("selected");
     }
     else{
         $('.lineColOnLine').show();
+        $("#showTheLabels").addClass("selected");
         $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
     }
 }

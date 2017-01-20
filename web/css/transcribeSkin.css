@@ -1303,7 +1303,7 @@ kbd {
     width: auto;
     position:relative;
     cursor: default;
-    padding: 0px 11px 1px 4px;
+    padding: 0px 11px 2px 4px;
     height: 30px;
     line-height: 30px;
     display: inline-block;

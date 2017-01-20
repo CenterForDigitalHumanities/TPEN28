@@ -461,31 +461,31 @@
              </div>
              <div class="toolLinks icon-panel">
                  <div class="icon-panel">
-                    <button onclick='$("#createColumn").click();'>
-                        <img src="css/custom-theme/images/create_column_md.png" alt="reparse" height="30px" />
+                    <button onclick='$("#createColumn").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/create_column_md.png" alt="reparse" height="30px" from="createColumn" />
                     </button>
-                     <button onclick='$("#adjustColumn").click();'>
-                         <img src="css/custom-theme/images/adjust_column_md.png" alt="reparse" />
+                     <button onclick='$("#adjustColumn").click(); toggleSelected($(this).children("img"), true);'>
+                         <img src="css/custom-theme/images/adjust_column_md.png" alt="reparse" from="adjustColumn" />
                     </button>
-                    <button onclick='$("#destroyColumn").click();'>
-                        <img src="css/custom-theme/images/destroy_column_md.png" alt="reparse" height="30px" />
+                    <button onclick='$("#destroyColumn").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/destroy_column_md.png" alt="reparse" height="30px" from="destroyColumn" />
                     </button>
-                    <button onclick='$("#clearColumns").click();'>
-                        <img src="css/custom-theme/images/reparse_md.png" alt="reparse" />
+                    <button onclick='$("#clearColumns").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/reparse_md.png" alt="reparse" from="clearColumns" />
                     </button>
                  </div>
                  <div class="icon-panel">
-                     <button onclick='$("#addLines").click();'>
-                         <img src="css/custom-theme/images/add_line_md.png" alt="reparse" height="30px" />
+                     <button onclick='$("#addLines").click(); toggleSelected($(this).children("img"), true);'>
+                         <img src="css/custom-theme/images/add_line_md.png" alt="reparse" height="30px" from="addLines"/>
                      </button>
-                     <button onclick='$("#adjustLines").click();'>
-                         <img src="css/custom-theme/images/merge_lines_md.png" alt="reparse" />
+                     <button onclick='$("#adjustLines").click(); toggleSelected($(this).children("img"), true);'>
+                         <img src="css/custom-theme/images/merge_lines_md.png" alt="reparse" from="adjustLines"/>
                      </button>
-                     <button onclick='$("#mergeLines").click();'>
-                        <img src="css/custom-theme/images/adjust_lines_md.png" alt="reparse" />
+                     <button onclick='$("#mergeLines").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/adjust_lines_md.png" alt="reparse" from="mergeLines"/>
                     </button>
-                     <button onclick='$("#removeLine").click();'>
-                         <img src="css/custom-theme/images/delete_line_md.png" alt="reparse" />
+                     <button onclick='$("#removeLine").click(); toggleSelected($(this).children("img"), true);'>
+                         <img src="css/custom-theme/images/delete_line_md.png" alt="reparse" from="removeLine"/>
                      </button>
                  </div>
              </div>
@@ -503,7 +503,7 @@
                             <small>Click and drag to place</small>
                         </div>
                         <div class="splitBlock">
-                            <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
+                            <button id="adjustColumn" class="tpenButton" title="Adjust the size of the columns by dragging the sides or edges.">
                                 Adjust Columns
                                 <img src="css/custom-theme/images/adjust_column_sm.png" alt="reparse" />
                                 <!--<i class="fa fa-reparse"></i>-->
@@ -1601,7 +1601,6 @@ $(document).on("click",".fullScreenTrans",fullPage);
 
 
             $("#parseOptions .tpenButton").click(function(event){
-
                 var show = $(this).attr("show");
                 $("#imgTop").unbind("mousemove");
                 $("#imgTop").unbind("mousedown");
@@ -1615,6 +1614,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
                 var thisID = $(this).attr("id");
                 $(".parsingToolButtons").find(".tpenButton").removeClass("selected");
                 toggleSelected($(this).parent(), true);
+                toggleIcon($(this).attr("id"));
                 if (thisID == "createColumn" || thisID == "destroyColumn" || thisID=="clearColumns") {
                     $("#addLines").removeClass("active");
                     $("#mergeLines").removeClass("active");
@@ -2342,8 +2342,13 @@ $(document).on("click",".fullScreenTrans",fullPage);
             $unselectArea.find(".blockOpen").removeClass("blockOpen"); //don't want to leave any of the others selected.
             $area.find(".blockStatusClosed").addClass("blockOpen");
             $area.children("button").toggleClass("selected");
+            $(".icon-panel").find(".selected").removeClass("selected");
         }
         $area.toggleClass("selected");
+    }
+    
+    function toggleIcon(fromBtn){
+        toggleSelected($("img[from='"+fromBtn+"']"), true);
     }
 
 </script>

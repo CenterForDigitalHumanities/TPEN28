@@ -553,8 +553,12 @@ div#transcriptletArea {
 .splitTool{
     display: block;
 }
+#controlsSplit {
+    font-size: small; // ticket #283
+}
 #parsingBtn{
     display: none;
+    margin: 2rem 0;
 }
 
 #parsingBtn[disabled]{
@@ -1204,12 +1208,12 @@ button.imgTool{
     background-color: rgb(209,72,54);
 }
 .split header {
-    margin: 0 -15px;
     text-align: center;
     background: #6d6e71;
     color: #e1f4fe;
     text-transform: uppercase;
     line-height: 1.5;
+    margin: 0 -15px 6px -15px;
 }
 .fullScreenTrans::before {
     content: "Close ";

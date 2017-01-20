@@ -1313,10 +1313,7 @@ kbd {
     max-width: 30%;
 }
 .trimSection:last-child{
-    border-right: transparent;
-}
-.trimSection span{
-    margin-left:5px;
+    border-right: none;
 }
 .trimSection .fa-2x {
     margin-top: -0.5em;
@@ -1546,7 +1543,7 @@ a.navigation {
 .topTrim a {
     border:none;
     background: none;
-    padding:.25em;
+    padding:0 .25em;
     color: white;
 }
 .topTrim a:hover, .topTrim [onclick]:hover {

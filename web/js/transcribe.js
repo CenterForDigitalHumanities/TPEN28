@@ -2570,6 +2570,10 @@ function splitPage(event, tool) {
     if(tool === "parsing"){
         resize=false;
     }
+    if(tool === "preview"){
+        $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
+        $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
+    }
 
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
@@ -5392,6 +5396,9 @@ tpen.screen.peekZoom = function(cancel){
                 $("#imgTop").css("height", newCanvasHeight + "px");
                 $("#imgTop").css("width", newCanvasWidth + "px");
 
+            } else if (tpen.screen.liveTool === "preview"){
+                $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
+                $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
             }
             else if(tpen.screen.liveTool !== "" && tpen.screen.liveTool!=="none"){
                 var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;

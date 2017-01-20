@@ -996,6 +996,7 @@ function acceptIPR(folio){
     .success(function(data){
         $("#iprAccept").fadeOut(1500);
         $(".trexHead").fadeOut(1500);
+        
     });
 }
 
@@ -3733,8 +3734,6 @@ function updateLine(line, cleanup, updateList){
             line.attr("data-answer", currentLineText);
             line.find(".notes").attr("data-answer", currentLineNotes);
             //FIXME: REST says this should be PUT
-
-            //@cubap 12/21/16 FIXME: Is it ok to run this after every line change or typingTimer no matter what, or should there be a check for change?
             if(updatePositions){
                 $.post(url,params,function(){
                     line.attr("hasError",null);
@@ -3744,6 +3743,14 @@ function updateLine(line, cleanup, updateList){
                     // success
                 }).fail(function(err){
                     line.attr("hasError","Saving Failed "+err.status);
+                    if(err.status === 403){
+                        var theURL = window.location.href;
+                        return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
+                    }
+                    else{
+                        $(".trexHead").show();
+                        $("#genericIssue").show(1000);
+                    }
                     throw err;
                 });
             }
@@ -3755,6 +3762,14 @@ function updateLine(line, cleanup, updateList){
                     // success
                 }).fail(function(err){
                     line.attr("hasError","Saving Failed "+err.status);
+                    if(err.status === 403){
+                        var theURL = window.location.href;
+                        return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
+                    }
+                    else{
+                        $(".trexHead").show();
+                        $("#genericIssue").show(1000);
+                    }
                     throw err;
                 });
             }

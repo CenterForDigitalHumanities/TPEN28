@@ -31,7 +31,9 @@ var tpen = {
         isMagnifying: false,
         isFullscreen: true,
         isAddingLines: false,
-        colorList: ["black","lime","magenta","white","#A64129"],
+        //colorList:["rgba(255,255,255,.4)","rgba(0,0,0,.4)","rgba(255,0,0,.4)","rgba(153,255,0,.4)", "rgba(0,255,204,.4)", "rgba(51,0,204,.4)", "rgba(204,255,0,.4)"],
+        //colorThisTime: "rgba(255,255,255,.4)",
+        colorList: ["white", "black","lime","magenta","#A64129"],
         colorThisTime: "white",
         currentFolio: 0,
         currentAnnoListID: 0,
@@ -3367,21 +3369,22 @@ function markerColors(){
  * This function allows the user to go through annotation colors and decide what color the outlined lines are.
  * colorThisTime
  */
-    var tempColorList = ["rgba(153,255,0,.4)", "rgba(0,255,204,.4)", "rgba(51,0,204,.4)", "rgba(204,255,0,.4)", "rgba(0,0,0,.4)", "rgba(255,255,255,.4)", "rgba(255,0,0,.4)"];
-    if (tpen.screen.colorList.length === 0){
-        tpen.screen.colorList = tempColorList;
-    }
     var index = tpen.screen.colorList.indexOf(tpen.screen.colorThisTime);
-    if(index++>tpen.screen.colorList.length-1){
-        index = 0;
+    if(index + 1 === tpen.screen.colorList.length){ //We are on the last color, so the next color should be index 0.
+        index = -1;
     }
+    index++;
     var color = tpen.screen.colorThisTime = tpen.screen.colorList[index];
+    if(index + 1 === tpen.screen.colorList.length){ //We have just changed to the last color in the list, so the color next time will be index 0.
+        index = -1;
+    }
+    var colorNextTime = tpen.screen.colorList[index+1];
 //    var oneToChange = tpen.screen.colorThisTime.lastIndexOf(")") - 2;
 //    var borderColor = tpen.screen.colorThisTime.substr(0, oneToChange) + '.2' + tpen.screen.colorThisTime.substr(oneToChange + 1);
 //    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9"); //make this color opacity 100
     $('.lineColIndicator').css('border', '1px solid ' + color);
     $('.lineColOnLine').css({'border-left':'1px solid ' + color, 'color':color});
-    $("#markerColors").css("color", color);
+    $("#markerColors").css("color", colorNextTime);
     $('.activeLine').css({
 //        'box-shadow' : '0px 0px 15px 8px ' + color,
         'box-shadow' : '0 0 15px black',

@@ -743,7 +743,6 @@ div#transcriptletArea {
     right: -15px;
     position: absolute;
     background-color: #aaa;
-    cursor: ew-resize;
     display: none;
     z-index: 4;
     height: 100vh;
@@ -753,6 +752,11 @@ div#transcriptletArea {
     -webkit-transition: all .5s;
     -o-transition: all .5s;
     transition: all .5s;
+}
+#transcriptionTemplate .ui-resizable-handle.ui-resizable-e {
+    width: 15px;
+    right: -15px;
+    height: 100vh;
 }
 .ui-widget-overlay{}
 #parsingDiv{overflow: hidden;width: auto; margin-bottom: 50px;}

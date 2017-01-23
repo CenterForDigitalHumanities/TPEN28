@@ -2581,6 +2581,7 @@ function splitPage(event, tool) {
     $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
     if(resize){
         $("#transcriptionTemplate").resizable({
+            handles:"e",
             disabled:false,
             minWidth: window.innerWidth / 2,
             maxWidth: window.innerWidth * .75,

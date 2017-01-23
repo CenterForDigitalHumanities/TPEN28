@@ -1366,6 +1366,7 @@ kbd {
     background-color: rgb(225, 244, 254);
     padding: 5px 0px;
     margin-top: .7em;
+    text-align: center;
 }
 #prevLine,#nextLine,#toggleNotes,#nextPage,#prevPage{
     position: relative;

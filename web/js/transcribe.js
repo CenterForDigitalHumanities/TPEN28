@@ -3100,37 +3100,42 @@ function reparseColumns(){
          //how do I pass the closing tag in?  How do i know if it exists?
         var myField = tpen.screen.focusItem[1].find('.theText')[0];
         var closeTag = (closingTag == undefined) ? "" : unescape(closingTag);
-
         //IE support
         if(specChar){
              if (document.selection) {
                 myField.focus();
                 sel = document.selection.createRange();
                 sel.text = unescape(myValue);
-                sel.setSelectionRange(sel.selectionStart, sel.selectionStart);
+                //console.log("Need to advance cursor pos by 1..." +sel.selectionStart, sel.selectionStart+1 );
+                sel.setSelectionRange(sel.selectionStart+1, sel.selectionStart+1);
                 updateLine($(myField).parent(), false, true);
-                //return sel+unescape(fullTag).length;
             }
             //MOZILLA/NETSCAPE support
             else if (myField.selectionStart || myField.selectionStart == '0') {
                 var startPosChar = myField.selectionStart;
+                var endPos = myField.selectionEnd;
                 var currentValue = myField.value;
                 currentValue = currentValue.slice(0, startPosChar) + unescape(myValue) + currentValue.slice(startPosChar);
                 myField.value = currentValue;
                 myField.focus();
-                myField.setSelectionRange(startPosChar, startPosChar);
+                //console.log("Need to advance cursor pos by 1..." +startPosChar, startPosChar+1 );
+                myField.setSelectionRange(startPosChar+1, startPosChar+1);
                 updateLine($(myField).parent(), false, true);
+            }
+            else{
+                myField.value += myValue;
             }
         }
         else{ //its an xml tag
             if (document.selection) {
                 if(fullTag === ""){
-                    fullTag = "</"+myValue+">";
+                    fullTag = "<"+myValue+">";
                 }
                 myField.focus();
                 sel = document.selection.createRange();
                 sel.text = unescape(fullTag);
-                sel.setSelectionRange(sel.selectionStart, sel.selectionStart);
+                //console.log("Need to advance cursor pos by "+fullTag.length+"..."+sel.selectionStart, sel.selectionStart+fullTag.length);
+                sel.setSelectionRange(sel.selectionStart+fullTag.length, sel.selectionStart+fullTag.length);
                 updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
@@ -3138,10 +3143,11 @@ function reparseColumns(){
             else if (myField.selectionStart || myField.selectionStart == '0') {
                 var startPos = myField.selectionStart;
                 var endPos = myField.selectionEnd;
+                if(fullTag === ""){
+                        fullTag = "<" + myValue +">";
+                }
                 if (startPos !== endPos) {
-                    if(fullTag === ""){
-                        fullTag = "</" + myValue +">";
-                    }
+                    
                     // something is selected, wrap it instead
                     var toWrap = myField.value.substring(startPos,endPos);
                     closeTag = "</" + myValue +">";
@@ -3152,27 +3158,32 @@ function reparseColumns(){
                         + closeTag
                         + myField.value.substring(endPos, myField.value.length);
                     myField.focus();
+                    //console.log("Need to put cursor at end of highlighted spot... "+endPos);
+                    myField.setSelectionRange(endPos+fullTag.length+closeTag.length, endPos+fullTag.length+closeTag.length);
                     updateLine($(myField).parent(), false, true);
 
-    //                var insertLength = startPos + unescape(fullTag).length +
-    //                    toWrap.length + 3 + closeTag.length;
-                    //return "wrapped" + insertLength;
                 }
                 else {
                     myField.value = myField.value.substring(0, startPos)
                         + unescape(fullTag)
                         + myField.value.substring(startPos);
                     myField.focus();
+                    //console.log("Move caret to startPos + tag length... "+startPos, startPos + fullTag.length);
+                    myField.setSelectionRange(startPos+ fullTag.length, startPos+ fullTag.length);
                     updateLine($(myField).parent(), false, true);
                     closeAddedTag(myValue, fullTag);
                     //return startPos+unescape(fullTag).length;
                 }
-                myField.setSelectionRange(startPos, startPos);
+               
             }
             else {
+                if(fullTag === ""){
+                    fullTag = "<"+myValue+">";
+                }
                 myField.value += unescape(fullTag);
                 myField.focus();
-                myField.setSelectionRange(myField.selectionStart);
+                //console.log("Last case... "+myField.selectionStart, myField.selectionStart+ fullTag.length);
+                myField.setSelectionRange(myField.selectionStart+ fullTag.length, myField.selectionStart+ fullTag.length);
                 updateLine($(myField).parent(), false, true);
                 closeAddedTag(myValue, fullTag);
                 //return myField.length;

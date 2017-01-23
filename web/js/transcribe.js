@@ -2285,7 +2285,7 @@ function hideWorkspaceForParsing(){
     //    tpen.screen.originalCanvasHeight = $("#transcriptionCanvas").height(); //make sure these are set correctly
 //    tpen.screen.originalCanvasWidth = $("#transcriptionCanvas").width(); //make sure these are set correctly
     imgTopOriginalTop = $("#imgTop img").css("top");
-    $("#transcriptionTemplate").css("max-width", "57%").css("width", "57%");
+    $("#transcriptionTemplate").css("max-width", "55%").css("width", "55%");
     $("#transcriptionCanvas").css("max-height", window.innerHeight + "px");
     $("#transcriptionTemplate").css("max-height", window.innerHeight + "px");
     $("#controlsSplit").hide();
@@ -5375,33 +5375,28 @@ tpen.screen.peekZoom = function(cancel){
         window.onresize = function(event, ui) {
             var newImgBtmTop = "0px";
             var newImgTopTop = "0px";
-    //        if(tpen.screen.liveTool === "controls"){ //the width is different for this one
-    //
-    //        }
-            if(tpen.screen.liveTool === 'parsing'){ //apply to all split tools?
+            if(tpen.screen.liveTool === 'parsing'){
                 var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
-                var newCanvasWidth = tpen.screen.originalCanvasWidth * .57;
-                //Can I use tpen.screen.originalCanvasWidth?
-                var newCanvasHeight = 1 / ratio * newCanvasWidth;
+                var newCanvasWidth = $("#transcriptionCanvas").width();
+                var newCanvasHeight = $("#transcriptionCanvas").height();
+                console.log("canvas x, y before:");
+                console.log(newCanvasWidth, newCanvasHeight);
                 var PAGEHEIGHT = Page.height();
-                if (newCanvasHeight > PAGEHEIGHT){
+                if (PAGEHEIGHT <= tpen.screen.originalCanvasHeight){ //allow it to be as big as possible, but not bigger.
                     newCanvasHeight = PAGEHEIGHT;
-                    newCanvasWidth = 1/ratio*newCanvasHeight;
+                    newCanvasWidth = ratio*newCanvasHeight;
                 }
-                var splitWidth = Page.width() - ($("#transcriptionTemplate").width()+35) + "px";
-                $(".split img").css("max-width", splitWidth);
-                $(".split:visible").css("width", splitWidth);
+                else if(PAGEHEIGHT > tpen.screen.originalCanvasHeight){ //I suppose this is possible for small images, so handle if its trying to be bigger than possible
+                    newCanvasHeight = tpen.screen.originalCanvasHeight;
+                    newCanvasWidth = tpen.screen.originalCanvasWidth;
+                }
                 $("#transcriptionCanvas").css("height", newCanvasHeight + "px");
-                newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
-                $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
-                $("#imgTop .lineColIndicatorArea").css("height", newCanvasHeight + "px");
-                $("#imgTop img").css({
-                    'height': newCanvasHeight + "px",
-                    'top': "0px"
-                });
+                $("#transcriptionCanvas").css("width", newCanvasWidth + "px");
                 $("#imgTop").css("height", newCanvasHeight + "px");
                 $("#imgTop").css("width", newCanvasWidth + "px");
-
+                $("#imgTop img").css({
+                    'height': newCanvasHeight + "px",
+                });
             } else if (tpen.screen.liveTool === "preview"){
                 $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
                 $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);

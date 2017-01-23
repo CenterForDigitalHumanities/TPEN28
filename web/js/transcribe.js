@@ -2489,6 +2489,7 @@ function fullPage(){
     $("#transcriptionTemplate").css("max-height", "none");
     $("#transcriptionTemplate").css("height", "auto");
     $("#transcriptionTemplate").css("display", "inline-block");
+    $("#canvasControls").removeClass("selected");
     $('.lineColIndicatorArea').css("max-height","none");
     $('.lineColIndicatorArea').show();
     $(".centerInterface").css("text-align", "left").css("background-color", "white");

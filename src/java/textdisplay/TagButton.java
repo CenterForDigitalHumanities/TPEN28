@@ -516,14 +516,14 @@ public class TagButton {
       Boolean caller = false;
       for (int i = 0; i < t.length; i++) {
          stackTrace += t[i].toString() + "\n";
-         if (t[i].toString().contains("getAllProjectButtons")) {
+         if (t[i].toString().contains("getAllProjectButtonsClassic")) {
             caller = true;
          }
       }
       if (!caller) {
-         LOG.log(Level.SEVERE, "{0} Running tagButton.getAllProjectButtons\n{1}", new Object[]{formatter.format(date), stackTrace});
+         LOG.log(Level.SEVERE, "{0} Running tagButton.getAllProjectButtonsClassic\n{1}", new Object[]{formatter.format(date), stackTrace});
       }
-      return getTag();
+      return "<span class=\"lookLikeButtons\" title=\"" + getFullTag() + "\" onclick=\"Interaction.insertTag('" + tag + "', '" + getFullTag() + "');\">" + getDescription() + "</span>";
    }
 
    /**
@@ -570,31 +570,41 @@ public class TagButton {
       }
    }
 
-   /**
-    * get all of the buttons the user has created, create a few dummy ones if they dont have any
-    */
-   public static String getAllButtons(int uid) throws SQLException {
+ public static String getAllProjectButtonsClassic(int projectID) throws SQLException {
+      Date date = new Date(System.currentTimeMillis());
+      StackTraceElement[] t = Thread.currentThread().getStackTrace();
+      DateFormat formatter = new SimpleDateFormat("yyyy-mm-dd H:M:S");
+      formatter.format(date);
+      String stackTrace = "";
+      for (int i = 0; i < t.length; i++) {
+         stackTrace += t[i].toString() + "\n";
+      }
+
+      LOG.log(Level.SEVERE, "{0} Running tagButton.getAllProjectButtonsClassic\n{1}", new Object[]{formatter.format(date), stackTrace});
       Connection j = null;
       PreparedStatement stmt = null;
       try {
          String toret = "";
-         String query = "select * from buttons where uid=?";
+         String query = "select distinct(position) from projectbuttons where project=? order by position";
          j = DatabaseWrapper.getConnection();
          stmt = j.prepareStatement(query);
-         stmt.setInt(1, uid);
+         stmt.setInt(1, projectID);
          ResultSet rs = stmt.executeQuery();
          int ctr = 0;
          while (rs.next()) {
             int position = rs.getInt("position");
-            TagButton b = new TagButton(uid, position);
-            toret += b.getButton();
+            try {
+               TagButton b = new TagButton(projectID, position, true);
+               toret += b.getButton();
+            } catch (NullPointerException e) {
+            }
             ctr++;
          }
          if (ctr == 0) {
-//            TagButton b = new TagButton(uid, 1, "temp", "button description");
-//            b = new TagButton(uid, 2, "temp", "button description");
-//            b = new TagButton(uid, 3, "temp", "button description");
-//            b = new TagButton(uid, 4, "temp", "button description");
+//            TagButton b = new TagButton(projectID, 1, "temp", true, "button description");
+//            b = new TagButton(projectID, 2, "temp", true, "button description");
+//            b = new TagButton(projectID, 3, "temp", true, "button description");
+//            b = new TagButton(projectID, 4, "temp", true, "button description");
          }
          return toret;
       } finally {
@@ -656,6 +666,12 @@ public class TagButton {
                 }
                 else{
                     jo.element("description","");
+                }
+                if(null != b.getFullTag()&& !"".equals(b.getFullTag())){
+                    jo.element("fullTag", b.getFullTag());
+                }
+                else{
+                    jo.element("fullTag", "");
                 }
                 //jo.element("color", b.getXMLColor());
                 ja.add(jo);

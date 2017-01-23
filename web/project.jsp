@@ -673,7 +673,9 @@
                                     JSONArray buttons_obj = JSONArray.fromObject(buttons);
                                     for(int i=0; i<buttons_obj.size(); i++){
                                         JSONObject thisButton = buttons_obj.getJSONObject(i);
-                                        out.print(thisButton.getString("tag")+"<br>");
+                                        String theHTML = "<span class='lookLikeButtons' title='"+thisButton.getString("fullTag")+"'> "+thisButton.getString("tag")+" </span> ";
+                                        //String theHTML = "<span class='lookLikeButtons' title='"+thisButton.getString("fullTag")+"'> "+thisButton.getString("description")+" </span> ";
+                                        out.print(theHTML);
                                     }
                                     //out.print(TagButton.getAllProjectButtons(projectID));
                                                                    %></div>

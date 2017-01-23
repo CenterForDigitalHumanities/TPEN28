@@ -678,11 +678,11 @@
                         <div id="contrastSlider"></div>
                     </div>
                     <header> Column Controls</header>
-                    <button id="showTheLines" role="button" class="block">
-                        <label for="lineToggle" title="Toggle Entire Lines">Show Lines</label><input title="Toggle Lines" type="checkbox" id="lineToggle" onchange="toggleLineMarkers();" >
+                    <button id="showTheLines" role="button" class="block" onclick="toggleLineMarkers();">
+                        Lines
                     </button>
-                    <button id="showTheLabels" role="button" class=" block selected"">
-                        <label for="indicatorToggle" title="Toggle Lines' Indicator">Show Labels</label><input type="checkbox" id="indicatorToggle" onchange="toggleLineCol();" checked="checked">
+                    <button id="showTheLabels" role="button" class="block active" onclick="toggleLineCol();">
+                        Labels
                     </button>
                     <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
                     <button role="button" id="parsingBtn" title="Redraw the lines on this page" class='block'>
@@ -1246,7 +1246,7 @@
                 <a class="returnButton exitPage" href="index.jsp">Return Home</a>
             </div>
         </div>
-        
+
         <div id="genericIssue" class="ui-widget ui-corner-all ui-widget-content">
             <h2 class="ui-widget-header ui-corner-all">Data Error</h2>
             <p>

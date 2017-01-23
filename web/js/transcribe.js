@@ -998,7 +998,7 @@ function acceptIPR(folio){
     .success(function(data){
         $("#iprAccept").fadeOut(1500);
         $(".trexHead").fadeOut(1500);
-        
+
     });
 }
 
@@ -3413,11 +3413,11 @@ function toggleLineMarkers(){
 function toggleLineCol(){
     if ($('.lineColOnLine:first').is(":visible")){
         $('.lineColOnLine').hide();
-        $("#showTheLabels").removeClass("selected");
+        $("#showTheLabels").removeClass("active");
     }
-    else{
+    else {
         $('.lineColOnLine').show();
-        $("#showTheLabels").addClass("selected");
+        $("#showTheLabels").addClass("active");
         $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
     }
 }
@@ -5410,7 +5410,7 @@ tpen.screen.peekZoom = function(cancel){
 //                     newCanvasWidth = 900;
 //                     newCanvasHeight = 1/ratio*newCanvasWidth;
                 }
-                
+
                 $("#transcriptionCanvas").css("height", newCanvasHeight + "px");
                 $("#transcriptionCanvas").css("width", newCanvasWidth + "px");
                 $("#imgTop").css("height", newCanvasHeight + "px");

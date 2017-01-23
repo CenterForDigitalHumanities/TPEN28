@@ -569,6 +569,12 @@ div#transcriptletArea {
 #parsingBtn[disabled]:hover{
     background-color: red;
 }
+#showTheLines::before,#showTheLabels::before{
+    content: "Show "
+}
+#showTheLines.active::before,#showTheLabels.active::before{
+    content: "Hide "
+}
 .fa-grayscale {
     border-radius: 50%;
     height: 1em;

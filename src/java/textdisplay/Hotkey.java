@@ -338,9 +338,9 @@ public class Hotkey {
                 ctr++;
                 char chara = (char) (rs.getInt("key"));
                 int button = rs.getInt("position") + buttonOffset;
-                //toret+="<script>if(pressedkey=="+(buttonOffset+rs.getInt("position"))+"){addchar('&#"+rs.getInt("key")+";');  return false;}</script>";
                 vars += "var char" + button + "=\"" + rs.getInt("key") + "\";\n";
-                toret += "&#" + rs.getInt("key")+";<br>";
+                toret += "<span class=\"lookLikeButtons\"  onclick=\"Interaction.addchar('&#" + rs.getInt("key") + ";');\">&#" + rs.getInt("key") + ";<sup>" + rs.getInt("position") + "</sup></span>";
+                //toret += "&#" + rs.getInt("key")+";<br>";
             }
             if (ctr == 0) {
 

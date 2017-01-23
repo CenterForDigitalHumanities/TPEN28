@@ -167,7 +167,7 @@
             <%
             int position = 1;
             textdisplay.TagButton b;
-            out.println(textdisplay.TagButton.getAllProjectButtons(projectID));
+            out.println(textdisplay.TagButton.getAllProjectButtonsClassic(projectID));
             /*while (new textdisplay.tagButton(projectID, position, true).exists()) {
                 b = new textdisplay.tagButton(projectID, position, true);
                 //out.println("<span class='tagButton' title='"+b.getFullTag()+"'>"+b.getDescription()+"("+b.getTag()+")</span>");

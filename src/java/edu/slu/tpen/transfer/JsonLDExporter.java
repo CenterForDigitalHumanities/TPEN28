@@ -129,8 +129,15 @@ public class JsonLDExporter {
       int canvasHeight = 1000;
       result.put("height", canvasHeight);
       if (pageDim != null) {
-         int canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
-         result.put("width", canvasWidth);
+        int canvasWidth = 0;  // Convert to canvas coordinates.
+        if(pageDim.height > 0){
+            canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
+        }
+        else{ //We were unable to resolve the image, so we have a height of 0.
+            canvasHeight = 0;
+        }
+        result.put("width", canvasWidth);
+        result.put("height", canvasHeight);
       }
       List<Object> images = new ArrayList<>();
       Map<String, Object> imageAnnot = new LinkedHashMap<>();
@@ -144,7 +151,9 @@ public class JsonLDExporter {
       }
       imageAnnot.put("resource", imageResource);
       imageAnnot.put("on", canvasID);
-      images.add(imageAnnot);
+      if(pageDim.height > 0){ //Only put the image annotaiton on to the canvas if we did not have any issues resolving it. 
+        images.add(imageAnnot);
+      }
       //If this list was somehow stored in the SQL DB, we could skip calling to the store every time. 
       otherContent = Canvas.getLinesForProject(projID, canvasID,f.getFolioNumber(), u.getUID());
 // no @id because it is not resolveable yet, but when it is it goes here.

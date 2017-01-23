@@ -5399,7 +5399,7 @@ tpen.screen.peekZoom = function(cancel){
                     newCanvasHeight = tpen.screen.originalCanvasHeight;
                     newCanvasWidth = tpen.screen.originalCanvasWidth;
                 }
-                if(PAGEWIDTH > 900){
+                if(PAGEWIDTH > 900){ //Whenever it gets less wide than this, it prioritizes height and stops resizing by width.
                     if(PAGEWIDTH < newCanvasWidth + SPLITWIDTH){
                         newCanvasWidth = PAGEWIDTH - SPLITWIDTH;
                         newCanvasHeight = 1/ratio*newCanvasWidth;

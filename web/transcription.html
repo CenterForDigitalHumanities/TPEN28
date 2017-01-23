@@ -25,15 +25,18 @@
             right: 1rem;
             margin: 0 auto;
             background-color: rgb(255,252,227);
-            padding: 4px 6px;
+            padding: 0;
             color: #666;
             text-align: center;
             z-index: 3;
             display: none;
             box-shadow: 0 0 5px rgba(0,0,0,0.34);
+            opacity: .85;
         }
         .magnifyHelp p {
             white-space: nowrap;
+            margin: 0;
+            padding: .25em;
         }
         #zoomat {
             box-shadow: inset -1px -1px 6px rgba(0,0,0,.34);
@@ -2370,7 +2373,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
         }
         $area.toggleClass("selected");
     }
-    
+
     function toggleIcon(fromBtn){
         toggleSelected($("img[from='"+fromBtn+"']"), true);
     }

@@ -19,13 +19,9 @@ import java.awt.Graphics;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
-import java.awt.image.RenderedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 
 
 /**
@@ -73,7 +69,9 @@ public class ImageUtils {
    public static Dimension getJPEGDimension(InputStream input) throws IOException {
       // Check for SOI marker.
       if (input.read() != 255 || input.read() != 216) {
-         throw new IOException("Missing JPEG SOI (Start Of Image) marker.");
+          //If we throw this exception, it breaks through to the front end.  Instead, we would rather the manifest contain a flagged bad canvas
+         //throw new IOException("Missing JPEG SOI (Start Of Image) marker.");
+         return new Dimension(0,0);
       }
       
       while (input.read() == 255) {

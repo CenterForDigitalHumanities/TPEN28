@@ -1420,6 +1420,9 @@ public class Folio {
       try (InputStream stream = getImageStream(false)) {
          return getJPEGDimension(stream);
       }
+      catch (Error e){ //we were unable to gather the image, so just return 0, 0.  We want to get the dimensions from somewhere else if possible.
+          return new Dimension(0, 0);
+      }
    }
 
    /**

@@ -17,9 +17,6 @@ package edu.slu.tpen.transfer;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -31,16 +28,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.slu.tpen.entity.Image.Canvas;
 import imageLines.ImageCache;
-import org.apache.commons.lang.StringUtils;
-import org.owasp.esapi.ESAPI;
 import textdisplay.Folio;
 import textdisplay.Project;
 import user.User;
 import static edu.slu.util.LangUtils.buildQuickMap;
-import static edu.slu.util.ServletUtils.getDBConnection;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import textdisplay.Annotation;
 
 /**
  * Class which manages serialisation to JSON-LD. Builds a Map containing the
@@ -114,6 +107,7 @@ public class JsonLDExporter {
       annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
       annotationList.element("testing", "msid_creation");
       //String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
+      System.out.println("Need pageDim in buildPage()");
       Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
       JSONArray otherContent;
       if (pageDim == null) {
@@ -121,17 +115,23 @@ public class JsonLDExporter {
          pageDim = f.getImageDimension();
       }
       LOG.log(Level.INFO, "pageDim={0}", pageDim);
-
       Map<String, Object> result = new LinkedHashMap<>();
       result.put("@id", canvasID);
       result.put("@type", "sc:Canvas");
       result.put("label", f.getPageName());
       int canvasHeight = 1000;
-      result.put("height", canvasHeight);
+      int canvasWidth = 0;
       if (pageDim != null) {
-         int canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
-         result.put("width", canvasWidth);
+          // Convert to canvas coordinates.
+        if(pageDim.height > 0){
+            canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
+        }
+        else{ //We were unable to resolve the image, so we have a height of 0.
+            canvasHeight = 0;
+        }
       }
+      result.put("width", canvasWidth);
+      result.put("height", canvasHeight);
       List<Object> images = new ArrayList<>();
       Map<String, Object> imageAnnot = new LinkedHashMap<>();
       imageAnnot.put("@type", "oa:Annotation");
@@ -147,9 +147,9 @@ public class JsonLDExporter {
       images.add(imageAnnot);
       //If this list was somehow stored in the SQL DB, we could skip calling to the store every time. 
       otherContent = Canvas.getLinesForProject(projID, canvasID,f.getFolioNumber(), u.getUID());
-// no @id because it is not resolveable yet, but when it is it goes here.
+      // no @id because it is not resolveable yet, but when it is it goes here.
       result.put("otherContent", otherContent);
-    result.put("images", images);
+      result.put("images", images);
       return result;
    }
 

@@ -5375,6 +5375,7 @@ tpen.screen.peekZoom = function(cancel){
         window.onresize = function(event, ui) {
             var newImgBtmTop = "0px";
             var newImgTopTop = "0px";
+            var heightResize = false;
             if(tpen.screen.liveTool === 'parsing'){
                 var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
                 var newCanvasWidth = $("#transcriptionCanvas").width();
@@ -5382,6 +5383,14 @@ tpen.screen.peekZoom = function(cancel){
                 console.log("canvas x, y before:");
                 console.log(newCanvasWidth, newCanvasHeight);
                 var PAGEHEIGHT = Page.height();
+                var PAGEWIDTH = Page.width();
+                var SPLITWIDTH = $("#parsingSplit").width();
+                if(PAGEWIDTH === screen.width){
+                    $(".centerInterface").css("text-align", "center");
+                }
+                else{
+                    $(".centerInterface").css("text-align", "left");
+                }
                 if (PAGEHEIGHT <= tpen.screen.originalCanvasHeight){ //allow it to be as big as possible, but not bigger.
                     newCanvasHeight = PAGEHEIGHT;
                     newCanvasWidth = ratio*newCanvasHeight;
@@ -5390,6 +5399,17 @@ tpen.screen.peekZoom = function(cancel){
                     newCanvasHeight = tpen.screen.originalCanvasHeight;
                     newCanvasWidth = tpen.screen.originalCanvasWidth;
                 }
+                if(PAGEWIDTH > 900){
+                    if(PAGEWIDTH < newCanvasWidth + SPLITWIDTH){
+                        newCanvasWidth = PAGEWIDTH - SPLITWIDTH;
+                        newCanvasHeight = 1/ratio*newCanvasWidth;
+                    }
+                }
+                else{
+//                     newCanvasWidth = 900;
+//                     newCanvasHeight = 1/ratio*newCanvasWidth;
+                }
+                
                 $("#transcriptionCanvas").css("height", newCanvasHeight + "px");
                 $("#transcriptionCanvas").css("width", newCanvasWidth + "px");
                 $("#imgTop").css("height", newCanvasHeight + "px");

@@ -2477,7 +2477,7 @@ function fullPage(){
     }
     $(".line, .parsing, .adjustable,.parsingColumn").remove();
     tpen.screen.isUnadjusted = tpen.screen.isFullscreen = true;
-    if ($("#trascriptionTemplate").hasClass("ui-resizable")){
+    if ($("#transcriptionTemplate").hasClass("ui-resizable")){
         $("#transcriptionTemplate").resizable('destroy');
     }
     $("#splitScreenTools").find('option:eq(0)').prop("selected", true);

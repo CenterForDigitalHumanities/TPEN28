@@ -211,7 +211,9 @@ body{
     border: 1px solid #000;
     resize: vertical;
     border-radius: 2px;
+    padding-right: 2rem; /* stay clear of column labels */
 }
+
 .theText,#captions,input.hotkey {
     font-family:'Junicode','Georgia', serif;
 }

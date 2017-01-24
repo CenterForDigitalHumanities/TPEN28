@@ -1698,10 +1698,10 @@ function setPositions() {
         }
         var bufferForImgTop = previousLineTop - 1.5;
         if(previousLineHeight > 0.0){
-            imgTopHeight = (previousLineHeight + currentLineHeight) + 3.5; 
+            imgTopHeight = (previousLineHeight + currentLineHeight) + 3.5;
         }
         else{ //there may not be a prev line so use the value of the current line...
-            imgTopHeight = (currentLineHeight) + 3.5; 
+            imgTopHeight = (currentLineHeight) + 3.5;
             bufferForImgTop = currentLineTop - 1.5;
         }
         //var topImgPositionPercent = ((previousLineTop - currentLineTop) * 100) / imgTopHeight;
@@ -1727,7 +1727,7 @@ function setPositions() {
         if(bottomImgPositionPx <= -12){
             bottomImgPositionPx += 12;
         }
-        
+
         var percentageFixed = 0;
         //use this to make sure workspace stays on screen!
         if (imgTopSize > 80){ //if #imgTop is 80% of the screen size then we need to fix that so the workspace stays.
@@ -1740,7 +1740,7 @@ function setPositions() {
             topImgPositionPx *= percentageFixed; // and this one
 
         }
-        
+
     }
     var positions = {
         imgTopHeight: imgTopHeight,
@@ -2574,6 +2574,13 @@ function splitPage(event, tool) {
     if(tool === "parsing"){
         resize=false;
     }
+    if(tool === "fullpage"){
+        $("#fullpageSplitCanvas").height($("#fullPageImg").height());
+        $(".fullP").each(function(i){
+            this.title = $("#transcriptlet_"+i+" .theText").text();
+        })
+            .tooltip();
+    }
     if(tool === "preview"){
         $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
         $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
@@ -2616,6 +2623,7 @@ function splitPage(event, tool) {
                 var newHeight1 = parseFloat($("#fullPageImg").height()) + parseFloat($("#fullpageSplit .toolLinks").height());
                 var newHeight2 = parseFloat($(".compareImage").height()) + parseFloat($("#compareSplit .toolLinks").height());
                 $('#fullpageSplit').css('height', newHeight1 + 'px');
+                $("#fullpageSplitCanvas").height($("#fullPageImg").height());
                 $('#compareSplit').css('height', newHeight2 + 'px');
                 newImgBtmTop = tpen.screen.imgBottomPositionRatio * height;
                 newImgTopTop = tpen.screen.imgTopPositionRatio * height;

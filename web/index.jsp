@@ -398,6 +398,7 @@ $(window).load(function(){gapi.plusone.go();});
                 %>
                         <li><a title="Active Projects" href="#projects">Active Projects</a></li>
                         <li><a title="Public Projects" href="#publicProjects">Public Projects</a></li>
+                        <li><a title="T-PEN Advanced" href="#advancedTpen">Advanced</a></li>
                 <%
                                }
                 %>
@@ -621,6 +622,406 @@ $(window).load(function(){gapi.plusone.go();});
                             out.print("There are no publicly accessible projects.");
                         }
                    %>
+                </div>
+                <div id="advancedTpen" class="lists ui-tabs-panel ui-widget-content ui-corner-bottom" style="">
+                    <div>
+                        <h2>Tools for Advanced Users</h2>
+                    </div>
+                    <p class="gloss ui-state-active ui-corner-all left">
+                        T‑PEN includes several advanced features that 
+                        allow a user to accomplish even more. As they are
+                        available, these options will be listed here. These
+                        useful tools are in good working order, but may require
+                        technical knowledge or preparation to use.</p>
+                    <div class="clear-left">
+                        <h3>Private Collections</h3>
+                        <p>
+                        Private collections of images can be hosted by 
+                        T‑PEN, analyzed by our tools, and transcribed as
+                        if loaded from a repository.
+                        </p>
+                        <p>
+                        Project with private images may not be made public or copied.
+                            
+<style type="text/css">
+    #uploadImages {position: fixed;z-index: 50;overflow: auto;max-height: 90%;
+                   width:60%;top:5%;left:20%;padding: 15px;
+                   box-shadow: 0 0 0 2000px rgba(0,0,0,.4);display: none;}
+    /* prevent replacing */
+    #uploadImages li {padding: 0 !important; height: auto !important;
+                      float: none !important; width:auto !important;margin: 0 !important;
+                      position: static !important; overflow: auto;
+    }
+    #uploadImages ol ul {
+        margin-left: 10px;
+    }
+    #uploadImages ol ul li {
+        list-style: inside disc !important;
+    }
+    #uploadImages ol li {
+        list-style: inside decimal !important;
+    }
+    #uploadForm {
+        width: 50%;
+    }
+    #irfan {
+        min-width: 250px;
+        max-width: 350px;
+        float: right;
+        width:40%;
+        padding: 5px;
+    }
+    #irfan a {
+        color: #A64129;
+    }
+    #irfan p {
+        font-size: 80%;
+    }
+    #projectName {
+        padding: .5em;
+        width: 100%;
+    }
+    #projectNameLabel {
+        width: 100%;
+    }
+    #upload-frame {visibility: hidden;height:0;width:0;display: none;}
+    .ui-progressbar-value {
+        height: 100%;
+        -webkit-transition: width .3s;
+        -moz-transition: width .3s;
+        -o-transition: width .3s;
+        transition: width .3s;
+}
+    .ui-progressbar-value.ui-widget-header {background: #A64129;box-shadow: 0 0 8px #A64129;}
+    #doneUploading,#creatingProject {display: none; width: 50%;margin: 0 25%;min-height: 48px;}
+    #bowlG, #bowl_ringG, .ball_holderG,.ballG {
+        -webkit-box-sizing:content-box;
+        -moz-box-sizing:content-box;
+        box-sizing:content-box;
+    }
+    #bowlG{
+        position:relative;
+        width:24px;
+        height:24px;
+        margin: .5em 7em;
+    }
+    #bowl_ringG{
+        position:absolute;
+        width:24px;
+        height:24px;
+        border:2px solid #ffffff;
+        -moz-border-radius:24px;
+        -webkit-border-radius:24px;
+        border-radius:24px;
+    }
+    .ball_holderG{
+        position:absolute;
+        width:6px;
+        height:24px;
+        left:9px;
+        top:0px;
+        -webkit-animation-name:ball_moveG;
+        -webkit-animation-duration:2s;
+        -webkit-animation-iteration-count:infinite;
+        -webkit-animation-timing-function:linear;
+        -moz-animation-name:ball_moveG;
+        -moz-animation-duration:2s;
+        -moz-animation-iteration-count:infinite;
+        -moz-animation-timing-function:linear;
+        -o-animation-name:ball_moveG;
+        -o-animation-duration:2s;
+        -o-animation-iteration-count:infinite;
+        -o-animation-timing-function:linear;
+        -ms-animation-name:ball_moveG;
+        -ms-animation-duration:2s;
+        -ms-animation-iteration-count:infinite;
+        -ms-animation-timing-function:linear;
+    }
+    .ballG{
+        position:absolute;
+        left:0px;
+        top:-6px;
+        width:10px;
+        height:10px;
+        background:#A64129;
+        -moz-border-radius:8px;
+        -webkit-border-radius:8px;
+        border-radius:8px;
+    }
+    @-webkit-keyframes ball_moveG{
+        0%{
+            -webkit-transform:rotate(0deg)}
+        100%{
+            -webkit-transform:rotate(360deg)} 
+    }
+    @-moz-keyframes ball_moveG{
+        0%{
+            -moz-transform:rotate(0deg)}
+        100%{
+            -moz-transform:rotate(360deg)}  
+    }
+    @-o-keyframes ball_moveG{
+        0%{
+            -o-transform:rotate(0deg)}
+        100%{
+            -o-transform:rotate(360deg)}
+    }
+    @-ms-keyframes ball_moveG{
+        0%{
+            -ms-transform:rotate(0deg)}
+        100%{
+            -ms-transform:rotate(360deg)}
+    }
+    #uploadImages .tpenButton.ui-button {
+        padding: 2px;
+        margin: 2px;
+        display: block;
+        text-align: center;
+        text-decoration: none;
+        min-width: 90px;
+        min-height: 16px;
+    }
+</style>
+<script type="text/javascript">
+    var progressBarValue=0;
+    $(function() {
+        $("#progressbar").progressbar({value:0});
+        $("progressbarWrapper").hide();
+    });
+    function updateProgressBar(progressBarValue) {
+        $("#progressbar").progressbar("value",progressBarValue);
+    }
+    var req;
+    var filename;
+    function validateFile(){
+        var fileVal = $("#file").val();
+        var pathIndex = fileVal.lastIndexOf("\\");
+        var extensionIndex = fileVal.lastIndexOf(".");
+        filename = fileVal.substring(pathIndex+1,extensionIndex);
+        var isZip = fileVal.substr(extensionIndex).toLowerCase() == ".zip";
+        if (extensionIndex < 0 || !isZip) {
+            $("#file").val("");
+            return false;
+        }
+        return true;
+    }
+    function ajaxFunction(){
+        if (!filename) {
+            return validateFile();
+        }
+        var url = "FileUpload?city="+filename+"&repository=%28private%29&collection=TPEN";
+        if (window.XMLHttpRequest){ 
+            req = new XMLHttpRequest();
+            try{
+                req.onreadystatechange = funcReadyStateChange;
+                req.open("GET", url, true);
+            } catch (e) {
+                console.log(e);
+            }
+                req.send(null);
+            }
+        else if (window.ActiveXObject) { 
+            req = new ActiveXObject("Microsoft.XMLHTTP");
+            if (req) {
+                req.onreadystatechange = funcReadyStateChange;
+                req.open("GET", url, true);
+                req.send();
+            }
+        }
+    }
+
+    function funcReadyStateChange(){
+        if (req.readyState == 4){
+            if (req.status == 200){
+                var xml = req.responseXML;
+                if (req.responseText == "No active listener"){
+                    if (progressBarValue > 0){
+                        $("#doneUploading").show().siblings().hide();
+                    } else {
+                        console.log(req.responseText);
+                        window.setTimeout("ajaxFunction();", 100);
+                        window.setTimeout("updateProgressBar(progressBarValue);", 100);
+                    }
+                } else {
+                    $("#fileUploadSubmit").find("input,label").hide();
+                    var responseNode=xml.getElementsByTagName("response")[0];
+                    var noOfBytesRead =responseNode.getElementsByTagName("bytes_read")[0].childNodes[0].nodeValue;
+                    var totalNoOfBytes = responseNode.getElementsByTagName("content_length")[0].childNodes[0].nodeValue;
+                    progressBarValue=noOfBytesRead/totalNoOfBytes*100;             
+                    document.getElementById("status").style.display="block";
+                    document.getElementById("percentDone").innerHTML="Percentage Completed: "+Math.floor(progressBarValue)+"%";
+                    document.getElementById("bytesRead").innerHTML= noOfBytesRead;
+                    document.getElementById("totalNoOfBytes").innerHTML= "of "+totalNoOfBytes;
+                    $("#progressbarWrapper").show();
+                    console.log(noOfBytesRead);
+                    console.log(totalNoOfBytes);
+                    console.log(progressBarValue);
+                    if (progressBarValue<100){
+                        window.setTimeout("ajaxFunction();", 350);
+                        window.setTimeout("updateProgressBar(progressBarValue);", 350);
+                    } else {
+                        $("#creatingProject").show().siblings().hide();
+                        document.getElementById("progressbarWrapper").style.display = "none";
+                        document.getElementById("status").style.display="none";
+                        window.setTimeout("ajaxFunction();", 500);
+                    }
+                }
+            } else {
+                console.log(req.statusText);
+            }
+        }
+    }
+    $(function(){
+        $("#closeUpload").click(function(){
+            if (progressBarValue == 100) {
+                window.location.reload();
+            } else {
+                $('#uploadImages').fadeOut(400);
+            }    
+        });
+    });
+     function setAction()
+    {
+        if(validateFile()){
+            
+            var city=document.getElementById('city').value;
+            var repo=document.getElementById('repo').value;
+            var msid=document.getElementById('MSID').value;
+            if(!city || city.length<1)
+                {
+                    city='Unknown City';
+                }
+            if(!repo || repo.length<1)
+                {
+                    repo='Unknown Repository';
+                }    
+                
+           if(!msid || msid.length<1)
+                {
+                    msid='Unknown Manuscript';
+                }
+        document.getElementById("fileUpload").action="FileUpload?city="+city+"&repository="+repo+"&collection="+msid;
+        return true;
+        }
+    else
+        {
+            alert('That file is not a zip file, or is too large.')
+            return false;
+        }
+    }
+</script>
+</p><div>
+    <a id="uploadImagesBtn" class="tpenButton ui-state-default ui-corner-all ui-helper-clearfix" onclick="$('#uploadImages').fadeIn(500);">Upload Images (Advanced)</a>
+</div>
+<div id="uploadImages" class="ui-widget-content ui-corner-all">
+    <a id="closeUpload" class="right tpenButton ui-button ui-state-default ui-corner-all ui-helper-clearfix">Close</a>
+    <h3>Private Image Upload</h3>
+    <p>
+        T‑PEN will store private user images for you. Properly prepared 
+        files will be imported into a project to which you can invite 
+        <span class="loud">up to 5 collaborators</span>. Uploaded images do not 
+        appear in manuscript listings, cannot be publicly shared, and cannot be 
+        included in more than one project.
+    </p>
+    <div id="uploadForm" class="left">
+        <h4>Prepare Your File</h4>
+        <ol class="left">
+            <li>All images must be in <strong>.jpg format</strong>;
+                <ul>
+                    <li>images will be resized to 2000 pixels in height and 85% quality;</li>
+                    <li>straight and close-cropped images work best.</li>
+                </ul>
+            </li>
+            <li>Combine all images into a single <strong>.zip file</strong>;
+                <ul>
+                    <li>file size may not exceed 200MB;</li>
+                    <li>this filename will be used in your project title, but
+                    may be changed.</li>
+                </ul>
+            </li>
+            <li>Upload the file below; and</li>
+            <li>Invite collaborators from the Project Management page.</li>
+        </ol>
+        <form id="fileUpload" onsubmit="if(setAction())ajaxFunction();" action="FileUpload?city=private&amp;repository=lib&amp;collection=TPEN(private)" enctype="multipart/form-data" method="POST" target="upload-frame" class="clear">
+            <h4>Upload File</h4>
+            <div id="fileUploadSubmit">
+                <div id="creatingProject">
+                    <div id="bowlG">
+                        <div id="bowl_ringG">
+                            <div class="ball_holderG">
+                                <div class="ballG">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <em>Upload complete. Creating project ...</em>
+                    <div class="quiet">
+                        This may take several minutes for large files.<br>
+                        You may leave this page while T‑PEN works.
+                    </div>
+                </div>
+                <div id="doneUploading">
+                    Your new project has been created.<br>
+                    <a class="tpenButton ui-button ui-state-default ui-corner-all ui-helper-clearfix" onclick="$('#doneUploading').hide().siblings('input,label').show();">
+                        Upload another file
+                    </a>
+                </div>
+            <div><input id="file" name="file" type="file" class="ui-button tpenButton left clear-left ui-state-default ui-corner-all ui-helper-clearfix"></div><br>
+                
+                <label for="city" class="clear-left">City:</label><input id="city" name="city" type="text" class="left"><br>
+                
+                <label for="repo" class="clear-left">Repository:</label><input id="repo" name="repo" type="text" class="left"><br>
+                <label for="MSID" class="clear-left">MS ID:</label><input id="MSID" name="MSID" type="text" class="left"><br>
+                <input name="Upload" type="submit" value="Upload .zip" class="ui-button tpenButton left clear-left ui-state-default ui-corner-all ui-helper-clearfix">
+            </div>
+            <div id="progressbarWrapper" style="width:100%;display: none;">
+                <div id="progressbar" style="height:24px;" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="ui-progressbar-value ui-widget-header ui-corner-left" style="display: none; width: 0%;"></div></div>
+            </div>
+                <div id="status" style="display:none">
+                    <div id="percentDone" style="font-weight: bold;"> </div>
+                    <span id="bytesRead" style="font-weight: bold;"> </span>
+                    <span id="totalNoOfBytes" style="font-weight: bold;"> </span>
+                </div>
+            <iframe id="upload-frame" name="upload-frame"></iframe>
+        </form>
+    </div>
+    <div id="irfan" class="ui-state-active ui-corner-all">
+        <a href="http://www.irfanview.com/" target="_blank" class="right">
+            <img alt="IrfanView Logo" src="images/sharing/irfanview-64.png">
+        </a>
+        <h4>Reduce those files!</h4>
+        <p>For viewing clearly on the web, images should have dimensions around
+            1000-2000 pixels. Uploading higher quality images wastes time 
+            and space.</p>
+        <p>The work you export from T‑PEN will match your original images
+            at their full resolution, as long as they are resized proportionally.</p>
+        <p>IrfanView 
+            (<a href="http://www.irfanview.com/" target="_blank">found here</a>)
+            is a simple and versatile tool that is free for
+            most users. It will safely convert and resize image files.
+    </p></div>
+</div>
+<script type="text/javascript">
+    $("#uploadImagesBtn").appendTo("#uploadImagesDiv");
+</script>
+                    </div>
+                    <div>
+                        <h3>Public Projects</h3>
+                        <p>
+                            Any project that does not contain any private images
+                            can become a Public Project, allowing users who are
+                            not members access to all or part of the project.
+                            The permissions of any project can be changed at any
+                            time by the group leader.
+                        </p>
+                        <p>
+                            View all Public Projects on the tab above. Set
+                            permissions for your eligible project by using the
+                            "Share Publicly" button at the top of the 
+                            "Collaboration" tab on the 
+                            <a href="project.jsp">Project Management page.</a>
+                        </p>
+                    </div>
                 </div>
                 <%} else {%>
                 <div id="projects">

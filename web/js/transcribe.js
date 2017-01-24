@@ -2322,7 +2322,7 @@ function hideWorkspaceForParsing(){
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
     var newCanvasWidth = tpen.screen.originalCanvasWidth * .55;
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
-    
+
     if($(window).height() <= 625){ //This is the smallest height we allow
         newCanvasHeight = 625;
     }
@@ -2334,14 +2334,14 @@ function hideWorkspaceForParsing(){
         newCanvasHeight = tpen.screen.originalCanvasHeight;
         newCanvasWidth = tpen.screen.originalCanvasWidth;
     }
-    
+
     if($(window).width() > 900){ //Whenever it gets less wide than this, it prioritizes height and stops resizing by width.
         if($(window).width() < newCanvasWidth + $("#parsingSplit").width()){
             newCanvasWidth = $(window).width() - $("#parsingSplit").width();
             newCanvasHeight = 1/ratio*newCanvasWidth;
         }
     }
-    else{ //Just do nothing instead of calling it 900 wide so it defaults to the height math, maybe put a max up there too.  
+    else{ //Just do nothing instead of calling it 900 wide so it defaults to the height math, maybe put a max up there too.
 //                     newCanvasWidth = 900;
 //                     newCanvasHeight = 1/ratio*newCanvasWidth;
     }
@@ -2398,8 +2398,8 @@ function hideWorkspaceForParsing(){
         $('.lineColIndicatorArea').hide();
         writeLines($("#imgTop img"));
     }, 1200);
-    
-    
+
+
 }
 
 /**
@@ -5328,16 +5328,7 @@ var Help = {
 tpen.screen.peekZoom = function(cancel){
         var topImg = $("#imgTop img");
         var btmImg = $("#imgBottom img");
-        var imgSrc = topImg.attr("src");
-        if(imgSrc.indexOf("imageResize?">-1 && imgSrc.indexOf("height=1000")>-1)){
-    imgSrc=imgSrc.replace("height=1000","height=2000");
-    }
-        if (imgSrc.indexOf("quality") === -1) {
-            imgSrc += "&quality=100";
-            topImg.add(btmImg).attr("src",imgSrc);
-        }
-        var WRAPWIDTH = $("#transcriptionCanvas").width();
-        var availableRoom = new Array (Page.height(),WRAPWIDTH);
+        var availableRoom = new Array (Page.height()-$(".navigation").height(),$("#transcriptionCanvas").width());
         var line = $(".activeLine");
         var limitIndex = (line.width()/line.height()> availableRoom[1]/availableRoom[0]) ? 1 : 0;
         var zoomRatio = (limitIndex === 1) ? availableRoom[1]/line.width() : availableRoom[0]/line.height();
@@ -5357,13 +5348,13 @@ tpen.screen.peekZoom = function(cancel){
                 "width"     : imgDims[1] * zoomRatio + "px",
                 "left"      : -line.position().left * zoomRatio,
                 "top"       : imgDims[3] * zoomRatio,
-                "max-width" : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%"
+                "max-width" : imgDims[1] * zoomRatio / availableRoom[1] * 100 + "%"
             });
             btmImg.css({
                 "left"      : -line.position().left * zoomRatio,
                 "top"       : (imgDims[3]-line.height()) * zoomRatio,
                 "width"     : imgDims[1] * zoomRatio + "px",
-                "max-width" : imgDims[1] * zoomRatio / WRAPWIDTH * 100 + "%"
+                "max-width" : imgDims[1] * zoomRatio / availableRoom[1] * 100 + "%"
             });
             tpen.screen.isPeeking = true;
         } else {
@@ -5425,14 +5416,14 @@ tpen.screen.peekZoom = function(cancel){
                     newCanvasHeight = tpen.screen.originalCanvasHeight;
                     newCanvasWidth = tpen.screen.originalCanvasWidth;
                 }
-                
+
                 if(PAGEWIDTH > 900){ //Whenever it gets less wide than this, it prioritizes height and stops resizing by width.
                     if(PAGEWIDTH < newCanvasWidth + SPLITWIDTH){
                         newCanvasWidth = PAGEWIDTH - SPLITWIDTH;
                         newCanvasHeight = 1/ratio*newCanvasWidth;
                     }
                 }
-                else{ //Just do nothing instead of calling it 900 wide so it defaults to the height math, maybe put a max up there too.  
+                else{ //Just do nothing instead of calling it 900 wide so it defaults to the height math, maybe put a max up there too.
 //                     newCanvasWidth = 900;
 //                     newCanvasHeight = 1/ratio*newCanvasWidth;
                 }

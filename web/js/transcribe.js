@@ -465,7 +465,7 @@ function setTPENObjectData(data){
 
     var count = 0;
     var length = tpen.project.leaders.length;
-    $.each(tpen.project.leaders, function(){
+    $.each(tpen.project.user_list, function(){
         count++;
         if (this.UID === parseInt(data.cuser)){
             if(this.fname){
@@ -477,13 +477,43 @@ function setTPENObjectData(data){
             if(this.openID){
                 tpen.user.openID = this.openID;
             }
-            tpen.user.isAdmin = true;
+            setTranscribingUser();
+            return false;
             //tpen.user.UID = parseInt(this.UID);
         }
-        else if(count == length){ //we did not find this user in the list of leaders.
+        if(count == length){ //we did not find this user in the list of project users.
+            console.warn("Not a user of this project.");
+        }
+    });
+    $.each(tpen.project.leaders, function(){
+        count++;
+        if (this.UID === parseInt(data.cuser)){
+            tpen.user.isAdmin = true;
+            return false;
+        }
+        if(count == length){ //we did not find this user in the list of leaders.
             console.warn("Not an admin");
         }
     });
+}
+/* Set the current transcribing user in the appropriate HTML elements.  Right now, it is first name, last name */
+function setTranscribingUser(){
+    var user = "";
+    if(!tpen.user.fname){
+        user += "? ";
+    }
+    else{
+        user += tpen.user.fname+" ";
+    }
+    if(!tpen.user.lname){
+        user += "?";
+    }
+    else{
+        user += tpen.user.lname;
+    }
+    $("#trimCurrentUser").html(user);
+    $("#trimCurrentUser").attr("title",user);
+    $("#ipr_user").html(user);
 }
 
 /*

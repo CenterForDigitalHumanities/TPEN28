@@ -1328,7 +1328,6 @@
         $("#imgTop img, #imgBottom img").css("width", "auto");
         $('.transcriptionImage').attr('src', "images/loading2.gif"); //background loader if there is a hang time waiting for image
         //check if logged in
-        var user = "";
         var url = "geti";
         $.ajax({
             url: url,
@@ -1337,10 +1336,6 @@
             success: function(data){
                 //tpen.user.UID = JSON.parse(data);
                 if(data.uname && data.uname !== ""){
-                    user = data.uname;
-                    $("#trimCurrentUser").html(user);
-                    $("#trimCurrentUser").attr("title",user);
-                    $("#ipr_user").html(user);
                     var theURL = window.location.href;
                     if (theURL.indexOf("projectID=") > -1){
                         var projID = getURLVariable("projectID");

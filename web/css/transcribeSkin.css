@@ -563,6 +563,14 @@ div#transcriptletArea {
 #controlsSplit {
     font-size: small; // ticket #283
 }
+#controlsSplit button .fa {
+    position: absolute;
+    right: 9px;
+}
+#imageToolSliders .fa {
+    position: absolute;
+    right: 24px;
+}
 #parsingBtn{
     display: none;
     margin: 2rem 0;

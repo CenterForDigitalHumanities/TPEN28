@@ -345,18 +345,19 @@ $(window).load(function(){gapi.plusone.go();});
             <div id="header2">
                 <div id="maintenance" class="loud"><span class="ui-icon ui-icon-info left"></span>Scheduled Maintenance: <script type="text/javascript">document.write(maintenanceDate());</script></div>
                     <%
+                    // #266 This only returns the person in session at the moment...
                     if (thisUser != null){
                         Date previousLogin = thisUser.getLastActiveDate();
                         thisUser.updateLastActive();
-                        user.User [] currentUsers = user.User.getLoggedInUsers();
-                        int numberTranscribing = currentUsers.length;
-                        String userCount = (numberTranscribing==1) ? "is 1 user" : "are "+numberTranscribing+" users";
-                        StringBuilder usersTranscribing = new StringBuilder();
-                        for (int i = 0 ; i<numberTranscribing;i++){
-                            usersTranscribing.append(currentUsers[i].getFname().substring(0,1)+" "+currentUsers[i].getLname()+" | ");
-                        }
-                        if(numberTranscribing==0)usersTranscribing.append("No one is transcribing at the moment...   ");
-                        int sbLength = usersTranscribing.length();
+                   //     user.User [] currentUsers = user.User.getLoggedInUsers();
+                   //     int numberTranscribing = currentUsers.length;
+                   //     String userCount = (numberTranscribing==1) ? "is 1 user" : "are "+numberTranscribing+" users";
+                   //     StringBuilder usersTranscribing = new StringBuilder();
+                   //     for (int i = 0 ; i<numberTranscribing;i++){
+                   //         usersTranscribing.append(currentUsers[i].getFname().substring(0,1)+" "+currentUsers[i].getLname()+" | ");
+                   //     }
+                   //     if(numberTranscribing==0)usersTranscribing.append("No one is transcribing at the moment...   ");
+                   //     int sbLength = usersTranscribing.length();
                     %>
                     <script type="text/javascript">
                     <%
@@ -365,7 +366,8 @@ $(window).load(function(){gapi.plusone.go();});
                     </script>
                         <div>
                             Welcome, <%out.print(thisUser.getFname()+" "+thisUser.getLname());%>. <a href="login.jsp" onclick="logout();return false;">Logout/Change User</a>
-                            <br/><div>There <%out.print("<span title='"+usersTranscribing.toString().substring(0,sbLength-3) +"' id=userList>"+userCount+"</span>");%> transcribing right now</div>
+                            <br/>
+<!--  #266                          <div>There <%--out.print("<span title='"+usersTranscribing.toString().substring(0,sbLength-3) +"' id=userList>"+userCount+"</span>");--%> transcribing right now</div>-->
                         </div>
                     <%} else {%>
                     <%}%>    

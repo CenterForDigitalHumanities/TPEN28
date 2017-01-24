@@ -408,6 +408,7 @@ function equalWidth(){
     %>
     <body id="buttonPage">
         <div id="wrapper">
+        
         <div id="header"><p align="center" class="tagline">transcription for paleographical and editorial notation</p></div>
             <div id="content">
                 <h1><script>document.write(document.title); </script></h1>
@@ -543,10 +544,11 @@ if (thisProject.getSchemaURL().length() > 5){%>
             </form>
      </div>
 <%
-        if (p.length() > 0){
-            out.print("<a class=\"returnButton\" href=\"transcription.html?p=" + request.getParameter("p") + appendProject + "\">Return to transcribing</a>");
+        if (p.length() > 0 || projectID > 0){
+            out.print("<a class=\"returnButton\" href=\"transcription.html?p=" + request.getParameter("p") + appendProject + "\">Return to Transcribing</a>");
         %><a class="returnButton" href="project.jsp?<%out.print(projectAppend);%>">Project Management</a><%
-        } else {%>
+        }
+        else {%>
         <a class="returnButton" href="project.jsp?<%out.print(projectAppend);%>">Return to Project Management</a>
         <%}%>        
         <a class="returnButton" href="index.jsp">T&#8209;PEN Home</a>

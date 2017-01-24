@@ -2173,7 +2173,7 @@ var Linebreak = {
             var startPos = myfield.selectionStart;
             if(focusItem[1].find(".nextLine").hasClass("ui-state-error") && myfield.value.substring(startPos).length > 0) {
             // if this is the last line, ask before proceeding
-                var cfrm = confirm("You are on the last line of the page. T-PEN can save the remaining text in the linebreaking tool for later insertion. \n\nConfirm?");
+                var cfrm = confirm("You are on the last line of the page. T&#8209;PEN can save the remaining text in the linebreaking tool for later insertion. \n\nConfirm?");
                 if (cfrm) {
                     leftovers = myfield.value.substring(startPos);
                     $("#lbText").text(leftovers);

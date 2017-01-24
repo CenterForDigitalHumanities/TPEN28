@@ -243,7 +243,7 @@
                         <li><a title="Manage Users" href="#tabs-3">Manage Users</a><div id="userAlert" class='ui-icon-alert ui-icon right' style="display:none;margin: 8px 8px 0 0;"></div></li>
                         <li><a title="Reports" href="#reportsTab">Reports</a></li>
                         <%}%>
-                        <li><a title="About the T-PEN project" href="#aboutTab">About T&#8209;PEN</a></li>
+                        <li><a title="About the T&#8209;PEN project" href="#aboutTab">About T&#8209;PEN</a></li>
                     </ul>
                     <div id="tabs-1">
                         <% } else {%>
@@ -776,7 +776,7 @@
                                                     <a class="tpenButton ui-button" target="_blank" href="reports.jsp?active=true">Run Report</a>
                                                 </li>
                                                 <li class="gui-tab-section">
-                                                    <h3>T-PEN Totals</h3>
+                                                    <h3>T&#8209;PEN Totals</h3>
                                                     <a class="tpenButton ui-button" target="_blank" href="reports.jsp?totals=true">Run Report</a>
                                                 </li>
                                             </ul>

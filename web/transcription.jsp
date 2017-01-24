@@ -759,7 +759,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
                     <a id="helpContact" href="admin.jsp#aboutTab" target="_blank" class="wBtn">Contact<span class="ui-icon ui-icon-comment right"></span></a>
                     </span>
                             </span>
-                            <a class="exitPage wBtn" title="T-PEN Home" href="index.jsp"><span class="left ui-icon ui-icon-home"></span>T-PEN Home</a>
+                            <a class="exitPage wBtn" title="T&#8209;PEN Home" href="index.jsp"><span class="left ui-icon ui-icon-home"></span>T&#8209;PEN Home</a>
 <%if(permitModify || permitButtons || permitCopy || permitExport || permitMetadata || isMember){%>
                             <a class="exitPage wBtn" title="My Projects" href="project.jsp?<%out.print(projectAppend);%>">My&nbsp;Projects</a>
 <%}%>

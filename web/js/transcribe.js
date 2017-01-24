@@ -659,11 +659,11 @@ function loadTranscription(pid, tool){
             },
             error: function(jqXHR, error, errorThrown) {
                 if (jqXHR.status && jqXHR.status === 404){
-                   $(".turnMsg").html("Could not find this project.  Check the project ID. Refresh the page to try again or contact your T-PEN admin.");
+                   $(".turnMsg").html("Could not find this project.  Check the project ID. Refresh the page to try again or contact your T&#8209;PEN admin.");
                    $(".transLoader").find("img").attr("src", "../TPEN28/images/missingImage.png");
                 }
                 else {
-                    $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T-PEN admin.");
+                    $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
                     $(".transLoader").find("img").attr("src", "../TPEN28/images/BrokenBook01.jpg");
                 }
 
@@ -831,11 +831,11 @@ function loadTranscription(pid, tool){
                 },
                 error: function(jqXHR, error, errorThrown) {
                     if (jqXHR.status && jqXHR.status === 404){
-                        $(".turnMsg").html("Could not find this project.  Check the project ID.  Refresh the page to try again or contact your T-PEN admin.");
+                        $(".turnMsg").html("Could not find this project.  Check the project ID.  Refresh the page to try again or contact your T&#8209;PEN admin.");
                         $(".transLoader").find("img").attr("src", "..TPEN28/images/missingImage.png");
                      }
                      else {
-                         $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T-PEN admin.");
+                         $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
                          $(".transLoader").find("img").attr("src", "..TPEN28/images/BrokenBook01.jpg");
                      }
                     //load Iframes after user check and project information data call
@@ -1340,7 +1340,7 @@ function updateURL(piece, classic){
             toAddressBar = replaceURLVariable("p", tpen.project.folios[tpen.screen.currentFolio].folioNumber);
         }
     };
-    window.history.pushState("", "T-PEN Transcription", toAddressBar);
+    window.history.pushState("", "T&#8209;PEN Transcription", toAddressBar);
 }
 
 /* Go to the transcription.jsp interface, which is the classic version */
@@ -4914,7 +4914,7 @@ var Linebreak = {
             var startPos = myfield.selectionStart;
             if(!tpen.screen.focusItem[1].next().size() && myfield.value.substring(startPos).length > 0) {
             // if this is the last line, ask before proceeding
-                var cfrm = confirm("You are on the last line of the page. T-PEN can save the remaining text in the linebreaking tool for later insertion. \n\nConfirm?");
+                var cfrm = confirm("You are on the last line of the page. T&#8209;PEN can save the remaining text in the linebreaking tool for later insertion. \n\nConfirm?");
                 if (cfrm) {
                     tpen.project.remainingText = myfield.value.substring(startPos);
                     $("#lbText").text(tpen.project.remainingText);
@@ -5914,9 +5914,9 @@ function dailyTip() {
         "Press <kbd>ENTER</kbd> to push any text after the cursor to the next line.",
         "Change what tools appear in the transcription interface in the project settings.",
         "Add new tools in an iframe in the project settings.",
-        "Attempt something against your permissions and you will see the T-PEN t-rex.",
+        "Attempt something against your permissions and you will see the T&#8209;PEN t-rex.",
         "Export your project as a SharedCanvas Manifest to use it in other great IIIF tools.",
-        "The Walter J. Ong, SJ Center for Digital Humanities at Saint Louis University thanks you for using T-PEN.",
+        "The Walter J. Ong, SJ Center for Digital Humanities at Saint Louis University thanks you for using T&#8209;PEN.",
         "Visit the blog for news on TPEN3!"
     ];
     var thisTip = tips[Math.floor(Math.random()*tips.length)];

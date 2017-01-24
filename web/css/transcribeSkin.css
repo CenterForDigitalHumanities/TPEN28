@@ -1338,7 +1338,7 @@ kbd {
 .trimSection:last-child{
     border-right: none;
 }
-.trimSection .fa-2x {
+.fa-2x {
     margin-top: -0.5em;
     top: 0.25em;
     position: relative;

@@ -666,7 +666,7 @@ div#transcriptletArea {
     /*box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);*/
     background-color: #8198AA;
 }
-.splitBlock.active,.icon-panel button.active,.toolLinks {
+.splitBlock.active,.icon-panel button.active {
     background:#829aac;
 }
 .splitBlock.active.danger,.icon-panel button.active.danger {
@@ -1362,7 +1362,7 @@ kbd {
 .toolLinks {
     position: relative;
     width: 100%;
-    background-color: rgb(225, 244, 254);
+    /*background-color: rgb(225, 244, 254);*/
     padding: 5px 0px;
     margin-top: .7em;
     text-align: center;

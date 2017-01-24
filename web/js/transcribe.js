@@ -1689,38 +1689,43 @@ function setPositions() {
         var currentLineTop = parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
         var previousLineTop = 0.0;
         var previousLineHeight = 0.0;
-        var nextLineHeight = 0.0; //only used to gauge height of imgTop
         var imgTopHeight = 0.0; //value for the height of imgTop
-        if(tpen.screen.focusItem[1].next().is('.transcriptlet')){
-            nextLineHeight = parseFloat(tpen.screen.focusItem[1].next().attr("lineHeight"));
-        }
         if(tpen.screen.focusItem[1].prev().is('.transcriptlet') && currentLineTop > parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"))){
             previousLineTop = parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"));
             previousLineHeight = parseFloat(tpen.screen.focusItem[1].prev().attr("lineHeight"));
         }
-        else{ //there may not be a previous line so use the values of the line you are on
-            previousLineTop = currentLineTop;
-            previousLineHeight = currentLineHeight;
+        var bufferForImgTop = previousLineTop - 1.5;
+        if(previousLineHeight > 0.0){
+            imgTopHeight = (previousLineHeight + currentLineHeight) + 3.5; 
         }
-
-        //We may be able to do this a bit better.
-        if(nextLineHeight > 0.0){
-            imgTopHeight = (nextLineHeight + currentLineHeight); // obscure behind workspace.
+        else{ //there may not be a prev line so use the value of the current line...
+            imgTopHeight = (currentLineHeight) + 3.5; 
+            bufferForImgTop = currentLineTop - 1.5;
         }
-        else{ //there may not be a next line so use the value of the previous line...
-            imgTopHeight = (previousLineHeight + currentLineHeight) + 1.5; // obscure behind workspace.  Do we need the 1.5?
+        //var topImgPositionPercent = ((previousLineTop - currentLineTop) * 100) / imgTopHeight;
+        var imgTopSize = (((imgTopHeight/100)*bottomImageHeight) / Page.height())*100;
+        if(bufferForImgTop < 0){
+            bufferForImgTop = 0;
         }
-        var topImgPositionPercent = ((previousLineTop - currentLineTop) * 100) / imgTopHeight;
-        var topImgPositionPx = ((-currentLineTop * bottomImageHeight) / 100);
+        //We may not be able to show the last line + the next line if there were two tall lines, so account for that here
+        if (imgTopSize > 80){
+            bufferForImgTop = currentLineTop - 1.5; //No longer adjust to previous line, adjust to current line.
+            if(bufferForImgTop < 0){
+                bufferForImgTop = 0;
+            }
+            imgTopHeight = (currentLineHeight) + 3.5; //There will be a new height because of it
+            imgTopSize = (((imgTopHeight/100)*bottomImageHeight) / Page.height())*100; //There will be a new size because of it to check later.
+        }
+        var topImgPositionPx = ((-(bufferForImgTop) * bottomImageHeight) / 100);
         if(topImgPositionPx <= -12){
             topImgPositionPx += 12;
         }
-        var bottomImgPositionPercent = -(currentLineTop + currentLineHeight);
+        //var bottomImgPositionPercent = -(currentLineTop + currentLineHeight);
         var bottomImgPositionPx = -((currentLineTop + currentLineHeight) * bottomImageHeight / 100);
         if(bottomImgPositionPx <= -12){
             bottomImgPositionPx += 12;
         }
-        var imgTopSize = (((imgTopHeight/100)*bottomImageHeight) / Page.height())*100;
+        
         var percentageFixed = 0;
         //use this to make sure workspace stays on screen!
         if (imgTopSize > 80){ //if #imgTop is 80% of the screen size then we need to fix that so the workspace stays.
@@ -1728,17 +1733,18 @@ function setPositions() {
             var origHeight = imgTopHeight;
             imgTopHeight = ((Page.height() - workspaceHeight - 80) / bottomImageHeight) *  100; //this needs to be a percentage
             percentageFixed = (100-(origHeight - imgTopHeight))/100; //what percentage of the original amount is left
-            bottomImgPositionPercent *= percentageFixed; //do the same percentage change to this value
+            //bottomImgPositionPercent *= percentageFixed; //do the same percentage change to this value
             bottomImgPositionPx *= percentageFixed; //and this one
             topImgPositionPx *= percentageFixed; // and this one
 
         }
+        
     }
     var positions = {
         imgTopHeight: imgTopHeight,
-        topImgPositionPercent: topImgPositionPercent,
+        //topImgPositionPercent: topImgPositionPercent,
         topImgPositionPx : topImgPositionPx,
-        bottomImgPositionPercent: bottomImgPositionPercent,
+        //bottomImgPositionPercent: bottomImgPositionPercent,
         bottomImgPositionPx: bottomImgPositionPx,
         activeLine: pairForBookmark
     };

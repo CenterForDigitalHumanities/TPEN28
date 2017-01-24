@@ -7,6 +7,9 @@ and open the template in the editor.
     Created on : Jan 27, 2015, 10:05:37 AM
     Author     : bhaberbe
 */
+input:focus, button:focus, a:focus{
+    outline:none;
+}
 #markerColors{
     color:black; /* Whatever the next color is in the colorList */
 }

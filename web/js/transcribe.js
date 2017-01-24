@@ -2381,8 +2381,12 @@ function hideWorkspaceForParsing(){
         $("#transcriptionCanvas").css("display", "block");
         tpen.screen.imgTopSizeRatio = $("#imgTop img").width() / $("#imgTop img").height();
         //$("#templateResizeBar").show();
-
-        $(".centerInterface").css("text-align", "center").css("background-color", "#e1f4fe");
+        if(screen.width === $(window).width() && screen.height === $(window).height()){
+            $(".centerInterface").css("text-align", "center").css("background-color", "#e1f4fe");
+        }
+        else{
+            $(".centerInterface").css("text-align", "left").css("background-color", "#e1f4fe");
+        }
         $("#transcriptionTemplate").css("width","auto");
     }, 500);
     window.setTimeout(function(){
@@ -5398,7 +5402,7 @@ tpen.screen.peekZoom = function(cancel){
                 var PAGEHEIGHT = Page.height();
                 var PAGEWIDTH = Page.width();
                 var SPLITWIDTH = $("#parsingSplit").width();
-                if(PAGEWIDTH === screen.width){
+                if(PAGEWIDTH === screen.width && PAGEHEIGHT === screen.height){
                     $(".centerInterface").css("text-align", "center");
                 }
                 else{

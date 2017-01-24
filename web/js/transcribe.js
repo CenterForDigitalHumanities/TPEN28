@@ -2286,19 +2286,43 @@ function hideWorkspaceForParsing(){
 //    tpen.screen.originalCanvasWidth = $("#transcriptionCanvas").width(); //make sure these are set correctly
     imgTopOriginalTop = $("#imgTop img").css("top");
     $("#transcriptionTemplate").css("max-width", "55%").css("width", "55%");
-    $("#transcriptionCanvas").css("max-height", window.innerHeight + "px");
-    $("#transcriptionTemplate").css("max-height", window.innerHeight + "px");
+    //$("#transcriptionCanvas").css("max-height", window.innerHeight + "px");
+    //$("#transcriptionTemplate").css("max-height", window.innerHeight + "px");
     $("#controlsSplit").hide();
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
     var newCanvasWidth = tpen.screen.originalCanvasWidth * .55;
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
-    var PAGEHEIGHT = Page.height();
-    if (newCanvasHeight > PAGEHEIGHT){
-        newCanvasHeight = PAGEHEIGHT;
-        newCanvasWidth = 1/ratio*newCanvasHeight;
+    
+    if($(window).height() <= 625){ //This is the smallest height we allow
+        newCanvasHeight = 625;
     }
-    $("#transcriptionCanvas").css("height", newCanvasHeight);
-    //$("#transcriptionCanvas").css("width", newCanvasWidth);
+    else if ($(window).height() <= tpen.screen.originalCanvasHeight){ //allow it to be as tall as possible, but not taller.
+        newCanvasHeight = $(window).height();
+        newCanvasWidth = ratio*newCanvasHeight;
+    }
+    else if($(window).height() > tpen.screen.originalCanvasHeight){ //I suppose this is possible for small images, so handle if its trying to be bigger than possible
+        newCanvasHeight = tpen.screen.originalCanvasHeight;
+        newCanvasWidth = tpen.screen.originalCanvasWidth;
+    }
+    
+    if($(window).width() > 900){ //Whenever it gets less wide than this, it prioritizes height and stops resizing by width.
+        if($(window).width() < newCanvasWidth + $("#parsingSplit").width()){
+            newCanvasWidth = $(window).width() - $("#parsingSplit").width();
+            newCanvasHeight = 1/ratio*newCanvasWidth;
+        }
+    }
+    else{ //Just do nothing instead of calling it 900 wide so it defaults to the height math, maybe put a max up there too.  
+//                     newCanvasWidth = 900;
+//                     newCanvasHeight = 1/ratio*newCanvasWidth;
+    }
+    $("#transcriptionTemplate").css("width","auto");
+    $("#transcriptionCanvas").css("height", newCanvasHeight + "px");
+    $("#transcriptionCanvas").css("width", newCanvasWidth + "px");
+    $("#imgTop").css("height", newCanvasHeight + "px");
+    $("#imgTop").css("width", newCanvasWidth + "px");
+    $("#imgTop img").css({
+        'height': newCanvasHeight + "px"
+    });
 
     $("#prevCanvas").attr("onclick", "");
     $("#nextCanvas").attr("onclick", "");
@@ -2309,14 +2333,13 @@ function hideWorkspaceForParsing(){
     $("#parsingSplit")
     .css({
         "display": "inline-block",
-        "height": window.innerHeight + "px"
+        //"height": window.innerHeight + "px"
     })
     .fadeIn();
 
     topImg.css({
         "top":"0px",
         "left":"0px",
-        "height":newCanvasHeight+"px",
         "overflow":"auto"
     });
     $("#imgTop .lineColIndicatorArea").css({
@@ -2324,70 +2347,20 @@ function hideWorkspaceForParsing(){
         "left":"0px",
         "height":newCanvasHeight+"px"
     });
-
-    $("#transcriptionCanvas").css("width", topImg.width());
-
-    //the width and max-width here may need to be played with a bit.
-//    if ($("#trascriptionTemplate").hasClass("ui-resizable")){
-//        $("#transcriptionTemplate").resizable('destroy');
-//    }
-//    $("#transcriptionTemplate").resizable({
-//        disabled:false,
-//        minWidth: window.innerWidth / 2,
-//        maxWidth: window.innerWidth * .55,
-//        start: function(event, ui){
-//            detachWindowResize();
-//        },
-//        resize: function(event, ui) {
-//            console.log("resize 1");
-//            var width = ui.size.width;
-//            var height = 1 / ratio * width;
-//            newCanvasWidth = 1/ratio*height;
-//            if (height > PAGEHEIGHT){
-//                height = PAGEHEIGHT;
-//                newCanvasWidth = 1/ratio*height;
-//            }
-////            console.log(originalCanvasHeight, originalCanvasWidth, height, newCanvasWidth, originalRatio );
-//            //$(".lineColIndicatorArea").css("height", height + "px");
-//            var splitWidth = Page.width() - (width + 35) + "px";
-//            $(".split img").css("max-width", splitWidth);
-//            $(".split:visible").css("width", splitWidth);
-//            $("#transcriptionCanvas").css("height", height + "px");//.css("width", newCanvasWidth + "px")
-//            $("#imgTop img").css({
-//                'height': height + "px",
-//                'top': "0px"
-////                'width' : $("#imgTop img").width()
-//            });
-//            $("#imgTop").css({ //This width will not change when the area is expanded, but does when it is shrunk.  We need to do the math to grow it.
-//                'height': $("#imgTop img").height(),
-//                'width': tpen.screen.imgTopSizeRatio * $("#imgTop img").height() + "px" //This locks up and does not change.
-//            });
-//            tpen.screen.textSize();
-//        },
-//        stop: function(event, ui){
-//            attachWindowResize();
-//            //$(".lineColIndicator .lineColOnLine").css("line-height", $(this).height()+"px");
-//        }
-//    });
+    console.log(screen.width,$(window).width() +" and "+screen.height,window.outerHeight);
+    if(screen.width == $(window).width() && screen.height == window.outerHeight){
+        $(".centerInterface").css("text-align", "center").css("background-color", "#e1f4fe");
+    }
+    else{
+        $(".centerInterface").css("text-align", "left").css("background-color", "#e1f4fe");
+    }
     $("#transWorkspace,#imgBottom").hide();
     $("#noLineWarning").hide();
     window.setTimeout(function(){
         $("#imgTop img").css("width", "auto");
         $("#imgTop img").css("top", "0px");
-        $("#imgTop").css("width", $("#imgTop img").width());
-        $("#transcriptionCanvas").css("width", $("#imgTop img").width() + "px"); //fits canvas to image.
-        $("#transcriptionTemplate").css("width", "55%"); //fits canvas to image. $("#imgTop img").width() + "px".  Do we need a background color?
-        $("#imgTop").css("height", $("#imgTop img").height());
+        $("#transcriptionTemplate").css("width", "auto"); //fits canvas to image. $("#imgTop img").width() + "px".  Do we need a background color?
         $("#transcriptionCanvas").css("display", "block");
-        tpen.screen.imgTopSizeRatio = $("#imgTop img").width() / $("#imgTop img").height();
-        //$("#templateResizeBar").show();
-        if(screen.width === $(window).width() && screen.height === $(window).height()){
-            $(".centerInterface").css("text-align", "center").css("background-color", "#e1f4fe");
-        }
-        else{
-            $(".centerInterface").css("text-align", "left").css("background-color", "#e1f4fe");
-        }
-        $("#transcriptionTemplate").css("width","auto");
     }, 500);
     window.setTimeout(function(){
         //in here we can control what interface loads up.  writeLines
@@ -2395,6 +2368,8 @@ function hideWorkspaceForParsing(){
         $('.lineColIndicatorArea').hide();
         writeLines($("#imgTop img"));
     }, 1200);
+    
+    
 }
 
 /**
@@ -5392,23 +5367,24 @@ tpen.screen.peekZoom = function(cancel){
         window.onresize = function(event, ui) {
             var newImgBtmTop = "0px";
             var newImgTopTop = "0px";
-            var heightResize = false;
             if(tpen.screen.liveTool === 'parsing'){
                 var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
                 var newCanvasWidth = $("#transcriptionCanvas").width();
                 var newCanvasHeight = $("#transcriptionCanvas").height();
-                console.log("canvas x, y before:");
-                console.log(newCanvasWidth, newCanvasHeight);
                 var PAGEHEIGHT = Page.height();
                 var PAGEWIDTH = Page.width();
                 var SPLITWIDTH = $("#parsingSplit").width();
-                if(PAGEWIDTH === screen.width && PAGEHEIGHT === screen.height){
-                    $(".centerInterface").css("text-align", "center");
+                console.log(screen.width,$(window).width() +" and "+screen.height,window.outerHeight);
+                if(screen.width == $(window).width() && screen.height == window.outerHeight){
+                    $(".centerInterface").css("text-align", "center").css("background-color", "#e1f4fe");
                 }
                 else{
-                    $(".centerInterface").css("text-align", "left");
+                    $(".centerInterface").css("text-align", "left").css("background-color", "#e1f4fe");
                 }
-                if (PAGEHEIGHT <= tpen.screen.originalCanvasHeight){ //allow it to be as big as possible, but not bigger.
+                if(PAGEHEIGHT <= 625){ //This is the smallest height we allow
+                    newCanvasHeight = 625;
+                }
+                else if (PAGEHEIGHT <= tpen.screen.originalCanvasHeight){ //allow it to be as tall as possible, but not taller.
                     newCanvasHeight = PAGEHEIGHT;
                     newCanvasWidth = ratio*newCanvasHeight;
                 }
@@ -5416,13 +5392,14 @@ tpen.screen.peekZoom = function(cancel){
                     newCanvasHeight = tpen.screen.originalCanvasHeight;
                     newCanvasWidth = tpen.screen.originalCanvasWidth;
                 }
+                
                 if(PAGEWIDTH > 900){ //Whenever it gets less wide than this, it prioritizes height and stops resizing by width.
                     if(PAGEWIDTH < newCanvasWidth + SPLITWIDTH){
                         newCanvasWidth = PAGEWIDTH - SPLITWIDTH;
                         newCanvasHeight = 1/ratio*newCanvasWidth;
                     }
                 }
-                else{
+                else{ //Just do nothing instead of calling it 900 wide so it defaults to the height math, maybe put a max up there too.  
 //                     newCanvasWidth = 900;
 //                     newCanvasHeight = 1/ratio*newCanvasWidth;
                 }

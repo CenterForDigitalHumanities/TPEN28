@@ -716,6 +716,7 @@ div#transcriptletArea {
     position: fixed;
     min-width: 15em;
     overflow-y: auto;
+    height: 100%;
 }
 #overlay{
     display: none;

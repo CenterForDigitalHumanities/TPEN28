@@ -5359,9 +5359,6 @@ tpen.screen.peekZoom = function(cancel){
     }
 
     //Must explicitly set new height and width for percentages values in the DOM to take effect.
-    //FIXME: Does not handle resizing the split area correctly except for in parsing interface.
-    //FIXME: If you look at project 4080, you will notice that sometimes the annotation will slip off screen
-    //FIXME: Gets in the way of transcriptionTemplate resizing.
     //with resizing because the img top position puts it up off screen a little.
     function attachWindowResize(){
         window.onresize = function(event, ui) {

@@ -507,7 +507,6 @@
                                 <!--<i class="fa fa-reparse"></i>-->
                                 <img src="css/custom-theme/images/create_column_sm.png" alt="reparse" />
                             </button>
-                            <i class="fa fa-caret-left blockStatusClosed"></i>
                             <small>Click and drag to place</small>
                         </div>
                         <div class="splitBlock">
@@ -516,7 +515,6 @@
                                 <img src="css/custom-theme/images/adjust_column_sm.png" alt="reparse" />
                                 <!--<i class="fa fa-reparse"></i>-->
                             </button>
-                            <i class="fa fa-caret-left blockStatusClosed"></i>
                             <small>Drag the edges of an existing column.</small>
                             <!--<small><i class="fa fa-info-circle"></i> This method does not remove any <acronym title="text, markup, and notes">transcription information</acronym>.</small>-->
                         </div>
@@ -526,7 +524,6 @@
                                 <img src="css/custom-theme/images/destroy_column_sm.png" alt="reparse" />
 <!--                                <i class="fa fa-reparse"></i>-->
                             </button>
-                            <i class="fa fa-caret-left blockStatusClosed"></i>
                             <small>Click a column to remove all its lines and transcription data.</small>
                             <small class="danger"><i class="fa fa-warning"></i> This is a destructive process and cannot be undone.</small>
                             <!-- Reparsing is not enabled yet <button>-->
@@ -538,7 +535,6 @@
                                 <!--<i class="fa fa-reparse"></i>-->
                                 <!--<i class="fa fa-reparse"></i>-->
                             </button>
-                            <i class="fa fa-caret-left blockStatusClosed"></i>
                             <small class="danger">
                                 <i class="fa fa-warning"></i>
                                 Click to remove all transcription data and lines from this page.
@@ -553,7 +549,6 @@
                                 <img src="css/custom-theme/images/add_line_sm.png" alt="reparse" />
                                 <!--<i class="fa fa-reparse"></i>-->
                             </button>
-                            <i class="fa fa-caret-left blockStatusClosed"></i>
                                 <small>Click within the shaded area to define the bottom of the new line.</small>
                                 <!--<small><i class="fa fa-info-circle"></i> Any <acronym title="text, markup, and notes">transcription information</acronym> will remain with the line above where you click.</small>-->
                                 <br>
@@ -580,7 +575,6 @@
                                 </button>
                                 <small>Click and drag the right side of the line to contain the line accurately.</small>
                                 <!--<small><i class="fa fa-info-circle"></i> Only the right boundary can be moved in this tool.</small>-->
-                                <i class="fa fa-caret-left blockStatusClosed"></i>
                             </div>
                             <div class="splitBlock">
 <!--                                <button id="removeLines" class="tpenButton" title="Merge two lines in a column">-->
@@ -589,7 +583,6 @@
                                     <img src="css/custom-theme/images/merge_lines_sm.png" alt="reparse" />
                                     <!--<i class="fa fa-reparse"></i>-->
                                 </button>
-                                <i class="fa fa-caret-left blockStatusClosed"></i>
                                 <small>Click within the shaded area to merge the highlighted lines.</small>
                                 <!--<small><i class="fa fa-info-circle"></i> This method combines your transcription information into the new line.</small>-->
                             </div>
@@ -600,7 +593,6 @@
                                     <img src="css/custom-theme/images/delete_line_sm.png" alt="reparse" />
                                     <!--<i class="fa fa-reparse"></i>-->
                                 </button>
-                                <i class="fa fa-caret-left blockStatusClosed"></i>
                                 <small>Click within the shaded area to delete the last line of a column.</small>
                                 <small><i class="fa fa-info-circle"></i> Deleting a line also removes its associated transcription information..</small>
                             </div>
@@ -2367,7 +2359,6 @@ $(document).on("click",".fullScreenTrans",fullPage);
         if(parsing){
             $unselectArea.find(".selected").removeClass("selected"); //don't want to leave any of the others selected.
             $unselectArea.find(".blockOpen").removeClass("blockOpen"); //don't want to leave any of the others selected.
-            $area.find(".blockStatusClosed").addClass("blockOpen");
             $area.children("button").toggleClass("selected");
             $(".icon-panel").find(".selected").removeClass("selected");
         }

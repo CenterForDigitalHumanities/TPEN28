@@ -80,20 +80,22 @@
                     <i class="fa fa-caret-right fa-2x"></i>
                 </a>
             </span>
-            <span class="trimSection">Transcribing as <span id="trimCurrentUser"></span></span>
+            <span class="trimSection" id="currentUser">
+                <i class="fa fa-user"></i>
+                <span id="trimCurrentUser"></span></span>
             <div style="position:absolute;right:0;top:0;z-index: 1;">
                 <span class="trimSection">
-                    <a class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="fa fa-home"></span>T-PEN Home</a>
-                    <a class="exitPage wBtn ui-state-default ui-button" title="My Projects" href="project.jsp">My&nbsp;Projects</a>
+                    <a id="homeBtn" class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="fa fa-home"></span></a>
+                    <a id="projectsBtn" class="exitPage wBtn ui-state-default ui-button" title="My Projects" href="project.jsp"><span class="fa fa-book"></span></a>
                 </span>
                 <span class="trimSection">
-                    <a id="helpContact" href="admin.jsp#aboutTab" target="_blank" class="wBtn ui-state-default ui-button">Contact <span class="fa fa-comment"></span></a>
+                    <a id="helpContact" href="admin.jsp#aboutTab" target="_blank" class="wBtn ui-state-default ui-button"><span class="fa fa-comment"></span></a>
                 </span>
                 <span class="trimSection">
-                    <a id="helpMe" class="ui-state-default ui-button">Help<i class="fa fa-question" style="margin-left:8px" aria-hidden="true"></i></a>
+                    <a id="helpMe" title="Open Help <F1>" class="ui-state-default ui-button"><i class="fa fa-question" aria-hidden="true"></i></a>
                 </span>
                 <span class="trimSection">
-                    <a id="classicSwitch" onclick="switchToClassicTranscription();" class="ui-state-default ui-button exitPage">Classic<i class="fa fa-beer" style="margin-left:8px" aria-hidden="true"></i></a>
+                    <a id="classicSwitch" title="Switch back to the old interface" onclick="switchToClassicTranscription();" class="ui-state-default ui-button exitPage"><i class="fa fa-beer" aria-hidden="true"></i></a>
                 </span>
             </div>
         </div>

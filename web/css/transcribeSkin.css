@@ -1727,3 +1727,53 @@ a.editButtons {
     border-radius: 2px;
     height: auto;
 }
+#classicSwitch::before {
+    content:"Classic ";
+}
+#helpMe::before {
+    content:"Help ";
+}
+#helpContact::before {
+    content:"Contact ";
+}
+#homeBtn::after {
+    content:" T-PEN Home";
+    white-space: nowrap;
+}
+#projectsBtn::after {
+    content:" My Projects";
+    white-space: nowrap;
+}
+#currentUser::before {
+    content:"Transcribing as ";
+    white-space: nowrap;
+}
+.navigation.collapsed #classicSwitch::before,
+.navigation.collapsed #helpMe::before,
+.navigation.collapsed #currentUser::before,
+.navigation.collapsed #homeBtn::after,
+.navigation.collapsed #projectsBtn::after,
+.navigation.collapsed #helpContact::before{
+    content:"";
+}
+.navigation.collapsed #trimPage,.navigation.collapsed #trimTitle {
+    max-width: 4em;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    float: left;
+}
+.navigation.collapsed #trimTitle{
+    max-width: 6em;
+}
+.navigation.collapsed #pageJump {
+    max-width: 1.5em;
+    margin: 0 .5em;
+}
+.navigation.collapsed.severe #trimTitle,
+.navigation.collapsed.severe #classicSwitch,
+.navigation.collapsed.severe #currentUser,
+.navigation.collapsed.severe #helpContact
+{
+    display:none;
+}

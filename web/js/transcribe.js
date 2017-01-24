@@ -5491,8 +5491,31 @@ tpen.screen.peekZoom = function(cancel){
                 $(this).css("line-height", $(this).height()+"px");
             });
             tpen.screen.textSize();
+            tpen.screen.responsiveNavigation();
         };
     }
+
+tpen.screen.responsiveNavigation = function(severeCheck){
+    if(!severeCheck && tpen.screen.navMemory > 0 && $('.collapsed.navigation').size()){
+        $('.collapsed.navigation').removeClass('collapsed severe');
+        tpen.screen.navMemory = 0;
+    }
+    var width = Page.width();
+    var contentWidth = (function(){
+        var w=0;
+        $('.trimSection').each(function(){
+            w+=$(this).width();
+        });
+        return w;
+    })();
+    if(contentWidth>width-70){ // 7 * 10px margin not accounted for otherwise
+        // content is encroaching and will overlap
+        var addClass = (severeCheck) ? "severe" : "collapsed";
+        $('.navigation').addClass(addClass);
+        tpen.screen.navMemory = contentWidth;
+        !severeCheck && tpen.screen.responsiveNavigation(true);
+    }
+};
 
     /*
      * I believe index.jsp makes a href='javascript:createProject(msID);' call through the links for Start Transcribing.

@@ -840,11 +840,13 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
     font-size: small;
     color: #999;
     text-transform: capitalize;
-    padding: .15em;
     max-height: 1.5em;
     overflow: hidden;
     bottom:0;
     right:0;
+}
+#contribution{
+    left:0;
 }
 #contribution:before {content:'Last edit by: '}
 .saveLog:first-child {color:#618797;}

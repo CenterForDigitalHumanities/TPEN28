@@ -1048,13 +1048,17 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     z-index: 3;
     text-align: center;
 }
-#splitScreenTools{
+#splitScreenTools, #compareJump{
     border: 2px solid #005a8c;
     font-size: .8em;
     border-radius: 2px;
     cursor: pointer;
     flex:2 1 auto;
     max-width: 12em;
+}
+/* Looks different than splitScreentTools without this padding for some reason. */
+#compareJump{
+    padding: 3px 4px 3px 0px;
 }
 #magnifyTools{
     position: absolute;

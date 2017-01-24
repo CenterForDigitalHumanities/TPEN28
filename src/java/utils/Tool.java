@@ -33,7 +33,7 @@ import user.User;
 public class Tool {
 
    public enum tools {
-      preview, compare, parsing, abbreviation, history, linebreak, annotation, paleography, sciat, unknown, page, xml, characters, inspector
+      preview, compare, parsing, abbreviation, history, linebreak, fullpage, paleography, sciat, unknown, page, xml, characters, inspector
    };
 
    public Tool(tools toolName, int UID) throws SQLException {
@@ -90,7 +90,7 @@ public class Tool {
 
    public static void initializeTools(int uid) throws SQLException {
       for (Tool.tools iter : tools.values()) {
-         if (iter != tools.sciat && iter != tools.annotation && iter != tools.unknown) {
+         if (iter != tools.sciat && iter != tools.unknown) {
             Tool t = new Tool(iter, uid);
          }
       }
@@ -154,6 +154,9 @@ public class Tool {
                 break;
                 case "linebreak":
                     toret[ctr] = tools.linebreak;        
+                break;
+                case "fullpage":
+                    toret[ctr] = tools.fullpage;        
                 break;
                 case "xml":
                     toret[ctr] = tools.xml;

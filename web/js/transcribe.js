@@ -614,6 +614,8 @@ function loadTranscription(pid, tool){
                             break;
                         case "linebreak" : label = "Import Text";
                             break;
+                        case "fullpage" : label = "View Full Page";
+                            break;
                         case "paleography" : label = false;
                             break;
                     }
@@ -1556,7 +1558,7 @@ function linesToScreen(lines, tool){
         lineColumnIndicator.find('.lineColOnLine').attr("style", "line-height:" + lineHeight + ";");
         //Put to the DOM
         $(".lineColIndicatorArea").append(lineColumnIndicator);
-        $("#fullPageSplitCanvas").append(fullPageLineColumnIndicator);
+        $("#fullpageSplitCanvas").append(fullPageLineColumnIndicator);
         colCounter++;
     }
     if (update && $(".transcriptlet").eq(0).length > 0){
@@ -2108,10 +2110,10 @@ function magnify(img, event){
         $("button[magnifyimg='compare']").addClass("selected");
     }
     else if (img === "full"){
-        img = $("#fullPageSplitCanvas");
-        container = "fullPageSplit";
+        img = $("#fullpageSplitCanvas");
+        container = "fullpageSplit";
         $("#magnifyTools").fadeIn(800).css({
-            "left":$("#fullPageSplit").css("left"),
+            "left":$("#fullpageSplit").css("left"),
             "top" : "100px"
         });
         $("button[magnifyimg='full']").addClass("selected");
@@ -2611,9 +2613,9 @@ function splitPage(event, tool) {
                 var splitWidth = window.innerWidth - (width + 35) + "px";
                 $(".split img").css("max-width", splitWidth);
                 $(".split:visible").css("width", splitWidth);
-                var newHeight1 = parseFloat($("#fullPageImg").height()) + parseFloat($("#fullPageSplit .toolLinks").height());
+                var newHeight1 = parseFloat($("#fullPageImg").height()) + parseFloat($("#fullpageSplit .toolLinks").height());
                 var newHeight2 = parseFloat($(".compareImage").height()) + parseFloat($("#compareSplit .toolLinks").height());
-                $('#fullPageSplit').css('height', newHeight1 + 'px');
+                $('#fullpageSplit').css('height', newHeight1 + 'px');
                 $('#compareSplit').css('height', newHeight2 + 'px');
                 newImgBtmTop = tpen.screen.imgBottomPositionRatio * height;
                 newImgTopTop = tpen.screen.imgTopPositionRatio * height;

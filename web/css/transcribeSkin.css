@@ -1425,7 +1425,7 @@ button, #uploadText, .lookLikeButtons {
     border: none;
 }
 button:hover{
-    background-color: #829aac;
+    background-color: #829aac !important;
 }
 button.active {
     background-color: #618797;

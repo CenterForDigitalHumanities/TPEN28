@@ -598,7 +598,7 @@ function loadTranscription(pid, tool){
                     var toolLabel = this.name;
                     var toolSource = this.url;
                     var splitTool = $('<div toolName="' + toolLabel
-                        + '" class="split iTool"><div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical fa-2x"></i></div></div>');
+                        + '" class="split iTool"><div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div></div>');
                     var splitToolIframe = $('<iframe style="height:' + splitHeight
                         + ';" src="' + toolSource + '"></iframe>');
                     var splitToolSelector = $('<option splitter="' + toolLabel
@@ -3152,7 +3152,7 @@ function reparseColumns(){
                         fullTag = "<" + myValue +">";
                 }
                 if (startPos !== endPos) {
-                    
+
                     // something is selected, wrap it instead
                     var toWrap = myField.value.substring(startPos,endPos);
                     closeTag = "</" + myValue +">";
@@ -3179,7 +3179,7 @@ function reparseColumns(){
                     closeAddedTag(myValue, fullTag);
                     //return startPos+unescape(fullTag).length;
                 }
-               
+
             }
             else {
                 if(fullTag === ""){

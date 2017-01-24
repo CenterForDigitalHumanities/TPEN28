@@ -82,7 +82,7 @@
     }
 %> 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Search T-PEN</title>
+        <title>Search T&#8209;PEN</title>
         <link rel="stylesheet" href="css/tpen.css" type="text/css" media="screen, projection">
         <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
         <!--[if lt IE 8]><link rel="stylesheet" href="css/ie.css" type="text/css" media="screen, projection"><![endif]-->
@@ -126,7 +126,7 @@
 <!--                search options-->
 <form id="searchFor" action="search.jsp" method="POST">
     <input id="searchWord" name="searchWord" type="text" class="text" placeholder="Enter a phrase for which to search" value="" />
-    <input id="searchBtn" name="search" type="submit" class="ui-button tpenButton" value="Search T-PEN" />
+    <input id="searchBtn" name="search" type="submit" class="ui-button tpenButton" value="Search T&#8209;PEN" />
     <h3>Advanced Filters</h3>
     Select an option from any of the dropdowns below to limit the scope of your search: 
     <%
@@ -233,7 +233,7 @@ if (searchWord.length()>0){
 }
 %>
                 </div>
-<a class="returnButton" href="index.jsp">T-PEN Home</a>
+<a class="returnButton" href="index.jsp">T&#8209;PEN Home</a>
             </div>
         </div>
         <div id="imagePreviewDiv">

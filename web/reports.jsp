@@ -18,7 +18,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>T-PEN Reports</title>
+        <title>T&#8209;PEN Reports</title>
         <link rel="stylesheet" href="css/tpen.css" type="text/css" media="screen, projection">
         <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
         <!--[if lt IE 8]><link rel="stylesheet" href="css/ie.css" type="text/css" media="screen, projection"><![endif]-->
@@ -314,7 +314,7 @@
         %>
 <div id="totalSummary" class="reportSection">
     <h2>Summary</h2>
-    <p>T-PEN totals, including all active and dormant projects and users.</p>
+    <p>T&#8209;PEN totals, including all active and dormant projects and users.</p>
     <label>Total&nbsp;Manuscripts: <span class="value"><%out.print(manuscriptCount);%></span></label>
     <label>Total&nbsp;Projects: <span class="value"><%out.print(projectCount);%></span></label>
     <label>Total&nbsp;Users: <span class="value"><%out.print(userCount);%></span></label>

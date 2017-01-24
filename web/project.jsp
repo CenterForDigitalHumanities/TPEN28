@@ -561,7 +561,7 @@
                                 %>
                             </li>
                             <li>
-                                <div id="inviteUserBtn" class="tpenButton"><span class="ui-icon ui-icon-person right"></span>Invite to T-PEN</div>
+                                <div id="inviteUserBtn" class="tpenButton"><span class="ui-icon ui-icon-person right"></span>Invite to T&#8209;PEN</div>
                                 <form id="inviteUser" class="ui-corner-all" name="invite" action="project.jsp" onsubmit="return simpleFormValidation();" method="get">
                                     <input type="hidden" name="projectID" value="<%out.print("" + projectID);%>">
                                     <input type="hidden" name="selecTab" value="2">
@@ -570,7 +570,7 @@
                                     <label for="lname">Last Name</label><input class="text" type="text" name="lname"/><br/>
                                     <button type="submit" value="Register" name="invite" class="ui-button tpenButton"><span class="ui-icon ui-icon-person right"></span>Invite</button>
                                 </form>
-                                    <p>Request T-PEN send an email to a new user on your behalf so you may include them on your project.</p>
+                                    <p>Request T&#8209;PEN send an email to a new user on your behalf so you may include them on your project.</p>
                             </li>
                             <li class="left ui-widget-content ui-corner-tr ui-corner-bl tall">
                                 <h3>Recent Activity on this Project</h3>

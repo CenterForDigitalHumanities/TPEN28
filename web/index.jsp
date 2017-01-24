@@ -46,15 +46,15 @@
 <html itemscope itemtype="http://schema.org/Product">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta property="og:title" content="T-PEN" />
+        <meta property="og:title" content="T&#8209;PEN" />
         <meta property="og:description" 
               content="Transcription for paleographical and editorial 
               notation" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="http://www.t-pen.org" />
-        <meta property="og:site_name" content="T-PEN" />
+        <meta property="og:site_name" content="T&#8209;PEN" />
         <meta property="fb:admins" content="155508371151230" />
-        <meta itemprop="name" content="T-PEN">
+        <meta itemprop="name" content="T&#8209;PEN">
         <meta itemprop="description" content="Digital tool for transcription">
         <meta itemprop="image" content="https://lh3.googleusercontent.com/-TysT8pvMcgI/AAAAAAAAAAI/AAAAAAAAADI/PWEsFECiPwE/s250-c-k/photo.jpg">        
         <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico">
@@ -660,10 +660,10 @@ $(window).load(function(){gapi.plusone.go();});
                 if (thisUser != null){
                 %>
                 <a href="admin.jsp">Account Management</a>
-                <a href="admin.jsp?selecTab=2">About T-PEN</a>
+                <a href="admin.jsp?selecTab=2">About T&#8209;PEN</a>
                 <a href="admin.jsp?selecTab=2">Contact Us</a>
                 <%} else {%>
-                <a href="about.jsp">About T-PEN</a>
+                <a href="about.jsp">About T&#8209;PEN</a>
                 <a href="about.jsp">Contact Us</a>
                 <%}%>
             </div>

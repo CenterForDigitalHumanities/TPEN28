@@ -10,7 +10,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>About T-PEN</title>
+        <title>About T&#8209;PEN</title>
         <link rel="stylesheet" href="css/tpen.css" type="text/css" media="screen, projection">
         <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
         <link type="text/css" href="css/custom-theme/jQuery.css" rel="Stylesheet" />

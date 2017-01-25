@@ -1770,24 +1770,24 @@ a.editButtons {
 .navigation.collapsed #helpContact::before{
     content:"";
 }
-.navigation.collapsed #trimPage,.navigation.collapsed #trimTitle {
+.navigation.collapsed #trimPage,.navigation.collapsed #titleSection {
     max-width: 4em;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     float: left;
 }
-.navigation.collapsed #trimTitle{
+.navigation.collapsed #titleSection{
     max-width: 6em;
 }
 .navigation.collapsed #pageJump {
     max-width: 1.5em;
     margin: 0 .5em;
 }
-.navigation.collapsed.severe #trimTitle,
-.navigation.collapsed.severe #classicSwitch,
+.navigation.collapsed.severe #titleSection,
+.navigation.collapsed.severe #classicSection,
 .navigation.collapsed.severe #currentUser,
-.navigation.collapsed.severe #helpContact
+.navigation.collapsed.severe #contactSection
 {
     display:none;
 }

@@ -2260,14 +2260,11 @@ tpen.screen.toggleMoveImage = function (event) {
         $(".lineColIndicatorArea").hide();
         fullTopImage();
         $("#imgTop")
-            .mousedown(moveImg)
-            .keyup(function(event){
-            if(!event.altKey||!(event.ctrlKey||event.metaKey)){
-                tpen.screen.toggleMoveImage(false);
-            }
-    });;
-    } else {
-        $("#imgTop").trigger('mouseup');
+            .mousedown(moveImg) //This will handle the mouse up
+    } 
+    else {
+        //$("#imgTop").trigger('mouseup'); //we do not need to fire the mouseup.  In fact, it produces a strange loop that causes a lag.
+        $(document).unbind("mousemove");
         updatePresentation(tpen.screen.focusItem[1]);
         $(".lineColIndicatorArea").show();
         $("#imgTop, #imgBottom").css("cursor", "");
@@ -2496,7 +2493,7 @@ function hideWorkspaceToSeeImage(which){
     
 }
 function fullTopImage(){
-    $("#imgTop").css("height","100vh");
+    $("#imgTop").css("height","100%");
     $(".hideMe").hide();
     $(".showMe2").show();
 }

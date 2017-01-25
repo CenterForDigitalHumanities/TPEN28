@@ -1598,9 +1598,14 @@ $(document).on("click",".fullScreenTrans",fullPage);
                     $("#imgTop, #imgBottom").unbind("mouseup");
                     var lineForEditing = $(".transcriptlet[lineserverid='" + $(".activeLine").attr("lineserverid") + "']");
                     updateLine(lineForEditing, false, true); //update the active line in case it was bumped.
-                } else if(tpen.screen.isPeeking && (!event.shiftKey || !(event.ctrlKey||event.metaKey))){
+                } 
+                else if(tpen.screen.isPeeking && (!event.shiftKey || !(event.ctrlKey||event.metaKey))){
                     // cancel Peek-Zoom
                     tpen.screen.peekZoom(true);
+                }
+                else if(!event.altKey || !event.ctrlKey || !event.metaKey){
+                    //cancel show and/or move image.  Must do this here because it is possible the user never moves the image and moveImg() won't handle the cancel case. 
+                    tpen.screen.toggleMoveImage(false);
                 }
             });
 

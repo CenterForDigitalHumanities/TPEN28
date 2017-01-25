@@ -2361,7 +2361,12 @@ $(document).on("click",".fullScreenTrans",fullPage);
             $area.children("button").toggleClass("selected");
             $(".icon-panel").find(".selected").removeClass("selected");
         }
-        $area.toggleClass("selected");
+        if($area.hasClass("selected")){
+            $area.removeClass("selected");
+        }
+        else{
+            $area.addClass("selected");
+        }
     }
 
     function toggleIcon(fromBtn){

@@ -2493,7 +2493,7 @@ function hideWorkspaceToSeeImage(which){
         $(".hideMe").hide();
         $(".showMe2").show();
     }
-    
+
 }
 function fullTopImage(){
     $("#imgTop").css("height","100vh");
@@ -2590,13 +2590,6 @@ function splitPage(event, tool) {
     if(tool === "parsing"){
         resize=false;
     }
-    if(tool === "fullpage"){
-        $("#fullpageSplitCanvas").height($("#fullPageImg").height());
-        $(".fullP").each(function(i){
-            this.title = $("#transcriptlet_"+i+" .theText").text();
-        })
-            .tooltip();
-    }
     if(tool === "preview"){
         $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
         $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
@@ -2679,6 +2672,13 @@ function splitPage(event, tool) {
         var splitSrc = $(".transcriptionImg:first").attr("src");
         $("#historyViewer").find("img").attr("src", splitSrc);
         History.showLine(tpen.screen.focusItem[1].attr("lineserverid"));
+    }
+    if(tool === "fullpage"){
+        $("#fullpageSplitCanvas").height($("#fullPageImg").height());
+        $(".fullP").each(function(i){
+            this.title = $("#transcriptlet_"+i+" .theText").text();
+        })
+            .tooltip();
     }
 
 }

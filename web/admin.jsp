@@ -794,52 +794,21 @@
                             </li>
                             <li id="contactForm" class="gui-tab-section">
                                 <h3>More T&#8209;PEN</h3>
-                                <div id='sharing'>
-                                    <a id="shareFacebook" class="share" 
-                                       href="http://www.facebook.com/pages/The-T-Pen-project/155508371151230"
-                                       sharehref="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.t-pen.org"
-                                       title="facebook"
-                                       target="_blank">
-                                        <img alt="facebook"
-                                             src="images/sharing/facebook.png"/>
-                                    </a>
-                                    <a id="shareGoogle" class="share" 
-                                       href="https://plus.google.com/104676239440224157170"
-                                       share-href="https://plus.google.com/share?url=http%3A%2F%2Fwww.t-pen.org&hl=en-US"
-                                       title="google+"
-                                       target="_blank">
-                                        <img alt="google+"
-                                             src="images/sharing/google+.png"/>
-                                    </a>
-                                    <a id="shareTwitter" class="share" 
-                                       href="https://twitter.com/intent/tweet?text=Well%20done%2C%20%23TPEN"
-                                       title="twitter"
-                                       target="_blank">
-                                        <img alt="twitter"
-                                             src="images/sharing/twitter.png"/>
-                                    </a>
-                                    <a id="shareYoutube" class="share" 
-                                       href="http://www.youtube.com/user/tpentool"
-                                       title="youtube"
-                                       target="_blank">
-                                        <img alt="youtube"
-                                             src="images/sharing/youtube-128.png"/>
-                                    </a>
-                                    <a id="shareBlogger" class="share" 
-                                       href="http://digital-editor.blogspot.com/"
-                                       title="blogger"
-                                       target="_blank">
-                                        <img alt="blogger"
-                                             src="images/sharing/blogger-128.png"/>
-                                    </a>
-                                    <a id="shareGithub" class="share" 
-                                       href="https://github.com/jginther/T-PEN/tree/master/trunk"
-                                       title="github"
-                                       target="_blank">
-                                        <img alt="github"
-                                             src="images/sharing/github.png"/>
-                                    </a>
-                                </div>
+                                    <div id='sharing'>
+                    <a id="shareFacebook" class="share" 
+                       href="http://www.facebook.com/pages/The-T-Pen-project/155508371151230"
+                       sharehref="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.t-pen.org"
+                       target="_blank">
+                        <img alt="facebook"
+                             src="images/sharing/facebook.png"/>
+                    </a>
+                    <a id="shareYoutube" class="share" 
+                       href="http://www.youtube.com/user/tpentool"
+                       target="_blank">
+                        <img alt="youtube"
+                             src="images/sharing/youtube-128.png"/>
+                    </a>
+                </div>
                                 <div>
 <!--                                    <div class="tpenButton contact">Directed Communication</div>
                                     <div class="contactDiv" style="display:block;">

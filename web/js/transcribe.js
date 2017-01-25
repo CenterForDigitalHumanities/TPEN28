@@ -2091,16 +2091,17 @@ function moveImg(event){
 
 
 
-function magnify(img, event){
+function magnify(imgFlag, event){
     //For separating out different imgs on which to zoom.
     var container = ""; // #id of limit
-    if (img === "trans"){
+    var img;
+    if (imgFlag === "trans"){
         img = $("#transcriptionTemplate");
         container = "transcriptionCanvas";
         $("#magnifyTools").fadeIn(800);
         $("button[magnifyimg='trans']").addClass("selected");
     }
-    else if (img === "compare"){
+    else if (imgFlag === "compare"){
         img = $("#compareSplit");
         container = "compareSplit";
         $("#magnifyTools").fadeIn(800).css({
@@ -2109,7 +2110,7 @@ function magnify(img, event){
         });
         $("button[magnifyimg='compare']").addClass("selected");
     }
-    else if (img === "full"){
+    else if (imgFlag === "full"){
         img = $("#fullpageSplitCanvas");
         container = "fullpageSplit";
         $("#magnifyTools").fadeIn(800).css({
@@ -2121,7 +2122,7 @@ function magnify(img, event){
     $("#zoomDiv").show();
     $("#zoomat").text(Math.round(tpen.screen.zoomMultiplier*10)/10+"x");
     $(".magnifyHelp").show();
-    hideWorkspaceToSeeImage();
+    hideWorkspaceToSeeImage(imgFlag);
     $(".lineColIndicatorArea").hide();
     tpen.screen.liveTool = "image";
     mouseZoom(img,container, event);
@@ -2212,7 +2213,9 @@ function mouseZoom($img,container, event){
     var imgURL = $img.find("img:first").attr("src");
     var page = $("#transcriptionTemplate");
     //collect information about the img
-    var imgDims = new Array($img.offset().left, $img.offset().top, $img.width(), $img.height());
+    var imgDims = new Array(parseInt($img.find("img").css("left")), parseInt($img.find("img").css("top")), $img.width(), $img.height());
+    var imgTop = $img.find("img").css("top");
+    var imgLeft = $img.find("img").css("left");
     //build the zoomed div
     var zoomSize = (page.height() / 3 < 120) ? 120 : page.height() / 3;
     if(zoomSize > 400) zoomSize = 400;
@@ -2223,7 +2226,7 @@ function mouseZoom($img,container, event){
         "height"        : zoomSize,
         "left"          : zoomPos[0] + 3,
         "top"           : zoomPos[1] + 3 - $(document).scrollTop() - $(".magnifyBtn").offset().top,
-        "background-position" : "0px 0px",
+        "background-position" : imgLeft+""+imgTop,
         "background-size"     : imgDims[2] * tpen.screen.zoomMultiplier + "px",
         "background-image"    : "url('" + imgURL + "')"
     });
@@ -2234,14 +2237,14 @@ function mouseZoom($img,container, event){
                 $("#zoomDiv").hide();
             }
             var mouseAt = new Array(event.pageX, event.pageY);
-            if ( mouseAt[0] < contain.left
+            if ( mouseAt[0] < contain.left - $("#"+container).offset().left
                 || mouseAt[0] > contain.left+$("#"+container).width()
                 || mouseAt[1] < contain.top
                 || mouseAt[1] > contain.top+$("#"+container).height()){
                 return false; // drop out, you've left containment
             }
             var zoomPos = new Array(mouseAt[0] - zoomSize / 2, mouseAt[1] - zoomSize / 2);
-            var imgPos = new Array((imgDims[0] - mouseAt[0]) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3, (imgDims[1] - mouseAt[1]) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3); //3px border adjustment
+            var imgPos = new Array((imgDims[0] - mouseAt[0] + contain.left) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3, (imgDims[1] - mouseAt[1] + contain.top) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3); //3px border adjustment
             $("#zoomDiv").css({
                 "left"  : zoomPos[0],
                 "top"   : zoomPos[1] - $(document).scrollTop(),
@@ -2454,6 +2457,7 @@ function restoreWorkspace(){
     $("#transWorkspace").show();
     $("#imgTop").css("width", "100%");
     $("#imgTop img").css({"height":"auto", "width":"100%"});
+    $("#imgBottom").css("height", "inherit");
     updatePresentation(tpen.screen.focusItem[1]);
     $(".hideMe").show();
     $(".showMe2").hide();
@@ -2467,18 +2471,29 @@ function restoreWorkspace(){
     $("#pageJump").removeAttr("disabled");
 }
 
-function hideWorkspaceToSeeImage(){
-    $("#transWorkspace").hide();
-    $("#imgTop").hide();
-    $("#imgBottom img").css({
-        "top" :"0%",
-        "left":"0%"
-    });
-    $("#imgBottom .lineColIndicatorArea").css({
-        "top": "0%"
-    });
-    $(".hideMe").hide();
-    $(".showMe2").show();
+function hideWorkspaceToSeeImage(which){
+    if(which === "trans"){
+        $("#transWorkspace").hide();
+        $("#imgBottom").css({
+            "height": "100%"
+        });
+        $(".hideMe").hide();
+        $(".showMe2").show();
+    }
+    else{
+        $("#transWorkspace").hide();
+        $("#imgTop").hide();
+        $("#imgBottom img").css({
+            "top" :"0%",
+            "left":"0%"
+        });
+        $("#imgBottom .lineColIndicatorArea").css({
+            "top": "0%"
+        });
+        $(".hideMe").hide();
+        $(".showMe2").show();
+    }
+    
 }
 function fullTopImage(){
     $("#imgTop").css("height","100vh");

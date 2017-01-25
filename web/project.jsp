@@ -728,8 +728,8 @@
                                                     newTool = Tool.tools.history;
                                                 } else if (userTools[i].compareTo("linebreak") == 0) {
                                                     newTool = Tool.tools.linebreak;
-//                                                } else if (userTools[i].compareTo("annotation") == 0) {
-//                                                    newTool = Tool.tools.annotation;
+                                                } else if (userTools[i].compareTo("fullpage") == 0) {
+                                                    newTool = Tool.tools.fullpage;
                                                 } else if (userTools[i].compareTo("paleography") == 0) {
                                                     newTool = Tool.tools.paleography;
 //                                                } else if (userTools[i].compareTo("sciat") == 0) {
@@ -767,7 +767,7 @@
                                         String[] toolCheck = new String[16];
                                         String[] toolName = new String[16];
                                         Tool.tools[] TOOLS = 
-                                        {Tool.tools.abbreviation, Tool.tools.compare, Tool.tools.parsing, Tool.tools.preview, Tool.tools.history, Tool.tools.linebreak, Tool.tools.paleography,
+                                        {Tool.tools.abbreviation, Tool.tools.compare, Tool.tools.parsing, Tool.tools.preview, Tool.tools.history, Tool.tools.linebreak, Tool.tools.fullpage, Tool.tools.paleography,
                                                 Tool.tools.xml, Tool.tools.characters, Tool.tools.page, Tool.tools.inspector};
                                         for (int i = 0; i < 11; i++) {
                                             toolCheck[i] = (Tool.isToolActive(TOOLS[i], UID)) ? "checked=true" : "";
@@ -779,6 +779,7 @@
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[3]);%> value="preview" />Preview Tool</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[4]);%> value="history" />History Tool</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[5]);%> value="linebreak" />Linebreaking Tool</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[6]);%> value="fullpage" />View Full Page</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[7]);%> value="xml" />XML Tags</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[8]);%> value="characters" />Special Characters</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[10]);%> value="inspector" />Inspect</label>

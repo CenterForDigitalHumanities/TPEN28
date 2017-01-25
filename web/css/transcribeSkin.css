@@ -1273,7 +1273,6 @@ button.imgTool{
     padding: 0 .25rem;
     display: table;
     text-align: center;
-    font-size: 2rem;
 }
 
 .fullScreenTrans:hover{
@@ -1482,19 +1481,22 @@ button.active {
     cursor: default;
     font-weight: bold;
 }
-#fullPageSplitCanvas .lineColOnLine{
+#fullpageSplitCanvas .lineColOnLine{
     border-left: none !important;
     font-size: 8pt;
     color: transparent !important;
 }
-.lineColIndicator.fullP{
-    border: none !important;
-}
-#fullPageSplitCanvas{
+#fullpageSplitCanvas{
     height:100%;
     position:relative;
     display: block;
     width:auto;
+}
+.ui-tooltip {
+    left: 0;
+    height: 1rem;
+    font-size: small;
+    position: absolute;
 }
 .activeTools{
     height: 190px !important;

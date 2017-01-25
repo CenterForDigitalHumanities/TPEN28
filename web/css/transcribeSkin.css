@@ -1248,7 +1248,6 @@ button.imgTool{
     content: "Close ";
     font-size: .8rem;
     text-transform: uppercase;
-    top: -.15rem;
     position: relative;
 }
 .fullScreenTrans::after {

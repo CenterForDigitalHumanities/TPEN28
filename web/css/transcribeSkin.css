@@ -564,12 +564,12 @@ div#transcriptletArea {
     font-size: small; // ticket #283
 }
 #controlsSplit button .fa {
-    position: absolute;
-    right: 9px;
+    position: relative;
+/*    margin-left: 3px; use this to bump them a little from the text if need be.*/
 }
 #imageToolSliders .fa {
-    position: absolute;
-    right: 24px;
+    position: relative;
+    /*    margin-left: 3px; use this to bump them a little from the text if need be.*/
 }
 #parsingBtn{
     display: none;

@@ -1485,6 +1485,9 @@ button.active {
     font-size: 8pt;
     color: transparent !important;
 }
+.lineColIndicator.fullP{
+    display: block !important;
+}
 #fullpageSplitCanvas{
     height:100%;
     position:relative;
@@ -1687,7 +1690,7 @@ a.editButtons {
     right: 0;
     margin: 0 auto;
     position: absolute;
-    max-height: 98%;
+    /* max-height: 98%; cubap: what? */
 }
 
 /* The help area CSS */

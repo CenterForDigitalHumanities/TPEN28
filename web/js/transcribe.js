@@ -5524,7 +5524,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         });
         return w;
     })();
-    if(contentWidth>width-105){ // 7 * 15px margin not accounted for otherwise
+    if(contentWidth>width-(7*20)){ // margin not accounted for otherwise
         // content is encroaching and will overlap
         var addClass = (severeCheck) ? "severe" : "collapsed";
         $('.navigation').addClass(addClass);

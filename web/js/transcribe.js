@@ -31,6 +31,9 @@ var tpen = {
         isMagnifying: false,
         isFullscreen: true,
         isAddingLines: false,
+        isPeeking: false,
+        isMoving: false,
+        toggleMove: false,
         //colorList:["rgba(255,255,255,.4)","rgba(0,0,0,.4)","rgba(255,0,0,.4)","rgba(153,255,0,.4)", "rgba(0,255,204,.4)", "rgba(51,0,204,.4)", "rgba(204,255,0,.4)"],
         //colorThisTime: "rgba(255,255,255,.4)",
         colorList: ["white", "black","lime","magenta","#A64129"],
@@ -2257,17 +2260,20 @@ function mouseZoom($img,container, event){
 
 tpen.screen.toggleMoveImage = function (event) {
     if (event && event.altKey && (event.ctrlKey || event.metaKey)) {
+        tpen.screen.toggleMove = true;
         $(".lineColIndicatorArea").hide();
         fullTopImage();
         $("#imgTop")
             .mousedown(moveImg) //This will handle the mouse up
     } 
     else {
-        //$("#imgTop").trigger('mouseup'); //we do not need to fire the mouseup.  In fact, it produces a strange loop that causes a lag.
-        $(document).unbind("mousemove");
+        $(document).unbind("mousemove"); //This is what we needed from the mousup event
+        tpen.screen.isMoving = false; //This is what we needed from the mouseup event. 
+        tpen.screen.toggleMove = false;
         updatePresentation(tpen.screen.focusItem[1]);
         $(".lineColIndicatorArea").show();
         $("#imgTop, #imgBottom").css("cursor", "");
+       
     }
 };
 
@@ -5405,7 +5411,7 @@ tpen.screen.peekZoom = function(cancel){
                 "height"    : tpen.screen.peekMemory[2]
             });
             $(".lineColIndicatorArea").fadeIn();
-            tpen.screen.isPeeking = false;
+            tpen.screen.isPeeking = false; 
         }
     };
 

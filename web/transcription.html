@@ -1590,7 +1590,10 @@ $(document).on("click",".fullScreenTrans",fullPage);
 
             }
             })
-            .keyup(function(event){;
+            .keyup(function(event){
+                if(tpen.screen.isMagnifying){
+                    return event;
+                }
                 //|| event.altKey is true while it is held down.
                 if(event.which == 18){
                     $("#imgTop,#imgBottom").unbind("mousemove").css("cursor", "default");

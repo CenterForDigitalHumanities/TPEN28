@@ -2493,7 +2493,7 @@ function hideWorkspaceToSeeImage(which){
 
 }
 function fullTopImage(){
-    $("#imgTop").css("height","100%");
+    $("#imgTop").css("height","100vh");
     $(".hideMe").hide();
     $(".showMe2").show();
 }
@@ -5369,7 +5369,8 @@ tpen.screen.peekZoom = function(cancel){
                 return false;
             }
             $(".lineColIndicatorArea").fadeOut();
-            tpen.screen.peekMemory = [parseInt(topImg.css("top")),parseInt(btmImg.css("top")),$("#imgTop").height()];
+            tpen.screen.peekMemory = [parseFloat(topImg.css("top")),parseFloat(btmImg.css("top")),$("#imgTop").css("height")]; 
+            //For some reason, doing $("#imgTop").height() and getting the integer value causes the interface to be broken when restored in the else below, even though it is the same value.
             $("#imgTop").css({
                 "height"    : line.height() * zoomRatio + "px"
             });

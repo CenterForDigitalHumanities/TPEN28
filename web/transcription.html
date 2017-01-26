@@ -1607,7 +1607,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
                     tpen.screen.peekZoom(true);
                 }
                 else if(tpen.screen.toggleMove && (!event.altKey || !event.ctrlKey || !event.metaKey)){
-                    //cancel show and/or move image.  Must do this here because it is possible the user never moves the image and moveImg() won't handle the cancel case. 
+                    //cancel show and/or move image.  Must do this here because it is possible the user never moves the image and moveImg() won't handle the cancel case.
                     //Do not check against tpen.screen.isMoving, just make sure we are not peeking (they share the ctrlKey or metaKey, so they both tend to want to fire).
                     tpen.screen.toggleMoveImage(false);
                 }

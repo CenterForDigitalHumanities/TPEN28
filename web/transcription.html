@@ -1475,11 +1475,11 @@ $(document).on("click",".fullScreenTrans",fullPage);
                 var wDelta = e.wheelDelta < 0 ? 'down' : 'up';
                 if(wDelta === "up"){
                     tpen.screen.zoomMultiplier += .4;
-                    $(document).mousemove();
+                    $(document).trigger('mousemove');
                 }
                 else{
                     tpen.screen.zoomMultiplier -= .4;
-                    $(document).mousemove();
+                    $(document).trigger('mousemove');
                 }
                 $("#zoomat").text(Math.round(tpen.screen.zoomMultiplier*10)/10+"x");
             }
@@ -1499,12 +1499,12 @@ $(document).on("click",".fullScreenTrans",fullPage);
                 //back out
                 if ((event.which === 109) || (event.which === 189) || (event.which === 173) ){ //173  = - in firefox
                     tpen.screen.zoomMultiplier -= .4;
-                    $(document).mousemove();
+                    $(document).trigger('mousemove');
                 }
                 //ease in
                 else if ((event.which === 107) || (event.which === 187) || (event.which === 61)){ // 61 = + in firefox
                     tpen.screen.zoomMultiplier += .4;
-                    $(document).mousemove();
+                    $(document).trigger('mousemove');
                 }
                 //esc
                 else if(event.which === 27){

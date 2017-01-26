@@ -601,8 +601,8 @@
                     </div>
                 </div>
             </div>
-        <div id="linebreakSplit" class="ui-widget ui-widget-content split">
-            <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
+            <div id="linebreakSplit" class="split">
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
             <h3>Linebreak Existing Transcription</h3>
                 <div id="linebreakTextContainer">
                     <!-- visible if text is saved -->
@@ -1520,7 +1520,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
                 Help.revealHelp(event);
                 //$("#helpMe").click();
             }
-            else if (event.which == 18 || event.altKey){
+            else if (event.which == 18 || event.altKey && (tpen.screen.liveTool !=="parsing")){
                //console.log('ALT KEY');
             var lineForEditing = $(".activeLine");
                lineForEditing.resizable();
@@ -1550,13 +1550,13 @@ $(document).on("click",".fullScreenTrans",fullPage);
                     fullPage();
                 }
             }
-            else if (event.which === 13){ //enter
+            else if (event.which === 13 && (tpen.screen.liveTool !=="parsing")){ //enter
                 if (event.shiftKey || event.altKey) return true;
                 event.preventDefault();
                 Linebreak.moveTextToNextBox();
                 return nextTranscriptlet();
             }
-            else if (event.which === 9){ // tab
+            else if (event.which === 9 && (tpen.screen.liveTool !=="parsing")){ // tab
             //TAB hijack to keep behavior as expected
                 var inForm = $(document.activeElement).is('input,textarea') && !$(document.activeElement).parent().is('.transcriptlet');
                 if(event.which === 9 && !inForm){
@@ -1566,7 +1566,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
                     else $("#nextLine").click();
                 }
             }
-            else if (event.ctrlKey || event.metaKey) { //ctrl
+            else if (event.ctrlKey || event.metaKey && (tpen.screen.liveTool !=="parsing")) { //ctrl
                 //This is also how you select a new tab in the browser.
                 if(event.which >= 49 && event.which <= 57){ //insert a special char
                     event.preventDefault();
@@ -1598,7 +1598,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
                     $("#imgTop, #imgBottom").unbind("mouseup");
                     var lineForEditing = $(".transcriptlet[lineserverid='" + $(".activeLine").attr("lineserverid") + "']");
                     updateLine(lineForEditing, false, true); //update the active line in case it was bumped.
-                } 
+                }
                 else if(tpen.screen.isPeeking && (!event.shiftKey || !(event.ctrlKey||event.metaKey))){
                     // cancel Peek-Zoom
                     tpen.screen.peekZoom(true);

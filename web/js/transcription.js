@@ -1,10 +1,10 @@
-/* 
+/*
  * Document     : tpen.js
  * Created on   : August 08, 2011
  * Author       : cubap,jdeerin1
  * Comment      : compatable with jQuery 1.6.2 and jQueryUI 1.8.9
- * 
- * Javascript used for interaction with the T&#8209;PEN transcription GUI and tools 
+ *
+ * Javascript used for interaction with the T&#8209;PEN transcription GUI and tools
  */
 
 /* Variables */
@@ -64,7 +64,7 @@ var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Const
 var Screen = {
     /**
      *  Sets the maximum width for tools in splitscreen.
-     *  
+     *
      *  @param width in pixels of unadjusted width for #wrapper
      */
     limit: function (width) {
@@ -83,9 +83,9 @@ var Screen = {
       return true;
     },
     /**
-     *  Restores full screen transcription interface. Removes overlays; resets 
-     *  liveTool, isZoomed, isFullscreen, isUnadjusted. 
-     *  
+     *  Restores full screen transcription interface. Removes overlays; resets
+     *  liveTool, isZoomed, isFullscreen, isUnadjusted.
+     *
      */
     fullsize: function (event) {
         window.clearInterval(ParsingInterval);
@@ -142,7 +142,7 @@ var Screen = {
     /**
      * Adjusts font-size in transcription and notes fields based on size of screen.
      * Minimum is 13px and maximum is 18px.
-     * 
+     *
      */
     textSize: function () {
         var textSize = Math.floor(focusItem[1].find(".theText").width() / 60),
@@ -159,7 +159,7 @@ var Screen = {
     /**
      * Reveals or hides note textarea.notes beneath current textarea.
      * Original id value is indexed. Inserted values match lineid.
-     * 
+     *
      * @param notes jQuery object .transcriplet
      */
     notesToggle: function (notes) {
@@ -175,7 +175,7 @@ var Screen = {
     },
     /**
      * Sets values for positioning variables used to set the screen.
-     * 
+     *
      * @see updatePresentation()
      */
     setPositions: function(){
@@ -188,7 +188,7 @@ var Screen = {
             // top of column
             var previousLine = (focusItem[1].prev().is('.transcriptlet') && (currentLineTop > parseInt(focusItem[1].prev().find(".lineTop").val())) ) ? parseInt(focusItem[1].prev().find(".lineHeight").val()) : focusItem[1].find(".lineTop").val();
             // oversized for screen
-            if (Page.height()-20 < (previousLine+currentLineHeight)*screenMultiplier+workspaceHeight()) previousLine = (previousLine==0) ? 0 : 20; 
+            if (Page.height()-20 < (previousLine+currentLineHeight)*screenMultiplier+workspaceHeight()) previousLine = (previousLine==0) ? 0 : 20;
             imgTopHeight = (previousLine+currentLineHeight)*screenMultiplier+20;//DEBUG+workspaceHeight(); // obscure behind workspace
             // topImgPosition, bookmarkTop - other bookmark dimensions stored in hidden inputs
             topImgPosition = (previousLine - currentLineTop)*screenMultiplier;
@@ -210,12 +210,12 @@ var Screen = {
 ////                bookmarkTop = 0;
 ////                topImgPosition = -parseInt(focusItem[1].find(".lineTop").val())*screenMultiplier;
 //                bookmarkHeight = parseInt(focusItem[1].find(".lineHeight").val())*screenMultiplier;
-//            } 
+//            }
         }
     },
     /**
      * Shows previous line of transcription above current textarea.
-     * 
+     *
      * @see updatePresentation()
      */
     updateCaptions: function() {
@@ -239,13 +239,13 @@ var Screen = {
             $('#notes').text($prevNote);
             $('#captions').css("height","4em").find("span").css("opacity",1);
             return true;
-        }                    
+        }
         $('#texts').text($prevLine);
         $('#notes').text($prevNote);
     },
     /**
      * Removes previous textarea and slides in the new focus.
-     * 
+     *
      * @see updatePresentation()
      */
     swapTranscriptlet: function() {
@@ -266,16 +266,16 @@ var Screen = {
         //slide out old transcriptlet and hide offscreen
 //        focusItem[0].one("webkitTransitionEnd transitionend oTransitionEnd",function(){
 //            $(this).css({
-//                "left":"-9000px",          
+//                "left":"-9000px",
 //                "position":"absolute",
 //                "z-index":"3"
-//            });  
+//            });
 //        });
 //        focusItem[0].css({
 //            "width":focusItem[0].width()
 //        });
         focusItem[1].prevAll(".transcriptlet").addClass("transcriptletBefore").removeClass("transcriptletAfter");
-        focusItem[1].nextAll(".transcriptlet").addClass("transcriptletAfter").removeClass("transcriptletBefore");       
+        focusItem[1].nextAll(".transcriptlet").addClass("transcriptletAfter").removeClass("transcriptletBefore");
 //        focusItem[1].find(".theText").focus();
         isUnadjusted = true;
 //        if (focusItem[0].attr("id")==focusItem[1].attr("id")) {
@@ -289,7 +289,7 @@ var Screen = {
     },
     /**
      * Aligns images and workspace using defined dimensions.
-     * 
+     *
      * @see maintainWorkspace()
      */
     adjustImgs: function(){
@@ -305,7 +305,7 @@ var Screen = {
         $('#bookmarkText').html($(focusItem[1]).find(".counter").text().replace(" ", "&nbsp;"));   //line number is experiemental TODO
         bookmarkLeft = parseInt($(focusItem[1]).find('.lineLeft').val())*screenMultiplier;
         bookmarkWidth = parseInt($(focusItem[1]).find('.lineWidth').val())*screenMultiplier;
-        $('#bookmark').css({ 
+        $('#bookmark').css({
             left:   bookmarkLeft+"px",
             top:    bookmarkTop+"px",
             height: bookmarkHeight+"px",
@@ -322,7 +322,7 @@ var Screen = {
     },
     /**
      * Keep workspace on the screen when displaying large lines.
-     * Tests for need and then adjusts. Runs on change to 
+     * Tests for need and then adjusts. Runs on change to
      * workspace size or line change.
      */
     maintainWorkspace: function(){
@@ -335,7 +335,7 @@ var Screen = {
     /**
      * Organizes the screen when a new line is focused on.
      * Tests if adjustment is needed before running.
-     * 
+     *
      * @see setPositions()
      * @see updateCaptions()
      * @see swapTranscriptlet()
@@ -352,12 +352,12 @@ var Screen = {
             //show previous line transcription
             $('#previous span').animate({
                 opacity:1
-            },100);                           
+            },100);
             Screen.maintainWorkspace();
             if (liveTool === "history"){
                 History.showLine(focusItem[1].attr("data-lineid"));
             }
-            Data.saveTranscription();       
+            Data.saveTranscription();
         } else {
             //will only adjust if page load or refocusing after changing the browser size
             if (isUnadjusted){
@@ -375,7 +375,7 @@ var Screen = {
     },
     /**
      * Determines action based on transcription line clicked and tool in use.
-     * Alerts 'unknown click' if all fails. Calls lineChange(e,event) for 
+     * Alerts 'unknown click' if all fails. Calls lineChange(e,event) for
      * parsing tool. Jumps to transcriptlet for full page tool.
      */
     clickedLine: function(e,event) {
@@ -392,7 +392,7 @@ var Screen = {
     /**
      * Hard reset for the screen based around focus. If the focus is not
      * available, the first line becomes the focus.
-     * 
+     *
      * @param focus ID of transcriptlet to build around
      * @see updatePresentation()
      */
@@ -407,7 +407,7 @@ var Screen = {
             folio    : folio,
             projectID   : projectID
         }, function(tags){
-            if(tags != null){     
+            if(tags != null){
                 Interaction.buildClosingTags(tags.split("\n"));
             }
         });
@@ -427,7 +427,7 @@ var Screen = {
     },
     /**
      *  Creates highlights on tags in the preview tool.
-     *  
+     *
      *  @param newText String to be placed on tags
      *  @see Screen.spannedText(textToSpan)
      */
@@ -441,7 +441,7 @@ var Screen = {
     },
     /**
      *  Wraps transcription text is spans for preview tool
-     *  
+     *
      *  @param textToSpan array of strings to wrap with spans
      */
     spannedText: function(textToSpan){
@@ -455,7 +455,7 @@ var Screen = {
 
 /* T-PEN Tools */
 var Parsing = {
-    /** 
+    /**
      * Sets screen for parsing tool use.
      * Slides the workspace down and scales the top img
      * to full height.
@@ -500,7 +500,7 @@ var Parsing = {
                 // assures that the resizing of the img completely took place
                 // FIXME may cause slow loop
                 console.log("parsing adjustment ("+firstLine.height()+", "+correctHeight+")");
-                Parsing.hideWorkspaceForParsing(); 
+                Parsing.hideWorkspaceForParsing();
             } else {
                 //hack to make the image draw correctly in some cases
         topImg.css('top', 'auto');
@@ -514,7 +514,7 @@ var Parsing = {
      * Resets the buttons to move between lines attached to each transcriptlet.
      * Called on $.load and in cleanupTranscriptlets().
      * 'Next Page', 'Previous Page', and 'End of Page'
-     *  
+     *
      *  @see cleanupTranscriptlets()
      */
     setLineNavBtns: function(){
@@ -538,7 +538,7 @@ var Parsing = {
     /**
      * Removes selected column and destroys the lines.
      * Used by parsing tool when Destroy Column(s) or Clear Page is clicked.
-     * 
+     *
      * @column jQuery object, column to be removed
      */
     removeColumn: function(column){
@@ -560,7 +560,7 @@ var Parsing = {
     /**
      * Removes clicked line, merges if possible with the following line.
      * updateLine(e,additionalParameters) handles the original, resized line.
-     * 
+     *
      * @param e clicked line element from lineChange(e) via saveNewLine(e)
      * @see lineChange(e)
      * @see saveNewLine(e)
@@ -587,16 +587,16 @@ var Parsing = {
             var cfrm = confirm("Removing this line will remove any data contained as well.\n'"+toDelete+"'\n\nContinue?");
             if(!cfrm)return false;
             isDestroyingLine = true;
-        } 
+        }
         var params = new Array({name:"remove",value:removedLine.attr("data-lineid")});
-        removedLine.remove(); 
+        removedLine.remove();
         this.removeTranscriptlet(removedLine.attr("data-lineid"),$(e).attr("data-lineid"));
         return params;
     },
     /**
      * Tests isAddingLines to add or remove the line.
      * updateLine(e,additionalParameters) handles the original, resized line.
-     * 
+     *
      * @param e clicked line element from lineChange(e)
      * @return jQuery serialized parameters to POST
      * @see updateLine(e)
@@ -615,7 +615,7 @@ var Parsing = {
     /**
      * Collects parameters and adds them to the parameters of the updated line.
      * POSTs to updateLinePositions servlet.
-     * 
+     *
      * @param e line element to be updated
      * @param additionalParameters array to add or remove lines
      * @return new lineID (int data from POST) if new line is created
@@ -664,7 +664,7 @@ var Parsing = {
     },
     /**
      * Adds a line by splitting the current line where it was clicked.
-     * 
+     *
      * @param e clicked line element
      * @see organizePage(e)
      */
@@ -677,7 +677,7 @@ var Parsing = {
         var newClick = event.pageY - e.offsetTop - $(event.target.parentElement).offset().top;               //accomodates browser inconsistencies
         //Insert new line and clip old one
         var newLine = $(e).clone(true);                         //clone(true) is a deep copy
-        var scaledClick = newClick / ($("#imgTopImg").height() / 1000); 
+        var scaledClick = newClick / ($("#imgTopImg").height() / 1000);
         //reduce fraction math at the cost of some precision
         newLine.css({
             "height"    :   oldDimensions[1]-newClick,
@@ -696,7 +696,7 @@ var Parsing = {
     /**
      * Inserts new transcriptlet when line is added.
      * Cleans up inter-transcriptlet relationships afterwards.
-     * 
+     *
      * @param e line element to build transcriptlet from
      * @param afterThisID lineid of line before new transcriptlet
      * @param newLineID lineid of new line
@@ -717,7 +717,7 @@ var Parsing = {
         }
       });
             isNotColumn = false;
-        } 
+        }
         var $afterThis = $(".transcriptlet[data-lineid='"+afterThisID+"']");
         var newTranscriptlet = [
             "<div class='transcriptlet transcriptletBefore' id='t",newLineID,
@@ -735,7 +735,7 @@ var Parsing = {
             "</div>"];
         if (isNotColumn){
             //update transcriptlet that was split
-            $afterThis.after(newTranscriptlet.join("")).find(".lineHeight").val($(".parsing[data-lineid='"+afterThisID+"']").attr("lineheight"));                    
+            $afterThis.after(newTranscriptlet.join("")).find(".lineHeight").val($(".parsing[data-lineid='"+afterThisID+"']").attr("lineheight"));
         } else {
       if (afterThisID === -1) {
         $("#entry").prepend(newTranscriptlet.join(""));
@@ -751,7 +751,7 @@ var Parsing = {
     /**
      * Removes transcriptlet when line is removed. Updates transcriplet
      * if line has been merged with previous.
-     * 
+     *
      * @param lineid lineid to remove
      * @param updatedLineID lineid to be updated
      */
@@ -775,9 +775,9 @@ var Parsing = {
     },
     /**
      * @deprecated Nobody cares about tabIndex anymore
-     * 
+     *
      * Coordinates tabindex and link references for newly added transcriptlets.
-     * 
+     *
      * @param e recently changed element
      * @see splitLine(e,event)
      * @see cleanupTranscriptlets()
@@ -863,7 +863,7 @@ var Parsing = {
                         var startLine = $(".line[data-lineid='"+thisColumnID[0]+"']");
                         oldHeight = parseInt(startLine.attr("lineheight"));
                         oldTop = parseInt(startLine.attr("linetop"));
-                        
+
                         startLine.attr({
                             "linetop"    : Math.round(newY/parseRatio),
                             "lineheight" : Math.round(oldTop+oldHeight-newY/parseRatio)
@@ -895,7 +895,7 @@ var Parsing = {
                         Parsing.updateLine(startLine);
                         $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
                     } else if(adjustment=="bottom"){
-                        
+
                         //save a new height for the bottom line
                         var endLine = $(".line[data-lineid='"+thisColumnID[1]+"']");
                         oldHeight = parseInt(endLine.attr("lineheight"));
@@ -912,7 +912,7 @@ var Parsing = {
                                 var nextline = endLine.prev(".line");
                                 Parsing.updateLine(null, Parsing.removeLine(endLine));
                                 //adjustedOldTop=oldTop-parseInt(endLine.attr("lineheight"));
-                                
+
                                 nextline.attr({
                                     "lineheight" : Math.round((newH+originalY)/parseRatio-oldTop)
                                 });
@@ -981,14 +981,14 @@ var Parsing = {
      },
     /**
      * Handles clicks in parsing tool.
-     * 
+     *
      * @param e clicked parsing element
      * @see splitLine(e,event)
      * @see updateLine(e,additionalParameters)
      */
      lineChange: function(e,event){
         if(isAddingLines)Parsing.splitLine(e,event);
-        this.updateLine(e,this.saveNewLine(e)); //auto-saving  
+        this.updateLine(e,this.saveNewLine(e)); //auto-saving
     },
     /**
      * Shows ruler within parsing tool. Called on mouseenter .parsing.
@@ -1044,7 +1044,7 @@ var Parsing = {
     },
     /**
      * Reassigns the interface data attached to each transcriptlet.
-     * 
+     *
      * @see setLineNavBtns()
      */
   cleanupTranscriptlets: function() {
@@ -1064,14 +1064,14 @@ var Parsing = {
             }
             $(this).attr("id","t"+(index+1))
       .find(".theText").attr("id", "transcription" + (index + 1)).end()
-                .find(".counter").text("Column:"+String.fromCharCode(64+columnCtr).toUpperCase()+" Line:"+(lineCtr-columnLineShift));  
+                .find(".counter").text("Column:"+String.fromCharCode(64+columnCtr).toUpperCase()+" Line:"+(lineCtr-columnLineShift));
     }).appendTo($("#entry"));
         this.setLineNavBtns();
         Preview.rebuild();
         // realign the focus with something in the DOM, if missing
         if (!focusItem[1].closest('body').length) focusItem[1] = $('#t1');
     },
-    /** 
+    /**
      * Restructures lines overlay as columns.
      * Used in parsing tool.
      */
@@ -1167,7 +1167,7 @@ var Preview = {
      *  Syncs changes between the preview tool and the transcription area,
      *  if it is on the page. If it is the previous or following page, a button
      *  to save remotely is created and added.
-     *  
+     *
      *  @param line jQuery object, line edited in the preview tool
      */
     edit: function(line){
@@ -1191,7 +1191,7 @@ var Preview = {
     /**
      *  Saves the changes made in the preview tool on the previous or following
      *  page. Overwrites anything currently saved.
-     *  
+     *
      *  @param button element clicked (for removal after success)
      *  @param saveLineID int lineID of changed transcription object
      *  @param focusFolio int id of folio in which the line has been changed
@@ -1207,7 +1207,7 @@ var Preview = {
     /**
      *  Syncs the current line of transcription in the preview tool when changes
      *  are made in the main interface. Called on keyup in .theText and .notes.
-     *  
+     *
      *  @param current element textarea in which change is made.
      */
      updateLine: function(current) {
@@ -1218,7 +1218,7 @@ var Preview = {
      },
     /**
      *  Rebuilds every line of the preview when changed by parsing.
-     *  
+     *
      */
     rebuild: function(){
         var allTrans = $(".transcriptlet");
@@ -1259,12 +1259,12 @@ var Preview = {
     format: function(){
         $(".previewText").each(function(){
             $(this).html(Preview.scrub($(this).text()));
-        });       
+        });
     },
     /**
      *  Analyzes the text in the preview tool to highlight the tags detected.
      *  Returns html of this text to Preview.format()
-     *  
+     *
      *  @param thisText String loaded in the current line of the preview tool
      */
     scrub: function(thisText){
@@ -1287,7 +1287,7 @@ var Preview = {
                 i++;
             }
             //use endTags because it might be 1 shorter than beginTags
-            var oeLen = endTags.length; 
+            var oeLen = endTags.length;
             encodedText = [workingText.substring(0, beginTags[0])];
             for (i=0;i<oeLen;i++){
                 encodedText.push("<span class='previewTag'>",
@@ -1321,9 +1321,9 @@ var Preview = {
 }
 // old news. replaced with SCIAT
 //var Annotation = {
-//    /** 
+//    /**
 //     *  Save annotations made within the tool.
-//     *  
+//     *
 //     *  @param x int left position of annotation
 //     *  @param y int top position of annotation
 //     *  @param h int height of annotation
@@ -1375,7 +1375,7 @@ var Preview = {
 //    },
 //    /**
 //     *  Deletes annotation from interface and database.
-//     *  
+//     *
 //     *  @param annotationID int unique id of annotation to be removed
 //     */
 //    remove: function(annotationID){
@@ -1383,11 +1383,11 @@ var Preview = {
 //        var params = new Array({name:"id",value:annotationID},{name:"delete",value:true});
 //        $.post('annotation', $.param(params), function(data){
 //            //deleted
-//        }, "html");      
+//        }, "html");
 //    },
 //    /**
 //     *  Updates an existing annotation.
-//     *  
+//     *
 //     *  @param x int left position of annotation
 //     *  @param y int top position of annotation
 //     *  @param h int height of annotation
@@ -1415,7 +1415,7 @@ var Preview = {
 //    },
 //    /**
 //     *  Handles changes to the options in the annotation tool.
-//     *  
+//     *
 //     *  @param elem element clicked from .toolLinks
 //     */
 //    options: function(elem){
@@ -1475,7 +1475,7 @@ var Preview = {
 //    },
 //    /**
 //     *  Updates the annotation attributes in preparation for saving.
-//     *  
+//     *
 //     *  @param $anno jQuery object, annotation updated
 //     *  @param ui object from jQuery resizable
 //     */
@@ -1497,7 +1497,7 @@ var Preview = {
 //    },
 //    /**
 //     *  Reveals the text and link of an annotation when hovering over the region.
-//     *  
+//     *
 //     *  @param $a jQuery object, annotation
 //     */
 //    showText: function($a){
@@ -1509,7 +1509,7 @@ var Preview = {
 //    },
 //    /**
 //     *  Show link results
-//     *  
+//     *
 //     */
 //    showLink: function(){
 //        if ($("#aLinkFrame").is(":visible")){
@@ -1537,7 +1537,7 @@ var Preview = {
 //    },
 //    /**
 //     *  Update links in annotation
-//     *  
+//     *
 //     *  @param a element, annotation
 //     */
 //    updateLink: function(){
@@ -1547,7 +1547,7 @@ var Preview = {
 //    },
 //    /**
 //     *  Update text of annotation
-//     *  
+//     *
 //     *  @param a element, annotation
 //     */
 //    updateText: function(){
@@ -1584,7 +1584,7 @@ var Help = {
     /**
      *  Shows specific page element through overlay and zooms in. If the element
      *  is not displayed on screen, an alternative message is shown.
-     *  
+     *
      *  @param refIndex int index of help button clicked
      */
     lightUp: function(refIndex){
@@ -1649,7 +1649,7 @@ var Help = {
     },
     /**
      *  Redraws the element on top of the overlay.
-     *  
+     *
      *  @param $element jQuery object to redraw
      */
     highlight: function($element){
@@ -1684,7 +1684,7 @@ var Help = {
     },
     /**
      *  Help function to call up video, if available.
-     *  
+     *
      *  @param refIndex int index of help button clicked
      */
     video: function(refIndex){
@@ -1758,7 +1758,7 @@ var Help = {
 var History = {
     /**
      *  Displays the image of the line in the history tool.
-     *  
+     *
      *  @param x int left position of history entry
      *  @param y int top position of the history entry
      *  @param h height of the history entry
@@ -1783,11 +1783,11 @@ var History = {
             "height":h *historyRatio +"px"
         });
         // size listings for balance of page for scrolling
-        $("#historyListing").height(Page.height()-hView.height()-22); 
+        $("#historyListing").height(Page.height()-hView.height()-22);
     },
     /**
      *  Updates the display when hovering over an entry in the history tool.
-     *  
+     *
      *  @param lineid int id of the targeted line
      */
     showLine: function(lineid){
@@ -1796,7 +1796,7 @@ var History = {
             // persist history options
             $("#historySplit .ui-state-active").each(function(){
                 $(this).removeClass("ui-state-active").click();
-            });            
+            });
         }).siblings(".historyLine").hide();
         var refLine = $(".transcriptlet[data-lineid='"+lineid+"']");
         History.showImage(parseInt(refLine.find(".lineLeft").val()),
@@ -1831,7 +1831,7 @@ var History = {
             w:  parseInt(archive.attr("linewidth")),
             h:  parseInt(archive.attr("lineheight"))
         }
-        
+
         var dims = {
             x:  parseInt(focusItem[1].find(".lineLeft").val()),
             y:  parseInt(focusItem[1].find(".lineTop").val()),
@@ -1864,7 +1864,7 @@ var History = {
     },
     /**
      *  Show only the text changes in the history tool.
-     *  
+     *
      *  @param button jQuery object, clicked button
      */
     textOnly: function(button){
@@ -1888,7 +1888,7 @@ var History = {
     },
     /**
      *  Show only parsing changes in the history tool.
-     *  
+     *
      *  @param button jQuery object, clicked button
      */
     parsingOnly: function(button) {
@@ -1912,7 +1912,7 @@ var History = {
     },
     /**
      *  Show notes as well in the history tool.
-     *  
+     *
      *  @param button jQuery object, clicked button
      */
     showNotes: function(button) {
@@ -1928,7 +1928,7 @@ var History = {
     },
     /**
      *  Revert only the text value from the history entry.
-     *  
+     *
      *  @param entry jQuery object, clicked history entry
      */
     revertText: function(entry){
@@ -1946,7 +1946,7 @@ var History = {
     },
     /**
      *  Revert only the parsing value from the history entry.
-     *  
+     *
      *  @param entry jQuery object, clicked history entry
      */
     revertParsing: function(entry){
@@ -1985,7 +1985,7 @@ var History = {
     },
     /**
      *  Reverts to values from the history entry.
-     *  
+     *
      *  @param entry jQuery object, clicked history entry
      */
     revertAll: function(entry){
@@ -1994,7 +1994,7 @@ var History = {
     },
     /**
      *  Revert only the text value from the history entry.
-     *  
+     *
      *  @param h element, clicked history tool
      */
     revert: function(h){
@@ -2017,7 +2017,7 @@ var History = {
     },
     /**
      *  Adds a history entry to the top of the tool when a line is changed.
-     *  
+     *
      *  @param lineid int unique id to attach to aded entry
      */
     prependEntry: function(lineid){
@@ -2113,7 +2113,7 @@ var Linebreak = {
     },
     /**
      * Saves all textarea values on the entire page.
-     *  
+     *
      * @see Data.saveTranscription()
      */
     saveWholePage: function(){
@@ -2121,10 +2121,10 @@ var Linebreak = {
         $(".transcriptlet").addClass(".isUnsaved");
         Data.saveTranscription();
     },
-    /** 
+    /**
      * Records remaining linebreaking text for later use.
      * POSTs to updateRemainingText servlet.
-     *  
+     *
      * @param leftovers text to record
      */
     saveLeftovers: function(leftovers){
@@ -2155,13 +2155,13 @@ var Linebreak = {
     /**
      * Moves all text after the cursor to the following transcription textarea.
      * Asks to save value as linebreak remaining text if on the last line.
-     * 
-     * @return false to prevent Interaction.keyhandler() from propogating 
+     *
+     * @return false to prevent Interaction.keyhandler() from propogating
      */
     moveTextToNextBox: function() {
         if(!isMember && !permitModify)return false;
         var myfield = focusItem[1].find(".theText")[0];
-        focusItem[1].addClass("isUnsaved");       
+        focusItem[1].addClass("isUnsaved");
         //IE support
         if (document.selection) {
             //FIXME this is not actual IE support
@@ -2243,7 +2243,7 @@ var Interaction = {
     },
     /**
      * Passes a click through the designated object.
-     * 
+     *
      * @param ghost jQuery element to pass the click through
      * @param contain jQuery element within which to pass clicks
      */
@@ -2269,7 +2269,7 @@ var Interaction = {
     },
     /**
      * Places cursor at the beginning of textarea.
-     * 
+     *
      * @deprecated Use setCursorPosition(e,0)
      * @param e element textarea to place cursor within
      */
@@ -2278,11 +2278,14 @@ var Interaction = {
     },
     /**
      * Handles key events in textareas.
-     * 
+     *
      * @param e key event
      * @return boolean to accept keystroke
      */
      keyhandler: function(e) {
+         if (tpen.screen.liveTool !=="parsing") {
+             return false;
+         }
         var pressedkey=e.which;
         if(e.keyCode) pressedkey=e.keyCode;
         if(pressedkey==13) {  //pressed return, move any text in front of the cursor down to the next line
@@ -2305,7 +2308,7 @@ var Interaction = {
             if(pressedkey==38){ //up arrow
                 focusItem[1].find('.previousLine').click();
                 return false;
-            }           
+            }
             if (pressedkey == 36) { //home key, does not work in some browsers, which reserve it
                 $("#transcription1").focus();
                 return false;
@@ -2319,7 +2322,7 @@ var Interaction = {
     /**
      * @deprecated As of 2.0, prefer focusItem[0]
      * Updates currentFocus with current textarea.
-     * 
+     *
      * @param element active transcription textarea
      */
      newFocus: function(element) {
@@ -2327,7 +2330,7 @@ var Interaction = {
     },
     /**
      * Adds closing tag button to textarea.
-     * 
+     *
      * @param tagName text of tag for display in button
      * @param fullTag title of tag for display in button
      */
@@ -2355,11 +2358,11 @@ var Interaction = {
                 focusItem[1].children(".xmlClosingTags").append(closeTag);
             });
         //orderTags()
-        //FIXME: tags not in the right order, just the order they are added 
+        //FIXME: tags not in the right order, just the order they are added
     },
     /**
      * Removes tag from screen and database without inserting.
-     * 
+     *
      * @param thisTag tag element
      */
      destroyClosingTag: function(thisTag){
@@ -2372,7 +2375,7 @@ var Interaction = {
     },
     /**
      * Removes tag from screen and database without closing.
-     * 
+     *
      * @param thisTag tag element
      */
      removeClosingTag: function(thisTag){
@@ -2402,7 +2405,7 @@ var Interaction = {
             // tag is from this page, but a later line
                 $(this).hide();
             } else {
-            //tag is from a previous page or line    
+            //tag is from a previous page or line
                 $(this).show();
             }
         });
@@ -2411,7 +2414,7 @@ var Interaction = {
     /**
      * Builds live tags list from string and insert closing buttons.
      * Uses String[] from utils.openTagTracker.getTagsAfterFolio().
-     * 
+     *
      * @param tags comma separated collection of live tags and location properties
      */
      buildClosingTags: function(tags){
@@ -2419,7 +2422,7 @@ var Interaction = {
         var closingTags = [];
         for (i=0;i<tags.length;i++){
             thisTag = tags[i].split(",");
-            var tagID               =   thisTag[0];     
+            var tagID               =   thisTag[0];
             var tagName             =   thisTag[1];
             var tagFolioLocation    =   thisTag[2];
             var tagLineLocation     =   thisTag[3];
@@ -2431,13 +2434,13 @@ var Interaction = {
                     closingTags.push("' title='");
                 }
                 closingTags.push(tagName,"' data-line='",tagLineLocation,"' data-folio='",tagFolioLocation,"' data-tagID='",tagID,"'>","/",tagName,"</div>");
-            }    
+            }
         }
         focusItem[1].find(".xmlClosingTags").html(closingTags.join(""));
     },
     /**
      * Inserts a value into active textarea.
-     * 
+     *
      * @param theChar value to insert
      */
      addchar: function(theChar, closingTag)
@@ -2467,11 +2470,11 @@ var Interaction = {
         if (!this.addchar(escape(fullTag),escape(tagName))) {
             this.closeTag(escape(tagName), escape(fullTag));
         }
-        
+
     },
     /**
      * Inserts value at cursor location.
-     * 
+     *
      * @param myField element to insert into
      * @param myValue value to insert
      * @return int end of inserted value position
@@ -2502,7 +2505,7 @@ var Interaction = {
                 Preview.updateLine(myField);
                 var insertLength = startPos + unescape(myValue).length +
                     toWrap.length + 3 + closeTag.length;
-                return "wrapped" + insertLength;              
+                return "wrapped" + insertLength;
             } else {
                 myField.value = myField.value.substring(0, startPos)
                     + unescape(myValue)
@@ -2520,7 +2523,7 @@ var Interaction = {
     },
     /**
      * Sets cursor position in form element.
-     * 
+     *
      * @param e element
      * @param position position for cursor
      */
@@ -2547,7 +2550,7 @@ var Interaction = {
     },
     /**
      * Navigates to selected page in project.
-     * 
+     *
      * @param dropdown select element listing pages
      */
      navigateTo: function(dropdown) {
@@ -2568,9 +2571,9 @@ var Interaction = {
             document.location='?p='+dropdown.value;
         }
     },
-    /** 
+    /**
      * Divides the screen and displays a tool on the right.
-     *  
+     *
      * @param tool  id of the tool to display
      * @param width integer of the img or form within the component
      */
@@ -2600,7 +2603,7 @@ var Interaction = {
         });
         Screen.updatePresentation(focusItem[1]);
     },
-    /** 
+    /**
      * Restores interface after shift key is released.
      */
      unShiftInterface: function(){
@@ -2610,7 +2613,7 @@ var Interaction = {
         .find("ui-resizable-handle").hide();
         $(document).mouseup();
     },
-    /** 
+    /**
      * Allows workspace to be moved up and down on the screen.
      * Requires shift key to be held down.
      */
@@ -2646,7 +2649,7 @@ var Interaction = {
             isUnadjusted = false;
         });
     },
-    /** 
+    /**
      * Allows manuscript image to be moved around.
      * Requires shift key to be held down.
      * Synchronizes movement of top and bottom images.
@@ -2699,7 +2702,7 @@ var Interaction = {
     },
     /**
      * Zooms in on the bounded area for a closer look.
-     * 
+     *
      * @param zoomOut: boolean to zoom in or out, prefer to use isZoomed
      */
     zoomBookmark: function(zoomOut){
@@ -2750,11 +2753,11 @@ var Interaction = {
                 "height"    : imgTopHeight
             });
             isZoomed = false;
-        }        
+        }
     },
     /**
      * Implements mouseZoom on the designated element.
-     * 
+     *
      * @param img string ID of img element to magnify
      */
     magnify: function(img){
@@ -2762,9 +2765,9 @@ var Interaction = {
             Interaction.mouseZoom($("#"+img));
 //        });
     },
-    /** 
+    /**
      * Creates a zoom on the image beneath the mouse.
-     *  
+     *
      * @param img jQuery img element to zoom on
      */
     mouseZoom: function($img){
@@ -2815,9 +2818,9 @@ var Interaction = {
           }, $img
         );
     },
-    /** 
+    /**
      * Builds div for use by Interaction.writeLines(imgToParse).
-     *  
+     *
      * @param thisLine transcriptlet element to represent
      * @param multiplier ratio to 1000px standard
      * @return complete div for addition to DOM
@@ -2828,7 +2831,7 @@ var Interaction = {
         var H = parseInt(thisLine.find(".lineHeight").val());
         var W = parseInt(thisLine.find(".lineWidth").val());
         var oH = ($.browser.opera) ?
-            [-1/$("#imgTopImg")[0].width,2/$("#imgTopImg")[0].height] : 
+            [-1/$("#imgTopImg")[0].width,2/$("#imgTopImg")[0].height] :
             [0,0]; //opera hack
         var newY = Page.convertPercent(Y/1000+oH[0],2);
         var newX = Page.convertPercent(X/originalX+oH[0],2);
@@ -2847,10 +2850,10 @@ var Interaction = {
         "</div>"];
         return lineOverlay.join("");
     },
-    /** 
+    /**
      * Overlays divs for each parsed line onto img indicated.
-     * Divs receive different classes in different 
-     *  
+     * Divs receive different classes in different
+     *
      * @param imgToParse img element lines will be represented over
      */
     writeLines: function(imgToParse){
@@ -2864,7 +2867,7 @@ var Interaction = {
     },
     /**
      *  Attaches highlight to active tool.
-     *  
+     *
      *  @param button element that was clicked
      */
     activateToolBtn: function(button){
@@ -2913,7 +2916,7 @@ var Data = {
     /**
      * Adds status class of isUnsaved.
      * isUnsaved is tested in several other functions.
-     * 
+     *
      * @see navigateTo(dropdown)
      * @see Data.saveTranscription()
      */
@@ -2921,7 +2924,7 @@ var Data = {
         if(isMember || permitModify || permitNotes){
             focusItem[1].addClass("isUnsaved");
         }
-    }, 
+    },
     /**
      * Caches manuscript image.
      */
@@ -3004,9 +3007,9 @@ var Data = {
             });
         }
     },
-    /** 
+    /**
      * Formats the date display with leading zero when needed.
-     *  
+     *
      * @param number number of day or month
      * @return int number with leading zero if needed
      */
@@ -3015,7 +3018,7 @@ var Data = {
     },
     /**
      *  Saves transcription object textual data.
-     *  
+     *
      *  @param transcription String from main textarea value
      *  @param notes String from notes section
      *  @param lineid int unique line id
@@ -3049,9 +3052,9 @@ var Data = {
             },
             timeout: 5000,
             dataType: "html"
-        });  
+        });
     },
-    /** 
+    /**
      * Records the values of the current and immediately previous transcriptions.
      * Checks for changes with isUnsaved before executing.
      */
@@ -3076,7 +3079,7 @@ var Data = {
     },
     /**
      * Checks for successful saving of transcription data.
-     * 
+     *
      * @param data string returned from saveTranscription POST
      * @param saveText string sent to saveTranscription POST
      */
@@ -3091,7 +3094,7 @@ var Data = {
 };
 /**
  * Updates manuscript image within compare tool.
- * 
+ *
  * @param dropdown select element within compare tool
  */
 function compareTo(dropdown){
@@ -3301,7 +3304,7 @@ $(function() {
             })
             .find(".destroyTag").remove();
         }
-    },".tags");   
+    },".tags");
     $(".exitPage").click(function(event) {
       var thisLink = $(this).attr("href");
       if (isUnsaved()) {
@@ -3369,7 +3372,7 @@ $(function() {
             $(this).addClass("ui-state-active")
                 .children(".ui-icon-triangle-1-e").switchClass("ui-icon-triangle-1-e","ui-icon-triangle-1-s").end()
                 .siblings("span").removeClass("ui-state-active")
-                .children(".ui-icon-triangle-1-s").switchClass("ui-icon-triangle-1-s","ui-icon-triangle-1-e");          
+                .children(".ui-icon-triangle-1-s").switchClass("ui-icon-triangle-1-s","ui-icon-triangle-1-e");
             $(this).next("div").slideDown();
         }
     if (thisID == "adjustLines") {
@@ -3539,7 +3542,7 @@ $(function() {
             var columnSet = $(".parsingColumn");
             $("#reparseColumn").html('<span class="left ui-icon ui-icon-refresh"></span>Submit '+columnSet.size()+' for Reparsing');
         }
-    }); 
+    });
     $("#destroyPage").click(function(){
         if(!isMember && !permitParsing)return false;
         $(".parsingColumn").each(function(){
@@ -3762,7 +3765,7 @@ $(function() {
             mouseenter: function(){
                 var dims = $(this).parents(".historyEntry").children(".historyRevert");
                 dims.html($(this).attr("title")).show();
-            }, 
+            },
             mouseleave: function(){
                 $(this).parents(".historyEntry").children(".historyRevert").html("").hide();
             },
@@ -3810,7 +3813,7 @@ $(function() {
         };
         $(this).show();
     });
-    $("#abbrevGroups").change(function(){   
+    $("#abbrevGroups").change(function(){
         $("#abbrevSplit").addClass("ui-state-disabled");
         $("#abbrevLabels option").remove();
         abbrevLabelsAll.children("."+$("#abbrevGroups option:selected").val()).clone(true).appendTo("#abbrevLabels");
@@ -3842,7 +3845,7 @@ $(function() {
 //            $("#abbrevBtn").click();
 //        }
         return false;
-    });       
+    });
     $("#imageBtn").click(function(event){
         liveTool = "image";
 //        Interaction.activateToolBtn(this);
@@ -3881,7 +3884,7 @@ $(function() {
 //    });
     $("#paleographyBtn").click(function(){
         if ($(this).attr('isready') == "true"){
-            window.open('paleo.jsp?'+location.href.match(/\jsp\?(.*)/)[1]);          
+            window.open('paleo.jsp?'+location.href.match(/\jsp\?(.*)/)[1]);
         } else {
             alert('This page has not been analyzed yet. Please try later.');
         }
@@ -3938,7 +3941,7 @@ $(function() {
         Parsing.hideWorkspaceForParsing();
         $(".actions").hide();
         $("#confirmParsingInst").show();
-    });    
+    });
     $(".iframeTools").click(function(event){
         liveTool = $(this).attr("id");
 //        Interaction.activateToolBtn(this);
@@ -3967,7 +3970,7 @@ $(function() {
         Preview.format();
         if(isFullscreen)isUnadjusted = true;
         isFullscreen = false;
-        $("#previewDiv").height(Page.height()-22);        
+        $("#previewDiv").height(Page.height()-22);
         Interaction.splitScreen("previewSplit", 600,event);
         // Scroll to current page after transition
         window.setTimeout(Preview.scrollToCurrentPage, 800);
@@ -4051,7 +4054,7 @@ $(function() {
             var btLength = brokenText.length;
             $("#lbText").html(function(index,html){
                 return html.split(unescape(linebreakString)).join(decodeURI(linebreakString)+"<br/>");
-            });        
+            });
         } else {
             alert("Please enter a string for linebreaking first.");
         }

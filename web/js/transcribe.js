@@ -2265,15 +2265,15 @@ tpen.screen.toggleMoveImage = function (event) {
         fullTopImage();
         $("#imgTop")
             .mousedown(moveImg) //This will handle the mouse up
-    } 
+    }
     else {
         $(document).unbind("mousemove"); //This is what we needed from the mousup event
-        tpen.screen.isMoving = false; //This is what we needed from the mouseup event. 
+        tpen.screen.isMoving = false; //This is what we needed from the mouseup event.
         tpen.screen.toggleMove = false;
         updatePresentation(tpen.screen.focusItem[1]);
         $(".lineColIndicatorArea").show();
         $("#imgTop, #imgBottom").css("cursor", "");
-       
+
     }
 };
 
@@ -3556,11 +3556,9 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
             var currentLine = $(transcriptlets[i]);
             if(i === transcriptlets.length -1){
                 updateLine(currentLine, false, false);
-                setTimeout(function(){ 
-                    if(relocate){
-                        window.location.href=relocate; 
-                    }
-                }, 800);
+                if(relocate){
+                    setTimeout(function(){ window.location.href=relocate; }, 800);
+                }
             }
             else{
                 updateLine(currentLine, false, false);
@@ -5379,7 +5377,7 @@ tpen.screen.peekZoom = function(cancel){
                 return false;
             }
             $(".lineColIndicatorArea").fadeOut();
-            tpen.screen.peekMemory = [parseFloat(topImg.css("top")),parseFloat(btmImg.css("top")),$("#imgTop").css("height")]; 
+            tpen.screen.peekMemory = [parseFloat(topImg.css("top")),parseFloat(btmImg.css("top")),$("#imgTop").css("height")];
             //For some reason, doing $("#imgTop").height() and getting the integer value causes the interface to be broken when restored in the else below, even though it is the same value.
             $("#imgTop").css({
                 "height"    : line.height() * zoomRatio + "px"
@@ -5415,7 +5413,7 @@ tpen.screen.peekZoom = function(cancel){
                 "height"    : tpen.screen.peekMemory[2]
             });
             $(".lineColIndicatorArea").fadeIn();
-            tpen.screen.isPeeking = false; 
+            tpen.screen.isPeeking = false;
         }
     };
 

@@ -3556,7 +3556,11 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
             var currentLine = $(transcriptlets[i]);
             if(i === transcriptlets.length -1){
                 updateLine(currentLine, false, false);
-                setTimeout(function(){ window.location.href=relocate; }, 800);
+                setTimeout(function(){ 
+                    if(relocate){
+                        window.location.href=relocate; 
+                    }
+                }, 800);
             }
             else{
                 updateLine(currentLine, false, false);
@@ -4969,7 +4973,7 @@ var Linebreak = {
                 tpen.screen.focusItem[1].find(".nextLine").click();
             }
         }
-        Data.saveTranscription("");
+        //Data.saveTranscription("");
         return false;
     }
 };

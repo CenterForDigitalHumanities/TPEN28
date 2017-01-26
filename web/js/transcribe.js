@@ -3556,7 +3556,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
             var currentLine = $(transcriptlets[i]);
             if(i === transcriptlets.length -1){
                 updateLine(currentLine, false, false);
-                if(relocate.length){
+                if(relocate){
                     setTimeout(function(){ window.location.href=relocate; }, 800);
                 }
             }
@@ -4971,7 +4971,7 @@ var Linebreak = {
                 tpen.screen.focusItem[1].find(".nextLine").click();
             }
         }
-        Data.saveTranscription("");
+        //Data.saveTranscription("");
         return false;
     }
 };

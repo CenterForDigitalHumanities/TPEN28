@@ -1552,11 +1552,11 @@ button.selected{
 }
 
 .splitBlock.selected{
-    background-color: rgb(189, 35, 49);
-    color:white;
+    //background-color: rgb(189, 35, 49);
+    /*color:white;*/
 }
 .splitBlock.selected.danger{
-/*    background-color: rgb(189, 35, 49);*/
+    background-color: rgb(189, 35, 49);
     color:#fffdd0 !important;
 }
 

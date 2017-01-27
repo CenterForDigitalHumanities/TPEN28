@@ -1591,7 +1591,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
                     event.preventDefault();
                     event.stopPropagation();
                     //find the index in the special chars field and insert it.
-                    var hotkey = $("#charactersPopin").children().eq(String.fromCharCode(event.which));
+                    var hotkey = $("#charactersPopin").children().eq(String.fromCharCode(event.which)-1);
                     hotkey.click(); //populating to the text field fires in onclick to this element, we have to register the change.
                 }
                 else if(event.ctrlKey && event.which === 36){ //HOME key.  Jump to first line.

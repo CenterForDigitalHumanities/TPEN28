@@ -2091,11 +2091,6 @@ $(document).on("click",".fullScreenTrans",fullPage);
             }
         },".historyOptions span");
 
-        //After 10 seconds of being on the page, we want to start preloading images.
-        window.setTimeout(function(){
-            console.log("It is now 15 seconds after page load.  Lets get the images");
-            preloadFolioImages();
-        }, 15000);
         $("#helpHeaders a").click(function(e){
             // fix scrolling from maybe center div? #290 on github
             e.preventDefault();

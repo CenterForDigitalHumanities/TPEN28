@@ -1175,6 +1175,10 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 };
                 image2.src = "images/missingImage.png";
             }
+            window.setTimeout(function(){
+                console.log("Lets get the images");
+                preloadFolioImages();
+            }, 15000);
 
         }; // the extra () ensures this only runs once.
         image.onerror =function(){

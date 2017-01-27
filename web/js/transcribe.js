@@ -50,7 +50,8 @@ var tpen = {
         imgTopPositionRatio: 1,
         imgBottomPositionRatio:1,
         originalCanvasHeight : 1000, //The canvas height when initially loaded into the transcription interface.
-        originalCanvasWidth: 1 //The canvas width when initially loaded into the transcrtiption interface.
+        originalCanvasWidth: 1, //The canvas width when initially loaded into the transcrtiption interface.
+        mode: "LTR"
     },
     user: {
         isAdmin: false,
@@ -1353,17 +1354,6 @@ function switchToClassicTranscription(){
     document.location.href = newURL;
 }
 
-//https://github.com/Teun/thenBy.js/blob/master/README.md
-    /* Copyright 2013 Teun Duynstee Licensed under the Apache License, Version 2.0 */
-    //This is a helper function for drawLinesDesignateColumns()
-function firstBy(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}
-        function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r)
-            {var u=r;r=function(n){return n[u]?n[u]:""}}if(1===r.length)
-            {var i=r,o=e.ignoreCase?t:n;r=function(n,t){return o(i(n))<o(i(t))?-1:o(i(n))>o(i(t))?1:0}}
-            return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){return n=r(n,t),n.thenBy=u,n}
-        function u(n,t){var u=this;return n=r(n,t),e(function(t,r){return u(t,r)||n(t,r)})}return e;
-    }
-    
 
 /*
  * Reorder the array of lines into the correct order for an RTL interface.  Return this back
@@ -1371,7 +1361,6 @@ function firstBy(){function n(n){return n}function t(n){return"string"==typeof n
  * 
  */
 function reorderLinesForRTL(lines, tool){
-    
     var firstBy=function(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}
         function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r)
             {var u=r;r=function(n){return n[u]?n[u]:""}}if(1===r.length)
@@ -1399,9 +1388,83 @@ function reorderLinesForRTL(lines, tool){
                     return LINEAy - LINEBy;
                 }
             })
-            
     );
-    drawLinesDesignateColumns(lines, tool, false);
+    tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = lines;
+    tpen.screen.focusItem[0] = null;
+    tpen.screen.focusItem[1] = null;
+    drawLinesDesignateColumns(lines, tool, false, "RTL");
+}
+
+/*
+ * Reorder the array of lines into the correct order for an LTR interface.  Return this back
+ * to drawLinesDesignateColumns(), with the RTL flag false as to avoid the recursion loop. 
+ * 
+ * *Note the call the returns the lines from the database in getList() returns them already in LTR order.
+ * 
+ */
+function reorderLinesForLTR(lines){
+    var firstBy=function(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}
+        function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r)
+            {var u=r;r=function(n){return n[u]?n[u]:""}}if(1===r.length)
+            {var i=r,o=e.ignoreCase?t:n;r=function(n,t){return o(i(n))<o(i(t))?-1:o(i(n))>o(i(t))?1:0}}
+            return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){return n=r(n,t),n.thenBy=u,n}
+        function u(n,t){var u=this;return n=r(n,t),e(function(t,r){return u(t,r)||n(t,r)})}return e}();
+    
+    lines.sort(
+            //First sort by X in Descending order (largestX to smallestX). Then, keeping that ordering principle, order by greatest y.
+            firstBy(function (linea, lineb) {
+                if (linea.on && lineb.on){
+                    var LINEAxywh = linea.on.slice(linea.on.indexOf("#xywh=") + 6).split(",");
+                    var LINEBxywh  = lineb.on.slice(lineb.on.indexOf("#xywh=") + 6).split(",");
+                    var LINEAx = parseInt(LINEAxywh[0]);
+                    var LINEBx = parseInt(LINEBxywh[0]);
+                    return LINEAx - LINEBx;
+                }
+            })
+            .thenBy(function (linea, lineb) {
+                if (linea.on && lineb.on){
+                    var LINEAxywh = linea.on.slice(linea.on.indexOf("#xywh=") + 6).split(",");
+                    var LINEBxywh  = lineb.on.slice(lineb.on.indexOf("#xywh=") + 6).split(",");
+                    var LINEAy = parseInt(LINEAxywh[1]);
+                    var LINEBy = parseInt(LINEBxywh[1]);
+                    return LINEAy - LINEBy;
+                }
+            })
+    );
+    tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = lines;
+    tpen.screen.focusItem[0] = null;
+    tpen.screen.focusItem[1] = null;
+    drawLinesDesignateColumns(lines, tpen.screen.liveTool, false, "LTR"); 
+}
+
+/* Certain pieces in the interface need to move, based on which interface is active. */
+function performInterfaceShift(interface){
+    tpen.screen.mode = interface;
+    if(interface === "RTL"){
+        $("#toggleXML").hide();
+        $("#xmlTagPopin").hide();
+        $(".theText").attr("dir", "rtl");
+        $("#prevPage").after($("#toggleNotes")); //This moves note button to the left side
+        $("#toggleNotes").removeClass("pull-left").addClass("pull-right");
+        $("#captionsText").css("direction", "rtl");
+        $(".notes").each(function(){
+            var notes = $(this);
+            var textarea = $(this).prev();
+            textarea.before(notes); //This moves notes to the left side.  
+        });
+    }
+    else if(interface === "LTR"){
+        $("#toggleXML").show();
+        $(".theText").attr("dir", "ltr");
+        $("#nextPage").after($("#toggleNotes")); //This moves notes button to the right side. 
+        $("#toggleNotes").removeClass("pull-right").addClass("pull-left");
+        $("#captionsText").css("direction", "ltr");
+        $(".notes").each(function(){
+            var notes = $(this);
+            var textarea = $(this).next();
+            textarea.after(notes); //This moves notes to the right side.  
+        });
+    }
 }
 
 /* 
@@ -1410,8 +1473,10 @@ function reorderLinesForRTL(lines, tool){
  * must figure out line#s and column letters.  Only supporting
  * top to bottom && (LTR || RTL)
  * */
-function drawLinesDesignateColumns(lines, tool, RTL){
-    if(RTL){
+function drawLinesDesignateColumns(lines, tool, RTLflag, shift){
+    $(".lineColIndicatorArea").empty(); //Clear the lines that are drawn off the screen.  This is in case of an interface toggle.
+    $(".transcriptlet").remove(); //Clear out the transcriptlets, they are being redrawn.
+    if(RTLflag){
         reorderLinesForRTL(lines, tool);
         //^^ This will loop us back here with lines in a new order.
         return false;
@@ -1622,8 +1687,16 @@ function drawLinesDesignateColumns(lines, tool, RTL){
         colCounter++;
     }
     if (update && $(".transcriptlet").eq(0).length > 0){
+        if(shift === "RTL"){ 
+            //focusOnLastModified(); 
+            //ultimately this is a little weird when toggling interfaces.  If it were focused on the the first line in LTR
+            //it ends up focusing on the first line in the last column...need a fix for that.  FIXME
+            updatePresentation($(".transcriptlet").eq(0));
+        }
+        else{
+            focusOnLastModified();
+        }
         //updatePresentation($(".transcriptlet").eq(0));
-        focusOnLastModified();
         activateTool(tool);
     }
     else{
@@ -1664,7 +1737,11 @@ function drawLinesDesignateColumns(lines, tool, RTL){
             }
 
     });
-    $("#transTemplateLoading").hide(); //if we drew the lines, this can disappear.
+    if(tpen.screen.mode !== shift){
+        performInterfaceShift(shift);
+    }
+    tpen.screen.textSize();
+    $("#transTemplateLoading").hide(); //if we drew the lines, this can disappear.;
 }
 
 /* Make the transcription interface focus to the transcriptlet passed in as the parameter. */
@@ -6019,7 +6096,17 @@ function dailyTip() {
     $("#tip").html(thisTip);
 }
 
-
+//https://github.com/Teun/thenBy.js/blob/master/README.md
+/* Copyright 2013 Teun Duynstee Licensed under the Apache License, Version 2.0 */
+//This is a helper function for drawLinesDesignateColumns()
+function firstBy(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}
+    function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r)
+        {var u=r;r=function(n){return n[u]?n[u]:""}}if(1===r.length)
+        {var i=r,o=e.ignoreCase?t:n;r=function(n,t){return o(i(n))<o(i(t))?-1:o(i(n))>o(i(t))?1:0}}
+        return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){return n=r(n,t),n.thenBy=u,n}
+    function u(n,t){var u=this;return n=r(n,t),e(function(t,r){return u(t,r)||n(t,r)})}return e;
+}
+    
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?
 if (!window.console) window.console = {};

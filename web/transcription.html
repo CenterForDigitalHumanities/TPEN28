@@ -95,7 +95,7 @@
                     <a id="helpMe" title="Open Help <F1>" class="ui-state-default ui-button"><i class="fa fa-question" aria-hidden="true"></i></a>
                 </span>
                 <span class="trimSection" id="classicSection">
-                    <a id="classicSwitch" title="Switch back to the old interface" onclick="switchToClassicTranscription();" class="ui-state-default ui-button exitPage"><i class="fa fa-beer" aria-hidden="true"></i></a>
+                    <a id="classicSwitch" title="Switch back to the old interface" onclick="switchToClassicTranscription();" class="ui-state-default ui-button exitPage"><img src="images/classictpen.svg" alt="classic TPEN" aria-hidden="true" height="18" style="top: .3em;position: relative;"></a>
                 </span>
             </div>
         </div>
@@ -1456,13 +1456,13 @@ $(document).on("click",".fullScreenTrans",fullPage);
         $("#canvasControls").click(function(event){
             splitPage(event,"controls");
         });
-        
+
         $("#rtlSwitch").click(function(event){
-            //we will already have the lines dereferenced at this point, always. 
+            //we will already have the lines dereferenced at this point, always.
             var annos = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
             drawLinesDesignateColumns(annos, tpen.screen.liveTool, true);
         });
-        
+
         $("#ltrSwitch").click(function(event){
             var annos = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
             reorderLinesForLTR(annos);

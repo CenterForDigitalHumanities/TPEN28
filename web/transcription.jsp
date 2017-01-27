@@ -1479,5 +1479,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
                 %>
         </script>
 <%@include file="WEB-INF/includes/noscript.jspf" %>
+
+<a href="transcription.html?<%out.print(projectAppend);%>" style="position: fixed;bottom: 2rem;right: 2rem;border-radius: 50%;background-color: #A64129;color: #fff;z-index: 3;text-align: center;height: 4rem;width: 4rem;padding-top: 1rem;text-decoration: none;box-shadow: 2px 1px 4px rgba(0,0,0,.3);">2.8 update
+    <img alt="2.8" src="images/28tpen.svg" height="24" >
+</a>
     </body><%}%>
 </html>

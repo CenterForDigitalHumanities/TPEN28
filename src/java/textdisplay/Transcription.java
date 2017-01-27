@@ -398,7 +398,13 @@ public class Transcription {
     * @throws SQLException
     */
    public static Transcription[] getProjectTranscriptions(int projectID, int folioNumber) throws SQLException, IOException {
-      String query = "select id from transcription where projectID=? and folio=? order by x, y";
+      String query = "select id from transcription where projectID=? and folio=? order by x, y"; 
+      /* 
+         For different interfaces with a mixture of left to right, right to left, top to bottom, bottom to top, we cannot really rely on the order returned here.
+         When IIIF, the annotationList holds the older we can rely on.  For LTR, this query returns the lines in the order I want, but makes it a strange order for RTL.
+         Therefore, the front end will be assuming some responsibility for ordering these lines for their line# and column letter designation, until such time
+         as the column is a real object that we can control and assign these types of properties to.  
+      */
       Connection j = null;
       PreparedStatement ps = null;
       Stack<Transcription> orderedTranscriptions = new Stack();

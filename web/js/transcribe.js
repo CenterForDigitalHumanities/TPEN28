@@ -1225,7 +1225,6 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
 //            }
 //        }
 //        tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
-//        linesToScreen(lines, tool);
         throw new Error("Your annotation data is in an unsupported format and cannot be used with this tanscription service.");
         //TODO what should we do with the interface?  Is this OK?
         $("#transTemplateLoading")
@@ -1248,7 +1247,6 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
         //This situation means we got our lines from the SQL and there is no need to query the store.
         tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
         drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
-        //linesToScreen(lines, tool);
     }
     else {
         throw new Error("Your annotation data is in an unsupported format and cannot be used with this tanscription service.");
@@ -1354,8 +1352,70 @@ function switchToClassicTranscription(){
     var newURL = "transcription.jsp?projectID="+getURLVariable('projectID')+"&p="+getURLVariable('p');
     document.location.href = newURL;
 }
-/* Take line data, turn it into HTML elements and put them to the DOM */
-function linesToScreen(lines, tool){
+
+//https://github.com/Teun/thenBy.js/blob/master/README.md
+    /* Copyright 2013 Teun Duynstee Licensed under the Apache License, Version 2.0 */
+    //This is a helper function for drawLinesDesignateColumns()
+function firstBy(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}
+        function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r)
+            {var u=r;r=function(n){return n[u]?n[u]:""}}if(1===r.length)
+            {var i=r,o=e.ignoreCase?t:n;r=function(n,t){return o(i(n))<o(i(t))?-1:o(i(n))>o(i(t))?1:0}}
+            return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){return n=r(n,t),n.thenBy=u,n}
+        function u(n,t){var u=this;return n=r(n,t),e(function(t,r){return u(t,r)||n(t,r)})}return e;
+    }
+    
+
+/*
+ * Reorder the array of lines into the correct order for an RTL interface.  Return this back
+ * to drawLinesDesignateColumns(), with the RTL flag false as to avoid the recursion loop. 
+ * 
+ */
+function reorderLinesForRTL(lines, tool){
+    
+    var firstBy=function(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}
+        function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r)
+            {var u=r;r=function(n){return n[u]?n[u]:""}}if(1===r.length)
+            {var i=r,o=e.ignoreCase?t:n;r=function(n,t){return o(i(n))<o(i(t))?-1:o(i(n))>o(i(t))?1:0}}
+            return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){return n=r(n,t),n.thenBy=u,n}
+        function u(n,t){var u=this;return n=r(n,t),e(function(t,r){return u(t,r)||n(t,r)})}return e}();
+    
+    lines.sort(
+            //First sort by X in Descending order (largestX to smallestX). Then, keeping that ordering principle, order by greatest y.
+            firstBy(function (linea, lineb) {
+                if (linea.on && lineb.on){
+                    var LINEAxywh = linea.on.slice(linea.on.indexOf("#xywh=") + 6).split(",");
+                    var LINEBxywh  = lineb.on.slice(lineb.on.indexOf("#xywh=") + 6).split(",");
+                    var LINEAx = parseInt(LINEAxywh[0]);
+                    var LINEBx = parseInt(LINEBxywh[0]);
+                    return LINEBx - LINEAx;
+                }
+            })
+            .thenBy(function (linea, lineb) {
+                if (linea.on && lineb.on){
+                    var LINEAxywh = linea.on.slice(linea.on.indexOf("#xywh=") + 6).split(",");
+                    var LINEBxywh  = lineb.on.slice(lineb.on.indexOf("#xywh=") + 6).split(",");
+                    var LINEAy = parseInt(LINEAxywh[1]);
+                    var LINEBy = parseInt(LINEBxywh[1]);
+                    return LINEAy - LINEBy;
+                }
+            })
+            
+    );
+    drawLinesDesignateColumns(lines, tool, false);
+}
+
+/* 
+ * Take line data, turn it into HTML elements and put them to the DOM 
+ * The lines come from the back end in LTR order.  The function
+ * must figure out line#s and column letters.  Only supporting
+ * top to bottom && (LTR || RTL)
+ * */
+function drawLinesDesignateColumns(lines, tool, RTL){
+    if(RTL){
+        reorderLinesForRTL(lines, tool);
+        //^^ This will loop us back here with lines in a new order.
+        return false;
+    }
     $("#noLineWarning").hide();
     var letterIndex = 0;
     var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -1374,12 +1434,9 @@ function linesToScreen(lines, tool){
     var theWidth = image.width();
     $('#transcriptionCanvas').css('height', tpen.screen.originalCanvasHeight + "px");
     $('.lineColIndicatorArea').css('height', tpen.screen.originalCanvasHeight + "px");
-//    $('#transcriptionCanvas').css('height', originalCanvasHeight2 + "px");
-//    $('.lineColIndicatorArea').css('height', originalCanvasHeight2 + "px");
-    //can i use tpen.screen.originalCanvasHeight here?
     var ratio = 0;
-    //should be the same as originalCanvasWidth2/originalCanvasHeight2
     ratio = theWidth / theHeight;
+    
     for (var i = 0; i < lines.length; i++){
         var line = lines[i];
         var lastLine = {};
@@ -3590,10 +3647,11 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
 }
 
     function drawLinesOnCanvas(lines, parsing, tool){
+        var RTL = false;
         if (lines.length > 0){
             $("#transTemplateLoading").hide();
             $("#transcriptionTemplate").show();
-            linesToScreen(lines, tool);
+            drawLinesDesignateColumns(lines, tool, RTL);
         }
         else { //list has no lines
             if (parsing !== "parsing") {
@@ -5960,6 +6018,8 @@ function dailyTip() {
     var thisTip = tips[Math.floor(Math.random()*tips.length)];
     $("#tip").html(thisTip);
 }
+
+
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?
 if (!window.console) window.console = {};

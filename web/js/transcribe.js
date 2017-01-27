@@ -622,6 +622,10 @@ function loadTranscription(pid, tool){
                             break;
                         case "paleography" : label = false;
                             break;
+                        case "ltr" : tpen.screen.mode = "LTR";
+                            break;
+                        case "rtl" : tpen.screen.mode = "RTL";
+                            break;    
                     }
                     var splitToolSelector = $('<option splitter="' + tool
                         + '" class="splitTool">' + label + '</option>');
@@ -1465,6 +1469,7 @@ function performInterfaceShift(interface){
             textarea.after(notes); //This moves notes to the right side.  
         });
     }
+    tpen.screen.textSize();
 }
 
 /* 
@@ -1473,10 +1478,10 @@ function performInterfaceShift(interface){
  * must figure out line#s and column letters.  Only supporting
  * top to bottom && (LTR || RTL)
  * */
-function drawLinesDesignateColumns(lines, tool, RTLflag, shift){
+function drawLinesDesignateColumns(lines, tool, RTL, shift){
     $(".lineColIndicatorArea").empty(); //Clear the lines that are drawn off the screen.  This is in case of an interface toggle.
     $(".transcriptlet").remove(); //Clear out the transcriptlets, they are being redrawn.
-    if(RTLflag){
+    if(RTL){
         reorderLinesForRTL(lines, tool);
         //^^ This will loop us back here with lines in a new order.
         return false;
@@ -1687,15 +1692,17 @@ function drawLinesDesignateColumns(lines, tool, RTLflag, shift){
         colCounter++;
     }
     if (update && $(".transcriptlet").eq(0).length > 0){
-        if(shift === "RTL"){ 
-            //focusOnLastModified(); 
-            //ultimately this is a little weird when toggling interfaces.  If it were focused on the the first line in LTR
-            //it ends up focusing on the first line in the last column...need a fix for that.  FIXME
-            updatePresentation($(".transcriptlet").eq(0));
-        }
-        else{
-            focusOnLastModified();
-        }
+//        if(shift === "RTL"){ 
+//            //focusOnLastModified(); 
+//            //ultimately this is a little weird when toggling interfaces.  If it were focused on the the first line in LTR
+//            //it ends up focusing on the first line in the last column...need a fix for that.  FIXME
+//            focusOnLastModified
+//            updatePresentation($(".transcriptlet").eq(0));
+//        }
+//        else{
+//            
+//        }
+        focusOnLastModified();
         //updatePresentation($(".transcriptlet").eq(0));
         activateTool(tool);
     }
@@ -1737,10 +1744,13 @@ function drawLinesDesignateColumns(lines, tool, RTLflag, shift){
             }
 
     });
-    if(tpen.screen.mode !== shift){
-        performInterfaceShift(shift);
+//    if(tpen.screen.mode !== shift){
+//        performInterfaceShift(shift);
+//    }
+    if(tpen.screen.mode === "RTL"){
+        performInterfaceShift("RTL");
     }
-    tpen.screen.textSize();
+    
     $("#transTemplateLoading").hide(); //if we drew the lines, this can disappear.;
 }
 
@@ -3728,7 +3738,10 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
         if (lines.length > 0){
             $("#transTemplateLoading").hide();
             $("#transcriptionTemplate").show();
-            drawLinesDesignateColumns(lines, tool, RTL);
+            if(tpen.screen.mode==="RTL"){
+                RTL = true;
+            }
+            drawLinesDesignateColumns(lines, tool, RTL, "");
         }
         else { //list has no lines
             if (parsing !== "parsing") {

@@ -33,7 +33,7 @@ import user.User;
 public class Tool {
 
    public enum tools {
-      preview, compare, parsing, abbreviation, history, linebreak, fullpage, paleography, sciat, unknown, page, xml, characters, inspector
+      preview, compare, parsing, abbreviation, history, linebreak, fullpage, paleography, sciat, unknown, page, xml, characters, inspector, rtl, ltr
    };
 
    public Tool(tools toolName, int UID) throws SQLException {
@@ -169,6 +169,12 @@ public class Tool {
                 break;
                 case "inspector":
                     toret[ctr] = tools.inspector;
+                break;
+                case "rtl":
+                    toret[ctr] = tools.rtl;
+                break;
+                case "ltr":
+                    toret[ctr] = tools.ltr;
                 break;
                 default:
                     toret[ctr] = tools.unknown;

@@ -742,7 +742,11 @@
                                                     newTool = Tool.tools.page;
                                                 } else if (userTools[i].compareTo("inspector") == 0) {
                                                     newTool = Tool.tools.inspector;
-                                                } else {
+                                                } else if(userTools[i].compareTo("rtl") == 0){
+                                                    newTool = Tool.tools.rtl;
+                                                } else if(userTools[i].compareTo("ltr") == 0){
+                                                    newTool = Tool.tools.ltr;
+                                                }else {
                                                     continue;
                                                 }
                                                 if (newTool != null) {
@@ -768,8 +772,8 @@
                                         String[] toolName = new String[16];
                                         Tool.tools[] TOOLS = 
                                         {Tool.tools.abbreviation, Tool.tools.compare, Tool.tools.parsing, Tool.tools.preview, Tool.tools.history, Tool.tools.linebreak, Tool.tools.fullpage, Tool.tools.paleography,
-                                                Tool.tools.xml, Tool.tools.characters, Tool.tools.page, Tool.tools.inspector};
-                                        for (int i = 0; i < 11; i++) {
+                                                Tool.tools.xml, Tool.tools.characters, Tool.tools.page, Tool.tools.inspector, Tool.tools.rtl, Tool.tools.ltr};
+                                        for (int i = 0; i < 13; i++) {
                                             toolCheck[i] = (Tool.isToolActive(TOOLS[i], UID)) ? "checked=true" : "";
                                         }
                                     %>
@@ -784,6 +788,8 @@
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[8]);%> value="characters" />Special Characters</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[10]);%> value="inspector" />Inspect</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[9]);%> value="page" />Page Tools</label>
+                                    <!--<label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[13]);%> value="ltr" />LTR mode</label>-->
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[12]);%> value="rtl" />RTL mode</label>
 
                                     <span class="ui-helper-clearfix"></span><h4 id="projectTools" class="clear-left" title="These options are tied to each project">Project Tools
                                         <a class="ui-icon ui-icon-plusthick" id="addTool" title="Add a Tool" onclick="$('#addingTools').fadeIn();">Add a Tool</a>

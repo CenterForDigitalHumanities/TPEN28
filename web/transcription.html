@@ -205,6 +205,14 @@
                             Page Tools
                             <i class="fa fa-file-image-o"></i>
                         </button>
+<!--                        <button style="display:inline-block;" id="ltrSwitch" title="Change Interface">
+                            LTR
+                            <i class="fa fa-beer"></i>
+                        </button>
+                        <button style="display:inline-block;" id="rtlSwitch" title="Change Interface">
+                            RTL
+                            <i class="fa fa-file-image-o"></i>
+                        </button>-->
                         <button id="magnify1" class="magnifyBtn let" magnifyImg="trans" title="Inspect Transcription Image" >
                             Inspect
                             <i class="fa fa-search-plus"></i>
@@ -1447,6 +1455,17 @@ $(document).on("click",".fullScreenTrans",fullPage);
 
         $("#canvasControls").click(function(event){
             splitPage(event,"controls");
+        });
+        
+        $("#rtlSwitch").click(function(event){
+            //we will already have the lines dereferenced at this point, always. 
+            var annos = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
+            drawLinesDesignateColumns(annos, tpen.screen.liveTool, true);
+        });
+        
+        $("#ltrSwitch").click(function(event){
+            var annos = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
+            reorderLinesForLTR(annos);
         });
 
 //        var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");

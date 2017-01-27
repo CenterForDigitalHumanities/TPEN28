@@ -784,10 +784,10 @@
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[4]);%> value="history" />History Tool</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[5]);%> value="linebreak" />Linebreaking Tool</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[6]);%> value="fullpage" />View Full Page</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[7]);%> value="xml" />XML Tags</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[8]);%> value="characters" />Special Characters</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[10]);%> value="inspector" />Inspect</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[9]);%> value="page" />Page Tools</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[8]);%> value="xml" />XML Tags</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[9]);%> value="characters" />Special Characters</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[11]);%> value="inspector" />Inspect</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[10]);%> value="page" />Page Tools</label>
                                     <!--<label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[13]);%> value="ltr" />LTR mode</label>-->
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[12]);%> value="rtl" />RTL mode</label>
 

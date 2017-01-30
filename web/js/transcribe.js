@@ -197,24 +197,23 @@ function createPreviewPages(){
                 currentPage = "currentPage";
             }
             if (currentFolioToUse.otherContent && currentFolioToUse.otherContent.length > 0){
-                var listOfAnnos = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
-                //var allAnnoLists = currentFolioToUse.otherContent;
-                //for(var j=0; j<allAnnoLists.length; j++){
-                    //var thisList = allAnnoLists[j];
-                makePreviewPage(listOfAnnos, pageLabel, currentPage, i, 0, listOfAnnos.length);
-                //}
+                // Need to make sure the race condition of the lines being RTL in dereferencedList is beat here, or popluatePreview will be wonky.  
+                var listOfAnnos = getList(tpen.manifest.sequences[0].canvases[i], false, false, i);
+                if(tpen.screen.mode === "RTL"){
+                    listOfAnnos = reorderLinesForRTL(listOfAnnos, tpen.screen.liveTool, true);
+                }
+                makePreviewPage(listOfAnnos, pageLabel, currentPage, i);
             }
             else{
                 console.warn("otherContent was null or empty, passing an empty array of lines");
-                populatePreview([], pageLabel, currentPage, 0);
+                populatePreview([], pageLabel, currentPage, i);
             }
         }
 
 }
 
-function makePreviewPage(thisList, pageLabel, currentPage, i, j, l){
-    var listOfAnnos = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
-    populatePreview(listOfAnnos, pageLabel, currentPage, i);
+function makePreviewPage(thisList, pageLabel, currentPage, i, RTL){
+    populatePreview(thisList, pageLabel, currentPage, i, RTL);
 //    if(data.proj == tpen.project.id){
 //        var linesForThisProject = data.resources;
 //        populatePreview(linesForThisProject, pageLabel, currentPage, i);
@@ -237,6 +236,10 @@ function gatherAndPopulate(currentOn, pageLabel, currentPage, i){
 
 /* Populate the line preview interface. */
 function populatePreview(lines, pageLabel, currentPage, order){
+    var RTL = false;
+    if(tpen.screen.mode === "RTL"){
+        RTL = true;
+    }
     var isCurrent =(tpen.screen.currentFolio===order);
     var letterIndex = 0;
     var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -254,7 +257,7 @@ function populatePreview(lines, pageLabel, currentPage, order){
         currentLineXYWH = currentLineXYWH.split(",");
         var currentLineX = currentLineXYWH[0];
         var line = lines[j];
-        var lineID = line["@id"];
+        var lineID = line["tpen_line_id"];
         var rawLineText = line.resource["cnt:chars"];
         rawLineText = $("<div/>").text(rawLineText).html();
         var lineText = highlightTags(rawLineText);
@@ -269,6 +272,10 @@ function populatePreview(lines, pageLabel, currentPage, order){
             if (abs > 0){
                 letterIndex++;
                 num = 0;
+                if(RTL){ //we need to reset the counters a bit differently...
+                    num = 1;
+                    col = letters[letterIndex];
+                }
             }
         }
         var previewLine = $('<div class="previewLine" data-lineNumber="' + j + '">'
@@ -622,7 +629,8 @@ function loadTranscription(pid, tool){
                             break;
                         case "paleography" : label = false;
                             break;
-                        case "ltr" : tpen.screen.mode = "LTR";
+                        case "ltr" : 
+                            tpen.screen.mode = "LTR";
                             break;
                         case "rtl" : tpen.screen.mode = "RTL";
                             break;    
@@ -1214,7 +1222,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
         $('.transcriptionImage').attr('src', "images/missingImage.png");
         throw Error("The canvas is malformed.  No 'images' field in canvas object or images:[0]['@id'] does not exist.  Cannot draw lines.");
     }
-    createPreviewPages(); //each time you load a canvas to the screen with all of its updates, remake the preview pages.
+    //createPreviewPages(); //each time you load a canvas to the screen with all of its updates, remake the preview pages.
 }
 
 /*
@@ -1368,7 +1376,7 @@ function switchToClassicTranscription(){
  * to drawLinesDesignateColumns(), with the RTL flag false as to avoid the recursion loop. 
  * 
  */
-function reorderLinesForRTL(lines, tool){
+function reorderLinesForRTL(lines, tool, preview){
     var firstBy=function(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}
         function r(r,e){if(e="number"==typeof e?{direction:e}:e||{},"function"!=typeof r)
             {var u=r;r=function(n){return n[u]?n[u]:""}}if(1===r.length)
@@ -1397,10 +1405,16 @@ function reorderLinesForRTL(lines, tool){
                 }
             })
     );
-    tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = lines;
-    tpen.screen.focusItem[0] = null;
-    tpen.screen.focusItem[1] = null;
-    drawLinesDesignateColumns(lines, tool, false, "RTL");
+    if(preview){
+        //Not sure we want the reordering for building prevew pages to be authoritative in setting dereferencedLists value
+    }
+    else{
+        tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = lines;
+        tpen.screen.focusItem[0] = null;
+        tpen.screen.focusItem[1] = null;
+        drawLinesDesignateColumns(lines, tool, false, "RTL");
+    }
+    return lines;
 }
 
 /*
@@ -1443,6 +1457,7 @@ function reorderLinesForLTR(lines){
     tpen.screen.focusItem[0] = null;
     tpen.screen.focusItem[1] = null;
     drawLinesDesignateColumns(lines, tpen.screen.liveTool, false, "LTR"); 
+    return lines;
 }
 
 /* Certain pieces in the interface need to move, based on which interface is active. */
@@ -1455,6 +1470,7 @@ function performInterfaceShift(interface){
         $("#prevPage").after($("#toggleNotes")); //This moves note button to the left side
         $("#toggleNotes").removeClass("pull-left").addClass("pull-right");
         $("#captionsText").css("direction", "rtl");
+        
         $(".notes").each(function(){
             var notes = $(this);
             var textarea = $(this).prev();
@@ -1482,13 +1498,16 @@ function performInterfaceShift(interface){
  * must figure out line#s and column letters.  Only supporting
  * top to bottom && (LTR || RTL)
  * */
-function drawLinesDesignateColumns(lines, tool, RTL, shift){
+function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
     $(".lineColIndicatorArea").empty(); //Clear the lines that are drawn off the screen.  This is in case of an interface toggle.
     $(".transcriptlet").remove(); //Clear out the transcriptlets, they are being redrawn.
     if(RTL){
-        reorderLinesForRTL(lines, tool);
+        reorderLinesForRTL(lines, tool, false);
         //^^ This will loop us back here with lines in a new order.
         return false;
+    }
+    if(preview){
+        
     }
     $("#noLineWarning").hide();
     var letterIndex = 0;
@@ -1728,7 +1747,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift){
             //when a user stops typing for 2 seconds, fire an update to get the new text.
             if(e.which !== 18){
                 typingTimer = setTimeout(function(){
-                    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+                    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
                     var idToCheckFor = lineToUpdate.attr("lineserverid").replace("line/", "");
                     var newText = lineToUpdate.find(".theText").val();
                     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
@@ -1754,8 +1773,8 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift){
     if(tpen.screen.mode === "RTL"){
         performInterfaceShift("RTL");
     }
-    
     $("#transTemplateLoading").hide(); //if we drew the lines, this can disappear.;
+    createPreviewPages(); //Every time we load a canvas to the screen with its new updates, we want to update previewPages as well.
 }
 
 /* Make the transcription interface focus to the transcriptlet passed in as the parameter. */
@@ -2744,6 +2763,9 @@ function splitPage(event, tool) {
     if(tool === "preview"){
         $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
         $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
+        if(tpen.screen.mode === "RTL"){
+            $(".previewText").css("text-align", "right"); //For a more natural right to left reading?
+        }
     }
 
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
@@ -2823,6 +2845,10 @@ function splitPage(event, tool) {
         var splitSrc = $(".transcriptionImg:first").attr("src");
         $("#historyViewer").find("img").attr("src", splitSrc);
         History.showLine(tpen.screen.focusItem[1].attr("lineserverid"));
+        if(tpen.screen.mode === "RTL"){
+            $(".historyText").css("text-align", "right"); //For a more natural right to left reading?
+        }
+        
     }
     if(tool === "fullpage"){
         $("#fullpageSplitCanvas").height($("#fullPageImg").height());
@@ -3650,7 +3676,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
     //var currentAnnoListResources = [];
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2; //Can I use tpen.screen.originalCanvasHeight and Width?
-    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
         //Go over each line from the column resize.
     if(parsing){
         $.each(linesInColumn, function(){
@@ -3763,18 +3789,25 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
         updateURL("p");
     }
 
-    function getList(canvas, drawFlag, parsing, tool){ //this could be the @id of the annoList or the canvas that we need to find the @id of the list for.
+    function getList(canvas, drawFlag, parsing, preview){ //this could be the @id of the annoList or the canvas that we need to find the @id of the list for.
         var lists = [];
         var annos = [];
-        if(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources){
-            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0];
-            return tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources;
+        var canvasIndex = 0;
+        if(preview || preview === 0){
+            canvasIndex = preview;
         }
-        if(tpen.screen.dereferencedLists[tpen.screen.currentFolio]){
-            annos = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
+        else{
+            canvasIndex = tpen.screen.currentFolio;
+        }
+        if(tpen.manifest.sequences[0].canvases[canvasIndex].resources){ //It is classic data, no otherContent will be available, just return these lines.
+            tpen.screen.dereferencedLists[canvasIndex] = tpen.manifest.sequences[0].canvases[canvasIndex].resources;
+            return tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].resources;
+        }
+        if(tpen.screen.dereferencedLists[canvasIndex]){
+            annos = tpen.screen.dereferencedLists[canvasIndex].resources;
             //tpen.screen.currentAnnoListID = tpen.screen.dereferencedLists[tpen.screen.currentFolio]["@id"];
             if(drawFlag){
-                drawLinesOnCanvas(annos, parsing, tool);
+                drawLinesOnCanvas(annos, parsing, tpen.screen.liveTool);
             }
             return annos;
         }
@@ -3788,26 +3821,28 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
             }
             for(var i=0; i<lists.length; i++){
                 var list = lists[i];
-                $.get(list, function(annoListData){
-                    if(annoListData.proj === parseInt(tpen.project.id)){
-                        tpen.screen.currentAnnoListID = list;
-                        tpen.screen.dereferencedLists[tpen.screen.currentFolio] = annoListData;
-                        if (annoListData.resources) {
-                            var resources = annoListData.resources;
+//                $.get(list, function(annoListData){
+                    if(list.proj === parseInt(tpen.project.id)){
+                        if(!preview){
+                            tpen.screen.currentAnnoListID = list;
+                            tpen.screen.dereferencedLists[canvasIndex] = list;
+                        }
+                        if (list.resources) {
+                            annos = list.resources;
                             //Here is when we would set empty, but its best just to return the empty array.  Maybe get rid of "empty" check in this file.
-                            for(var l=0; l<resources.length; l++){
-                                var currentResource = resources[l];
-                                if(currentResource.on.startsWith(canvas['@id'])){
-                                     annos.push(currentResource);
-                                 }
-                            }
+//                            for(var l=0; l<resources.length; l++){
+//                                var currentResource = resources[l];
+//                                if(currentResource.on.startsWith(canvas['@id'])){
+//                                     annos.push(currentResource);
+//                                 }
+//                            }
                         }
                         if(drawFlag){
-                            drawLinesOnCanvas(annos, parsing, tool);
+                            drawLinesOnCanvas(annos, parsing, tpen.screen.liveTool);
                         }
                         return annos;
                     }
-                });
+ //               });
             }
         }
 
@@ -3821,7 +3856,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
  * */
 function updateLine(line, cleanup, updateList){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
-    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2;
     //Can I use tpen.screen.originalCanvasHeight and Width?  IDK yet, untested.
@@ -4087,7 +4122,7 @@ function saveNewLine(lineBefore, newLine){
                 "newcol":false
             });
             var currentFolio = tpen.screen.currentFolio;
-            var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+            var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
             if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
                 // if it IIIF, we need to update the list
                 if (beforeIndex == - 1){
@@ -4358,7 +4393,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     var removedText = $(".transcriptlet[lineserverid='" + lineid + "']").find(".theText").val();
     var params = new Array({name:'submitted',value:true},{name:'projectID',value:tpen.project.id});
     var currentFolio = parseInt(tpen.screen.currentFolio);
-    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
     var url = "updateLinePositions";
     var lineIDToRemove = parseInt(lineid.replace("line/", ""));
     params.push({name:"remove", value:lineIDToRemove});
@@ -4436,7 +4471,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
 
 /* Remove all transcriptlets in a column */
 function removeColumnTranscriptlets(lines, recurse){
-    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
     $("#parsingCover").show();
    // console.log("Remove column transcriptlets... "+lines.length);
     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
@@ -4669,28 +4704,6 @@ function bumpLine(direction, activeLine){
     activeLine.css("left", currentLineLeftPX);
     updateLine($(".transcriptlet[lineserverid='"+id+"']"), false, true);
 }
-
-
-    //UI effects for when a user decides to edit a line within the preview split tool.
-    function edit(line){
-        var focusLineID = $(line).siblings(".previewLineNumber").attr("lineserverid");
-        var transcriptionText = ($(line).hasClass("previewText")) ? ".theText" : ".notes";
-        var pair = $(".transcriptlet[lineserverid='"+focusLineID+"']").find(transcriptionText);
-        var transcriptlet = $(".transcriptlet[lineserverid='"+focusLineID+"']");
-        if ($(line).hasClass("currentPage")){
-          if (pair.parent().attr('id') !== tpen.screen.focusItem[1].attr('id')){
-              updatePresentation(transcriptlet);
-          }
-            line.focus();
-            $(line).keyup(function(){
-                //Data.makeUnsaved();
-                pair.val($(this).text());
-            });
-        }
-        else {
-            //console.log("NOt the current page.")
-        }
-    }
 
     function scrollToCurrentPage(){
         var pageOffset = $(".previewPage").filter(":first").height() + 20;
@@ -4951,7 +4964,7 @@ function replaceURLVariable(variable, value){
 var Data = {
     /* Save all lines on the canvas */
     saveTranscription:function(relocate){
-        var linesAsJSONArray = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false);
+        var linesAsJSONArray = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
         batchLineUpdate(linesAsJSONArray, relocate, false);
     }
 }
@@ -5353,18 +5366,25 @@ var Help = {
      *
      *  @param line jQuery object, line edited in the preview tool
      */
+        //UI effects for when a user decides to edit a line within the preview split tool.
     edit: function(line){
+        var focusLineID = $(line).siblings(".previewLineNumber").attr("lineserverid");
+        var transcriptionText = ($(line).hasClass("previewText")) ? ".theText" : ".notes";
+        var pair = $(".transcriptlet[lineserverid='"+focusLineID+"']").find(transcriptionText);
+        var transcriptlet = $(".transcriptlet[lineserverid='"+focusLineID+"']");
         if ($(line).hasClass("currentPage")){
-            var focusLineNumber = $(line).siblings(".previewLineNumber").attr("data-linenumber");
-            var focusFolio = $(line).parents(".previewPage").attr("data-pagenumber");
-            var transcriptionText = ($(line).hasClass("previewText")) ? ".theText" : ".notes";
-            var pair = $(".transcriptlet[lineid='"+focusLineNumber+"']").find(transcriptionText);
-          if (pair.parent().attr('id') !== tpen.screen.focusItem[1].attr('id')) updatePresentation(pair.parent());
-                line.focus();
+            if (transcriptlet.attr('id') !== tpen.screen.focusItem[1].attr('id')){
+                updatePresentation(transcriptlet);
+            }
+            line.focus();
             $(line).keyup(function(){
-                // Data.makeUnsaved();
+                //Data.makeUnsaved();
                 pair.val($(this).text());
+                transcriptlet.find(".theText").keyup();
             });
+        }
+        else {
+            //console.log("NOt the current page.")
         }
     },
     /**

@@ -5941,10 +5941,10 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         if (historyText.indexOf("- empty -") !== -1) historyText = "";
         if (historyNotes.indexOf("- empty -") !== -1) historyNotes = "";
         var lineid = entry.parent(".historyLine").attr("id").substr(7);
-        var pair = $(".transcriptlet[lineserverid='"+lineid+"']");
+        var pair = $(".transcriptlet[lineserverid='line/"+lineid+"']");
         pair.addClass("isUnsaved").find(".theText").val(historyText);
         pair.find(".notes").val(historyNotes);
-        updateLine($(".transcriptlet[lineserverid='"+lineid+"']"), false, false);
+        updateLine($(".transcriptlet[lineserverid='line/"+lineid+"']"), false, false);
     },
     /**
      *  Revert only the parsing value from the history entry.
@@ -5959,9 +5959,9 @@ tpen.screen.responsiveNavigation = function(severeCheck){
             left   : parseInt(entry.attr("lineleft")),
             top   : parseInt(entry.attr("linetop"))
         }
-        var thisTranscriptlet = $(".transcriptlet[lineserverid='"+lineid+"']");
+        var thisTranscriptlet = $(".transcriptlet[lineserverid='line/"+lineid+"']");
         var dummyBuild = ["<div id='dummy' style='display:none'",
-        " lineserverid='",lineid,     "'",
+        " lineserverid='line/",lineid,     "'",
         " lineleft='",   dims.left,  "'",
         " linetop='",    dims.top,   "'",
         " linewidth='",  dims.width, "'",

@@ -789,9 +789,14 @@
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[11]);%> value="inspector" />Inspect</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[10]);%> value="page" />Page Tools</label>
                                     <!--<label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[13]);%> value="ltr" />LTR mode</label>-->
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[12]);%> value="rtl" />RTL mode</label>
-
-                                    <span class="ui-helper-clearfix"></span><h4 id="projectTools" class="clear-left" title="These options are tied to each project">Project Tools
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[12]);%> value="rtl" />RTL mode </label>
+                                    
+                                    <span class="ui-helper-clearfix"></span>
+                                    <span class="ui-icon ui-icon-alert left demoAlert"></span>
+                                    <span class="demoWarning">Right-To-Left has some limitations at this time. XML tags will not be available.
+                                        Exporting an RTL document may produce neither properly ordered nor RTL formatted text.</span>
+                                    
+                                    <h4 id="projectTools" class="clear-left" title="These options are tied to each project">Project Tools
                                         <a class="ui-icon ui-icon-plusthick" id="addTool" title="Add a Tool" onclick="$('#addingTools').fadeIn();">Add a Tool</a>
                                         <span class="left clear-left small">(Click on a label to edit the button name)</span></h4>
                                     <%

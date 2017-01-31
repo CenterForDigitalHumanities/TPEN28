@@ -794,7 +794,7 @@
                                     <span class="ui-helper-clearfix"></span>
                                     <span class="ui-icon ui-icon-alert left demoAlert"></span>
                                     <span class="demoWarning">Right-To-Left has some limitations at this time. XML tags will not be available.
-                                        Exporting an RTL document may produce neither properly ordered nor RTL formatted text.</span>
+                                        Exporting an RTL document may produce text that is neither properly ordered nor properly RTL formatted.</span>
                                     
                                     <h4 id="projectTools" class="clear-left" title="These options are tied to each project">Project Tools
                                         <a class="ui-icon ui-icon-plusthick" id="addTool" title="Add a Tool" onclick="$('#addingTools').fadeIn();">Add a Tool</a>

@@ -13,12 +13,6 @@ input:focus, button:focus, a:focus{
 #markerColors{
     color:black; /* Whatever the next color is in the colorList */
 }
-.demoWarning{
-    color: #CC1C08;
-    display: inline-block;
-    margin-top: 4px;
-    position: relative;
-}
 .specialCharacters li, .xmlTags li{
     border-right: none !important;
     cursor: default;

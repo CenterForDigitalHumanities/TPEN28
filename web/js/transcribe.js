@@ -289,6 +289,7 @@ function populatePreview(lines, pageLabel, currentPage, order){
         previewPage.append(previewLine);
     }
     $("#previewDiv").append(previewPage);
+    setDirectionForElements();
 }
 
 /*
@@ -1466,11 +1467,8 @@ function performInterfaceShift(interface){
     if(interface === "RTL"){
         $("#toggleXML").hide();
         $("#xmlTagPopin").hide();
-        $(".theText").attr("dir", "rtl");
         $("#prevPage").after($("#toggleNotes")); //This moves note button to the left side
         $("#toggleNotes").removeClass("pull-left").addClass("pull-right");
-        $("#captionsText").css("direction", "rtl");
-        
         $(".notes").each(function(){
             var notes = $(this);
             var textarea = $(this).prev();
@@ -1479,10 +1477,8 @@ function performInterfaceShift(interface){
     }
     else if(interface === "LTR"){
         $("#toggleXML").show();
-        $(".theText").attr("dir", "ltr");
         $("#nextPage").after($("#toggleNotes")); //This moves notes button to the right side. 
         $("#toggleNotes").removeClass("pull-right").addClass("pull-left");
-        $("#captionsText").css("direction", "ltr");
         $(".notes").each(function(){
             var notes = $(this);
             var textarea = $(this).next();
@@ -1773,6 +1769,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
     if(tpen.screen.mode === "RTL"){
         performInterfaceShift("RTL");
     }
+    
     $("#transTemplateLoading").hide(); //if we drew the lines, this can disappear.;
     createPreviewPages(); //Every time we load a canvas to the screen with its new updates, we want to update previewPages as well.
 }
@@ -2763,9 +2760,9 @@ function splitPage(event, tool) {
     if(tool === "preview"){
         $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
         $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
-        if(tpen.screen.mode === "RTL"){
-            $(".previewText").css("text-align", "right"); //For a more natural right to left reading?
-        }
+//        if(tpen.screen.mode === "RTL"){
+//            $(".previewText").css("text-align", "right"); //For a more natural right to left reading?
+//        }
     }
 
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
@@ -2845,10 +2842,7 @@ function splitPage(event, tool) {
         var splitSrc = $(".transcriptionImg:first").attr("src");
         $("#historyViewer").find("img").attr("src", splitSrc);
         History.showLine(tpen.screen.focusItem[1].attr("lineserverid"));
-        if(tpen.screen.mode === "RTL"){
-            $(".historyText").css("text-align", "right"); //For a more natural right to left reading?
-        }
-        
+        $(".historyText").attr("dir", "auto"); //These elements don't always get set on page load, so make sure they are auto here.   
     }
     if(tool === "fullpage"){
         $("#fullpageSplitCanvas").height($("#fullPageImg").height());
@@ -6131,6 +6125,20 @@ function dailyTip() {
     ];
     var thisTip = tips[Math.floor(Math.random()*tips.length)];
     $("#tip").html(thisTip);
+}
+
+function setDirectionForElements(){
+    console.log("set direction 1");
+    $(" .previewText,\n\
+        .notes,\n\
+        .theText,\n\
+        .exportText,\n\
+        .exportFolioNumber,\n\
+        .historyText, \n\
+        #captionsText,\n\
+        #contribution,\n\
+        #trimTitle \n\
+    ").attr("dir", "auto");
 }
 
 //https://github.com/Teun/thenBy.js/blob/master/README.md

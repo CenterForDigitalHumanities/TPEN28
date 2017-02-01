@@ -470,3 +470,18 @@ if ($("body").is("#transcriptionPage")){
         });
         
     }
+    
+    /* Explicitly set dir=auto for a set of html elements.  Call after page load. */
+    function setDirectionForElements(){
+        console.log("set direction 2");
+        $(" .previewText,\n\
+        .notes,\n\
+        .theText,\n\
+        .exportText,\n\
+        .exportFolioNumber,\n\
+        .historyText, \n\
+        #captionsText,\n\
+        #contribution,\n\
+        #trimTitle \n\
+    ").attr("dir", "auto");
+    }

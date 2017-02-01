@@ -333,6 +333,11 @@
                };
                 %>
                 Custom.updateDisplay();
+                //setDirectionForElements(); No tpen.js on this page, have to do this explicitly here.
+                $(" .exportText,\n\
+                    .exportFolioNumber,\n\
+                    #export_title\n\
+                ").attr("dir", "auto");
         });
         function ordinal(n) {
             if (10 < n && n < 14) return n + 'th';
@@ -608,7 +613,7 @@
         <div id="wrapper">
                 <div id="fullText">
                     <div id="titlePage" class="exportPage editable" contentEditable>
-                        <h1 class="ui-corner-all ui-state-default"><%out.print(p.getProjectName());%></h1>
+                        <h1 id="export_title" class="ui-corner-all ui-state-default"><%out.print(p.getProjectName());%></h1>
                         <div class="editSpace"></div>
                         <h4>Group Members:</h4>
                             <ul>

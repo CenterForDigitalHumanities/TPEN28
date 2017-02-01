@@ -289,6 +289,7 @@ function populatePreview(lines, pageLabel, currentPage, order){
         previewPage.append(previewLine);
     }
     $("#previewDiv").append(previewPage);
+    setDirectionForElements();
 }
 
 /*
@@ -333,7 +334,7 @@ function highlightTags(workingText){
     return encodedText.join("");
 }
 
-function populateSpecialCharacters(specialCharacters){
+function populateSpecialCharacters(){
     var specialCharacters = tpen.project.specialChars;
     var speCharactersInOrder = new Array(specialCharacters.length);
     for (var char = 0; char < specialCharacters.length; char++){
@@ -344,7 +345,12 @@ function populateSpecialCharacters(specialCharacters){
             var position2 = parseInt(thisChar.position);
             var newCharacter = "<div class='character lookLikeButtons' onclick='addchar(\"&#" + keyVal + "\")'>&#" + keyVal + ";</div>";
             if (position2 - 1 >= 0 && (position2 - 1) < specialCharacters.length) {
-                speCharactersInOrder[position2 - 1] = newCharacter;
+                //speCharactersInOrder[position2 - 1] = newCharacter;
+                speCharactersInOrder[char] = newCharacter;
+            }
+            else{
+                speCharactersInOrder[char] = newCharacter;
+                //Something is wrong with the position value, do your best.
             }
         }
     }
@@ -538,7 +544,7 @@ function loadTranscription(pid, tool){
     var userTranscription = $('#transcriptionText').val();
     var pageToLoad = getURLVariable("p");
     var canvasIndex = 0;
-
+    $("#projectsBtn").attr("href", "project.jsp?projectID="+pid);
     $("#transTemplateLoading").show();
     if (pid || $.isNumeric(userTranscription)){
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
@@ -1466,11 +1472,8 @@ function performInterfaceShift(interface){
     if(interface === "RTL"){
         $("#toggleXML").hide();
         $("#xmlTagPopin").hide();
-        $(".theText").attr("dir", "rtl");
         $("#prevPage").after($("#toggleNotes")); //This moves note button to the left side
         $("#toggleNotes").removeClass("pull-left").addClass("pull-right");
-        $("#captionsText").css("direction", "rtl");
-        
         $(".notes").each(function(){
             var notes = $(this);
             var textarea = $(this).prev();
@@ -1479,10 +1482,8 @@ function performInterfaceShift(interface){
     }
     else if(interface === "LTR"){
         $("#toggleXML").show();
-        $(".theText").attr("dir", "ltr");
         $("#nextPage").after($("#toggleNotes")); //This moves notes button to the right side. 
         $("#toggleNotes").removeClass("pull-right").addClass("pull-left");
-        $("#captionsText").css("direction", "ltr");
         $(".notes").each(function(){
             var notes = $(this);
             var textarea = $(this).next();
@@ -1773,6 +1774,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
     if(tpen.screen.mode === "RTL"){
         performInterfaceShift("RTL");
     }
+    
     $("#transTemplateLoading").hide(); //if we drew the lines, this can disappear.;
     createPreviewPages(); //Every time we load a canvas to the screen with its new updates, we want to update previewPages as well.
 }
@@ -2672,7 +2674,7 @@ function fullTopImage(){
 }
 
 /* Reset the interface to the full screen transcription view. */
-function fullPage(){
+function fullPage{
     if ($("#overlay").is(":visible")) {
         $("#overlay").click();
         return false;
@@ -2763,9 +2765,14 @@ function splitPage(event, tool) {
     if(tool === "preview"){
         $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
         $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
-        if(tpen.screen.mode === "RTL"){
-            $(".previewText").css("text-align", "right"); //For a more natural right to left reading?
-        }
+//        if(tpen.screen.mode === "RTL"){
+//            $(".previewText").css("text-align", "right"); //For a more natural right to left reading?
+//        }
+    }
+    
+    if(tool === "fullpage"){
+        var maxHeight = window.innerHeight - 75; //75 comes from buttons above image
+        $("#fullPageImg").css("max-height", maxHeight); //If we want to keep the full image on page, it cant be taller than that.
     }
 
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
@@ -2804,6 +2811,8 @@ function splitPage(event, tool) {
                 $(".split:visible").css("width", splitWidth);
                 var newHeight1 = parseFloat($("#fullPageImg").height()) + parseFloat($("#fullpageSplit .toolLinks").height());
                 var newHeight2 = parseFloat($(".compareImage").height()) + parseFloat($("#compareSplit .toolLinks").height());
+                var fullPageMaxHeight = window.innerHeight - 85; //85 comes from buttons above image
+                $("#fullPageImg").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
                 $('#fullpageSplit').css('height', newHeight1 + 'px');
                 $("#fullpageSplitCanvas").height($("#fullPageImg").height());
                 $('#compareSplit').css('height', newHeight2 + 'px');
@@ -2845,10 +2854,7 @@ function splitPage(event, tool) {
         var splitSrc = $(".transcriptionImg:first").attr("src");
         $("#historyViewer").find("img").attr("src", splitSrc);
         History.showLine(tpen.screen.focusItem[1].attr("lineserverid"));
-        if(tpen.screen.mode === "RTL"){
-            $(".historyText").css("text-align", "right"); //For a more natural right to left reading?
-        }
-        
+        $(".historyText").attr("dir", "auto"); //These elements don't always get set on page load, so make sure they are auto here.   
     }
     if(tool === "fullpage"){
         $("#fullpageSplitCanvas").height($("#fullPageImg").height());
@@ -5664,8 +5670,12 @@ tpen.screen.peekZoom = function(cancel){
 //                    newCanvasHeight = PAGEHEIGHT;
 //                    newCanvasWidth = ratio*newCanvasHeight;
 //                }
+                var fullPageMaxHeight = window.innerHeight - 85; //85 comes from buttons above image, margins and padding
                 $(".split img").css("max-width", splitWidth);
                 $(".split:visible").css("width", splitWidth);
+                $("#fullPageImg").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
+                //$("#fullPageSplit").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
+                $("#fullpageSplitCanvas").height($("#fullPageImg").height());
                 $("#transcriptionTemplate").css("width", newCanvasWidth + "px");
                 $("#transcriptionCanvas").css("width", newCanvasWidth + "px");
                 $("#transcriptionCanvas").css("height", newCanvasHeight + "px");
@@ -5675,6 +5685,8 @@ tpen.screen.peekZoom = function(cancel){
                 $("#imgBottom img").css("top", newImgBtmTop + "px");
                 $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
                 $(".lineColIndicatorArea").css("height",newCanvasHeight+"px");
+                 
+                
 //                if(tpen.screen.liveTool === "parsing"){
 //                    $("#imgTop img").css({
 //                    'height': height + "px"
@@ -6131,6 +6143,20 @@ function dailyTip() {
     ];
     var thisTip = tips[Math.floor(Math.random()*tips.length)];
     $("#tip").html(thisTip);
+}
+
+function setDirectionForElements(){
+    console.log("set direction 1");
+    $(" .previewText,\n\
+        .notes,\n\
+        .theText,\n\
+        .exportText,\n\
+        .exportFolioNumber,\n\
+        .historyText, \n\
+        #captionsText,\n\
+        #contribution,\n\
+        #trimTitle \n\
+    ").attr("dir", "auto");
 }
 
 //https://github.com/Teun/thenBy.js/blob/master/README.md

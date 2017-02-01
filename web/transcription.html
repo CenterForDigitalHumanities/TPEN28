@@ -1311,6 +1311,7 @@
         $(".editXMLs").addClass("exitPage").attr("href","buttons.jsp?p="
             + tpen.project.folios[tpen.screen.currentFolio].folioNumber
             + "&projectID=" + tpen.project.id+"#tabs-2");
+        $("#projectsBtn").attr("href", "project.jsp?projectID="+tpen.project.id);
     }
 
     function getHistory(){

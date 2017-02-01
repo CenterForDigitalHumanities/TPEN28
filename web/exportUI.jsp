@@ -267,6 +267,7 @@ if (request.getParameter("projectID")!=null){
             });
             XML.prep();
             $("#formatXML").find("input[name^='stripTag']").change();
+            setDirectionForElements();
         });
         function validForm(){
             var firstFolio = $("#beginFolio").children("option:selected").index();

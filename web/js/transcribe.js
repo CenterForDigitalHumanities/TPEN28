@@ -2674,7 +2674,7 @@ function fullTopImage(){
 }
 
 /* Reset the interface to the full screen transcription view. */
-function fullPage{
+function fullPage(){
     if ($("#overlay").is(":visible")) {
         $("#overlay").click();
         return false;

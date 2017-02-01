@@ -770,11 +770,20 @@
                                     // User Tools
                                         String[] toolCheck = new String[16];
                                         String[] toolName = new String[16];
+                                        String track = "";
                                         Tool.tools[] TOOLS = 
                                         {Tool.tools.abbreviation, Tool.tools.compare, Tool.tools.parsing, Tool.tools.preview, Tool.tools.history, Tool.tools.linebreak, Tool.tools.fullpage, Tool.tools.paleography,
                                                 Tool.tools.xml, Tool.tools.characters, Tool.tools.page, Tool.tools.inspector, Tool.tools.rtl, Tool.tools.ltr};
                                         for (int i = 0; i < 13; i++) {
                                             toolCheck[i] = (Tool.isToolActive(TOOLS[i], UID)) ? "checked=true" : "";
+                                            if(i==8){
+                                                if(Tool.isToolActive(TOOLS[i], UID)){
+                                                    track = "track='checked'";
+                                                }
+                                                else{
+                                                    track = "track=''";
+                                                }
+                                            }
                                         }
                                     %>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[0]);%> value="abbreviations"/>Cappelli Abbreviations</label>
@@ -784,12 +793,12 @@
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[4]);%> value="history" />History Tool</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[5]);%> value="linebreak" />Linebreaking Tool</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[6]);%> value="fullpage" />View Full Page</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[8]);%> value="xml" />XML Tags</label>
+                                    <label class='userTools'><input <%out.print(track);%> name="userTool[]" type="checkbox" <%out.print(toolCheck[8]);%> value="xml" />XML Tags</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[9]);%> value="characters" />Special Characters</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[11]);%> value="inspector" />Inspect</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[10]);%> value="page" />Page Tools</label>
                                     <!--<label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[13]);%> value="ltr" />LTR mode</label>-->
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[12]);%> value="rtl" />RTL mode </label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[12]);%> value="rtl" onchange="toggleRTLOption(event);" />RTL mode </label>
                                     
                                     <span class="ui-helper-clearfix"></span>
                                     <span class="ui-icon ui-icon-alert left demoAlert"></span>
@@ -1411,7 +1420,21 @@ $("#samplePreview").hover(function(){
                                             "height":   "100%"
                                         });
                                         });
-                                        
+                                    
+                                  
+                                    function toggleRTLOption(e){
+                                        var target = $(e.target);
+                                        if(target.is(":checked")){
+                                            $("input[value='xml']").removeAttr("checked").attr("disabled", "disabled");
+                                        }
+                                        else{
+                                            $("input[value='xml']").removeAttr("disabled");
+                                            if($("input[value='xml']").attr("track") == "checked"){
+                                                $("input[value='xml']").attr("checked", "checked");
+                                            }
+                                            
+                                        }
+                                    }
                                     function navigateTo(dropdown){
                                         $("body").addClass(" ui-state-disabled");
                                         document.location='transcription.html?p='+dropdown.value;

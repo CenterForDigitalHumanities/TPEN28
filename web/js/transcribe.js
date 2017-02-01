@@ -544,7 +544,7 @@ function loadTranscription(pid, tool){
     var userTranscription = $('#transcriptionText').val();
     var pageToLoad = getURLVariable("p");
     var canvasIndex = 0;
-
+    $("#projectsBtn").attr("href", "project.jsp?projectID="+pid);
     $("#transTemplateLoading").show();
     if (pid || $.isNumeric(userTranscription)){
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.

@@ -334,7 +334,7 @@ function highlightTags(workingText){
     return encodedText.join("");
 }
 
-function populateSpecialCharacters(specialCharacters){
+function populateSpecialCharacters(){
     var specialCharacters = tpen.project.specialChars;
     var speCharactersInOrder = new Array(specialCharacters.length);
     for (var char = 0; char < specialCharacters.length; char++){
@@ -345,7 +345,12 @@ function populateSpecialCharacters(specialCharacters){
             var position2 = parseInt(thisChar.position);
             var newCharacter = "<div class='character lookLikeButtons' onclick='addchar(\"&#" + keyVal + "\")'>&#" + keyVal + ";</div>";
             if (position2 - 1 >= 0 && (position2 - 1) < specialCharacters.length) {
-                speCharactersInOrder[position2 - 1] = newCharacter;
+                //speCharactersInOrder[position2 - 1] = newCharacter;
+                speCharactersInOrder[char] = newCharacter;
+            }
+            else{
+                speCharactersInOrder[char] = newCharacter;
+                //Something is wrong with the position value, do your best.
             }
         }
     }

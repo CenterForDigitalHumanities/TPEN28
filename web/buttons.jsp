@@ -83,7 +83,7 @@
                 if (projectID > 0) {
                     %>
                     <script type="text/javascript">
-                        document.location = "buttons.jsp?projectID=<%out.print(projectID);%>";
+                        document.location.href = "buttons.jsp?projectID=<%out.print(projectID);%>";
                     </script>
         <%
                     //response.sendRedirect("buttons.jsp?projectID=" + projectID);
@@ -247,16 +247,16 @@ function equalWidth(){
         }
         var hotkeyLoop = $("#tabs-1").find("input:text").not(".label");
         var xmlLoop = $("#tabs-2").find("input:text");
-        for (i=0;i<hotkeyLoop.length;i++){
+        for (var i=0;i<hotkeyLoop.length;i++){
             hotkeyLoop[i].name = "a"+(i+1);
         }
-        for (i=0;i<xmlLoop.length;i=i+7) {
-            xmlLoop[i].name = "description"+(i/7+1);
+        for (var k=0;k<xmlLoop.length;k=k+7) {
+            xmlLoop[k].name = "description"+(k/7+1);
 //            xmlLoop[i+1].name = "xmlColor"+(i/8+1);
-            xmlLoop[i+1].name = "b"+(i/7+1);
-            for (j=0;j<5;j++){                  //parameters
-                xmlLoop[i+2+j].name = "b"+(i/7+1)+"p"+(j+1);
-                if (xmlLoop[i+2+j].value == 'null') xmlLoop[i+2+j].value = '';
+            xmlLoop[k+1].name = "b"+(k/7+1);
+            for (var j=0;j<5;j++){                  //parameters
+                xmlLoop[k+2+j].name = "b"+(k/7+1)+"p"+(j+1);
+                if (xmlLoop[k+2+j].value == 'null') xmlLoop[k+2+j].value = '';
             }
         }
         return true;

@@ -1476,7 +1476,7 @@ function performInterfaceShift(interface){
         $("#toggleXML").hide();
         $("#xmlTagPopin").hide();
         $("#prevPage").after($("#toggleNotes")); //This moves note button to the left side
-        $("#toggleNotes").removeClass("pull-left").addClass("pull-right");
+        $("#toggleNotes").removeClass("pull-left").addClass("pull-right").removeClass("clear-left").addClass("clear-right");
         $(".notes").each(function(){
             var notes = $(this);
             var textarea = $(this).prev();
@@ -1486,7 +1486,7 @@ function performInterfaceShift(interface){
     else if(interface === "LTR"){
         $("#toggleXML").show();
         $("#nextPage").after($("#toggleNotes")); //This moves notes button to the right side. 
-        $("#toggleNotes").removeClass("pull-right").addClass("pull-left");
+        $("#toggleNotes").removeClass("pull-right").addClass("pull-left").removeClass("clear-right").addClass("clear-left");
         $(".notes").each(function(){
             var notes = $(this);
             var textarea = $(this).next();

@@ -147,7 +147,11 @@
                 var addHotkeyData = {projectID:projectID};
                 $.post("addHotkey", $.param(addHotkeyData),function(data){
                     var position = data;    //tag position from servlet
-                    $("#sortable1").children("li").eq(-1).clone(true).appendTo($("#sortable1"))
+                    var newCharHTML = $("<li class=\"ui-state-default\"><input readonly class=\"label hotkey\" name=\"a"+position+"a\" id=\"a"+position+"a\" value='42' tabindex=-5>\n\
+                    <input class=\"shrink\" onkeyup=\"updatea(this);\" name=\"a"+position+"\" id=\"a"+position+"\" type=\"text\" value='42'></input>\n\
+                    <a class=\"ui-icon ui-icon-closethick right\" onclick=\"deleteHotkey(" + position + ");\">delete</a></li>");
+                        
+                    newCharHTML.appendTo($("#sortable1"))
                     .children("input.label").attr("id", "a"+position+"a").val("-").end()
                     .children("input.shrink").attr({
                         "name":"a"+position,
@@ -441,8 +445,10 @@ function equalWidth(){
                     </div>
                         <ul id="sortable1" class="connectedSortable ui-helper-reset">
             <%
-                Hotkey ha;
-                    int ctr = 1;
+                    /* This should use the same get all hotkeys as the rest of the site... */
+                    Hotkey ha;
+                    int ctr = 1; //There are lots of position 0 buttons, they are ignored by all the getters now since they should never happen.  That way the same buttons are displayed consitently. 
+                    //In the future, we need to figure out how 0s got in there and stop it from happening. 
                     try {
                         String ref = request.getHeader("referer");
                         if (ref.contains("transcription")) {
@@ -544,8 +550,12 @@ if (thisProject.getSchemaURL().length() > 5){%>
             </form>
      </div>
 <%
-        if (p.length() > 0 || projectID > 0){
-            out.print("<a class=\"returnButton\" href=\"transcription.html?p=" + request.getParameter("p") + appendProject + "\">Return to Transcribing</a>");
+        if (projectID > 0){
+            String pPiece = "";
+            if(Integer.parseInt(p) > 0){
+                pPiece = "p="+p;
+            }
+            out.print("<a class=\"returnButton\" href=\"transcription.html?" + pPiece + appendProject + "\">Return to Transcribing</a>");
         %><a class="returnButton" href="project.jsp?<%out.print(projectAppend);%>">Project Management</a><%
         }
         else {%>

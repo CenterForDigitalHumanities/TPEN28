@@ -301,17 +301,17 @@ public class Hotkey {
                 toret += "<span class=\"lookLikeButtons\"  onclick=\"Interaction.addchar('&#" + rs.getInt("key") + ";');\">&#" + rs.getInt("key") + ";<sup>" + rs.getInt("position") + "</sup></span>";
             }
             if (ctr == 0) {
-                Hotkey ha;
-                ha = new Hotkey(222, uid, 1);
-                ha = new Hotkey(254, uid, 2);
-                ha = new Hotkey(208, uid, 3);
-                ha = new Hotkey(240, uid, 4);
-                ha = new Hotkey(503, uid, 5);
-                ha = new Hotkey(447, uid, 6);
-                ha = new Hotkey(198, uid, 7);
-                ha = new Hotkey(230, uid, 8);
-                ha = new Hotkey(540, uid, 9);
-                return this.javascriptToAddButtons(uid);
+//                Hotkey ha;
+//                ha = new Hotkey(222, uid, 1);
+//                ha = new Hotkey(254, uid, 2);
+//                ha = new Hotkey(208, uid, 3);
+//                ha = new Hotkey(240, uid, 4);
+//                ha = new Hotkey(503, uid, 5);
+//                ha = new Hotkey(447, uid, 6);
+//                ha = new Hotkey(198, uid, 7);
+//                ha = new Hotkey(230, uid, 8);
+//                ha = new Hotkey(540, uid, 9);
+//                return this.javascriptToAddButtons(uid);
             }
             vars += "</script>";
             return vars + toret;
@@ -321,10 +321,10 @@ public class Hotkey {
         }
     }
     /**Build the javascript used to drive all hotkeys that are part of this project*/
-    public String javascriptToAddProjectButtons(int projectID) throws SQLException {
+    public static String javascriptToAddProjectButtons(int projectID) throws SQLException {
         String toret = "";
         String vars = "<script>";
-        String query = "select * from hotkeys where uid=0 and projectID=? order by position";
+        String query = "select * from hotkeys where uid=0 and projectID=? and not position=0 order by position";
         Connection j = null;
         PreparedStatement stmt = null;
         try {
@@ -344,16 +344,16 @@ public class Hotkey {
             }
             if (ctr == 0) {
 
-                new Hotkey(222, projectID, 1, true);
-                new Hotkey(254, projectID, 2, true);
-                new Hotkey(208, projectID, 3, true);
-                new Hotkey(240, projectID, 4, true);
-                new Hotkey(503, projectID, 5, true);
-                new Hotkey(447, projectID, 6, true);
-                new Hotkey(198, projectID, 7, true);
-                new Hotkey(230, projectID, 8, true);
-                new Hotkey(540, projectID, 9, true);
-                return this.javascriptToAddButtons(uid);
+//                new Hotkey(222, projectID, 1, true);
+//                new Hotkey(254, projectID, 2, true);
+//                new Hotkey(208, projectID, 3, true);
+//                new Hotkey(240, projectID, 4, true);
+//                new Hotkey(503, projectID, 5, true);
+//                new Hotkey(447, projectID, 6, true);
+//                new Hotkey(198, projectID, 7, true);
+//                new Hotkey(230, projectID, 8, true);
+//                new Hotkey(540, projectID, 9, true);
+//                return this.javascriptToAddButtons(uid);
             }
             vars += "</script>";
             return toret;
@@ -365,7 +365,7 @@ public class Hotkey {
     
     /**Build the javascript used to drive all hotkeys that are part of this project*/
     public String javascriptToAddProjectButtonsRawData(int projectID) throws SQLException {
-        String query = "select * from hotkeys where uid=0 and projectID=? order by position";
+        String query = "select * from hotkeys where uid=0 and projectID=? and not position=0 order by position";
         Connection j = null;
         PreparedStatement stmt = null;
         try {
@@ -384,16 +384,16 @@ public class Hotkey {
                 ja.add(jo);
             }
             if (ctr == 0) {
-
-                new Hotkey(222, projectID, 1, true);
-                new Hotkey(254, projectID, 2, true);
-                new Hotkey(208, projectID, 3, true);
-                new Hotkey(240, projectID, 4, true);
-                new Hotkey(503, projectID, 5, true);
-                new Hotkey(447, projectID, 6, true);
-                new Hotkey(198, projectID, 7, true);
-                new Hotkey(230, projectID, 8, true);
-                new Hotkey(540, projectID, 9, true);
+                //These are default ones.  Do we still want them?
+//                new Hotkey(222, projectID, 1, true);
+//                new Hotkey(254, projectID, 2, true);
+//                new Hotkey(208, projectID, 3, true);
+//                new Hotkey(240, projectID, 4, true);
+//                new Hotkey(503, projectID, 5, true);
+//                new Hotkey(447, projectID, 6, true);
+//                new Hotkey(198, projectID, 7, true);
+//                new Hotkey(230, projectID, 8, true);
+//                new Hotkey(540, projectID, 9, true);
 //                return this.javascriptToAddButtons(uid);
             }
             return ja.toString();

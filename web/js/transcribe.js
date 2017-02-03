@@ -1365,7 +1365,10 @@ function updateURL(piece, classic){
         else{
             toAddressBar = replaceURLVariable("p", tpen.project.folios[tpen.screen.currentFolio].folioNumber);
         }
+        var relocator = "buttons.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber+"&projectID="+tpen.project.id;
+        $(".editButtons").attr("href", relocator);
     };
+       
     window.history.pushState("", "T&#8209;PEN Transcription", toAddressBar);
 }
 

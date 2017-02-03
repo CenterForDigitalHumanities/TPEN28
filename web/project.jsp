@@ -661,10 +661,8 @@
                             <li class="left ui-widget-content ui-corner-tr ui-corner-bl tall">
                                 <h3>Current Button Summary</h3>
                                 <h6>Special Character Buttons</h6><%
-                                    Hotkey ha;
-                                    ha = new Hotkey(projectID, true);
                                     /**Retrieve stored button information*/
-                                    out.print(ha.javascriptToAddProjectButtons(projectID));
+                                    out.print(Hotkey.javascriptToAddProjectButtons(projectID));
                                 %><br class="clear-left" />
                                 <h6>XML Tags</h6>
                                 <div id="allXML"><%

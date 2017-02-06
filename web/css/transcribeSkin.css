@@ -1797,6 +1797,9 @@ a.editButtons {
 .clear-left {
     clear: left;
 }
+.clear-right {
+    clear: right;
+}
 
 button,.navigation, #contribution,
 #saveReport,#imgTop,#imgBottom,.tags,

@@ -1493,6 +1493,7 @@ button.active {
     position:relative;
     display: block;
     width:auto;
+    margin: 0px auto;
 }
 .ui-tooltip {
     left: 0;
@@ -1685,7 +1686,7 @@ a.editButtons {
     text-decoration: underline;
 }
 
-.compareImage, #fullPageImg {
+.compareImage{
     left: 0;
     right: 0;
     margin: 0 auto;

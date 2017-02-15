@@ -271,10 +271,11 @@ function populatePreview(lines, pageLabel, currentPage, order){
             var abs = Math.abs(parseInt(lastLineX) - parseInt(currentLineX));
             if (abs > 0){
                 letterIndex++;
-                num = 0;
+                num = 1;
+                col = letters[letterIndex];
                 if(RTL){ //we need to reset the counters a bit differently...
                     num = 1;
-                    col = letters[letterIndex];
+                    //col = letters[letterIndex];
                 }
             }
         }
@@ -1367,8 +1368,7 @@ function updateURL(piece, classic){
         }
         var relocator = "buttons.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber+"&projectID="+tpen.project.id;
         $(".editButtons").attr("href", relocator);
-    };
-       
+    }    
     window.history.pushState("", "T&#8209;PEN Transcription", toAddressBar);
 }
 
@@ -4928,7 +4928,8 @@ function replaceURLVariable(variable, value){
         }
        }
        variables = vars.toString();
-       variables = variables.replace(",", "&");
+       variables = variables.replace(/,/g, "&");
+       console.log("Here are variables " + variables);
        return(location + "?"+variables);
 }
 
@@ -6145,9 +6146,9 @@ function dailyTip() {
 }
 
 function setDirectionForElements(){
-    console.log("set direction 1");
     $(" .previewText,\n\
         .notes,\n\
+        #notes,\n\
         .theText,\n\
         .exportText,\n\
         .exportFolioNumber,\n\

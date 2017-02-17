@@ -1708,7 +1708,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
                                 mousemove:  function(event){
                                     event.preventDefault();
                                     deltaPoint = {
-                                        x: event.pageX-point.x,
+                                        x: event.pageX-offset.left-point.x,
                                         y: event.pageY-(point.y)
                                     };
                                     if (deltaPoint.x < 0) {
@@ -1798,14 +1798,14 @@ $(document).on("click",".fullScreenTrans",fullPage);
                             $(this).removeClass("parsingColumnSelected");
                         });
                       $(".parsingColumn").bind({
-                        mouseenter: function() {
-                          $(this).addClass("parsingColumnSelected");
+                        mouseenter: function(pe){
+                          $(pe.target).addClass("parsingColumnSelected");
                         },
-                        mouseleave: function() {
-                          $(this).removeClass("parsingColumnSelected");
+                        mouseleave: function(pe){
+                          $(pe.target).removeClass("parsingColumnSelected");
                         },
-                        click: function() {
-                          removeColumn($(this));
+                        click: function(pe){
+                          removeColumn($(pe.target));
                         }
                       });
                     }
@@ -1818,7 +1818,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
                             .bind('click', function(){destroyPage();})
                     }
                 }
-                else if (thisID == "addLines" || thisID == "mergeLines" || thisID==="deleteLine" || thisID == "adjustLines") {
+                else if (thisID == "addLines" || thisID == "mergeLines" || thisID==="removeLine" || thisID == "adjustLines") {
                     $("#ctrlLinesInst").find(".startHide").hide();
                     $("#"+show).fadeIn(800);
                     $("#ctrlColumnsInst").find(".activeParsingTool").fadeOut(800);
@@ -1893,47 +1893,52 @@ $(document).on("click",".fullScreenTrans",fullPage);
                         });
 
                     }
-                    if (thisID == "mergeLines"){
+                    if (thisID == "mergeLines" || thisID == "removeLine"){
                         $("#mergeLines").addClass("active");
                         $("#addLines").removeClass("active");
                         $("#adjustLines").removeClass("active");
                         $("#removeLine").removeClass("active");
+                        var deleteOnly = false;
+                        if(thisID === "removeLine"){
+                            deleteOnly = true;
+                        }
                         //prep for column adjustment
                         tpen.screen.isAddingLines = false;
                         $(".parsing").bind({
                             mouseenter: function(){
-                                applyRuler($(this));
+                                applyRuler($(this), deleteOnly);
                             },
                             mouseleave: function(){
-                                removeRuler($(this));
+                                removeRuler($(this), deleteOnly);
                             },
                             click: function(event){
-                                lineChange($(this), event, false);
+                                lineChange($(this), event, deleteOnly);
                             }
                         });
                         $("#imgTop").children(".line").addClass("parsing").removeClass("line");
                     }
-                    if (thisID == "removeLine"){
-                        $("#removeLine").addClass("active");
-                        $("#addLines").removeClass("active");
-                        $("#mergeLines").removeClass("active");
-                        $("#adjustLines").removeClass("active");
-                        //prep for column adjustment
-                        tpen.screen.isAddingLines = false;
-                        activateLastLineRemoval();
-                        $(".parsing").bind({
-                            mouseenter: function(){
-                                applyRuler($(this));
-                            },
-                            mouseleave: function(){
-                                removeRuler($(this));
-                            },
-                            click: function(event){
-                                lineChange($(this), event, true);
-                            }
-                        });
-                        $("#imgTop").children(".line").addClass("parsing").removeClass("line");
-                    }
+//                    if (thisID == "removeLine"){
+//                        console.log("The id of the btn was remove line");
+//                        $("#removeLine").addClass("active");
+//                        $("#addLines").removeClass("active");
+//                        $("#mergeLines").removeClass("active");
+//                        $("#adjustLines").removeClass("active");
+//                        //prep for column adjustment
+//                        tpen.screen.isAddingLines = false;
+//                        activateLastLineRemoval();
+//                        $(".parsing").bind({
+//                            mouseenter: function(){
+//                                applyRuler($(this));
+//                            },
+//                            mouseleave: function(){
+//                                removeRuler($(this));
+//                            },
+//                            click: function(event){
+//                                lineChange($(this), event, true);
+//                            }
+//                        });
+//                        $("#imgTop").children(".line").addClass("parsing").removeClass("line");
+//                    }
                 };
             });
 
@@ -2324,58 +2329,6 @@ $(document).on("click",".fullScreenTrans",fullPage);
         $("#ruler2").css("color", color).css("background", color);
         $("#sampleRuler").css("color", color).css("background", color);
     }
-
-//    //Turn the ruler on
-//    function applyRuler(line){
-//            //var sRCbkp = selectRulerColor; //select Ruler Color backup
-//            $("#imageTip").html("Add a Line");
-//            if(!tpen.screen.isAddingLines){
-//                if (line.attr("lineleft") == line.next("div").attr("lineleft")) {
-//                    line.next("div").addClass('deletable');
-//                }
-//                line.addClass('deletable');
-//                if($(".deletable").size()>1){
-//                    $(".deletable").addClass("mergeable");
-//                    $("#imageTip").html("Merge Line");
-//                } else {
-//                    $("#imageTip").html("Delete Line");
-//                }
-//               //sRCbkp = 'transparent';
-//            }
-//            line.css('cursor','crosshair').bind('mousemove', function(e){
-//                var myLeft = line.position().left;
-//                var myWidth = line.width();
-//                $('#imageTip').show().css({
-//                    left:e.pageX,
-//                    top:e.pageY+20
-//                });
-//                $('#ruler1').show().css({
-//                    left: myLeft,
-//                    top: e.pageY,
-//                    height:'1px',
-//                    width:e.pageX-myLeft-7,
-//                    //background:"red"
-//                });
-//                $('#ruler2').show().css({
-//                    left: e.pageX+7,
-//                    top: e.pageY,
-//                    width:myWidth+myLeft-e.pageX-7,
-//                    height:'1px',
-//                   // background:"red"
-//                });
-//            });
-//
-//    }
-    /**
-     * Hides ruler within parsing tool. Called on mouseleave .parsing.
-     */
-//    function removeRuler(line){
-//        if(!tpen.screen.isAddingLines){$(".deletable").removeClass('deletable mergeable');}
-//        //line.unbind('mousemove');
-//        $('#imageTip').hide();
-//        $('#ruler1').hide();
-//        $('#ruler2').hide();
-//    }
 
     function toggleSelected($area, parsing){
         var $unselectArea = $area.parent();

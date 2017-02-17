@@ -3599,7 +3599,7 @@ function toggleLineMarkers(){
         $("#showTheLines").removeClass("selected");
     }
     else {
-        $('.lineColIndicator').show();
+        $('.lineColIndicator').css("display", "block");
         $(".lineColIndicator").removeClass("linesHidden");
         $("#showTheLines").addClass("selected");
         $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });

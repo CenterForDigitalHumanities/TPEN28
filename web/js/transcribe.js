@@ -271,10 +271,11 @@ function populatePreview(lines, pageLabel, currentPage, order){
             var abs = Math.abs(parseInt(lastLineX) - parseInt(currentLineX));
             if (abs > 0){
                 letterIndex++;
-                num = 0;
+                num = 1;
+                col = letters[letterIndex];
                 if(RTL){ //we need to reset the counters a bit differently...
                     num = 1;
-                    col = letters[letterIndex];
+                    //col = letters[letterIndex];
                 }
             }
         }
@@ -1195,7 +1196,6 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 image2.src = "images/missingImage.png";
             }
             window.setTimeout(function(){
-                console.log("Lets get the images");
                 preloadFolioImages();
             }, 15000);
 
@@ -1367,8 +1367,7 @@ function updateURL(piece, classic){
         }
         var relocator = "buttons.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber+"&projectID="+tpen.project.id;
         $(".editButtons").attr("href", relocator);
-    };
-       
+    }    
     window.history.pushState("", "T&#8209;PEN Transcription", toAddressBar);
 }
 
@@ -2563,7 +2562,6 @@ function hideWorkspaceForParsing(){
         "left":"0px",
         "height":newCanvasHeight+"px"
     });
-    console.log(screen.width,$(window).width() +" and "+screen.height,window.outerHeight);
     if(screen.width == $(window).width() && screen.height == window.outerHeight){
         $(".centerInterface").css("text-align", "center").css("background-color", "#e1f4fe");
     }
@@ -2884,12 +2882,10 @@ function gatherColumns(startIndex){
     }
 }
 
-function removeColumn(column, destroy){
-    if (!destroy){
-        if (column.attr("hastranscription") === "true"){
-            var cfrm = confirm("This column contains transcription data that will be lost.\n\nContinue?");
-            if (!cfrm) return false;
-        }
+function removeColumn(column){
+    if (column.attr("hastranscription") === "true"){
+        var cfrm = confirm("This column contains transcription data that will be lost.\n\nContinue?");
+        if (!cfrm) return false;
     }
     var colX = column.attr("lineleft");
     // collect lines from column
@@ -3603,7 +3599,7 @@ function toggleLineMarkers(){
         $("#showTheLines").removeClass("selected");
     }
     else {
-        $('.lineColIndicator').show();
+        $('.lineColIndicator').css("display", "block");
         $(".lineColIndicator").removeClass("linesHidden");
         $("#showTheLines").addClass("selected");
         $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
@@ -4330,19 +4326,37 @@ function removeLine(e, columnDelete, deleteOnly){
                     "lineheight":   convertedNewLineHeight
                 });
             }
+            else{
+                removedLine = $(e);
+                tpen.screen.isDestroyingLine = true;
+            }
         }
-        else if ($(e).hasClass("deletable")){ // delete
-            var cfrm = confirm("Removing this line will remove any data contained as well.\n\nContinue?");
-            if (!cfrm){
+        var params = new Array({name:"remove", value:removedLine.attr("lineserverid")});
+        if(deleteOnly){
+            if($(e).hasClass("deletable")){
+                var cfrm = confirm("Removing this line will remove any data contained as well.\n\nContinue?");
+                if (!cfrm){
+                    $("#parsingCover").hide();
+                    return false;
+                }
+                removeTranscriptlet(removedLine.attr("lineserverid"), $(e).attr("lineserverid"), true, "cover");
+                removedLine.remove();
+                return params;
+            }
+            else{
                 $("#parsingCover").hide();
                 return false;
             }
-            tpen.screen.isDestroyingLine = true;
         }
-        var params = new Array({name:"remove", value:removedLine.attr("lineserverid")});
-        removedLine.remove();
-        removeTranscriptlet(removedLine.attr("lineserverid"), $(e).attr("lineserverid"), true, "cover");
-        return params;
+        else{
+            removeTranscriptlet(removedLine.attr("lineserverid"), $(e).attr("lineserverid"), true, "cover");
+            removedLine.remove();
+            return params;
+        }
+        
+        
+        
+        
     }
 }
 
@@ -4468,15 +4482,20 @@ function removeColumnTranscriptlets(lines, recurse){
 //                    var params = {"content":JSON.stringify(paramObj)};
 //                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio] = currentAnnoList;
                     if (recurse){
+                        console.log("I recursed in remove transcriptlets, now I want to remove the column");
+                        console.log(tpen.screen.nextColumnToRemove);
                         tpen.screen.nextColumnToRemove.remove();
                         // FIXME: I cannot find this object always? BH confirmed.  Not sure why, it doesn't always remove it.  Should we pass it in as an argument?
                         destroyPage();
                     }
                     else{
                         cleanupTranscriptlets(true);
+                        console.log("I am in remove transcriptlets, now I want to remove the column");
+                        console.log(tpen.screen.nextColumnToRemove);
                         tpen.screen.nextColumnToRemove.remove();
                         $("#parsingCover").hide();
                     }
+                    $(".parsing.deletable").remove();
 //                    $.post(url, params, function(data){
 //                        if (recurse){
 //                            tpen.screen.nextColumnToRemove.remove();
@@ -4504,6 +4523,9 @@ function removeColumnTranscriptlets(lines, recurse){
             $(".lineColIndicator[lineserverid='" + lineID + "']").remove(); //Remove the line representing the transcriptlet
             $(".previewLineNumber[lineserverid='" + lineID + "']").parent().remove(); //Remove the line in text preview of transcription.
             $("#parsingCover").hide()
+            if(l===0){
+                $(".parsing.deletable").remove();
+            }
         }
     }
 }
@@ -4838,19 +4860,28 @@ function bumpLine(direction, activeLine){
     }
 
     //Turn the ruler on
-    function applyRuler(line){
+    function applyRuler(line, deleteOnly){
             //var sRCbkp = selectRulerColor; //select Ruler Color backup
             $("#imageTip").html("Add a Line");
             if(!tpen.screen.isAddingLines){
-                if (line.attr("lineleft") == line.next("div").attr("lineleft")) {
-                    line.next("div").addClass('deletable');
-                }
-                line.addClass('deletable');
-                if($(".deletable").size()>1){
-                    $(".deletable").addClass("mergeable");
-                    $("#imageTip").html("Merge Line");
-                } else {
+                if(deleteOnly){
                     $("#imageTip").html("Delete Line");
+                    if (line.attr("lineleft") !== line.next("div").attr("lineleft")) {
+                        line.addClass('deletable');
+                    }
+                }
+                else{
+                    if (line.attr("lineleft") == line.next("div").attr("lineleft")) {
+                        line.next("div").addClass('deletable');
+                    }
+                    line.addClass('deletable');
+                    if($(".deletable").size()>1){
+                        $(".deletable").addClass("mergeable");
+                        $("#imageTip").html("Merge Line");
+                    } 
+                    else  {
+                        $("#imageTip").html("Delete Line");
+                    }
                 }
                //sRCbkp = 'transparent';
             }
@@ -4928,7 +4959,8 @@ function replaceURLVariable(variable, value){
         }
        }
        variables = vars.toString();
-       variables = variables.replace(",", "&");
+       variables = variables.replace(/,/g, "&");
+       console.log("Here are variables " + variables);
        return(location + "?"+variables);
 }
 
@@ -6145,9 +6177,9 @@ function dailyTip() {
 }
 
 function setDirectionForElements(){
-    console.log("set direction 1");
     $(" .previewText,\n\
         .notes,\n\
+        #notes,\n\
         .theText,\n\
         .exportText,\n\
         .exportFolioNumber,\n\

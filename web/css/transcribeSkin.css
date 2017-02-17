@@ -1504,13 +1504,11 @@ button.active {
 .activeTools{
     height: 190px !important;
 }
-#imageTools .ui-widget-content{
-    border: 1px solid black !important;
-    color: black;
-    background: rgba(0,42,92, .5) !important;
+#imageToolSliders .ui-slider-range.ui-widget-header{
+    background: #226683 !important;
 }
-#imageTools .ui-widget-header{
-    background: rgba(0,42,92, .5) !important;
+#imageToolSliders .ui-slider-handle{
+    background: #226683 !important;
 }
 #imageTools .ui-slider-horizontal .ui-slider-handle {
     background: #002a5c;

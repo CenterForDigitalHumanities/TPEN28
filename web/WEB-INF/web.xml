@@ -659,7 +659,7 @@
         <url-pattern>/getHistory</url-pattern>
     </servlet-mapping>
     <session-config>
-        <session-timeout>3000</session-timeout>
+        <session-timeout>720</session-timeout>
     </session-config>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

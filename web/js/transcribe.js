@@ -66,6 +66,27 @@ var dragHelper = "<div id='dragHelper'></div>";
 var typingTimer;
 
 /**
+ * Make sure all image tools reset to their default values.
+*/
+function resetImageTools(newPage){
+    $("#brightnessSlider").slider("value", "100");
+    $("#contrastSlider").slider("value", "100");
+    if($("button[which='grayscale']").hasClass("selected")){
+            toggleFilter("grayscale");
+        }
+    if($("button[which='invert']").hasClass("selected")){
+        toggleFilter("invert");
+    }
+    if($("#showTheLines").hasClass("selected")){
+        toggleLineMarkers();
+    }
+    if(!$("#showTheLabels").hasClass("selected")){
+        toggleLineCol();
+    }
+    
+}
+
+/**
  * Redraw the screen for use after updating the current line, folio, or
  * tools being used. Expects all screen variables to be set.
  *
@@ -1228,6 +1249,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
         $('.transcriptionImage').attr('src', "images/missingImage.png");
         throw Error("The canvas is malformed.  No 'images' field in canvas object or images:[0]['@id'] does not exist.  Cannot draw lines.");
     }
+    resetImageTools(true);
     //createPreviewPages(); //each time you load a canvas to the screen with all of its updates, remake the preview pages.
 }
 
@@ -3592,8 +3614,8 @@ function markerColors(){
 
 /* Toggle the line/column indicators in the transcription interface. (A1, A2...) */
 function toggleLineMarkers(){
-    if ($('.lineColIndicator:first').is(":visible")
-        && $('.lineColIndicator:eq(1)').is(":visible")){ //see if a pair of lines are visible just in case you checked the active line first.
+    if (($('.lineColIndicator:first').is(":visible")&& $('.lineColIndicator:eq(1)').is(":visible"))
+            || $("#showTheLines").hasClass("selected")){ //see if a pair of lines are visible just in case you checked the active line first.
         $('.lineColIndicator').hide();
         $(".activeLine").show().addClass("linesHidden");
         $("#showTheLines").removeClass("selected");
@@ -3610,11 +3632,11 @@ function toggleLineMarkers(){
 function toggleLineCol(){
     if ($('.lineColOnLine:first').is(":visible")){
         $('.lineColOnLine').hide();
-        $("#showTheLabels").removeClass("active");
+        $("#showTheLabels").removeClass("selected");
     }
     else {
         $('.lineColOnLine').show();
-        $("#showTheLabels").addClass("active");
+        $("#showTheLabels").addClass("selected");
         $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
     }
 }

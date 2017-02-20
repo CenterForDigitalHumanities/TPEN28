@@ -665,7 +665,9 @@
             <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
                 <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
                 <div style="padding:0 15px;">
-
+                    <button style="margin-bottom: 8px;" class="block" onclick="resetImageTools(false);" title="Reset Tools">
+                    Reset to Defaults
+                    </button>
                     <header> Image Controls </header>
                     <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
                         Grayscale
@@ -680,11 +682,12 @@
                         Contrast  <i class="fa fa-adjust"></i>
                         <div id="contrastSlider"></div>
                     </div>
+
                     <header> Column Controls</header>
                     <button id="showTheLines" role="button" class="block" onclick="toggleLineMarkers();">
                         Lines
                     </button>
-                    <button id="showTheLabels" role="button" class="block active" onclick="toggleLineCol();">
+                    <button id="showTheLabels" role="button" class="block selected" onclick="toggleLineCol();">
                         Labels
                     </button>
                     <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>

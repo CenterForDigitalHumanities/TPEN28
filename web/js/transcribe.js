@@ -2807,7 +2807,7 @@ function splitPage(event, tool) {
     $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
     $("#imgTop img").css("top", newImgTopTop + "px");
     $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
-    $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
+    
     if(resize){
         attachTemplateResize();
     } else {
@@ -2849,6 +2849,12 @@ function splitPage(event, tool) {
          var fullPageMaxHeight = window.innerHeight - 125; //100 comes from buttons above image and topTrim
         $("#compareSplit img").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
     }
+    setTimeout(function(){
+        $.each($(".lineColOnLine"), function(){
+            $(this).css("line-height", $(this).parent().height() + "px");
+        });
+    }, 1000);
+    
 }
 
 function forceOrderPreview(){

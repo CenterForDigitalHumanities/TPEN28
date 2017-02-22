@@ -1447,7 +1447,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
         $(".magnifyBtn").click(function(event){
             if ($(this).hasClass("ui-state-active")){
                 $('#zoomDiv').hide();
-                restoreWorkspace()
+                restoreWorkspace();
                 tpen.screen.isMagnifying = false;
                 $(document).off("mousemove");
                 $(this).removeClass("ui-state-active");

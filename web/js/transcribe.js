@@ -2409,9 +2409,13 @@ function mouseZoom($img,container, event){
     var imgURL = $img.find("img:first").attr("src");
     var page = $("#transcriptionTemplate");
     //collect information about the img
-    var imgDims = new Array(parseInt($img.find("img").css("left")), parseInt($img.find("img").css("top")), $img.width(), $img.height());
+    
     var imgTop = $img.find("img").css("top");
     var imgLeft = $img.find("img").css("left");
+    if(imgTop === "auto")imgTop="0px";
+    if(imgLeft === "auto")imgLeft="0px";
+    var imgOffset = $img.find("img").offset().top;
+    var imgDims = new Array(parseInt(imgLeft), parseInt(imgTop), $img.width(), $img.height());
     //build the zoomed div
     var zoomSize = (page.height() / 3 < 120) ? 120 : page.height() / 3;
     if(zoomSize > 400) zoomSize = 400;
@@ -2421,7 +2425,7 @@ function mouseZoom($img,container, event){
         "width"         : zoomSize,
         "height"        : zoomSize,
         "left"          : zoomPos[0] + 3,
-        "top"           : zoomPos[1] + 3 - $(document).scrollTop() - $(".magnifyBtn").offset().top,
+        "top"           : zoomPos[1] + 3 - $(document).scrollTop() - $(".magnifyBtn").offset().top + imgOffset,
         "background-position" : imgLeft+""+imgTop,
         "background-size"     : imgDims[2] * tpen.screen.zoomMultiplier + "px",
         "background-image"    : "url('" + imgURL + "')"
@@ -2443,7 +2447,7 @@ function mouseZoom($img,container, event){
             var imgPos = new Array((imgDims[0] - mouseAt[0] + contain.left) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3, (imgDims[1] - mouseAt[1] + contain.top) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3); //3px border adjustment
             $("#zoomDiv").css({
                 "left"  : zoomPos[0],
-                "top"   : zoomPos[1] - $(document).scrollTop(),
+                "top"   : zoomPos[1] - $(document).scrollTop() + imgOffset,
                 "background-size"     : imgDims[2] * tpen.screen.zoomMultiplier + "px",
                 "background-position" : imgPos[0] + "px " + imgPos[1] + "px"
             });
@@ -3878,6 +3882,9 @@ function updateLine(line, cleanup, updateList){
     if(tpen.screen.liveTool === "parsing"){
         //OR it was from bump line in the trasncription interface.  How do I detect that?  This is overruled below until we figure that out.
         updatePositions = true;
+        updateContent = false;
+        currentLineText = currentLineTextAttr = "";
+        currentLineNotes = currentLineNotesAttr = "";
     }
 //    var currentAnnoListID = tpen.screen.currentAnnoListID;
     var dbLine = {
@@ -3914,7 +3921,7 @@ function updateLine(line, cleanup, updateList){
 //    else if (currentAnnoListID){
         var lineID = (line != null) ? $(line).attr("lineserverid") : -1;
         lineID = parseInt(lineID.replace("line/", "")); //TODO check this in the future to make sure you are getting the lineID and not some string here.
-        if (lineID>0 || $(line).attr("id")=="dummy"){
+        if (parseInt(lineID)>0 || $(line).attr("id")=="dummy"){
             params.push(
                 {name:"updatey",value:lineTop},
                 {name:"updatex",value:lineLeft},
@@ -3985,48 +3992,50 @@ function updateLine(line, cleanup, updateList){
             line.attr("data-answer", currentLineText);
             line.find(".notes").attr("data-answer", currentLineNotes);
             //FIXME: REST says this should be PUT
-            if(updatePositions){
-                $.post(url,params,function(){
-                    line.attr("hasError",null);
-                    markLineSaved(line);
-
-                    $("#parsingCover").hide();
-                    // success
-                }).fail(function(err){
-                    line.attr("hasError","Saving Failed "+err.status);
-                    if(err.status === 403){
-                        var theURL = window.location.href;
-                        return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
-                    }
-                    else{
-                        $(".trexHead").show();
-                        $("#genericIssue").show(1000);
-                    }
-                    throw err;
-                });
+            if(updatePositions && updateContent){
+                
             }
-            if(updateContent){
-                $.post(url2,params2,function(){
-                    line.attr("hasError",null);
-                    markLineSaved(line);
-                    $("#parsingCover").hide();
-                    // success
-                }).fail(function(err){
-                    line.attr("hasError","Saving Failed "+err.status);
-                    if(err.status === 403){
-                        var theURL = window.location.href;
-                        return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
-                    }
-                    else{
-                        $(".trexHead").show();
-                        $("#genericIssue").show(1000);
-                    }
-                    throw err;
-                });
-            }
-            if(!updateContent && !updatePositions){
-                markLineSaved(line);
-            }
+            else{
+                if(updatePositions){
+                    $.post(url,params,function(){
+                        console.log(line.attr("linewidth"));
+                        line.attr("hasError",null);
+                        markLineSaved(line);
+                        $("#parsingCover").hide();
+                        // success
+                    }).fail(function(err){
+                        line.attr("hasError","Saving Failed "+err.status);
+                        if(err.status === 403){
+                            var theURL = window.location.href;
+                            return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
+                        }
+                        else{
+                            $(".trexHead").show();
+                            $("#genericIssue").show(1000);
+                        }
+                        throw err;
+                    });
+                }
+                if(updateContent){
+                    $.post(url2,params2,function(){
+                        line.attr("hasError",null);
+                        markLineSaved(line);
+                        $("#parsingCover").hide();
+                        // success
+                    }).fail(function(err){
+                        line.attr("hasError","Saving Failed "+err.status);
+                        if(err.status === 403){
+                            var theURL = window.location.href;
+                            return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
+                        }
+                        else{
+                            $(".trexHead").show();
+                            $("#genericIssue").show(1000);
+                        }
+                        throw err;
+                    });
+                }
+            
 //        } else {
 //            throw new Error("No good. The ID could not be dereferenced. Maybe this is a new annotation?");
 //        }
@@ -4034,6 +4043,10 @@ function updateLine(line, cleanup, updateList){
         if (cleanup) cleanupTranscriptlets(true);
         updateClosingTags();
     }
+    if(!updateContent && !updatePositions){
+        markLineSaved(line);
+    }
+}
 
 
 

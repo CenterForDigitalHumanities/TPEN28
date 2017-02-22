@@ -446,7 +446,7 @@ function equalWidth(){
                         <ul id="sortable1" class="connectedSortable ui-helper-reset">
             <%
                     /* This should use the same get all hotkeys as the rest of the site... */
-                    Hotkey ha;
+                    //Hotkey ha;
                     int ctr = 1; //There are lots of position 0 buttons, they are ignored by all the getters now since they should never happen.  That way the same buttons are displayed consitently. 
                     //In the future, we need to figure out how 0s got in there and stop it from happening. 
                     try {
@@ -457,18 +457,22 @@ function equalWidth(){
                     } catch (NullPointerException e) {
                         //They didnt get here from another page, maybe a bookmark. Not a big deal
                     }
-                    while (new Hotkey(projectID, ctr, true).exists()) {
-                        ha = new Hotkey(projectID, ctr, true);
-                        out.print("<li class=\"ui-state-default\"><input readonly class=\"label hotkey\" name=\"a"+ctr+"a\" id=\"a"+ctr+"a\" value=\""+(char)Integer.parseInt(ha.getButton())+"\" tabindex=-5>\n");
-                        out.print("<input class=\"shrink\" onkeyup=\"updatea(this);\" name=\"a"+ctr+"\" id=\"a"+ctr+"\" type=\"text\" value=\""+ha.getButton()+"\"></input>");
-                        out.print("<a class=\"ui-icon ui-icon-closethick right\" onclick=\"deleteHotkey(" + ctr + ");\">delete</a></li>");
-                        out.print("\n");
-                        ctr++;
-                    }
+                    
+                    out.print(Hotkey.javascriptToBuildEditableButtons(projectID));
+                    //some key positions are not in order and skip, like 1,2,3,5,6,8, and it breaks here when there is a skip. 
+//                    while (new Hotkey(projectID, ctr, true).exists()) {
+//                        ha = new Hotkey(projectID, ctr, true);
+//                        out.print("<li class=\"ui-state-default\"><input readonly class=\"label hotkey\" name=\"a"+ctr+"a\" id=\"a"+ctr+"a\" value=\""+(char)Integer.parseInt(ha.getButton())+"\" tabindex=-5>\n");
+//                        out.print("<input class=\"shrink\" onkeyup=\"updatea(this);\" name=\"a"+ctr+"\" id=\"a"+ctr+"\" type=\"text\" value=\""+ha.getButton()+"\"></input>");
+//                        out.print("<a class=\"ui-icon ui-icon-closethick right\" onclick=\"deleteHotkey(" + ctr + ");\">delete</a></li>");
+//                        out.print("\n");
+//                        ctr++;
+//                    }
             %>
                     </ul>
             <input type="button" id="addH" name="addH" class="tpenButton ui-button" value="Add a Button"/>
-            <input type="submit" id="update" name="update" value="Save Changes" class="tpenButton ui-button"/><br><br>
+            <input type="submit" id="update" name="update" value="Save Changes" class="tpenButton ui-button"/>
+            <input type="button" id="return" name="return" value="Return to Management" onclick="document.location.href='project.jsp?projectID=<%out.print(projectID);%>';" class="tpenButton ui-button"/><br><br>
                 </div>
                 <div id="tabs-2">
                     <div class="right" style="width:440px;">

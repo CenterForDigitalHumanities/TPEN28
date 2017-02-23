@@ -104,14 +104,38 @@
     50% {-webkit-transform: scale(1.3, 1.3);}
     100% {-webkit-transform: scale(1.0, 1.0); }
 }
+
+@keyframes bounce {
+0%, 10%, 2%, 5.3%, 8% {
+    -webkit-animation-timing-function: cubic-bezier(0.215,.61,.355,1);
+    animation-timing-function: cubic-bezier(0.215,.61,.355,1);
+    -webkit-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
+}
+4%, 4.3% {
+    -webkit-animation-timing-function: cubic-bezier(0.755,.050,.855,.060);
+    animation-timing-function: cubic-bezier(0.755,.050,.855,.060);
+    -webkit-transform: translate3d(0,-30px,0);
+    transform: translate3d(0,-30px,0);
+}
+7% {
+    -webkit-animation-timing-function: cubic-bezier(0.755,.050,.855,.060);
+    animation-timing-function: cubic-bezier(0.755,.050,.855,.060);
+    -webkit-transform: translate3d(0,-15px,0);
+    transform: translate3d(0,-15px,0);
+}
+9% {
+    -webkit-transform: translate3d(0,-4px,0);
+    transform: translate3d(0,-4px,0);
+}
+}
+
 #updateRedirect:hover{
     opacity: 1.0 !important;
     -webkit-animation: none;
+    animation: none;
 }
-#updateRedirect:hover #updateHover{
-    display: block;
-}
-#updateHover{
+#updateHover {
     display: none;
     position: absolute;
     color: white;
@@ -121,43 +145,40 @@
     white-space: nowrap;
     font-size: 11pt;
 }
-/*#updateRedirect::before {  Puts a ring around it, hidden for now 
-    content:"";
-    display:block;
-    border: 2px solid #A64129;
-    -webkit-border-radius: 50%;
-    height: 4rem;
-    width: 4rem;
-    position: absolute;
-    left:-2px;
-    top:-2px;
-    -webkit-animation: pulsate-grow 3.5s ease-out;
-    -webkit-animation-iteration-count: infinite; 
-    -webkit-animation-delay: 0.6s;
-    opacity: 0.0;
+.bounce {
+    -webkit-animation-name: bounce;
+    animation-name: bounce;
+    -webkit-transform-origin: center bottom;
+    transform-origin: center bottom;
+    -webkit-animation-duration: 10s;
+    animation-duration: 10s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    animation-delay: 4s;
 }
-#updateRedirect::after {  Puts a ring around it, hidden for now 
-    content:"";
-    display:block;
-    border:2px solid #A64129;
-    -webkit-border-radius: 50%;
-    height: 4rem;
-    width: 4rem;
-    position: absolute;
-    left:-2px;
-    top:-2px;
-    -webkit-animation: pulsate-grow 3.5s ease-out;
-    -webkit-animation-iteration-count: infinite; 
-    -webkit-animation-delay: 0.8s;
-    opacity: 0.0;
-}*/
 #updateRedirect{
     position: fixed;bottom: 2rem;right: 3rem;border-radius: 50%;background-color: #A64129;color: #fff;z-index: 3;text-align: center;height: 4rem;width: 4rem;padding-top: 1rem;text-decoration: none;box-shadow: 2px 1px 4px rgba(0,0,0,.3);
-    -webkit-animation: pulsate 3.5s ease-out;
     -webkit-animation-iteration-count: infinite; 
-
+    animation-iteration-count: infinite;
 }
-            #parsingLoader {z-index: 50;visibility: visible !important;position: fixed; width: 100%;height:100%;background-color: #69ACC9;top:33%;}
+#updateRedirect::before{
+    content:"Enjoy new features and an improved interface!";
+    display: none;
+    position: absolute;
+    color: #226683;
+    top: 1rem;
+    right: 4rem;
+    font-weight: bold;
+    width: 12em;
+    font-size: 11pt;
+    background: lightblue;
+    z-index: -1;
+    border-radius: .5rem;
+}
+#updateRedirect:hover::before{
+    display: block;
+}
+#parsingLoader {z-index: 50;visibility: visible !important;position: fixed; width: 100%;height:100%;background-color: #69ACC9;top:33%;}
             #parsingLoader img {position: absolute;top:0;left:0;bottom:0;right:0;margin:auto;}
             #imgTop, #imgBottom {display:block; height:35%; width:100%;overflow:hidden;z-index: 1;position: relative;}
             #imgBottom {z-index: 2;height:100%;}
@@ -1544,10 +1565,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
         </script>
 <%@include file="WEB-INF/includes/noscript.jspf" %>
 
-<a id="updateRedirect" href="transcription.html?<%out.print(projectAppend);%>">
+<a id="updateRedirect" class="bounce" href="transcription.html?<%out.print(projectAppend);%>">
     2.8 update
     <img alt="2.8" src="images/28tpen.svg" height="24" >
-    <span id="updateHover"> Use the T-PEN 2.8 update! </span>
 </a>
     </body><%}%>
 </html>

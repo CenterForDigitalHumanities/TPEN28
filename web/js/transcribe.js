@@ -2844,6 +2844,8 @@ function splitPage(event, tool) {
         $("#fullPageImg").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
         $("#fullpageSplitCanvas").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
         $("#fullpageSplitCanvas").css("max-width", $("#fullPageImg").width()); //If we want to keep the full image on page, it cant be taller than that.
+        $("#fullpageSplitCanvas").height($("#fullPageImg").height());
+        $("#fullpageSplitCanvas").width($("#fullPageImg").width());
         $(".fullP").each(function(i){
             this.title = $("#transcriptlet_"+i+" .theText").text();
         })

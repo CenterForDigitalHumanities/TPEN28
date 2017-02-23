@@ -351,7 +351,7 @@ $(window).load(function(){gapi.plusone.go();});
                             <input type="hidden" name="ref" value="http://t-pen.org/TPEN/login.jsp">
                             <input class="ui-state-default ui-button ui-corner-all" type="submit" title="Log In" value="Log In">
                         </form>
-                            <!--<br>-->
+                            <!--<br> didn't work to fix problem on mac-->
                             <h6 id="forgetFormBtn" class="loud caps left">Reset your Password<span class="left ui-icon ui-icon-arrowstop-1-s"></span></h6>
                             <form id="forgetForm" action="admin.jsp" method="POST" class="ui-corner-all left clear-left">
                                 <span>Enter the email address associated with your account to have your password reset.</span>

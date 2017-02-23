@@ -92,7 +92,71 @@
 <script type="text/javascript" src="jwysiwyg/jquery.wysiwyg.js"></script>        -->
         
         <style type="text/css">
-            body,#wrapper{height: 100%;width:100%;opacity:1;}
+        body,#wrapper{height: 100%;width:100%;opacity:1;}
+        
+@-webkit-keyframes pulsate {
+    0% {opacity: 0.21;}
+    50% {opacity: 0.58;}
+    100% {opacity: 0.91;}
+}
+@-webkit-keyframes pulsate-grow {  
+    0% {-webkit-transform: scale(1.0, 1.0);}
+    50% {-webkit-transform: scale(1.3, 1.3);}
+    100% {-webkit-transform: scale(1.0, 1.0); }
+}
+#updateRedirect:hover{
+    opacity: 1.0 !important;
+    -webkit-animation: none;
+}
+#updateRedirect:hover #updateHover{
+    display: block;
+}
+#updateHover{
+    display: none;
+    position: absolute;
+    color: white;
+    top: 65px;
+    left: -73px;
+    font-weight: bold;
+    white-space: nowrap;
+    font-size: 11pt;
+}
+/*#updateRedirect::before {  Puts a ring around it, hidden for now 
+    content:"";
+    display:block;
+    border: 2px solid #A64129;
+    -webkit-border-radius: 50%;
+    height: 4rem;
+    width: 4rem;
+    position: absolute;
+    left:-2px;
+    top:-2px;
+    -webkit-animation: pulsate-grow 3.5s ease-out;
+    -webkit-animation-iteration-count: infinite; 
+    -webkit-animation-delay: 0.6s;
+    opacity: 0.0;
+}
+#updateRedirect::after {  Puts a ring around it, hidden for now 
+    content:"";
+    display:block;
+    border:2px solid #A64129;
+    -webkit-border-radius: 50%;
+    height: 4rem;
+    width: 4rem;
+    position: absolute;
+    left:-2px;
+    top:-2px;
+    -webkit-animation: pulsate-grow 3.5s ease-out;
+    -webkit-animation-iteration-count: infinite; 
+    -webkit-animation-delay: 0.8s;
+    opacity: 0.0;
+}*/
+#updateRedirect{
+    position: fixed;bottom: 2rem;right: 3rem;border-radius: 50%;background-color: #A64129;color: #fff;z-index: 3;text-align: center;height: 4rem;width: 4rem;padding-top: 1rem;text-decoration: none;box-shadow: 2px 1px 4px rgba(0,0,0,.3);
+    -webkit-animation: pulsate 3.5s ease-out;
+    -webkit-animation-iteration-count: infinite; 
+
+}
             #parsingLoader {z-index: 50;visibility: visible !important;position: fixed; width: 100%;height:100%;background-color: #69ACC9;top:33%;}
             #parsingLoader img {position: absolute;top:0;left:0;bottom:0;right:0;margin:auto;}
             #imgTop, #imgBottom {display:block; height:35%; width:100%;overflow:hidden;z-index: 1;position: relative;}
@@ -1480,8 +1544,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
         </script>
 <%@include file="WEB-INF/includes/noscript.jspf" %>
 
-<a href="transcription.html?<%out.print(projectAppend);%>" style="position: fixed;bottom: 2rem;right: 2rem;border-radius: 50%;background-color: #A64129;color: #fff;z-index: 3;text-align: center;height: 4rem;width: 4rem;padding-top: 1rem;text-decoration: none;box-shadow: 2px 1px 4px rgba(0,0,0,.3);">2.8 update
+<a id="updateRedirect" href="transcription.html?<%out.print(projectAppend);%>">
+    2.8 update
     <img alt="2.8" src="images/28tpen.svg" height="24" >
+    <span id="updateHover"> Use the T-PEN 2.8 update! </span>
 </a>
     </body><%}%>
 </html>

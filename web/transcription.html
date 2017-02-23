@@ -1447,7 +1447,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
         $(".magnifyBtn").click(function(event){
             if ($(this).hasClass("ui-state-active")){
                 $('#zoomDiv').hide();
-                restoreWorkspace()
+                restoreWorkspace();
                 tpen.screen.isMagnifying = false;
                 $(document).off("mousemove");
                 $(this).removeClass("ui-state-active");
@@ -1498,12 +1498,16 @@ $(document).on("click",".fullScreenTrans",fullPage);
                 event.preventDefault();
                 var wDelta = e.wheelDelta < 0 ? 'down' : 'up';
                 if(wDelta === "up"){
-                    tpen.screen.zoomMultiplier += .4;
-                    $(document).trigger('mousemove');
+                    if(tpen.screen.zoomMultiplier < 10){
+                        tpen.screen.zoomMultiplier += .4;
+                        $(document).trigger('mousemove');
+                    }
                 }
                 else{
-                    tpen.screen.zoomMultiplier -= .4;
-                    $(document).trigger('mousemove');
+                    if(tpen.screen.zoomMultiplier > .5){
+                        tpen.screen.zoomMultiplier -= .4;
+                        $(document).trigger('mousemove');
+                    }
                 }
                 $("#zoomat").text(Math.round(tpen.screen.zoomMultiplier*10)/10+"x");
             }
@@ -1522,13 +1526,17 @@ $(document).on("click",".fullScreenTrans",fullPage);
             if(tpen.screen.isMagnifying){
                 //back out
                 if ((event.which === 109) || (event.which === 189) || (event.which === 173) ){ //173  = - in firefox
-                    tpen.screen.zoomMultiplier -= .4;
-                    $(document).trigger('mousemove');
+                    if(tpen.screen.zoomMultiplier > .5){
+                        tpen.screen.zoomMultiplier -= .4;
+                        $(document).trigger('mousemove');
+                    }
                 }
                 //ease in
                 else if ((event.which === 107) || (event.which === 187) || (event.which === 61)){ // 61 = + in firefox
-                    tpen.screen.zoomMultiplier += .4;
-                    $(document).trigger('mousemove');
+                    if(tpen.screen.zoomMultiplier < 10){
+                        tpen.screen.zoomMultiplier += .4;
+                        $(document).trigger('mousemove');
+                    }
                 }
                 //esc
                 else if(event.which === 27){
@@ -1665,7 +1673,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
                 $(".parsingToolButtons").find(".tpenButton").removeClass("selected");
                 toggleSelected($(this).parent(), true);
                 toggleIcon($(this).attr("id"));
-                if (thisID == "createColumn" || thisID == "destroyColumn" || thisID=="clearColumns") {
+                if (thisID == "createColumn" || thisID == "destroyColumn" || thisID == "clearColumns" || thisID == "adjustColumn") {
                     $("#addLines").removeClass("active");
                     $("#mergeLines").removeClass("active");
                     $("#removeLine").removeClass("active");
@@ -1675,7 +1683,9 @@ $(document).on("click",".fullScreenTrans",fullPage);
                     $("#ctrlLinesInst").find(".activeParsingTool").fadeOut(800);
                     $(".parsing").unbind();
                     linesToColumns();
-
+                    if(thisID == "adjustColumn"){
+                        adjustColumn(event);
+                    }
                     if (thisID == "createColumn"){
                         $.each($(".parsingColumn"), function(){
                             $(this).removeClass("parsingColumnSelected");
@@ -2354,5 +2364,13 @@ $(document).on("click",".fullScreenTrans",fullPage);
     }
 
 </script>
+        <noscript>
+            <div id="noscript">
+                You are blocking scripts on this page. T-PEN uses 
+                <code>googleapis.com</code> and <code>javascript</code> 
+                for necessary functionality.
+            </div>
+            <div id="trexHead" style="display:block"></div>
+        </noscript>
     </body>
 </html>

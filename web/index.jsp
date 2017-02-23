@@ -151,6 +151,10 @@
             td > a {
                 text-decoration: none;
             }
+            .ui-tabs-panel{
+                height: 100% !important;
+                /*overflow: auto;*/
+            }
         </style>
         <script type="text/javascript">
             $(function() {
@@ -192,21 +196,36 @@
                     mouseenter: function(){
                         var city = $(this).attr('data-map');
                         if (city.length < 3) return false; //No reliable map data in lookup table
+                        var mapwidth = parseInt($("#cityMapContain").width());
+                        var mapheight = parseInt($("#manuscripts").height()) - 40;
+                        var scrollAdjust = $("#manuscripts").scrollTop();
+                        if(scrollAdjust > 40){
+                            scrollAdjust -= 40;
+                        }
+                        if(mapwidth > 640){
+                            mapwidth = 640;
+                        }
+                        if(mapheight > 640){
+                            mapheight = 640;
+                        }
                         var src = [
                             "https://maps.googleapis.com/maps/api/staticmap?",
                             "center=",city,
                             "&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png|",city,
                             "&sensor=false&scale=1&zoom=3&visibility=simplified&maptype=terrain",
-                            "&size=",$("#cityMapContain").width(),"x",$("#cityMapContain").height()
+                            "&key=AIzaSyCo380ccyCHOeJRDqKIjCiTzOcwm-ZqjmU",  
+                            "&size=",mapwidth,"x",mapheight
                         ].join("");
                         $("#cityMap").attr("src",src).parent().show();
                         var src2 = [
                             "https://maps.googleapis.com/maps/api/staticmap?",
                             "center=",city,
                             "&sensor=false&scale=1&zoom=10&visibility=simplified&maptype=terrain",
-                            "&size=",Math.round($("#cityMapContain").width()*.3),"x",Math.round($("#cityMapContain").height()*.9)
+                            "&key=AIzaSyCo380ccyCHOeJRDqKIjCiTzOcwm-ZqjmU",
+                            "&size=",Math.round(mapwidth*.3),"x",Math.round(mapheight*.9)
                         ].join("");
                         $("#cityMapZoom img").attr("src",src2).show();
+                        $("#cityMapContain").css("height", mapheight+"px").css("width", mapwidth+"px").css("top", scrollAdjust);
                     },
                     mouseleave: function(){
                         $("#cityMapContain").hide();
@@ -327,11 +346,12 @@ $(window).load(function(){gapi.plusone.go();});
     if (thisUser == null){%>
                         <div id="login">
                         <form action="login.jsp" method="POST">
-                            <label for="uname">Email</label><input class="text" type="text" name="uname">
-                            <label for="password">Password</label><input class="text" type="password" name="password">
+                            <label for="uname">Email</label><input class="text" type="text" name="uname"><br>
+                            <label for="password">Password</label><input class="text" type="password" name="password"><br>
                             <input type="hidden" name="ref" value="http://t-pen.org/TPEN/login.jsp">
                             <input class="ui-state-default ui-button ui-corner-all" type="submit" title="Log In" value="Log In">
                         </form>
+                            <!--<br> didn't work to fix problem on mac-->
                             <h6 id="forgetFormBtn" class="loud caps left">Reset your Password<span class="left ui-icon ui-icon-arrowstop-1-s"></span></h6>
                             <form id="forgetForm" action="admin.jsp" method="POST" class="ui-corner-all left clear-left">
                                 <span>Enter the email address associated with your account to have your password reset.</span>
@@ -387,7 +407,7 @@ $(window).load(function(){gapi.plusone.go();});
                     </a>
                 </div>
             </div>
-            <div id="tabs">
+            <div id="tabs" style="padding-bottom: 3em;">
               <ul id="menu">
                 <%
                 if (thisUser == null){
@@ -430,9 +450,9 @@ $(window).load(function(){gapi.plusone.go();});
                         <h3>Available Repositories</h3>
                         <div class="lists">
                           <div id="cityMapContain">
-                                          <img id="cityMap" alt="map" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=3&sensor=false&scale=1&size=300x200&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis" />
+                                          <img id="cityMap" alt="map" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=3&sensor=false&scale=1&size=300x200&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis&key=AIzaSyCo380ccyCHOeJRDqKIjCiTzOcwm-ZqjmU" />
                                           <div id="cityMapZoom">
-                                              <img alt="inset" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=10&sensor=false&scale=1&size=100x140&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis" />
+                                              <img alt="inset" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=10&sensor=false&scale=1&size=100x140&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis&key=AIzaSyCo380ccyCHOeJRDqKIjCiTzOcwm-ZqjmU" />
                                           </div>
                           </div>
                             <%

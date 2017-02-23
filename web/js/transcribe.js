@@ -603,7 +603,7 @@ function loadTranscription(pid, tool){
                     scrubFolios();
                     $.each(transcriptionFolios, function(count){
                         var label = (tpen.screen.currentFolio===count) ?
-                        "‣" + this.label : "&nbsp;" + this.label;
+                        this.label : "&nbsp;" + this.label;
                         var opt = $("<option folioNum='" + count
                             + "' val='" + this.label + "'>"
                             + label + "</option>");
@@ -1191,6 +1191,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                     tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //It is now preloaded.
                 }
                 focusOnLastModified();
+                updatePageLabels(pageTitle);
             }
             else{
                 $('#requestAccessContainer').show();
@@ -1251,6 +1252,24 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
     }
     resetImageTools(true);
     //createPreviewPages(); //each time you load a canvas to the screen with all of its updates, remake the preview pages.
+}
+
+function updatePageLabels(pageTitle){
+    $("#trimPage").html(pageTitle);
+    $("#trimPage").attr("title", pageTitle);
+    var selectedOption = $("#pageJump").find("option:selected");
+    var selectedOptionText = selectedOption.html();
+    selectedOptionText = selectedOptionText.replace("‣","");
+    selectedOption.html(selectedOptionText);
+    $.each($("#pageJump").find("option"), function(){
+        $(this).prop("selected", false);
+        var option = $(this);
+        var optionText = option.html();
+        optionText = optionText.replace("‣","");
+        option.html(optionText);
+    });
+    $("#pageJump").find("option").prop("selected", false);
+    $("option[val='"+pageTitle+"']").prop("selected", true).attr("selected",true).html("‣"+pageTitle);
 }
 
 /*

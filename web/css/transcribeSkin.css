@@ -521,9 +521,10 @@ div#transcriptletArea {
     width: 100%;
     pointer-events: none;
     background: rgba(0,0,0,.7) url(../images/trexhead.png) right center no-repeat fixed;
-    background-size: 100%;
+    background-size: 53%;
+    background-position: 100% 0px;
     z-index: 3;
-    display:none;
+    display: none;
 }
 .tpenButton{
     /*font-weight: bold;*/
@@ -900,7 +901,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     display: inline-block;
     margin-right: 6px;
 }
-#iprAccept,#requestAccess, #genericIssue {position: fixed;left:0;right:0;top:10%;margin:auto;width:90%;max-width: 600px;max-height: 400px;overflow: hidden;padding: 5px;z-index: 50;
+#iprAccept,#requestAccessContainer, #genericIssue {position: fixed;left:0;right:0;top:10%;margin:auto;width:90%;max-width: 600px;max-height: 400px;overflow: hidden;padding: 5px;z-index: 50;
                            -moz-box-shadow:0 0 45px black;
                            box-shadow:0 0 45px black; display:none;}
 #requestAccess textarea {width:100%;height:5em;}

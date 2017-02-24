@@ -90,7 +90,7 @@ public class Tool {
 
    public static void initializeTools(int uid) throws SQLException {
       for (Tool.tools iter : tools.values()) {
-         if (iter != tools.sciat && iter != tools.unknown) {
+         if (iter != tools.sciat && iter != tools.unknown && iter!= tools.rtl) {
             Tool t = new Tool(iter, uid);
          }
       }

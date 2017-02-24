@@ -126,7 +126,6 @@ public class GetProjectTPENServlet extends HttpServlet {
                             JSONArray folios_array = JSONArray.fromObject(gson.toJson(folios));
                             JSONObject folio_obj = null;
                             //TODO need to get the ipr agreement status for the archive of this folio for this user 
-                            
                             for(int x=0; x<folios.length; x++){
                                 Integer folioNum = folios[x].getFolioNumber();
                                 Manuscript forThisFolio = new Manuscript(folioNum);
@@ -135,6 +134,8 @@ public class GetProjectTPENServlet extends HttpServlet {
                                 String controllerName = "public project";
                                 String archive = folios[x].getArchive();
                                 String ipr_agreement = folios[x].getIPRAgreement();
+                                System.out.println("Do i have a controller");
+                                System.out.println(controller);
                                 if(null != controller){
                                     controllerName = controller.getUname();
                                 }
@@ -142,7 +143,8 @@ public class GetProjectTPENServlet extends HttpServlet {
                                 folio_obj.element("manuscript", manID);
                                 folio_obj.element("archive", archive);
                                 folio_obj.element("ipr_agreement", ipr_agreement);
-                                if(user.getUname().equals(controllerName) || forThisFolio.isRestricted()){ //
+                                if(user.getUname().equals(controllerName) || !forThisFolio.isRestricted()){ 
+                                    //This user is the controlling user or this folio is not restricted
                                     folio_obj.element("ipr", true); //should be true in this case because the check needs to pass
                                 }
                                 else{
@@ -157,27 +159,27 @@ public class GetProjectTPENServlet extends HttpServlet {
                                     //Then this manuscript is accounted for.
                                     manuscripts_in_project.add(manID);
                                     User currentUser = user;
-                                    System.out.println("Is the current user authorized?");
-                                    System.out.println(forThisFolio.isAuthorized(currentUser));
                                     if(forThisFolio.isRestricted()){
                                         if(forThisFolio.isAuthorized(currentUser)){
                                             for_the_array.element("auth", "true");
-                                            System.out.println("23.2");
+                                            System.out.println("the user is authorized for this manuscript");
+                                        }
+                                        else{
+                                            System.out.println("the user is not authorized for this manuscript");
                                         }
                                     }
                                     else{
                                         for_the_array.element("auth", "true");
-                                        System.out.println("23.3");
+                                        System.out.println("23.3 auth is true because its not this is not a restriced manuscript");
                                     }
                                     mans_and_restrictions.add(for_the_array);
-                                } 
+                                }
                             }
-                            
                             jsonMap.put("ls_fs", folios_array.toString());
                             System.out.println("4");
                             jsonMap.put("mans_in_project", manuscripts_in_project.toString());
                             System.out.println("20");
-                            jsonMap.put("user_mans_auth",mans_and_restrictions.toString());
+                            jsonMap.put("user_mans_auth", mans_and_restrictions.toString());
                             System.out.println("21");
 //                            System.out.println("folios json ========== " + gson.toJson(folios));
                             JSONObject manifest = new JSONObject();                            

@@ -964,8 +964,6 @@ function loadTranscription(pid, tool){
     else {
         throw new Error("The input was invalid.");
     }
-    scrubNav();
-
 }
 
 function activateTool(tool){
@@ -1220,7 +1218,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
             window.setTimeout(function(){
                 preloadFolioImages();
             }, 15000);
-
+            scrubNav();
         }; // the extra () ensures this only runs once.
         image.onerror =function(){
             var image2 = new Image();

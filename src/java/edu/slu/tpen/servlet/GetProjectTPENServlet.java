@@ -134,8 +134,8 @@ public class GetProjectTPENServlet extends HttpServlet {
                                 String controllerName = "public project";
                                 String archive = folios[x].getArchive();
                                 String ipr_agreement = folios[x].getIPRAgreement();
-                                System.out.println("Do i have a controller");
-                                System.out.println(controller);
+                                //System.out.println("Do i have a controller");
+                                //System.out.println(controller);
                                 if(null != controller){
                                     controllerName = controller.getUname();
                                 }
@@ -162,15 +162,15 @@ public class GetProjectTPENServlet extends HttpServlet {
                                     if(forThisFolio.isRestricted()){
                                         if(forThisFolio.isAuthorized(currentUser)){
                                             for_the_array.element("auth", "true");
-                                            System.out.println("the user is authorized for this manuscript");
+                                           // System.out.println("the user is authorized for this manuscript");
                                         }
                                         else{
-                                            System.out.println("the user is not authorized for this manuscript");
+                                            //System.out.println("the user is not authorized for this manuscript");
                                         }
                                     }
                                     else{
                                         for_the_array.element("auth", "true");
-                                        System.out.println("23.3 auth is true because its not this is not a restriced manuscript");
+                                        //System.out.println("23.3 auth is true because its not this is not a restriced manuscript");
                                     }
                                     mans_and_restrictions.add(for_the_array);
                                 }

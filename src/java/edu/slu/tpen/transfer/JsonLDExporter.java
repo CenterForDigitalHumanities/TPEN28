@@ -105,9 +105,9 @@ public class JsonLDExporter {
       annotationList.element("proj", projID);
       annotationList.element("on", canvasID);
       annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
-      annotationList.element("testing", "msid_creation");
+      //annotationList.element("testing", "msid_creation");
       //String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
-      System.out.println("Need pageDim in buildPage()");
+      //System.out.println("Need pageDim in buildPage()");
       Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
       JSONArray otherContent;
       if (pageDim == null) {
@@ -137,6 +137,7 @@ public class JsonLDExporter {
       imageAnnot.put("@type", "oa:Annotation");
       imageAnnot.put("motivation", "sc:painting");
       Map<String, Object> imageResource = buildQuickMap("@id", String.format("%s%s&user=%s", Folio.getRbTok("SERVERURL"), f.getImageURLResize(), u.getUname()), "@type", "dctypes:Image", "format", "image/jpeg");
+      //System.out.println("Have image resources");
 //      imageResource.put("iiif", ?);
       if (pageDim != null) {
          imageResource.put("height", pageDim.height ); 
@@ -145,11 +146,16 @@ public class JsonLDExporter {
       imageAnnot.put("resource", imageResource);
       imageAnnot.put("on", canvasID);
       images.add(imageAnnot);
-      //If this list was somehow stored in the SQL DB, we could skip calling to the store every time. 
-      otherContent = Canvas.getLinesForProject(projID, canvasID,f.getFolioNumber(), u.getUID());
+      //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
+      //System.out.println("Get otherContent");
+      //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
+      //This is NULL
+      otherContent = Canvas.getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID());
       // no @id because it is not resolveable yet, but when it is it goes here.
+      //System.out.println("Finalize result");
       result.put("otherContent", otherContent);
       result.put("images", images);
+      //System.out.println("Return");
       return result;
    }
 

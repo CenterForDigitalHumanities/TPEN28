@@ -1826,9 +1826,17 @@ $(document).on("click",".fullScreenTrans",fullPage);
                             //prep for column adjustment
                             var columnSet = $(".parsingColumn");
                             columnSet.addClass("parsingColumnSelected");
+                            var iconToUse = $('<span class="pull-left fa fa-circle"></span>');
                             var columnText = (columnSet.size() === 1) ? "Destroy This Column" : "Destroy "+columnSet.size()+" Columns";
-                            $(".destroyPage").html('<span class="pull-left fa fa-circle"></span>'+columnText+'')
-                            .bind('click', function(){destroyPage();})
+                            var cfrm = confirm(iconToUse + "Destroy "+columnSet.size()+" Column(s)?  The transcription data will be lost.\n\nContinue?");
+                            if (!cfrm){
+                                return false;
+                            }
+                            else{
+                                destroyPage();
+                            }
+//                            $(".destroyPage").html('<span class="pull-left fa fa-circle"></span>'+columnText+'')
+//                            .bind('click', function(){destroyPage();})
                     }
                 }
                 else if (thisID == "addLines" || thisID == "mergeLines" || thisID==="removeLine" || thisID == "adjustLines") {

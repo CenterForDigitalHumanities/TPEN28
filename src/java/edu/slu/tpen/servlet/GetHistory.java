@@ -46,6 +46,9 @@ public class GetHistory extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         StringBuilder historyHTML = new StringBuilder("");
+        StringBuilder historyLine = new StringBuilder("");
+        StringBuilder historyEntry = new StringBuilder("");
+        StringBuilder historyEntryCollection = new StringBuilder("");
         Calendar m = Calendar.getInstance(); //midnight
         //             m.set(Calendar.HOUR_OF_DAY, 0);
         //             m.set(Calendar.MINUTE, 0);
@@ -65,14 +68,19 @@ public class GetHistory extends HttpServlet {
         int i = -1;
         for (Transcription t: thisText) {
             i++;
+            historyLine.setLength(0);
+            historyEntry.setLength(0);
+            historyEntryCollection.setLength(0);
             List<ArchivedTranscription> history = pageHistory.get(t.getLineID());
-            if (history == null){
-                historyHTML.append("<div class='historyLine' id='history").append(t.getLineID()).append("' linewidth='").append(t.getWidth()).append("' lineheight='").append(t.getHeight()).append("' lineleft='").append(t.getX()).append("' linetop='").append(t.getY()).append("'>No previous versions</div>");
+            if (history == null){ //This will be the first entry, so the entry is the line
+                historyLine.append("<div class='historyLine' id='history").append(t.getLineID()).append("' linewidth='").append(t.getWidth()).append("' lineheight='").append(t.getHeight()).append("' lineleft='").append(t.getX()).append("' linetop='").append(t.getY()).append("'>No previous versions</div>");
+                historyHTML.append(historyLine);
             } 
             else {
-                historyHTML.append("<div class='historyLine' id='history").append(t.getLineID()).append("'>");
+                historyLine.append("<div class='historyLine' id='history").append(t.getLineID()).append("'>");
                 for (ArchivedTranscription h: history){
-                    historyHTML.append("<div class='historyEntry ui-corner-all' linewidth='").append(h.getWidth()).append("' lineheight='").append(h.getHeight()).append("' lineleft='").append(h.getX()).append("' linetop='").append(h.getY()).append("'>");
+                    historyEntry.setLength(0);
+                    historyEntry.append("<div class='historyEntry ui-corner-all' linewidth='").append(h.getWidth()).append("' lineheight='").append(h.getHeight()).append("' lineleft='").append(h.getX()).append("' linetop='").append(h.getY()).append("'>");
                     String dateString = "-";
                     DateFormat dfm;
                     Calendar historyDate = Calendar.getInstance();
@@ -85,30 +93,42 @@ public class GetHistory extends HttpServlet {
                         dateString = dfm.format(h.getDate());//DateFormat.getDateInstance(DateFormat.MEDIUM).format(historyDate);
                     }
                     dfm.setCalendar(historyDate);
-                    historyHTML.append("<div class='historyDate'>").append(dateString).append("</div>");
+                    historyEntry.append("<div class='historyDate'>").append(dateString).append("</div>");
                     
                     if (h.getCreator() > 0){
                         User creatorUser = new User(h.getCreator());
                         String creatorName = creatorUser.getFname()+" "+creatorUser.getLname();
-                        historyHTML.append("<div class='historyCreator'>").append(creatorName).append("</div>");
+                        historyEntry.append("<div class='historyCreator'>").append(creatorName).append("</div>");
                     
                     }
-                    historyHTML.append("<div class='right historyRevert'></div><div class='right loud historyDims'></div><div class='historyText'>")
-                            .append(h.getText())
+                    String lineText = h.getText();
+                    String lineComment = h.getComment();
+                    if(null == lineText || lineText.equals("")){
+                        lineText = "<span style='color:silver;'>&#45; empty &#45;</span>";
+                    }
+                    if(null == lineComment || lineComment.equals("")){
+                        lineComment = "<span style='color:silver;'>&#45; empty &#45;</span>";
+                    }
+                    historyEntry.append("<div class='right historyRevert'></div><div class='right loud historyDims'></div><div class='historyText'>")
+                            .append(lineText)
                             .append("</div><div class='historyNote'>")
-                            .append(h.getComment())
+                            .append(lineComment)
                             .append("</div>");
                    
                     //if(isMember || permitModify){
-                    historyHTML.append("<div class='historyOptions'><span title='Revert image parsing only' class='ui-icon ui-icon-image right'></span>")
+                    historyEntry.append("<div class='historyOptions'><span title='Revert image parsing only' class='ui-icon ui-icon-image right'></span>")
                         .append("<span title='Revert text only' class='ui-icon ui-icon-pencil right'></span>")
                         .append("<span title='Revert to this version' class='ui-icon ui-icon-arrowreturnthick-1-n right'></span></div>");
-
-                        
                     //}
-                    historyHTML.append("</div>");
+                    historyEntry.append("</div>");
+                    historyEntryCollection.insert(0, historyEntry);
+                    //historyEntryCollection.append(historyEntry); 
                 }
-                historyHTML.append("</div>");
+                //historyEntryCollection.append(historyEntry); 
+                
+                historyLine.append(historyEntryCollection);
+                historyLine.append("</div>");
+                historyHTML.append(historyLine); //Order lines from newest to oldest.  You can change this affect by using append() instead. 
             }
         }
         out.print(historyHTML.toString());

@@ -3890,8 +3890,8 @@ function updateLine(line, cleanup, updateList){
     lineHeight = Math.round(lineHeight, 0);
     var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
     var currentLineServerID = line.attr('lineserverid');
-    var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".theText").val();
-    var currentLineNotes = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".notes").val();
+    var currentLineText = $(line).find(".theText").val();
+    var currentLineNotes = $(line).find(".notes").val();
     var currentLineTextAttr = unescape(line.attr("data-answer"));
     var currentLineNotesAttr = unescape(line.find(".notes").attr("data-answer"));
     var params = new Array({name:'submitted',value:true},{name:'folio',value:tpen.project.folios[tpen.screen.currentFolio].folioNumber},{name:'projectID',value:tpen.project.id});
@@ -4007,6 +4007,7 @@ function updateLine(line, cleanup, updateList){
                 .stop(true,true).animate({"color":"green"}, 400)
                 .append("<div class='saveLog'>"+columnMark + '&nbsp;saved&nbsp;at&nbsp;'+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+"</div>")//+", "+Data.dateFormat(date.getDate())+" "+month[date.getMonth()]+" "+date.getFullYear())
                 .animate({"color":"#618797"}, 600);
+               
             }
             line.attr("data-answer", currentLineText);
             line.find(".notes").attr("data-answer", currentLineNotes);
@@ -4021,6 +4022,7 @@ function updateLine(line, cleanup, updateList){
                         line.attr("hasError",null);
                         markLineSaved(line);
                         $("#parsingCover").hide();
+                        if(!updateContent)History.prependEntry(lineID);
                         // success
                     }).fail(function(err){
                         line.attr("hasError","Saving Failed "+err.status);
@@ -4040,6 +4042,7 @@ function updateLine(line, cleanup, updateList){
                         line.attr("hasError",null);
                         markLineSaved(line);
                         $("#parsingCover").hide();
+                        History.prependEntry(lineID);
                         // success
                     }).fail(function(err){
                         line.attr("hasError","Saving Failed "+err.status);
@@ -5848,7 +5851,22 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         });
 
     }
-
+    /* Make call to sql to get lines and Java to build history.  See GetHistory.java */
+    function getHistory(){
+        var url = "getHistory";
+        var folioNum = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
+        var params = {projectID: tpen.project.id, p:folioNum};
+        $.post(url, params)
+            .success(function(data){
+                $("#historyListing").empty();
+                var historyElem = $(data);
+                $("#historyListing").append(historyElem);
+            })
+            .fail(function(data){
+                $("#historyListing").empty(); //? good nuf for now?
+                //TODO: Should we populate history with something informing failure?
+            });
+    }
     var History = {
     /**
      *  Displays the image of the line in the history tool.
@@ -6061,6 +6079,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         //if(!isMember && !permitModify)return false;
         var historyText = entry.find(".historyText").text();
         var historyNotes = entry.find(".historyNote").text();
+        //As long as it's actually the same dash
         if (historyText.indexOf("- empty -") !== -1) historyText = "";
         if (historyNotes.indexOf("- empty -") !== -1) historyNotes = "";
         var lineid = entry.parent(".historyLine").attr("id").substr(7);
@@ -6144,38 +6163,53 @@ tpen.screen.responsiveNavigation = function(severeCheck){
      *  @param lineid int unique id to attach to aded entry
      */
     prependEntry: function(lineid){
-        var lineidHist = lineid.replace("line/", "");
-        var updated = $(".transcriptlet[lineserverid='"+lineid+"']");
+        var lineidHist = lineid;
+        var updated = $(".transcriptlet[lineserverid='line/"+lineid+"']");
+        var lineText = updated.find(".theText").val();
+        var lineNotes = updated.find(".notes").val();
+        if(lineText === ""){
+            lineText = "<span style='color:silver;'>&#45; empty &#45;</span>"; 
+        }
+        if(lineNotes === ""){
+            lineNotes = "<span style='color:silver;'>&#45; empty &#45;</span>";
+        }
         var firstEntry = $("#history"+lineidHist).find(".historyEntry").eq(0);
         var newEntry = null;
+        var historyMaker = tpen.user.fname +" "+tpen.user.lname;
+        var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
+        //FIXME
+        //Haberberger note: History dims is off when new entries are added, so we hide them on new entries.  After page load, the comparison works.
+        //<div class='right loud historyDims'></div>  //<-- taken from next to .historyRevert 3 lines down from here. 
+        var firstEntryHTML = $("<div id='newEntry' class='historyEntry ui-corner-all' linewidth='' lineheight='' lineleft='' linetop=''>\n\
+                <div class='historyDate'></div><div class='historyCreator'>"+historyMaker+"</div>\n\
+                <div class='right historyRevert'></div>\n\
+                <div class='historyText'> "+lineText+" </div><div class='historyNote'>"+lineNotes+"</div>\n\
+                <div class='historyOptions' style='display: none;'>\n\
+                    <span title='Revert image parsing only' class='ui-icon ui-icon-image right'></span>\n\
+                    <span title='Revert text only' class='ui-icon ui-icon-pencil right'></span>\n\
+                    <span title='Revert to this version' class='ui-icon ui-icon-arrowreturnthick-1-n right'></span>\n\
+                </div></div>");
         if (firstEntry.length < 1){
             // No previous versions, add a new entry entirely
-            var firstEntry = ["<div id='newEntry' class='historyEntry ui-corner-all' linewidth='' lineheight='' lineleft='' linetop=''>",
-                "<div class='historyDate'></div><div class='historyCreator'></div>",
-                "<div class='right historyRevert'></div><div class='right loud historyDims'></div>",
-                "<div class='historyText'></div><div class='historyNote'></div>",
-                "<div class='historyOptions' style='display: none;'>",
-                    "<span title='Revert image parsing only' class='ui-icon ui-icon-image right'></span>",
-                    "<span title='Revert text only' class='ui-icon ui-icon-pencil right'></span>",
-                    "<span title='Revert to this version' class='ui-icon ui-icon-arrowreturnthick-1-n right'></span>",
-                "</div></div>"].join("");
-            $("#history"+lineidHist).html(firstEntry);
-            newEntry = $("#newEntry");
+            $("#history"+lineidHist).append(firstEntryHTML);
+            newEntry = $("#history"+lineidHist).find("#newEntry");
             newEntry.attr("id", "");
-        } else {
-            newEntry = firstEntry.clone();
+        } 
+        else {
+            newEntry = firstEntryHTML;
+            newEntry.insertBefore(firstEntry); //We could add to the bottom with append to the parent if we want. 
         }
         newEntry.attr({
-            "linewidth" : updated.attr("lineWidth"),
-            "lineheight" : updated.attr("lineHeight"),
-            "lineleft" : updated.attr("lineLeft"),
-            "linetop" : updated.attr("lineTop")
-        }).find(".historyDate").html("<span class='quiet' title='History will update when the page reloads'>new entry</span>")
-        .siblings(".historyCreator").html("<span class='quiet' title='History will update when the page reloads'>Local User</span>")
-        .siblings(".historyText").text(updated.find(".theText").val())
-        .siblings(".historyNote").text(updated.find(".notes").val())
+            "linewidth" : parseInt(parseFloat(updated.attr("lineWidth")) * (10*ratio)),
+            "lineheight" : parseInt(parseFloat(updated.attr("lineHeight")) * 10),
+            "lineleft" : parseInt(parseFloat(updated.attr("lineLeft")) * (10*ratio)),
+            "linetop" : parseInt(parseFloat(updated.attr("lineTop"))) * 10
+        }).find(".historyDate").html("<span class='quiet' title='History will update when the page reloads'>Just Now</span>")
+        .siblings(".historyCreator").html("<span class='quiet' title='History will update when the page reloads'>"+historyMaker+"</span>")
+        .siblings(".historyText").html(lineText)
+        .siblings(".historyNote").html(lineNotes)
         .siblings(".historyOptions").find("span").click(function(){History.revert(this)});
-        newEntry.insertBefore(firstEntry);
+        
     },
     /**
      *  Attaches the credit for the most recent edit to the main interface.

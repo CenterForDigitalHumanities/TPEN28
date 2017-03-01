@@ -921,12 +921,12 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 #progress {bottom:0;right:0;}
 #lineResizing {top:50%;width:auto;max-width: 25%;}
 #zoomDiv {display: none;border-radius : 50%; box-shadow :5px 5px 15px 3px black,15px 15px 100px rgba(230,255,255,.8) inset,-15px -15px 100px rgba(0,0,15,.4) inset;width : 300;height:300;border: 3px gold outset;overflow : hidden;position:fixed;left: 450px;top: 65px;background-color: transparent;background-position: 0px 0px;background-size: auto;background-repeat:no-repeat;}
-#historyListing {height: 100%;overflow: auto;position:relative;}
+#historyListing {height: 100%;overflow: auto;position:relative; overflow: auto; max-height: 83vh !important;}
 .historyEntry,.historyLine{position: relative;overflow: auto;}
-.historyLine{height:auto; margin-bottom: 20px; border-bottom: 3px solid black; display: none;}
-.historyEntry {border-width: 0px; padding:5px 0;margin:-5px 0; }
+.historyLine{height:auto; margin-bottom: 20px; display: none;}
+.historyEntry {border-width: 0px; padding:5px 0;margin:2px 0; }
 .historyEntry:hover {box-shadow:rgba(166,65,41,0.7) 0 0 10px,rgba(166,65,41,0.7) 0 0 10px inset;}
-.historyNote,.historyText{position: relative;overflow: auto;padding:3px;background:whitesmoke;margin: 0 10px;clear: left;max-height: 5em;}
+.historyNote,.historyText{position: relative;overflow: auto;padding:3px;background:whitesmoke;margin: 0 10px;clear: left; max-height: 5em; min-height: .5em;}
 .historyNote {display: none;}
 .historyCreator,.historyDate{position: relative;overflow: hidden;margin: 0 10px;float: left;}
 .historyOptions {position: absolute;right:12px; top:20px;z-index: 10;display: none;}

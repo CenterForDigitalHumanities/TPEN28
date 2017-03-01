@@ -1109,16 +1109,21 @@ function focusOnLastModified(){
             && l.resource["cnt:chars"]
             && l.resource["cnt:chars"].length > 0;
     });
-    if(scribedLines.length!==lines.length)    {
+    if(scribedLines.length!==lines.length){
         var i;
         for (i=1;i<lines.length;i++){
             if (lines[i].modified > focusOn.modified) {
-                focusOn.modified = lines[i].modified;
+                focusOn = lines[i];
+            }
+            if(i === lines.length -1){
+                updatePresentation($(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']"));
             }
         }
     }
-    var line = $(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']");
-    updatePresentation(line);
+    else{
+        updatePresentation($(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']"));
+    }
+    
 };
 
 /*

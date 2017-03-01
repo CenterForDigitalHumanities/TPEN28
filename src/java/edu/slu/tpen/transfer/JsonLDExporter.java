@@ -76,7 +76,8 @@ public class JsonLDExporter {
          }
          pages.put("canvases", pageList);
          manifestData.put("sequences", new Object[] { pages });
-      } catch (UnsupportedEncodingException ignored) {
+      } 
+      catch (UnsupportedEncodingException ignored) {
       }
    }
 
@@ -94,7 +95,6 @@ public class JsonLDExporter {
     * serialisation
     */
    private Map<String, Object> buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
-       
       Integer msID = f.getMSID();
       String msID_str = msID.toString();
       String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
@@ -149,15 +149,12 @@ public class JsonLDExporter {
       //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
       //System.out.println("Get otherContent");
       //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
-      //This is NULL
       otherContent = Canvas.getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID());
-      // no @id because it is not resolveable yet, but when it is it goes here.
       //System.out.println("Finalize result");
       result.put("otherContent", otherContent);
       result.put("images", images);
       //System.out.println("Return");
       return result;
    }
-
    private static final Logger LOG = Logger.getLogger(JsonLDExporter.class.getName());
 }

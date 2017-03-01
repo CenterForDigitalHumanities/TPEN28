@@ -935,6 +935,7 @@ public class Folio {
     */
    private void detect() throws SQLException, IOException {
       try (InputStream stream = getUncachedImageStream(false)) {
+          //TODO: FIXME: cubap bhaberbe  This image is broken or Null in some way and breaks when we pass it in to stuff down the line.  
          BufferedImage img = ImageIO.read(stream);
 //         writeDebugImage(img, "uncached");
 
@@ -1384,10 +1385,10 @@ public class Folio {
                if (!path.endsWith(".jpg") && !path.endsWith(".JPG")) {
                   path += ".jpg";
                }
-					LOG.log(Level.INFO, "Loading private image from {0}", path);
+                LOG.log(Level.INFO, "Loading private image from {0}", path);
                return new FileInputStream(path);
             } else if (!onlyLocal) {
-					LOG.log(Level.INFO, "Loading image with URL {0}", imageURL);
+                LOG.log(Level.INFO, "Loading image with URL {0}", imageURL);
                HttpURLConnection conn = (HttpURLConnection)imageURL.openConnection();
                conn.connect();
                return conn.getInputStream();

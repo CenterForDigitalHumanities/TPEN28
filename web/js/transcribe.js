@@ -138,6 +138,7 @@ function scrubNav(){
     } else {
         $("#nextCanvas,#nextPage").css("visibility","");
     }
+    $(window).trigger("resize");
 }
 
 /* Load the interface to the first page of the manifest. */

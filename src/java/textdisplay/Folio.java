@@ -125,7 +125,6 @@ public class Folio {
             stmt3.setInt(1, folioNumber);
             ResultSet rs = stmt3.executeQuery();
             linePositions = loadLines(rs).toArray(new Line[0]);
-
             try (PreparedStatement stmt2 = j.prepareStatement("select * from folios where pageNumber=?")) {
                stmt2.setInt(1, folioNumber);
                rs = stmt2.executeQuery();
@@ -936,12 +935,17 @@ public class Folio {
    private void detect() throws SQLException, IOException {
       try (InputStream stream = getUncachedImageStream(false)) {
           //TODO: FIXME: cubap bhaberbe  This image is broken or Null in some way and breaks when we pass it in to stuff down the line.  
+         System.out.println("I am in detect() in FOlio.java  What is stream?");
+         System.out.println(stream);
          BufferedImage img = ImageIO.read(stream);
+         System.out.println("DID I GET BUFFERED IMG +++++++++++");
+         System.out.println(img);
 //         writeDebugImage(img, "uncached");
 
          // @TODO:  BOZO:  What do do when the BI is null?
 
          int height = 1000;
+         System.out.println("going into imageProcessor.  Did i get height: "+height);
          imageProcessor proc = new imageProcessor(img, height);
 
          List<line> detectedLines;
@@ -950,6 +954,7 @@ public class Folio {
          // and has some error catching for a stack overflow that has occured before due to a recursive call within
          if (getArchive().equals("CEEC") || getArchive().equals("ecodices") || new Manuscript(folioNumber).getCity().equals("Baltimore")) {
             try {
+                System.out.println("Now I need to detect lines on the processed image");
                detectedLines = proc.detectLines(true);
             } catch (Exception e) {
                // If the agressive method fails, log the error and run regular

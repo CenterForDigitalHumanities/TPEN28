@@ -188,13 +188,13 @@ public class Canvas {
         lines = Transcription.getProjectTranscriptions(projectID, folioNumber);
         int numberOfLines = lines.length;
         List<Object> resources = new ArrayList<>();
-        System.out.println("How many lines?   "+numberOfLines);
+        //System.out.println("How many lines?   "+numberOfLines);
         for (int i = 0; i < numberOfLines; i++) {
             if (lines[i] != null) {   
-                System.out.println("On line "+i);
+                //System.out.println("On line "+i);
                 dateString = "";
                 //when it breaks, it doesn't get this far
-                System.out.println(lines[i].getLineID() + " " +lines[i].getDate().toString());
+                //System.out.println(lines[i].getLineID() + " " +lines[i].getDate().toString());
                 int lineID = lines[i].getLineID();
                 Map<String, Object> lineAnnot = new LinkedHashMap<>();
                 String lineURI = "line/" + lineID;
@@ -205,11 +205,11 @@ public class Canvas {
                 lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(lines[i].getText())));
                 lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight())); 
                 if(null != lines[i].getComment() && !"null".equals(lines[i].getComment())){
-                    System.out.println("comment was usable");
+                    //System.out.println("comment was usable");
                     lineAnnot.put("_tpen_note", lines[i].getComment());
                 }
                 else{
-                    System.out.println("comment was null");
+                    //System.out.println("comment was null");
                     lineAnnot.put("_tpen_note", "");
                 }
                 lineAnnot.put("_tpen_creator",lines[i].getCreator());

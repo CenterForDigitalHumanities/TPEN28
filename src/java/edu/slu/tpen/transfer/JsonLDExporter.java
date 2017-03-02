@@ -110,6 +110,7 @@ public class JsonLDExporter {
       //System.out.println("Need pageDim in buildPage()");
       Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
       JSONArray otherContent;
+      //System.out.println("Build page for "+f.getFolioNumber());
       if (pageDim == null) {
          //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
          pageDim = f.getImageDimension();

@@ -168,6 +168,7 @@ public class Canvas {
      * @return : The annotation lists @id property, not the object.  Meant to look like an otherContent field.
      */
     public static JSONArray getLinesForProject(Integer projectID, String canvasID, Integer folioNumber, Integer UID) throws MalformedURLException, IOException, SQLException {
+        System.out.println("Get lines for project");
         JSONObject parameter = new JSONObject();
         JSONObject annotationList = new JSONObject();
         JSONArray resources_array = new JSONArray();
@@ -177,7 +178,7 @@ public class Canvas {
         annotationList.element("proj", projectID);
         annotationList.element("on", canvasID);
         annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
-        annotationList.element("testing", "msid_creation");
+        //annotationList.element("testing", "msid_creation");
         Transcription[] lines;
         parameter.element("@type", "sc:AnnotationList");
         if(projectID > -1){
@@ -187,9 +188,13 @@ public class Canvas {
         lines = Transcription.getProjectTranscriptions(projectID, folioNumber);
         int numberOfLines = lines.length;
         List<Object> resources = new ArrayList<>();
+        //System.out.println("How many lines?   "+numberOfLines);
         for (int i = 0; i < numberOfLines; i++) {
             if (lines[i] != null) {   
+                //System.out.println("On line "+i);
                 dateString = "";
+                //when it breaks, it doesn't get this far
+                //System.out.println(lines[i].getLineID() + " " +lines[i].getDate().toString());
                 int lineID = lines[i].getLineID();
                 Map<String, Object> lineAnnot = new LinkedHashMap<>();
                 String lineURI = "line/" + lineID;
@@ -199,15 +204,27 @@ public class Canvas {
                 lineAnnot.put("motivation", "oad:transcribing"); 
                 lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(lines[i].getText())));
                 lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight())); 
-                lineAnnot.put("_tpen_note", lines[i].getComment());
+                if(null != lines[i].getComment() && !"null".equals(lines[i].getComment())){
+                    //System.out.println("comment was usable");
+                    lineAnnot.put("_tpen_note", lines[i].getComment());
+                }
+                else{
+                    //System.out.println("comment was null");
+                    lineAnnot.put("_tpen_note", "");
+                }
                 lineAnnot.put("_tpen_creator",lines[i].getCreator());
 //                System.out.println("What is the date for this line?");
 //                System.out.println(lines[i].getDate());
 //                System.out.println(lines[i].getDate().toString());
 //                System.out.println(lines[i].getDate().getTime());
+                //This is throwing Null Pointer and bubbling up to JsonLDExporter and up to getProjectTPENServlet
+                
                 dateString = lines[i].getDate().toString();
                 lineAnnot.put("modified", dateString);
                 resources.add(lineAnnot);
+            }
+            else{
+                System.out.println("lines was null");
             }
         }
         resources_array = JSONArray.fromObject(resources);

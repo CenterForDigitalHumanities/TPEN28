@@ -982,7 +982,7 @@ public class Manuscript {
     */
    public User getControllingUser() throws SQLException {
       if (!this.isRestricted()) {
-         System.out.println("This is not a restricted manuscript."); 
+         //System.out.println("This is not a restricted manuscript."); 
          return null;
       }
       String query = "select restricted from manuscript where id=?";
@@ -992,7 +992,7 @@ public class Manuscript {
          j = DatabaseWrapper.getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, id);
-         System.out.println("select restricted from manuscript where id="+id);
+         //System.out.println("select restricted from manuscript where id="+id);
          ResultSet rs = ps.executeQuery();
          if (rs.next()) {
             return new User(rs.getInt(1));
@@ -1001,7 +1001,7 @@ public class Manuscript {
          DatabaseWrapper.closeDBConnection(j);
          DatabaseWrapper.closePreparedStatement(ps);
       }
-      System.out.println("Did not find controlling user");
+      //System.out.println("Did not find controlling user");
       return null;
    }
 
@@ -1024,7 +1024,7 @@ public class Manuscript {
             //System.out.println("I have mans that meet this criteria");
             //System.out.println("Is "+rs.getInt(1)+" equal to 0 or -999");
             if (rs.getInt(1) != 0 && rs.getInt(1) != -999) {
-               System.out.println("No,  return true");
+               //System.out.println("No,  return true");
                return true;
             }
             else{

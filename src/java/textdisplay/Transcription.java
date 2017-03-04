@@ -69,10 +69,12 @@ public class Transcription {
     */
    public Transcription(int projectID, int folio, int x, int y, int height, int width, Boolean isProject) throws SQLException, IOException {
       if (isProject) {
-         String insertQuery = "insert into transcription(projectID,folio,x,y,height,width,comment,text,line,creator) values(?,?,?,?,?,?,'','',-1,0)";
+         String insertQuery = "insert into transcription(projectID,folio,x,y,height,width,comment,text,line,creator, date) values(?,?,?,?,?,?,'','',-1,0,?)";
          Connection j = null;
          PreparedStatement ps = null;
+         
          try {
+            Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
             this.projectID = projectID;
             this.folio = folio;
             this.x = x;
@@ -81,6 +83,7 @@ public class Transcription {
             this.height = height;
             this.text = "";
             this.comment = "";
+            this.date = now;
             j = DatabaseWrapper.getConnection();
             ps = j.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setInt(1, projectID);
@@ -89,6 +92,7 @@ public class Transcription {
             ps.setInt(4, y);
             ps.setInt(5, height);
             ps.setInt(6, width);
+            ps.setTimestamp(7, now);
             ps.execute();
             ResultSet rs = ps.getGeneratedKeys();
             //the Line id is an auto increment field, so get that and store it here.
@@ -108,10 +112,11 @@ public class Transcription {
          }
       } else {
          //in this case projectID is actually a UID
-         String insertQuery = "insert into transcription(creator,folio,x,y,height,width,comment,text,line) values(?,?,?,?,?,?,'','',-1)";
+         String insertQuery = "insert into transcription(creator,folio,x,y,height,width,comment,text,line, date) values(?,?,?,?,?,?,'','',-1,?)";
          Connection j = null;
          PreparedStatement ps = null;
          try {
+            Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
             j = DatabaseWrapper.getConnection();
             ps = j.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setInt(1, projectID);
@@ -120,12 +125,14 @@ public class Transcription {
             ps.setInt(4, y);
             ps.setInt(5, height);
             ps.setInt(6, width);
+            ps.setTimestamp(7, now);
             ps.execute();
             ResultSet rs = ps.getGeneratedKeys();
             //the Line id is an auto increment field, so get that and store it here.
             if (rs.next()) {
                this.lineID = rs.getInt(1);
             }
+            this.date = now;
             this.text = "";
             this.comment = "";
             this.projectID = projectID;
@@ -155,8 +162,8 @@ public class Transcription {
     */
    public Transcription(int uid, int projID, int folioID, String t, String c, Rectangle r) throws SQLException, IOException {
       try (Connection j = DatabaseWrapper.getConnection()) {
-         try (PreparedStatement ps = j.prepareStatement("INSERT INTO transcription (creator, projectID, folio, x, y, width, height, comment, text, line) " +
-                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, -1)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+         try (PreparedStatement ps = j.prepareStatement("INSERT INTO transcription (creator, projectID, folio, x, y, width, height, comment, text, line, date) " +
+                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, -1, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
             UID = uid;
             projectID = projID;
             folio = folioID;
@@ -166,7 +173,7 @@ public class Transcription {
             height = r.height;
             text = t;
             comment = c;
-            
+            date = new java.sql.Timestamp(System.currentTimeMillis());
             ps.setInt(1, UID);
             ps.setInt(2, projectID);
             ps.setInt(3, folio);
@@ -176,6 +183,7 @@ public class Transcription {
             ps.setInt(7, height);
             ps.setString(8, text);
             ps.setString(9, comment);
+            ps.setTimestamp(10, date);
             ps.execute();
             ResultSet rs = ps.getGeneratedKeys();
             //the Line id is an auto increment field, so get that and store it here.
@@ -413,15 +421,19 @@ public class Transcription {
          ps = j.prepareStatement(query);
          ps.setInt(1, projectID);
          ps.setInt(2, folioNumber);
+         //System.out.println("Get transcription line ids");
          ResultSet transcriptionIDs = ps.executeQuery();
-         while (transcriptionIDs.next()) {
+         while (transcriptionIDs.next()){
             //add a Transcription object built using the unique id
             orderedTranscriptions.add(new Transcription(transcriptionIDs.getString(1)));
          }
          if (orderedTranscriptions.size() == 0) {
+             System.out.println("No orderedTranscriptions");
             //create Transcription(s) based on Project settings and Line parsing
             Project p = new Project(projectID);
+            //System.out.println("Got project");
             Project.imageBounding preferedBounding = p.getProjectImageBounding();
+            //System.out.println("Got image bounding");
             if (preferedBounding == Project.imageBounding.none) {
                //do nothing
             }
@@ -455,22 +467,29 @@ public class Transcription {
                }
             }
             if (preferedBounding == Project.imageBounding.lines) {
+                System.out.println("I know image bouding was lines");
                //make a Transcription for each Line
                Folio f = new Folio(folioNumber, true);
+               //System.out.println("Got folio");
                Line[] lines = f.getlines();
+               //System.out.println("got lines");
                for (int i = 0; i < lines.length; i++) {
                   Transcription t = new Transcription(projectID, folioNumber, lines[i].left, lines[i].top, lines[i].getHeight(), lines[i].getWidth(), true);
                   orderedTranscriptions.add(t);
                }
                if (orderedTranscriptions.size() == 0) {
+                  //System.out.println("Still, ordered transcription was 0");
                   int height = 1000;
-
                   int width = f.getImageDimension().width;
+                  //System.out.println("Got f width");
                   Transcription fullPage = new Transcription(projectID, folioNumber, 0, 0, height, width, true);
+                  //System.out.println("Got full page");
                   orderedTranscriptions.add(fullPage);
                }
             }
-
+         }
+         else{
+             System.out.println("Already had orderedTranscriptions");
          }
          Transcription[] toret = new Transcription[orderedTranscriptions.size()];
          for (int i = 0; i < orderedTranscriptions.size(); i++) {

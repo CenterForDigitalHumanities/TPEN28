@@ -48,6 +48,8 @@ public class imageProcessor {
     * @param h
     */
    public imageProcessor(BufferedImage img, int h) {
+       System.out.println("I made it into the img processor with this img +++++++++");
+       System.out.println(img);
       untouchedImage = img;
       orig = img;
       maxHeight = h;
@@ -66,7 +68,6 @@ public class imageProcessor {
     * @return Vector containing all lines, null in case of unrecoverable error
     */
    public List<line> detectLines(boolean doBlobExtract) {
-
       orig = ImageHelpers.scale(untouchedImage, maxHeight);
 //      writeDebugImage(orig, "detectLines.orig");
       BufferedImage stored = ImageHelpers.scale(orig, 1000);
@@ -77,7 +78,6 @@ public class imageProcessor {
             orig.setRGB(i, j, -1);
          }
       }
-
       if (doBlobExtract) {
          for (int i = 0; i < bin.getWidth(); i++) {
             for (int j = 0; j < bin.getHeight(); j++) {
@@ -112,7 +112,6 @@ public class imageProcessor {
                }
             }
          }
-
          for (int i = 0; i < blobs.size(); i++) {
             if ((blobs.get(i).size < 4000)) {
                blob.drawBlob(orig, blobs.get(i).x, blobs.get(i).y, blobs.get(i), 0x000000);

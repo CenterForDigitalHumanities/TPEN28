@@ -138,6 +138,7 @@ function scrubNav(){
     } else {
         $("#nextCanvas,#nextPage").css("visibility","");
     }
+    $(window).trigger("resize");
 }
 
 /* Load the interface to the first page of the manifest. */
@@ -1033,7 +1034,7 @@ function activateUserTools(tools, permissions){
 }
 
 /*
- * Checks the TPEN object for the manuscript permissions from a specific folio.  If this user has not accepted the
+ * Checks the TPEN28 object for the manuscript permissions from a specific folio.  If this user has not accepted the
  * agreement, then they will see a pop up requiring them to request access.
  * @param {type} id
  * @returns {Boolean}
@@ -1077,7 +1078,7 @@ function acceptIPR(folio){
 }
 
 /*
- * Checks the TPEN object for the IPR agreement from a specific folio.  If this user has not accepted the
+ * Checks the TPEN28 object for the IPR agreement from a specific folio.  If this user has not accepted the
  * agreement, then they will see a pop up requiring them to request access.
  * @param {type} id
  * @returns {Boolean}
@@ -1109,16 +1110,21 @@ function focusOnLastModified(){
             && l.resource["cnt:chars"]
             && l.resource["cnt:chars"].length > 0;
     });
-    if(scribedLines.length!==lines.length)    {
+    if(scribedLines.length!==lines.length){
         var i;
         for (i=1;i<lines.length;i++){
             if (lines[i].modified > focusOn.modified) {
-                focusOn.modified = lines[i].modified;
+                focusOn = lines[i];
+            }
+            if(i === lines.length -1){
+                updatePresentation($(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']"));
             }
         }
     }
-    var line = $(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']");
-    updatePresentation(line);
+    else{
+        updatePresentation($(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']"));
+    }
+    
 };
 
 /*
@@ -1280,7 +1286,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
     var lines = [];
 //    var currentFolio = parseInt(tpen.screen.currentFolio);
     if ((canvasObj.resources !== undefined && canvasObj.resources.length > 0)) {
-        //This situation means we got our lines from the SQL and there is no need to query the store.  This is TPEN 1.0
+        //This situation means we got our lines from the SQL and there is no need to query the store.  This is TPEN28 1.0
 //        for (var i = 0; i < canvasObj.resources.length; i++) {
 //            if (isJSON(canvasObj.resources[i])) {   // it is directly an annotation
 //                lines.push(canvasObj.resources[i]);
@@ -1305,7 +1311,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
             .css("height", "inherit");
     }
     else if((canvasObj.otherContent[0] !== undefined && canvasObj.otherContent[0].resources !== undefined && canvasObj.otherContent[0].resources.length > 0)){
-        //This is TPEN 2.8 using the SQL
+        //This is TPEN28 2.8 using the SQL
         //This situation means we got our lines from the SQL and there is no need to query the store.
         tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
         drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
@@ -1330,7 +1336,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
         $("#imgBottom")
             .css("height", "inherit");
         // we have the anno list for this canvas (potentially), so query for it.
-        // This is TPEN 2.8, using the annotation store.
+        // This is TPEN28 2.8, using the annotation store.
 //        var annosURL = "getAnno";
 //        var onValue = canvasObj["@id"];
 //        var properties = {
@@ -3725,7 +3731,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
                 "otherContent" : [],
                 "forProject": tpen.manifest['@id'],
                 "_tpen_note" : lineNote,
-                "testing":"TPEN28"
+                //"testing":"TPEN28"
             };
             var index = - 1;
             //find the line in the anno list resources and replace its position with the new line resource.
@@ -3890,8 +3896,8 @@ function updateLine(line, cleanup, updateList){
     lineHeight = Math.round(lineHeight, 0);
     var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
     var currentLineServerID = line.attr('lineserverid');
-    var currentLineText = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".theText").val();
-    var currentLineNotes = $(".transcriptlet[lineserverid='" + currentLineServerID + "']").find(".notes").val();
+    var currentLineText = $(line).find(".theText").val();
+    var currentLineNotes = $(line).find(".notes").val();
     var currentLineTextAttr = unescape(line.attr("data-answer"));
     var currentLineNotesAttr = unescape(line.find(".notes").attr("data-answer"));
     var params = new Array({name:'submitted',value:true},{name:'folio',value:tpen.project.folios[tpen.screen.currentFolio].folioNumber},{name:'projectID',value:tpen.project.id});
@@ -3918,7 +3924,7 @@ function updateLine(line, cleanup, updateList){
         "otherContent" : [],
         "forProject": tpen.manifest['@id'],
         "_tpen_note" : currentLineNotes,
-        "testing":"TPEN28"
+//        "testing":"TPEN28"
     };
 //    if (!currentAnnoListID){ //BH 12/21/16 we need to skip this check now since we don't have a anno list ID anymore
 //        if(!currentAnnoList){
@@ -4007,6 +4013,7 @@ function updateLine(line, cleanup, updateList){
                 .stop(true,true).animate({"color":"green"}, 400)
                 .append("<div class='saveLog'>"+columnMark + '&nbsp;saved&nbsp;at&nbsp;'+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+"</div>")//+", "+Data.dateFormat(date.getDate())+" "+month[date.getMonth()]+" "+date.getFullYear())
                 .animate({"color":"#618797"}, 600);
+               
             }
             line.attr("data-answer", currentLineText);
             line.find(".notes").attr("data-answer", currentLineNotes);
@@ -4021,6 +4028,7 @@ function updateLine(line, cleanup, updateList){
                         line.attr("hasError",null);
                         markLineSaved(line);
                         $("#parsingCover").hide();
+                        if(!updateContent)History.prependEntry(lineID);
                         // success
                     }).fail(function(err){
                         line.attr("hasError","Saving Failed "+err.status);
@@ -4040,6 +4048,7 @@ function updateLine(line, cleanup, updateList){
                         line.attr("hasError",null);
                         markLineSaved(line);
                         $("#parsingCover").hide();
+                        History.prependEntry(lineID);
                         // success
                     }).fail(function(err){
                         line.attr("hasError","Saving Failed "+err.status);
@@ -4125,7 +4134,7 @@ function saveNewLine(lineBefore, newLine){
         "forProject": tpen.manifest['@id'],
         "_tpen_note": "",
         "_tpen_creator" : tpen.user.UID,
-        "testing":"TPEN28"
+        //"testing":"TPEN28"
     };
     var url = "updateLinePositions"; //saveNewTransLineServlet
     var params = new Array(
@@ -5848,7 +5857,22 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         });
 
     }
-
+    /* Make call to sql to get lines and Java to build history.  See GetHistory.java */
+    function getHistory(){
+        var url = "getHistory";
+        var folioNum = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
+        var params = {projectID: tpen.project.id, p:folioNum};
+        $.post(url, params)
+            .success(function(data){
+                $("#historyListing").empty();
+                var historyElem = $(data);
+                $("#historyListing").append(historyElem);
+            })
+            .fail(function(data){
+                $("#historyListing").empty(); //? good nuf for now?
+                //TODO: Should we populate history with something informing failure?
+            });
+    }
     var History = {
     /**
      *  Displays the image of the line in the history tool.
@@ -6061,6 +6085,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         //if(!isMember && !permitModify)return false;
         var historyText = entry.find(".historyText").text();
         var historyNotes = entry.find(".historyNote").text();
+        //As long as it's actually the same dash
         if (historyText.indexOf("- empty -") !== -1) historyText = "";
         if (historyNotes.indexOf("- empty -") !== -1) historyNotes = "";
         var lineid = entry.parent(".historyLine").attr("id").substr(7);
@@ -6144,38 +6169,53 @@ tpen.screen.responsiveNavigation = function(severeCheck){
      *  @param lineid int unique id to attach to aded entry
      */
     prependEntry: function(lineid){
-        var lineidHist = lineid.replace("line/", "");
-        var updated = $(".transcriptlet[lineserverid='"+lineid+"']");
+        var lineidHist = lineid;
+        var updated = $(".transcriptlet[lineserverid='line/"+lineid+"']");
+        var lineText = updated.find(".theText").val();
+        var lineNotes = updated.find(".notes").val();
+        if(lineText === ""){
+            lineText = "<span style='color:silver;'>&#45; empty &#45;</span>"; 
+        }
+        if(lineNotes === ""){
+            lineNotes = "<span style='color:silver;'>&#45; empty &#45;</span>";
+        }
         var firstEntry = $("#history"+lineidHist).find(".historyEntry").eq(0);
         var newEntry = null;
+        var historyMaker = tpen.user.fname +" "+tpen.user.lname;
+        var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
+        //FIXME
+        //Haberberger note: History dims is off when new entries are added, so we hide them on new entries.  After page load, the comparison works.
+        //<div class='right loud historyDims'></div>  //<-- taken from next to .historyRevert 3 lines down from here. 
+        var firstEntryHTML = $("<div id='newEntry' class='historyEntry ui-corner-all' linewidth='' lineheight='' lineleft='' linetop=''>\n\
+                <div class='historyDate'></div><div class='historyCreator'>"+historyMaker+"</div>\n\
+                <div class='right historyRevert'></div>\n\
+                <div class='historyText'> "+lineText+" </div><div class='historyNote'>"+lineNotes+"</div>\n\
+                <div class='historyOptions' style='display: none;'>\n\
+                    <span title='Revert image parsing only' class='ui-icon ui-icon-image right'></span>\n\
+                    <span title='Revert text only' class='ui-icon ui-icon-pencil right'></span>\n\
+                    <span title='Revert to this version' class='ui-icon ui-icon-arrowreturnthick-1-n right'></span>\n\
+                </div></div>");
         if (firstEntry.length < 1){
             // No previous versions, add a new entry entirely
-            var firstEntry = ["<div id='newEntry' class='historyEntry ui-corner-all' linewidth='' lineheight='' lineleft='' linetop=''>",
-                "<div class='historyDate'></div><div class='historyCreator'></div>",
-                "<div class='right historyRevert'></div><div class='right loud historyDims'></div>",
-                "<div class='historyText'></div><div class='historyNote'></div>",
-                "<div class='historyOptions' style='display: none;'>",
-                    "<span title='Revert image parsing only' class='ui-icon ui-icon-image right'></span>",
-                    "<span title='Revert text only' class='ui-icon ui-icon-pencil right'></span>",
-                    "<span title='Revert to this version' class='ui-icon ui-icon-arrowreturnthick-1-n right'></span>",
-                "</div></div>"].join("");
-            $("#history"+lineidHist).html(firstEntry);
-            newEntry = $("#newEntry");
+            $("#history"+lineidHist).append(firstEntryHTML);
+            newEntry = $("#history"+lineidHist).find("#newEntry");
             newEntry.attr("id", "");
-        } else {
-            newEntry = firstEntry.clone();
+        } 
+        else {
+            newEntry = firstEntryHTML;
+            newEntry.insertBefore(firstEntry); //We could add to the bottom with append to the parent if we want. 
         }
         newEntry.attr({
-            "linewidth" : updated.attr("lineWidth"),
-            "lineheight" : updated.attr("lineHeight"),
-            "lineleft" : updated.attr("lineLeft"),
-            "linetop" : updated.attr("lineTop")
-        }).find(".historyDate").html("<span class='quiet' title='History will update when the page reloads'>new entry</span>")
-        .siblings(".historyCreator").html("<span class='quiet' title='History will update when the page reloads'>Local User</span>")
-        .siblings(".historyText").text(updated.find(".theText").val())
-        .siblings(".historyNote").text(updated.find(".notes").val())
+            "linewidth" : parseInt(parseFloat(updated.attr("lineWidth")) * (10*ratio)),
+            "lineheight" : parseInt(parseFloat(updated.attr("lineHeight")) * 10),
+            "lineleft" : parseInt(parseFloat(updated.attr("lineLeft")) * (10*ratio)),
+            "linetop" : parseInt(parseFloat(updated.attr("lineTop"))) * 10
+        }).find(".historyDate").html("<span class='quiet' title='History will update when the page reloads'>Just Now</span>")
+        .siblings(".historyCreator").html("<span class='quiet' title='History will update when the page reloads'>"+historyMaker+"</span>")
+        .siblings(".historyText").html(lineText)
+        .siblings(".historyNote").html(lineNotes)
         .siblings(".historyOptions").find("span").click(function(){History.revert(this)});
-        newEntry.insertBefore(firstEntry);
+        
     },
     /**
      *  Attaches the credit for the most recent edit to the main interface.

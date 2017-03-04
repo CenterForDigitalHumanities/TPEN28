@@ -27,7 +27,7 @@ public class CreateAnnoListUtil {
         canvasList.element("resources", resource);
         canvasList.element("proj", projectID);
         canvasList.element("@context", "http://iiif.io/api/presentation/2/context.json");
-        canvasList.element("testing", "msid_creation"); 
+        //canvasList.element("testing", "msid_creation"); 
         return canvasList;
     }
 }

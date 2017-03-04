@@ -1485,6 +1485,7 @@ $("#samplePreview").hover(function(){
                                         $.post(url, params, function(data){
                                             $(".hideWhileCopying").show();
                                             $("#copyingNotice").hide();
+                                            location.reload(); //This is to force pagination to get this project into the project list
                                         });
                                     }
                 </script>

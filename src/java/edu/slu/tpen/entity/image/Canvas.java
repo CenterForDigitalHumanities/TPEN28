@@ -178,7 +178,7 @@ public class Canvas {
         annotationList.element("proj", projectID);
         annotationList.element("on", canvasID);
         annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
-        annotationList.element("testing", "msid_creation");
+        //annotationList.element("testing", "msid_creation");
         Transcription[] lines;
         parameter.element("@type", "sc:AnnotationList");
         if(projectID > -1){

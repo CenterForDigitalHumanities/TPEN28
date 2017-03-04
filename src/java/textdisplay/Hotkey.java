@@ -341,7 +341,7 @@ public class Hotkey {
                 int key = rs.getInt("key");
                 String btn = ""+key;
                 ctr = ""+position;
-                System.out.println("got one");
+                //System.out.println("got one");
                 toret += "<li class=\"ui-state-default\"><input readonly class=\"label hotkey\" name=\"a"+ctr+"a\" id=\"a"+ctr+"a\" value=\""+(char)key+"\" tabindex=-5>";
                 toret += "<input class=\"shrink\" onkeyup=\"updatea(this);\" name=\"a"+ctr+"\" id=\"a"+ctr+"\" type=\"text\" value=\""+btn+"\"></input>";
                 toret += "<a class=\"ui-icon ui-icon-closethick right\" onclick=\"deleteHotkey(" + ctr + ");\">delete</a></li>";

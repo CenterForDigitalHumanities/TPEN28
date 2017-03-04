@@ -1034,7 +1034,7 @@ function activateUserTools(tools, permissions){
 }
 
 /*
- * Checks the TPEN object for the manuscript permissions from a specific folio.  If this user has not accepted the
+ * Checks the TPEN28 object for the manuscript permissions from a specific folio.  If this user has not accepted the
  * agreement, then they will see a pop up requiring them to request access.
  * @param {type} id
  * @returns {Boolean}
@@ -1078,7 +1078,7 @@ function acceptIPR(folio){
 }
 
 /*
- * Checks the TPEN object for the IPR agreement from a specific folio.  If this user has not accepted the
+ * Checks the TPEN28 object for the IPR agreement from a specific folio.  If this user has not accepted the
  * agreement, then they will see a pop up requiring them to request access.
  * @param {type} id
  * @returns {Boolean}
@@ -1286,7 +1286,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
     var lines = [];
 //    var currentFolio = parseInt(tpen.screen.currentFolio);
     if ((canvasObj.resources !== undefined && canvasObj.resources.length > 0)) {
-        //This situation means we got our lines from the SQL and there is no need to query the store.  This is TPEN 1.0
+        //This situation means we got our lines from the SQL and there is no need to query the store.  This is TPEN28 1.0
 //        for (var i = 0; i < canvasObj.resources.length; i++) {
 //            if (isJSON(canvasObj.resources[i])) {   // it is directly an annotation
 //                lines.push(canvasObj.resources[i]);
@@ -1311,7 +1311,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
             .css("height", "inherit");
     }
     else if((canvasObj.otherContent[0] !== undefined && canvasObj.otherContent[0].resources !== undefined && canvasObj.otherContent[0].resources.length > 0)){
-        //This is TPEN 2.8 using the SQL
+        //This is TPEN28 2.8 using the SQL
         //This situation means we got our lines from the SQL and there is no need to query the store.
         tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
         drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
@@ -1336,7 +1336,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
         $("#imgBottom")
             .css("height", "inherit");
         // we have the anno list for this canvas (potentially), so query for it.
-        // This is TPEN 2.8, using the annotation store.
+        // This is TPEN28 2.8, using the annotation store.
 //        var annosURL = "getAnno";
 //        var onValue = canvasObj["@id"];
 //        var properties = {
@@ -3731,7 +3731,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
                 "otherContent" : [],
                 "forProject": tpen.manifest['@id'],
                 "_tpen_note" : lineNote,
-                "testing":"TPEN28"
+                //"testing":"TPEN28"
             };
             var index = - 1;
             //find the line in the anno list resources and replace its position with the new line resource.
@@ -3924,7 +3924,7 @@ function updateLine(line, cleanup, updateList){
         "otherContent" : [],
         "forProject": tpen.manifest['@id'],
         "_tpen_note" : currentLineNotes,
-        "testing":"TPEN28"
+//        "testing":"TPEN28"
     };
 //    if (!currentAnnoListID){ //BH 12/21/16 we need to skip this check now since we don't have a anno list ID anymore
 //        if(!currentAnnoList){
@@ -4134,7 +4134,7 @@ function saveNewLine(lineBefore, newLine){
         "forProject": tpen.manifest['@id'],
         "_tpen_note": "",
         "_tpen_creator" : tpen.user.UID,
-        "testing":"TPEN28"
+        //"testing":"TPEN28"
     };
     var url = "updateLinePositions"; //saveNewTransLineServlet
     var params = new Array(

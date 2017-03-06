@@ -48,22 +48,24 @@ public class ProjectServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int uid = -1;
+        int uid = 0;
         int projID = 0;
-        boolean skip = false;
+        boolean skip = true;
         String url_piece = req.getRequestURI() + req.getPathInfo().substring(1).replace("/", "").replace("manifest.json","");
         String skip_uid_check = "manifest";
-        System.out.println(url_piece);
-        if(url_piece.contains(skip_uid_check)){
-            System.out.println("We wanna skip");
-            uid = 0;
-            skip = true;
-        }
-        else{
-            uid = getUID(req, resp);
-        }
+        //System.out.println(url_piece);
+//        if(url_piece.contains(skip_uid_check)){
+//            System.out.println("We wanna skip");
+//            uid = 0;
+//            skip = true;
+//        }
+//        else{
+//            uid = getUID(req, resp);
+//        }     
+        System.out.println("Project Servlet");
         if (uid >= 0) {
             try {
+                System.out.println("Project 1");
                 String check = "transcribe";
                 String redirect = req.getPathInfo().substring(1);
                 if (redirect.contains(check)) {
@@ -71,12 +73,16 @@ public class ProjectServlet extends HttpServlet {
                     String redirectURL = req.getContextPath() + "/newberryTrans.html?projectID=" + projID;
                     resp.sendRedirect(redirectURL);
                 } else {
+                    System.out.println("Project 2");
                     projID = Integer.parseInt(req.getPathInfo().substring(1).replace("/", "").replace("manifest.json",""));
                     Project proj = new Project(projID);
+                    System.out.println("Project 3");
                     if (proj.getProjectID() > 0) {
+                        System.out.println("Project 4");
                         if (new Group(proj.getGroupID()).isMember(uid) || skip) {
                             System.out.println("export");
                             if (checkModified(req, proj)) {
+                                System.out.println("Project 5");
                                 resp.setContentType("application/ld+json; charset=UTF-8");
                                 resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
                                 resp.setStatus(HttpServletResponse.SC_OK);

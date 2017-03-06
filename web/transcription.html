@@ -6,6 +6,10 @@
         <link type="text/css" href="css/custom-theme/jQuery.css" rel="Stylesheet" />
         <link type="text/css" href="css/transcribeSkin.css" rel="Stylesheet" />
         <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
+        <script type="text/javascript" src="js/transcribe.js"></script>
+        <script src="https://use.fontawesome.com/4ae676603d.js"></script>
         <style>
         p{
             padding: 0px 10px;
@@ -496,11 +500,11 @@
                      <button onclick='$("#addLines").click(); toggleSelected($(this).children("img"), true);'>
                          <img src="css/custom-theme/images/add_line_md.png" alt="reparse" height="30px" from="addLines"/>
                      </button>
-                     <button onclick='$("#adjustLines").click(); toggleSelected($(this).children("img"), true);'>
-                         <img src="css/custom-theme/images/merge_lines_md.png" alt="reparse" from="adjustLines"/>
-                     </button>
                      <button onclick='$("#mergeLines").click(); toggleSelected($(this).children("img"), true);'>
-                        <img src="css/custom-theme/images/adjust_lines_md.png" alt="reparse" from="mergeLines"/>
+                         <img src="css/custom-theme/images/merge_lines_md.png" alt="reparse" from="mergeLines"/>
+                     </button>
+                     <button onclick='$("#adjustLines").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/adjust_lines_md.png" alt="reparse" from="adjustLines"/>
                     </button>
                      <button onclick='$("#removeLine").click(); toggleSelected($(this).children("img"), true);'>
                          <img src="css/custom-theme/images/delete_line_md.png" alt="reparse" from="removeLine"/>
@@ -1286,10 +1290,7 @@
         </select>-->
         </div>
         <div class="trexHead"></div>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
-        <script type="text/javascript" src="js/transcribe.js"></script>
-        <script src="https://use.fontawesome.com/4ae676603d.js"></script>
+        
 
         <script>
 
@@ -1316,25 +1317,7 @@
             + "&projectID=" + tpen.project.id+"#tabs-2");
         $("#projectsBtn").attr("href", "project.jsp?projectID="+tpen.project.id);
     }
-
-    function getHistory(){
-        var url = "getHistory";
-        var folioNum = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
-        var params = {projectID: tpen.project.id, p:folioNum};
-        $.post(url, params)
-            .success(function(data){
-                $("#historyListing").empty();
-                var historyElem = $(data);
-                $("#historyListing").append(historyElem);
-            })
-            .fail(function(data){
-                $("#historyListing").empty(); //? good nuf for now?
-                //TODO: Should we populate history with something informing failure?
-            });
-    }
-
-
-
+    
     //Page load event triggers and attached here.
     $(document).ready(function(){
         dailyTip();
@@ -1826,9 +1809,17 @@ $(document).on("click",".fullScreenTrans",fullPage);
                             //prep for column adjustment
                             var columnSet = $(".parsingColumn");
                             columnSet.addClass("parsingColumnSelected");
+                            var iconToUse = $('<span class="pull-left fa fa-circle"></span>');
                             var columnText = (columnSet.size() === 1) ? "Destroy This Column" : "Destroy "+columnSet.size()+" Columns";
-                            $(".destroyPage").html('<span class="pull-left fa fa-circle"></span>'+columnText+'')
-                            .bind('click', function(){destroyPage();})
+                            var cfrm = confirm(iconToUse + "Destroy "+columnSet.size()+" Column(s)?  The transcription data will be lost.\n\nContinue?");
+                            if (!cfrm){
+                                return false;
+                            }
+                            else{
+                                destroyPage();
+                            }
+//                            $(".destroyPage").html('<span class="pull-left fa fa-circle"></span>'+columnText+'')
+//                            .bind('click', function(){destroyPage();})
                     }
                 }
                 else if (thisID == "addLines" || thisID == "mergeLines" || thisID==="removeLine" || thisID == "adjustLines") {
@@ -2141,39 +2132,6 @@ $(document).on("click",".fullScreenTrans",fullPage);
         });
     });
 
-    /* Allows users to slightly adjust a line within a column while within the transcription interface. */
-    function bumpLine(direction, activeLine){
-        //values are in pixel, not percentage.
-        var id = activeLine.attr("lineserverid");
-        if(direction === "left"){
-            var currentLineLeft = activeLine.css("left");
-            var currentLineLeftPerc = (parseFloat(currentLineLeft) / $("#imgTop").width()) * 100;
-            if (currentLineLeftPerc > .3){
-                currentLineLeftPerc -= .3;
-            }
-            else{ //no negative left value
-                currentLineLeftPerc = 0.0;
-            }
-           currentLineLeft = "%"+currentLineLeftPerc;
-        }
-        else if (direction === "right"){
-            var currentLineLeft = activeLine.css("left");
-            var currentLineLeftPerc = (parseFloat(currentLineLeft) / $("#imgTop").width()) * 100;
-            if (currentLineLeftPerc < 99.7){ //no left values greater than 100
-                currentLineLeftPerc += .3;
-            }
-            else{
-                currentLineLeftPerc = 100.0;
-            }
-           currentLineLeft = "%"+currentLineLeftPerc;
-        }
-        var currentLineLeftPX = parseFloat(currentLineLeftPerc/100) * $("#imgTop").width() + "px";
-        $(".transcriptlet[lineserverid='"+id+"']").attr("lineleft", currentLineLeftPerc);
-        activeLine.css("left", currentLineLeftPX);
-        //updateLine($(".transcriptlet[lineserverid='"+id+"']"), false, true);
-    }
-
-
     //UI effects for when a user decides to edit a line within the preview split tool.
     function edit(line){
         var focusLineID = $(line).siblings(".previewLineNumber").attr("lineserverid");
@@ -2193,154 +2151,6 @@ $(document).on("click",".fullScreenTrans",fullPage);
         else {
             //console.log("NOt the current page.")
         }
-    }
-
-    function scrollToCurrentPage(){
-        var pageOffset = $(".previewPage").filter(":first").height() + 20;
-        $("#previewDiv").animate({
-            scrollTop:pageOffset
-        },500);
-        $("#previewNotes").filter(".ui-state-active").each( // pulled out #previewAnnotations
-            function(){
-                if ($("."+this.id).is(":hidden")){
-                    $("."+this.id).show();
-                    scrollToCurrentPage();
-                }
-            });
-    }
-
-    /*
-     * Get the inline 'style' attribute of the transcription image containers and attach brightness or contrast filters to it.
-     * The entire function is string manipulation and runs quickly.
-     */
-    function imageSlider(){
-        var newFilter = "";
-        if(navigator.userAgent.indexOf("Chrome") !== -1 ) { //also works with filter
-          newFilter = "-webkit-filter:";
-        }
-        else if(navigator.userAgent.indexOf("Opera") !== -1 ) {
-          newFilter = "-o-filter:";
-        }
-        else if(navigator.userAgent.indexOf("MSIE") !== -1 ) { //also works with filter
-          newFilter= "-ms-filter:";
-        }
-        else if(navigator.userAgent.indexOf("Firefox") !== -1 ) { //-moz-filter does not work in more recent versions.  The newest version works with regular filter.
-          newFilter = "filter:";
-        }
-        else {
-            //Uncomment this code to alert the user that their browser does not support these CSS3 Filter tools.
-
-//          alert("This tool is not supported by your browser.  The supported browsers are:\n\n\
-//                Google Chrome\n Microsoft Internet Explorer\nOpera\nLatest version of Firefox");
-//          return false;
-        }
-        var imgTop = document.getElementById("imgTop");
-        var imgBtm = document.getElementById("imgBottom");
-        var currentStyleTop = imgTop.getAttribute("style");
-        var currentStyleBtm = imgBtm.getAttribute("style"); //null if there is no inline style (this happens)
-        if (currentStyleTop === "null" || currentStyleTop === null) currentStyleTop = ""; //in case there is no inline style becase that returns null
-        if (currentStyleBtm === "null" || currentStyleBtm === null) currentStyleBtm = ""; //in case there is no inline style because that returns null
-        var alteredStyleTop = "";
-        var alteredStyleBottom = "";
-        var pieceToRemoveTop = "";
-        var pieceToRemoveBtm = "";
-        //Account for the different ways filter can be represented and alter it accordingly
-        if(currentStyleTop.indexOf("-webkit-filter") >= 0){ //Chrome
-          //Remove current filter string from the style attribute
-          pieceToRemoveTop = currentStyleTop.substring(currentStyleTop.indexOf("-webkit-filter"), currentStyleTop.lastIndexOf(";") + 1);
-          pieceToRemoveBtm = currentStyleBtm.substring(currentStyleBtm.indexOf("-webkit-filter"), currentStyleBtm.lastIndexOf(";") + 1);
-
-          //Put the pieces of the filter together
-          newFilter += " brightness("+$("#brightnessSlider").slider("value")+"%) contrast("+$("#contrastSlider").slider("value")+"%);";
-          alteredStyleTop = currentStyleTop.replace(pieceToRemoveTop, "") + newFilter;
-          alteredStyleBottom = currentStyleBtm.replace(pieceToRemoveBtm, "") + newFilter;
-        }
-        else if(currentStyleTop.indexOf("-ms-filter") >= 0){ //microsoft browsers
-          pieceToRemoveTop = currentStyleTop.substring(currentStyleTop.indexOf("-ms-filter"), currentStyleTop.lastIndexOf(";") + 1);
-          pieceToRemoveBtm = currentStyleBtm.substring(currentStyleBtm.indexOf("-ms-filter"), currentStyleBtm.lastIndexOf(";") + 1);
-          //Put the pieces of the filter together
-          newFilter += " brightness("+$("#brightnessSlider").slider("value")+"%) contrast("+$("#contrastSlider").slider("value")+"%);";
-          alteredStyleTop = currentStyleTop.replace(pieceToRemoveTop, "") + newFilter;
-          alteredStyleBottom = currentStyleBtm.replace(pieceToRemoveBtm, "") + newFilter;
-        }
-        else if(currentStyleTop.indexOf("-o-filter") >= 0){ //Opera
-          //Remove current filter string from the style attribute
-          pieceToRemoveTop = currentStyleTop.substring(currentStyleTop.indexOf("-o-filter"), currentStyleTop.lastIndexOf(";") + 1);
-          pieceToRemoveBtm = currentStyleBtm.substring(currentStyleBtm.indexOf("-o-filter"), currentStyleBtm.lastIndexOf(";") + 1);
-          //Put the pieces of the filter together
-          newFilter += " brightness("+$("#brightnessSlider").slider("value")+"%) contrast("+$("#contrastSlider").slider("value")+"%);";
-          alteredStyleTop = currentStyleTop.replace(pieceToRemoveTop, "") + newFilter;
-          alteredStyleBottom = currentStyleBtm.replace(pieceToRemoveBtm, "") + newFilter;
-        }
-        else if(currentStyleTop.indexOf("filter") >= 0){ //Works with firefox, IE and Chrome, but we specifically set prefixes at the beginning of the function.
-          //Remove current filter string from the style attribute
-          pieceToRemoveTop = currentStyleTop.substring(currentStyleTop.indexOf("filter"), currentStyleTop.lastIndexOf(";") + 1);
-          pieceToRemoveBtm = currentStyleBtm.substring(currentStyleBtm.indexOf("filter"), currentStyleBtm.lastIndexOf(";") + 1);
-          //Put the pieces of the filter together
-          newFilter += " brightness("+$("#brightnessSlider").slider("value")+"%) contrast("+$("#contrastSlider").slider("value")+"%);";
-          alteredStyleTop = currentStyleTop.replace(pieceToRemoveTop, "") + newFilter;
-          alteredStyleBottom = currentStyleBtm.replace(pieceToRemoveBtm, "") + newFilter;
-        }
-        else{ //First time the filter is being added.  The prefix is already a part of newFilter, so we just need to add the rest of the string.
-          newFilter += " brightness("+$("#brightnessSlider").slider("value")+"%) contrast("+$("#contrastSlider").slider("value")+"%);";
-          alteredStyleTop = currentStyleTop + " "+newFilter;
-          alteredStyleBottom = currentStyleBtm +" "+newFilter;
-        }
-        imgTop.setAttribute("style",alteredStyleTop); //set the style attribute with the appropriate filter string attached to it.
-        imgBtm.setAttribute("style",alteredStyleBottom); //set the style attribute with the appropriate filter string attached to it.
-    }
-
-    /* Toggle grayscale and invert image CSS filters.v   */
-    function toggleFilter(which){
-        /*
-         * The grayscale/invert toggle classes CANNOT BE DEFINED as the same object being given the brightness/contrast filters or they ALL BREAK
-         */
-        var filterObjectTop = document.getElementsByClassName("transcriptionImage")[0];
-        var filterObjectBottom = document.getElementsByClassName("transcriptionImage")[1];
-        var thisFilter = which+"Filter";
-        if(filterObjectTop.className.indexOf(thisFilter) >= 0){
-          filterObjectTop.className = filterObjectTop.className.replace(thisFilter, '');
-          filterObjectBottom.className = filterObjectBottom.className.replace(thisFilter, '');
-          $("button[which='"+which+"']").removeClass("selected");
-        }
-        else{
-          filterObjectTop.className = filterObjectTop.className+=" "+thisFilter;
-          filterObjectBottom.className = filterObjectBottom.className+=" "+thisFilter;
-          $("button[which='"+which+"']").addClass("selected");
-        }
-    }
-
-    //Make sure the value entered into the area that allows a user to define a custom ruler color is a valida color string.
-    function validTextColour(stringToTest) {
-        //Alter the following conditions according to your need.
-        if (stringToTest === "") { return false; }
-        if (stringToTest === "inherit") { return false; }
-        if (stringToTest === "transparent") { return true; }
-
-        var image = document.createElement("img");
-        image.style.color = "rgb(0, 0, 0)";
-        image.style.color = stringToTest;
-        if (image.style.color !== "rgb(0, 0, 0)") { return true; }
-        image.style.color = "rgb(255, 255, 255)";
-        image.style.color = stringToTest;
-        return image.style.color !== "rgb(255, 255, 255)";
-    }
-
-    //Change the ruler color.
-    function rulerColor(color){
-        if(color==="custom"){
-            color=$("#customRuler").val();
-            if(validTextColour(color)){
-
-            }
-            else{
-                color = "red";
-            }
-
-        }
-        $("#ruler1").css("color", color).css("background", color);
-        $("#ruler2").css("color", color).css("background", color);
-        $("#sampleRuler").css("color", color).css("background", color);
     }
 
     function toggleSelected($area, parsing){

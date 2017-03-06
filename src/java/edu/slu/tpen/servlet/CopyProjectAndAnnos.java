@@ -159,7 +159,7 @@ public class CopyProjectAndAnnos extends HttpServlet {
                                       lineAnnot.put("motivation", "oad:transcribing"); 
                                       lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(rs.getString("text"))));
                                       lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, rs.getInt("x"), rs.getInt("y"), rs.getInt("width"), rs.getInt("height"))); 
-                                      lineAnnot.put("testing", "msid_creation");
+                                      //lineAnnot.put("testing", "msid_creation");
                                       resources_list.add(lineAnnot);
                                       String note = rs.getString("comment");
                                       lineAnnot.put("_tpen_note",note);

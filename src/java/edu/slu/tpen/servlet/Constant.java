@@ -20,6 +20,6 @@ package edu.slu.tpen.servlet;
  */
 public class Constant {
       public static String ANNOTATION_SERVER_ADDR = "http://165.134.241.141:80/annotationstore";
-      public static String TPEN_CANVAS_PREFIX = "http://tpen.org/TPEN28";
+      public static String TPEN_CANVAS_PREFIX = "http://tpen.org/TPEN";
     //public static String ANNOTATION_SERVER_ADDR = "http://localhost:8080/annotationstore";
 }

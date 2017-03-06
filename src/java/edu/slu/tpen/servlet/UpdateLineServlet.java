@@ -52,9 +52,8 @@ public class UpdateLineServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        System.out.println("The back says we should update a line's content");
+        //System.out.println("The back says we should update a line's content");
         try {
-
             if (request.getParameter("text") == null) {
 
                 response.sendError(response.SC_BAD_REQUEST);

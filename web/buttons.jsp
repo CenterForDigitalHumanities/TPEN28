@@ -481,57 +481,10 @@ function equalWidth(){
                         <p>Rearrange by clicking on the blue box and dragging. Click the "X" icon to remove a button from the list. Add as many buttons as is useful. You will access them through the footer menu.</p>
                     </div>
                     <ul id="sortable2" class="connectedSortable ui-helper-reset">
-<%
-String appendProject = "&projectID="+projectID;
-ctr = 1;
-TagButton b;
-while (new TagButton(projectID, ctr, true).exists()) {
-    b = new TagButton(projectID, ctr, true);
-    out.println("<li class=\"ui-state-default xmlPanel\">");
-    out.println("<span class='ui-icon ui-icon-arrow-4 toggleXML left'></span>");
-    out.println("<a class=\"ui-icon ui-icon-closethick right\" onclick=\"deleteTag(" + ctr + ");\">delete</a>");
-    out.println("<input class=\"description\" onchange=\"unsavedAlert('#tabs-2');\" type=\"text\" placeholder=\"Button Name\" name=description"+(ctr)+" value=\""+b.getDescription()+"\">");
-//    out.println("<input class=\"colors\" onchange=\"unsavedAlert('#tabs-2');\" type=\"text\" placeholder=\"black\" name=xmlColor"+(ctr)+" value=\""+"b.getXMLColor"+"\">");
-    out.println("<div class='xmlParams'>");
-    out.println("<span class=\"firstRow collapseXML\"><span class=\"bold tag\"><input name=\"b"+ctr+"\" id=\"b"+ctr+"\" type=\"text\" class='collapseXML' value=\""+b.getTag()+"\"></input></span>");
-    if (b.hasParameters()) {
-        String[] params = b.getparameters();
-        String parameters = new String();
-        //out.print("<script type='text/javascript'>var parameters='';");
-        switch (params.length) {
-            case 5:     parameters = "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder='parameter' type='text' name='b" + ctr + "p5' value='" + params[4] + "'/>\n</span>" + parameters;
-            case 4:     parameters = "<span class='clear-left lastRow collapseXML'>\n<input onchange=\"unsavedAlert('#tabs-2');\" placeholder='parameter' type='text' name='b" + ctr + "p4' value='" + params[3] + "'/>"+parameters;
-            case 3:     parameters = "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder='parameter' class='collapseXML' type='text' name='b" + ctr + "p3' value='" + params[2] + "'/><span class='right ui-icon moreParameters ui-icon-plus' title='Add more parameters to this button'>\n</span>\n</span>"+parameters;
-            case 2:     parameters = "<span class='clear-left secondRow collapseXML'>\n<input onchange=\"unsavedAlert('#tabs-2');\" placeholder='parameter' type='text' name='b" + ctr + "p2' value='" + params[1] + "'/>"+parameters;
-            case 1:     parameters = "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder='parameter' type='text' name='b" + ctr + "p1' value='" + params[0] + "'/><span class='right ui-icon moreParameters ui-icon-plus' title='Add more parameters to this button'>\n</span>\n</span>"+parameters;
-            default:    break;
-        }
-        switch (params.length) {
-            case 1:     parameters += "<span class='clear-left secondRow collapseXML'>\n<input onchange=\"unsavedAlert('#tabs-2');\" placeholder='parameter' type='text' name='b"+ ctr + "p2' value=''/>";
-            case 2:     parameters += "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder='parameter' type='text' name='b"+ ctr + "p3' value=''/><span class='right ui-icon moreParameters ui-icon-plus' title='Add more parameters to this button'>\n</span>\n</span>";
-            case 3:     parameters += "<span class='clear-left lastRow collapseXML'>\n<input onchange=\"unsavedAlert('#tabs-2');\" placeholder='parameter' type='text' name='b"+ ctr + "p4' value=''/>";
-            case 4:     parameters += "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder='parameter' type='text' name='b"+ ctr + "p5' value=''/>\n</span>";
-            default:     break;
-        }
-        out.println(parameters);
-    } else {%>
-                    <input onchange="unsavedAlert('#tabs-2');" placeholder="parameter" type="text" name="b<%out.print(ctr);%>p1" />
-                    <span class="right ui-icon moreParameters ui-icon-plus" title="Add more parameters to this button"></span><%out.print("</span>");//close .firstRow%>
-                    <span class="clear-left secondRow collapseXML">
-                        <input onchange="unsavedAlert('#tabs-2');" placeholder="parameter" type="text" name="b<%out.print(ctr);%>p2" />
-                        <input onchange="unsavedAlert('#tabs-2');" placeholder="parameter" type="text" name="b<%out.print(ctr);%>p3" />
-                        <span class="right ui-icon moreParameters ui-icon-plus" title="Add more parameters to this button"></span>
-                    </span>
-                    <span class="clear-left lastRow collapseXML">
-                        <input onchange="unsavedAlert('#tabs-2');" placeholder="parameter" type="text" name="b<%out.print(ctr);%>p4" />
-                        <input onchange="unsavedAlert('#tabs-2');" placeholder="parameter" type="text" name="b<%out.print(ctr);%>p5" />
-                    </span>
-<%
-    }
-        out.println("</div></li>");
-        ctr++;
-}
-%>
+                    <%
+                    String appendProject = "&projectID="+projectID;
+                    out.print(TagButton.buildAllProjectXML(projectID)); //prints out all the XML tags.
+                    %>
                     </ul>
                     <input type="button" id="addT" name="addT" value="Add a Tag" class="tpenButton ui-button" onclick="document.getElementById('selecTab').value = 1;" />
                     <input type="submit" onclick="document.getElementById('selecTab').value = 1;" id="update" name="update" value="Save Changes" class="tpenButton ui-button"/><br><br>

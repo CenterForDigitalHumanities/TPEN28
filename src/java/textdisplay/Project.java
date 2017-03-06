@@ -919,7 +919,7 @@ public class Project {
             //System.out.println(toret);
             return toret;
          } else {
-             System.out.println("No linebreaking text found");
+             //System.out.println("No linebreaking text found");
             return "";
          }
       } finally {

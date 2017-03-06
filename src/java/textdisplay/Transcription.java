@@ -467,7 +467,7 @@ public class Transcription {
                }
             }
             if (preferedBounding == Project.imageBounding.lines) {
-                System.out.println("I know image bouding was lines");
+                //System.out.println("I know image bouding was lines");
                //make a Transcription for each Line
                Folio f = new Folio(folioNumber, true);
                //System.out.println("Got folio");
@@ -489,7 +489,7 @@ public class Transcription {
             }
          }
          else{
-             System.out.println("Already had orderedTranscriptions");
+             //System.out.println("Already had orderedTranscriptions");
          }
          Transcription[] toret = new Transcription[orderedTranscriptions.size()];
          for (int i = 0; i < orderedTranscriptions.size(); i++) {

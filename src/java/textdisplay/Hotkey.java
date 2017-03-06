@@ -326,14 +326,14 @@ public class Hotkey {
         String query = "select * from hotkeys where uid=0 and projectID=? and not position=0 order by position";
         Connection j = null;
         PreparedStatement stmt = null;
-        System.out.println("build editable buttons");
+        //System.out.println("build editable buttons");
         try {
             j = DatabaseWrapper.getConnection();
             stmt = j.prepareStatement(query);
             stmt.setInt(1, projectID);
-            System.out.println("DO sql...");
+            //System.out.println("DO sql...");
             ResultSet rs = stmt.executeQuery();
-            System.out.println("OK");
+            //System.out.println("OK");
             int buttonOffset = 48;
             String ctr = "";
             while (rs.next()) {

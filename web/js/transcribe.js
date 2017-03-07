@@ -1155,7 +1155,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
     //Move up all image annos
     var cnt = - 1;
     if (canvasObj.images[0].resource['@id'] !== undefined && canvasObj.images[0].resource['@id'] !== ""){ //Only one image
-        var image = null;
+        var image = new Image();
         //Check to see if we can use a preloaded image...
         if(tpen.project.folioImages[tpen.screen.currentFolio].image){
             image = tpen.project.folioImages[tpen.screen.currentFolio].image;
@@ -1164,7 +1164,8 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
         else{
             image = new Image();
         }
-        image.onload = function() {
+        image.src = "";
+        image.onload = function(){
             $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
             $("#imgTop img, #imgBottom img").css("width", "100%");
             $("#imgBottom").css("height", "inherit");
@@ -1191,7 +1192,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                     $(".trexHead").show();
                 }
                 if(!tpen.project.folioImages[tpen.screen.currentFolio].preloaded){
-                    tpen.project.folioImages[tpen.screen.currentFolio].image = image;
+                    tpen.project.folioImages[tpen.screen.currentFolio].image =  image;
                     tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //It is now preloaded.
                 }
                 focusOnLastModified();
@@ -4661,16 +4662,16 @@ function preloadFolioImages(){
         var folioImageToGet = tpen.manifest.sequences[0].canvases[i].images[0].resource["@id"];
         if(tpen.project.folioImages[i].image === null || !tpen.project.folioImages[i].preloaded ){
             tpen.project.folioImages[i].image = new Image();
-            tpen.project.folioImages[i].image.onload = function() {
-                //the problem here is that we cannot rely on i, so we cannot set the preloaded flag here.  This is done during loadTranscriptionCanvas() instead.
-                try{
-                    //tpen.project.folioImages[i].preloaded = true;
-                    //console.log("Finished preloading an image");
-                }
-                catch(err){
-                    console.warn("Could not load an image during preload.");
-                }
-            };
+//            tpen.project.folioImages[i].image.onload = function() {
+//                //the problem here is that we cannot rely on i, so we cannot set the preloaded flag here.  This is done during loadTranscriptionCanvas() instead.
+//                try{
+//                    //tpen.project.folioImages[i].preloaded = true;
+//                    //console.log("Finished preloading an image");
+//                }
+//                catch(err){
+//                    console.warn("Could not load an image during preload.");
+//                }
+//            };
             tpen.project.folioImages[i].image.src = folioImageToGet;
         }
         else{

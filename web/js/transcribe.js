@@ -1203,6 +1203,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 $(".trexHead").show();
                 //handle the background
                 var image2 = new Image();
+                image2.src = "";
                 image2
                 .onload = function(){
                     $("#noLineWarning").hide();
@@ -1229,6 +1230,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
         }; // the extra () ensures this only runs once.
         image.onerror =function(){
             var image2 = new Image();
+            image2.src = "";
             image2
             .onload = function(){
                 $("#noLineWarning").hide();

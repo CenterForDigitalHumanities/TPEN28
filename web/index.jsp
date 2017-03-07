@@ -96,6 +96,9 @@
             ul li a {
                 padding:2px;
             }
+            a[onclick]{
+                cursor: pointer;
+            }
             #userKnown2, #userUnknown2,#browseListings {
                 margin: 8px 0; 
                 overflow: hidden; 

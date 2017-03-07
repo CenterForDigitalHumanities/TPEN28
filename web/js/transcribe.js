@@ -1162,7 +1162,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
             tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //We know it is preloaded, ensure the flag is correct.
         }
         else{
-            image = new Image();
+            //image = new Image();
         }
         image.src = "";
         image.onload = function(){
@@ -5876,6 +5876,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
                 //TODO: Should we populate history with something informing failure?
             });
     }
+    
     var History = {
     /**
      *  Displays the image of the line in the history tool.

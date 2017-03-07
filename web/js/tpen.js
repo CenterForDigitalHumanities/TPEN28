@@ -257,7 +257,7 @@ String.prototype.indices = function(string){
 /* Image Filters 
  * code borrowed from http://www.html5rocks.com/en/tutorials/canvas/imagefilters/
  * uses HTML 5 canvas element 
- * *\/
+ * 
 Filters = {};
 Filters.getPixels = function(img) {
   var c = this.getCanvas(img.width, img.height);
@@ -468,7 +468,6 @@ if ($("body").is("#transcriptionPage")){
         .fail(function(data){
             alert("Could not create project");
         });
-        
     }
     
     /* Explicitly set dir=auto for a set of html elements.  Call after page load. */

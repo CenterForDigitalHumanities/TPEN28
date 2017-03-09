@@ -1643,9 +1643,9 @@ $(document).on("click",".fullScreenTrans",fullPage);
 
             $("#parseOptions .tpenButton").click(function(event){
                 var show = $(this).attr("show");
-                $("#imgTop").unbind("mousemove");
-                $("#imgTop").unbind("mousedown");
-                $("#imgTop").unbind("mouseup");
+                $(document).unbind("mousemove");
+                $(document).unbind("mousedown");
+                $(document).unbind("mouseup");
                 $("#imgTop").css("cursor", "default");
                 $("#imgBottom").css("cursor", "default");
                 $(".parsing").removeClass("adjustable");
@@ -1675,30 +1675,48 @@ $(document).on("click",".fullScreenTrans",fullPage);
                         });
 
                         var isCreating = true;
-                        adjustColumn(event);
+                        //adjustColumn(event);
                         ////console.log("New or reparse column");
                         var offset = $('#imgTop').offset();
                         var point = {};
                         var deltaPoint = {x:0,y:0};
-                        $("#imgTop").bind({
+                        $(".parsingColumn").off();
+                        $(".parsingColumn").unbind();
+                        $(document).bind({
                                 mousedown: function(event){
-                                   // //console.log("NEWCOLUMN");
-                                    if ((event.target.className.indexOf("transcriptionImage") === -1 )){//|| !$("#createColumn").hasClass("ui-state-active")
-                                        isCreating = false;
-                                        return true;
+                                    //This bit of mouse down ensures it only fires on left mouse click.
+                                    event = event || window.event;
+                                    if(event.pageY <= offset.top || event.pageX <= offset.left || event.pageX >= (offset.left + $("#imgTop").width())){ //If you try to draw off of imgTop....
+                                        return false;
+                                    }
+                                    if ("buttons" in event) {
+                                        if(!event.buttons === 1){
+                                            return false;
+                                        }
                                     }
                                     else{
-                                        event.preventDefault();
-                                        var newCol = "<div id='newCol' class='parsingColumn ui-resizable' style='z-index:1000; background-color: yellow;'></div>";
-                                        point = {x:event.pageX - offset.left,y:event.pageY - offset.top};
-                                        $(newCol).insertBefore($("#imgTop img")).css({
-                                            'position'  : 'absolute',
-                                            'top': point.y,
-                                            'left': point.x,
-                                            'min-width' : "5px",
-                                            'min-height': "5px"
-                                        });
+                                        var check = event.which || event.button;
+                                        if(check!==1){
+                                            return false;
+                                        }
                                     }
+// Why this? It stops it from working when overlapping an existing column 3-9-17                                    
+//                                    if ((event.target.className.indexOf("transcriptionImage") === -1 )){
+//                                        isCreating = false;
+//                                        return true;
+//                                    }
+                                    //else{
+                                    event.preventDefault();
+                                    var newCol = "<div id='newCol' class='parsingColumn ui-resizable' style='z-index:1000; background-color: yellow;'></div>";
+                                    point = {x:event.pageX - offset.left,y:event.pageY - offset.top};
+                                    $(newCol).insertBefore($("#imgTop img")).css({
+                                        'position'  : 'absolute',
+                                        'top': point.y,
+                                        'left': point.x,
+                                        'min-width' : "5px",
+                                        'min-height': "5px"
+                                    });
+                                    //}
 
                                 },
                                 mousemove:  function(event){
@@ -1722,16 +1740,21 @@ $(document).on("click",".fullScreenTrans",fullPage);
                                 },
                                 mouseup:    function(event){
                                     event.preventDefault();
+                                    var $newCol = $("#newCol");
+                                    if(event.pageY <= offset.top || event.pageX <= offset.left || event.pageX >= (offset.left + $("#imgTop").width())){ //If you try to draw off of imgTop....
+                                        $newCol.remove();
+                                        return false;
+                                    }
                                     $("#parsingCover").show();
                                     if (!isCreating){
-                                        $("#imgTop").unbind("mousemove");
-                                        $("#imgTop").unbind("mousedown");
-                                        $("#imgTop").unbind("mouseup");
+                                        $(document).unbind("mousemove");
+                                        $(document).unbind("mousedown");
+                                        $(document).unbind("mouseup");
                                         $("#imgTop").css("cursor", "default");
                                         $("#imgBottom").css("cursor", "default");
                                         return true;
                                     }
-                                    var $newCol = $("#newCol");
+                                    
                                     $newCol.attr({
                                         "lineserverid"   : "-1",
                                         "newline"       : true,
@@ -1747,6 +1770,7 @@ $(document).on("click",".fullScreenTrans",fullPage);
                                     // Prevent tiny columns on accident
                                     if (parseInt($newCol.attr('linewidth'))+parseInt($newCol.attr('lineheight')) < 12) {
                                         $newCol.remove();
+                                        $("#parsingCover").hide();
                                         return true;
                                     }
                                     tpen.screen.isAddingLines = true;
@@ -1773,20 +1797,35 @@ $(document).on("click",".fullScreenTrans",fullPage);
                                         saveNewLine(null,columnIsLine);
                                         $("#imgTop").append(columnIsLine);
                                     }
-                                    adjustColumn(); //Do this so that the new column is adjustable.
+                                    //adjustColumn(); //Do this so that the new column is adjustable.
                                     $("#createColumn").ajaxStop(function(){
                                         $(this).click()
                                         .unbind("ajaxStop");
                                         isCreating = false;
                                     });
-                                    $("#imgTop").unbind("mousemove");
-                                    $("#imgTop").unbind("mousedown");
-                                    $("#imgTop").unbind("mouseup");
+                                    //$("#imgTop").unbind("mousemove");
+                                    //$("#imgTop").unbind("mousedown");
+                                    //$("#imgTop").unbind("mouseup");
                                     $("#imgTop").css("cursor", "default");
                                     $("#imgBottom").css("cursor", "default");
                                 }
 
                         });
+//                                .children()
+//                        .bind({
+//                            mousedown: function(event){ //Stop propogation on the children of #imgTop
+//                                event.stopImmediatePropagation();
+//                                $(this).parent().trigger('mousedown');
+//                            },
+//                            mousemove: function(event){
+//                                event.stopImmediatePropagation();
+//                                $(this).parent().trigger('mousemove');
+//                            }, 
+//                            mouseup: function(event){
+//                                event.stopImmediatePropagation();
+//                                $(this).parent().trigger('mouseup');
+//                            }
+//                        });
                     }
                     if (thisID === "destroyColumn") {
                       //prep for column adjustment
@@ -1809,9 +1848,9 @@ $(document).on("click",".fullScreenTrans",fullPage);
                             //prep for column adjustment
                             var columnSet = $(".parsingColumn");
                             columnSet.addClass("parsingColumnSelected");
-                            var iconToUse = $('<span class="pull-left fa fa-circle"></span>');
+                            //var iconToUse = $('<span class="pull-left fa fa-circle"></span>');
                             var columnText = (columnSet.size() === 1) ? "Destroy This Column" : "Destroy "+columnSet.size()+" Columns";
-                            var cfrm = confirm(iconToUse + "Destroy "+columnSet.size()+" Column(s)?  The transcription data will be lost.\n\nContinue?");
+                            var cfrm = confirm("Destroy "+columnSet.size()+" Column(s)?  The transcription data will be lost.\n\nContinue?");
                             if (!cfrm){
                                 return false;
                             }
@@ -1950,9 +1989,9 @@ $(document).on("click",".fullScreenTrans",fullPage);
         $(".accordion").children("span")
         .append("<span class='fa fa-triangle-right pull-left'></span>")
         .click(function(event){
-        $("#imgTop").unbind("mousemove");
-        $("#imgTop").unbind("mousedown");
-        $("#imgTop").unbind("mouseup");
+        $(document).unbind("mousemove");
+        $(document).unbind("mousedown");
+        $(document).unbind("mouseup");
         $("#imgTop").css("cursor", "default");
         $("#imgBottom").css("cursor", "default");
         $(".parsing").unbind('mousemove');
@@ -2130,6 +2169,21 @@ $(document).on("click",".fullScreenTrans",fullPage);
             $("#transcriptionCanvas").height("");
             $("#transcriptionCanvas").height($(".transcriptionImage").height());
         });
+        //moved out of setTPENObject function because these events do not get attached properly when fired in there.  
+        tpen.screen.abbrevLabelsAll = $("#abbrevLabels").clone();
+        $("#abbrevLabels").change(function(){
+            $("#abbrevImg").attr("src","//t-pen.org/images/cappelli/"+$(this).val());
+        });
+        $("#abbrevGroups").change(function(){
+            $("#abbrevSplit").addClass("ui-state-disabled");
+            $("#abbrevLabels option").remove();
+            tpen.screen.abbrevLabelsAll.children(".group-"+$("#abbrevGroups option:selected").val()).clone(true).appendTo("#abbrevLabels");
+            $("#abbrevLabels").removeAttr("disabled");
+            $("#abbrevSplit").removeClass("ui-state-disabled");
+            $("#abbrevLabels option:first").attr("selected",true);
+            $("#abbrevLabels").change();
+        });
+        
     });
 
     //UI effects for when a user decides to edit a line within the preview split tool.

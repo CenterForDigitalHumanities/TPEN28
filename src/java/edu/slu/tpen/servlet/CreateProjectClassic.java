@@ -49,6 +49,8 @@ public class CreateProjectClassic extends HttpServlet {
 
     /*
      * Create manuscript, folio and project.  Servlet taken from transcription.jsp code for creating a project from T-PEN 1.0
+     *
+     * Bryan H:  FIXME:   This servlet fails sometimes and sends this into a very deep loop.  Why?
      */
     public String createProject(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException, SQLException {
@@ -61,6 +63,8 @@ public class CreateProjectClassic extends HttpServlet {
                 User u = new User(UID);
                 textdisplay.Project[] p = u.getUserProjects();
                 msIDs = new int[p.length];
+                // firstPage() fails ALOT
+                // Cambridge, Cologny
                 for (int i = 0; i < p.length; i++) {
                     try {
                         msIDs[i] = new textdisplay.Manuscript(p[i].firstPage()).getID();

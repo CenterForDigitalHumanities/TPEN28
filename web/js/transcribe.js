@@ -489,6 +489,8 @@ function setTPENObjectData(data){
         $("#lbText").html(unescape(tpen.project.remainingText));
         $("#linebreakTextContainer").show();
         $("#linebreakNoTextContainer").hide();
+        
+    
     }
 
     if(data.manifest){
@@ -2552,6 +2554,9 @@ function hideWorkspaceForParsing(){
     //    tpen.screen.originalCanvasHeight = $("#transcriptionCanvas").height(); //make sure these are set correctly
 //    tpen.screen.originalCanvasWidth = $("#transcriptionCanvas").width(); //make sure these are set correctly
     imgTopOriginalTop = $("#imgTop img").css("top");
+    if ($("#transcriptionTemplate").hasClass("ui-resizable")){
+        $("#transcriptionTemplate").resizable('destroy');
+    }
     $("#transcriptionTemplate").css("max-width", "55%").css("width", "55%");
     //$("#transcriptionCanvas").css("max-height", window.innerHeight + "px");
     //$("#transcriptionTemplate").css("max-height", window.innerHeight + "px");
@@ -2961,6 +2966,7 @@ function destroyPage(){
     tpen.screen.nextColumnToRemove = $(".parsingColumn:first");
     var colX = tpen.screen.nextColumnToRemove.attr("lineleft");
     var lines = $(".parsing[lineleft='" + colX + "']");
+    lines.addClass("deletable");
     if (tpen.screen.nextColumnToRemove.length > 0) {
         removeColumnTranscriptlets(lines, true);
     }
@@ -2985,7 +2991,7 @@ function linesToColumns(){
     gatherColumns( - 1); //Gets all columns into an array.
     //build columns
     var columns = [];
-    for (j = 0; j < gatheredColumns.length; j++){
+    for (var j = 0; j < gatheredColumns.length; j++){
         var parseImg = document.getElementById("imgTop").getElementsByTagName("img");
         var scaledX = gatheredColumns[j][0];
         var scaledY = gatheredColumns[j][1];
@@ -3038,24 +3044,25 @@ function linesToColumns(){
     $('#imgTop').find('.parsing').css({
         'z-index': '-10'
     });
-    $(".parsingColumn")
-    .mouseenter(function(){
-        var lineInfo;
-        lineInfo = $("#transcription" + ($(this).index(".parsing") + 1)).val();
-        $("#lineInfo").empty()
-        .text(lineInfo)
-        .append("<div>" + $("#t" + ($(this).index(".line") + 1)).find(".counter").text() + "</div>")
-        .show();
-        if (!tpen.screen.isMagnifying){
-            $(this).addClass("jumpLine");
-        }
-    })
-    .mouseleave(function(){
-        $(".parsing").removeClass("jumpLine");
-        $("#lineInfo").hide();
-    })
-    .click(function(event){
-    });
+    //Why is this here?  BH 3-9-17
+//    $(".parsingColumn")
+//    .mouseenter(function(){
+//        var lineInfo;
+//        lineInfo = $("#transcription" + ($(this).index(".parsing") + 1)).val();
+//        $("#lineInfo").empty()
+//        .text(lineInfo)
+//        .append("<div>" + $("#t" + ($(this).index(".line") + 1)).find(".counter").text() + "</div>")
+//        .show();
+//        if (!tpen.screen.isMagnifying){
+//            $(this).addClass("jumpLine");
+//        }
+//    })
+//    .mouseleave(function(){
+//        $(".parsing").removeClass("jumpLine");
+//        $("#lineInfo").hide();
+//    })
+//    .click(function(event){
+//    });
 }
 
 /**
@@ -3272,19 +3279,19 @@ function adjustColumn(event){
 //    }
 //}
 
-function reparseColumns(){
-    $.each($('.parsingColumn'), function(){
-        var colX = $(this).attr("lineleft");
-        // collect lines from column
-        var lines = $(".parsing[lineleft='" + colX + "']");
-        lines.addClass("deletable");
-        var linesSize = lines.size();
-        // delete from the end, alerting for any deleted data
-        for (var i = linesSize; i > 0; i--){
-            removeLine(lines[i], true, false);
-        }
-    });
-}
+//function reparseColumns(){
+//    $.each($('.parsingColumn'), function(){
+//        var colX = $(this).attr("lineleft");
+//        // collect lines from column
+//        var lines = $(".parsing[lineleft='" + colX + "']");
+//        lines.addClass("deletable");
+//        var linesSize = lines.size();
+//        // delete from the end, alerting for any deleted data
+//        for (var i = linesSize; i > 0; i--){
+//            removeLine(lines[i], true, false);
+//        }
+//    });
+//}
 
      /**
      * Adds closing tag button to textarea.
@@ -4537,27 +4544,12 @@ function removeColumnTranscriptlets(lines, recurse){
                 console.log("remove line "+l);
                 var theLine = $(lines[l]);
                 removeTranscriptlet(theLine.attr("lineserverid"), theLine.attr("lineserverid"), true, "");
-//                for(var k=0; k<currentAnnoList.length; k++){
-//                    var currentResource = currentAnnoList[k];
-//                    if (currentResource["@id"] == theLine.attr("lineserverid")){
-//                        console.log("remove this line");
-//                        currentAnnoList.splice(k, 1);
-//                        removeTranscriptlet(theLine.attr("lineserverid"), theLine.attr("lineserverid"), true, "");
-//                    }
-//                }
                 if (l === 0){
                     console.log("They have all been removed.  make sure to update the cached list of resources.");
-                    //removeTranscriptlet should be updating tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources, but we can do it here too.
-//                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
-//                    var url = "updateAnnoList";
-//                    var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
-//                    var params = {"content":JSON.stringify(paramObj)};
-//                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio] = currentAnnoList;
                     if (recurse){
                         console.log("I recursed in remove transcriptlets, now I want to remove the column");
                         console.log(tpen.screen.nextColumnToRemove);
                         tpen.screen.nextColumnToRemove.remove();
-                        // FIXME: I cannot find this object always? BH confirmed.  Not sure why, it doesn't always remove it.  Should we pass it in as an argument?
                         destroyPage();
                     }
                     else{
@@ -4568,18 +4560,6 @@ function removeColumnTranscriptlets(lines, recurse){
                         $("#parsingCover").hide();
                     }
                     $(".parsing.deletable").remove();
-//                    $.post(url, params, function(data){
-//                        if (recurse){
-//                            tpen.screen.nextColumnToRemove.remove();
-//                            // FIXME: I cannot find this object always?
-//                            destroyPage();
-//                        }
-//                        else{
-//                            cleanupTranscriptlets(true);
-//                            tpen.screen.nextColumnToRemove.remove();
-//                            $("#parsingCover").hide();
-//                        }
-//                    });
                 }
             }
     }
@@ -4967,7 +4947,7 @@ function bumpLine(direction, activeLine){
                 });
                 $('#ruler1').show().css({
                     left: myLeft,
-                    top: e.pageY + 4, //if you hover over the line, the background color of .parsing flashes
+                    top: e.pageY, 
                     height:'1px',
                     width:myWidth, //e.pageX-myLeft-7
 //                    background:"green"
@@ -6234,19 +6214,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         }
     }
 }
-    tpen.screen.abbrevLabelsAll = $("#abbrevLabels").clone();
-    $("#abbrevGroups").change(function(){
-        $("#abbrevSplit").addClass("ui-state-disabled");
-        $("#abbrevLabels option").remove();
-        tpen.screen.abbrevLabelsAll.children(".group-"+$("#abbrevGroups option:selected").val()).clone(true).appendTo("#abbrevLabels");
-        $("#abbrevLabels").removeAttr("disabled");
-        $("#abbrevSplit").removeClass("ui-state-disabled");
-        $("#abbrevLabels option:first").attr("selected",true);
-        $("#abbrevLabels").change();
-    });
-    $("#abbrevLabels").change(function(){
-        $("#abbrevImg").attr("src","//t-pen.org/images/cappelli/"+$(this).val());
-    });
+
 
 function markLineUnsaved(line){
     line.addClass("isUnsaved"); //mark on the transcriptlet.  You can find the drawn line on the screen and do something to.

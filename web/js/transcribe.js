@@ -1199,6 +1199,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 }
                 focusOnLastModified();
                 updatePageLabels(pageTitle);
+                
             }
             else{
                 $('#requestAccessContainer').show();
@@ -1767,6 +1768,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
         $("#fullpageSplitCanvas").append(fullPageLineColumnIndicator);
         colCounter++;
     }
+    checkParsingReroute(); //If liveTool is fed in from a page refresh, this does not check the pageJump() jumping into parsing.  
     if (update && $(".transcriptlet").eq(0).length > 0){
 //        if(shift === "RTL"){ 
 //            //focusOnLastModified(); 
@@ -2971,7 +2973,9 @@ function destroyPage(){
         removeColumnTranscriptlets(lines, true);
     }
     else {
-        cleanupTranscriptlets(true);
+        var newURL = "transcription.html?projectID="+getURLVariable('projectID')+"&p="+getURLVariable('p')+"&liveTool=parsing";
+        window.location.href= newURL;
+        cleanupTranscriptlets(true, newURL);
         $("#parsingCover").hide();
     }
 }
@@ -4949,7 +4953,7 @@ function bumpLine(direction, activeLine){
                     left: myLeft,
                     top: e.pageY, 
                     height:'1px',
-                    width:myWidth, //e.pageX-myLeft-7
+                    width:myWidth //e.pageX-myLeft-7
 //                    background:"green"
                 });
 //                $('#ruler2').show().css({
@@ -5012,7 +5016,6 @@ function replaceURLVariable(variable, value){
        }
        variables = vars.toString();
        variables = variables.replace(/,/g, "&");
-       console.log("Here are variables " + variables);
        return(location + "?"+variables);
 }
 
@@ -6260,6 +6263,17 @@ function setDirectionForElements(){
         #contribution,\n\
         #trimTitle \n\
     ").attr("dir", "auto");
+}
+
+function checkParsingReroute(){
+    if(getURLVariable('liveTool') == "parsing"){
+        setTimeout(function () {
+            hideWorkspaceForParsing();
+            var replaceURL = replaceURLVariable("liveTool", "none");
+            window.history.pushState("", "T&#8209;PEN Transcription", replaceURL);
+            $(".pageTurnCover").fadeOut(1500);
+        }, 1500);
+    }
 }
 
 //https://github.com/Teun/thenBy.js/blob/master/README.md

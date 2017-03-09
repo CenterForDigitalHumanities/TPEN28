@@ -875,7 +875,7 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
 .adjustable {background-color: white !important;cursor: default;border-right: solid black 4px;}
 /*            #toggler {display: none; z-index: 6;position: fixed;right:5px;top:45px;width: auto;}*/
 #imageTip {text-align: center;overflow: visible;display: none;z-index: 6;position:absolute;background-color:#A68329;height: 18px;width:auto; max-width: 100px;color:#FFDB7F;box-shadow:2px 2px 4px black;}
-#ruler1,#ruler2 {display: none;background: black;position: absolute;z-index: 4;}
+#ruler1,#ruler2 {display: none;background: black;position: absolute;z-index: 4; pointer-events: none;}
 #sampleRuler {overflow: hidden;position:relative;background:black;width:80%;margin:0 auto;height:2px;top:-10px;}
 #savedChanges {display: none; opacity:0;position: fixed;right:20px;min-width:150px;top:100%;padding: 4px;text-align: center;z-index: 50;}
 #linebreakDiv {height:100%; padding: 4px;overflow: auto;width:auto;}

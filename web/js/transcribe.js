@@ -6272,7 +6272,7 @@ function checkParsingReroute(){
             var replaceURL = replaceURLVariable("liveTool", "none");
             window.history.pushState("", "T&#8209;PEN Transcription", replaceURL);
             $(".pageTurnCover").fadeOut(1500);
-        }, 1500);
+        }, 800);
     }
 }
 

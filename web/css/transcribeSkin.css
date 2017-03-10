@@ -387,7 +387,8 @@ body{
     z-index: 3;
     visibility: visible;
     overflow: hidden;
-    max-width: 40em;
+    /*max-width: 40em;*/
+    max-width: 80em;
 }
 div#transcriptletArea {
     margin-bottom: 0.25em;

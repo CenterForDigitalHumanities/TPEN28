@@ -256,11 +256,16 @@ function equalWidth(){
         }
         for (var k=0;k<xmlLoop.length;k=k+7) {
             xmlLoop[k].name = "description"+(k/7+1);
-//            xmlLoop[i+1].name = "xmlColor"+(i/8+1);
             xmlLoop[k+1].name = "b"+(k/7+1);
-            for (var j=0;j<5;j++){                  //parameters
-                xmlLoop[k+2+j].name = "b"+(k/7+1)+"p"+(j+1);
-                if (xmlLoop[k+2+j].value == 'null') xmlLoop[k+2+j].value = '';
+            for (var j=0;j<5;j++){
+                if(k+2+j < xmlLoop.length){
+                    //k+2+j ends up == xmlLoop.length, we need to make sure that we don't try to access the array in this case.
+                    xmlLoop[k+2+j].name = "b"+(k/7+1)+"p"+(j+1); 
+                    if (xmlLoop[k+2+j].value == 'null') xmlLoop[k+2+j].value = '';
+                }
+                else{
+                    //Stop all together?  Not sure what to do here
+                }
             }
         }
         return true;

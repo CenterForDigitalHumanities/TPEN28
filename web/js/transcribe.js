@@ -1583,7 +1583,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
     $('.lineColIndicatorArea').css('height', tpen.screen.originalCanvasHeight + "px");
     var ratio = 0;
     ratio = theWidth / theHeight;
-    
+    //Why does this run twice when i am going fullPage() from parsing interface?
     for (var i = 0; i < lines.length; i++){
         var line = lines[i];
         var lastLine = {};
@@ -2782,7 +2782,7 @@ function fullPage(){
         $(".transcriptlet").remove(); //we are about to redraw these, if we dont remove them, then the transcriptlets repeat.
         setTimeout(function(){
             redraw("");
-        }, 1000);
+        }, 750);
     }
     tpen.screen.liveTool = "none";
 
@@ -3236,9 +3236,8 @@ function adjustColumn(event){
                     "width": newWidth + "%"
                 });
             });
-            updateLinesInColumn(thisColumnID);
+            updateLinesInColumn(thisColumnID, true);
             $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
-            cleanupTranscriptlets(true);
         }
         else if (adjustment === "right"){
             //save a new width for all these lines
@@ -3254,9 +3253,9 @@ function adjustColumn(event){
                     "width": newWidth + "%"
                 });
             });
-            updateLinesInColumn(thisColumnID);
+            updateLinesInColumn(thisColumnID, true);
             $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
-            cleanupTranscriptlets(true);
+            
         } else {
             $("#progress").html("No changes made.").delay(3000).fadeOut(1000);
         }
@@ -3690,7 +3689,7 @@ function toggleLineCol(){
     }
 }
 
-function updateLinesInColumn(column){
+function updateLinesInColumn(column, clean){
     var startLineID = column[0];
     var endLineID = column[1];
     var startLine = $(".parsing[lineserverid='" + startLineID + "']"); //Get the start line
@@ -3717,7 +3716,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
         //Go over each line from the column resize.
     if(parsing){
-        $.each(linesInColumn, function(){
+        $.each(linesInColumn, function(i){
             var line = $(this);
             lineTop = parseFloat(line.attr("linetop")) * 10;
             lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
@@ -3757,6 +3756,9 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
                 }
             });
             updateLine(line, false, false);
+            if(i === linesInColumn.length-1){
+                cleanupTranscriptlets(true);
+            }
         });
     }
     else{

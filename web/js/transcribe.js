@@ -3718,6 +3718,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
     if(parsing){
         $.each(linesInColumn, function(i){
             var line = $(this);
+            var tpenLineId = line.attr("line")
             lineTop = parseFloat(line.attr("linetop")) * 10;
             lineLeft = parseFloat(line.attr("lineleft")) * (10 * ratio);
             lineWidth = parseFloat(line.attr("linewidth")) * (10 * ratio);
@@ -3744,13 +3745,14 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
                 "otherContent" : [],
                 "forProject": tpen.manifest['@id'],
                 "_tpen_note" : lineNote,
+                "tpen_line_id" : currentLineServerID
                 //"testing":"TPEN28"
             };
             var index = - 1;
             //find the line in the anno list resources and replace its position with the new line resource.
             $.each(currentAnnoList, function(){
                 index++;
-                if (this["@id"] == currentLineServerID){
+                if (this.tpen_line_id === currentLineServerID){
                     currentAnnoList[index] = dbLine;
                     return false;
                 }
@@ -3930,6 +3932,7 @@ function updateLine(line, cleanup, updateList){
 //    var currentAnnoListID = tpen.screen.currentAnnoListID;
     var dbLine = {
         "@id" : currentLineServerID,
+        "tpen_line_id" :  currentLineServerID,
         "@type" : "oa:Annotation",
         "motivation" : "oad:transcribing",
         "resource" : {
@@ -4139,6 +4142,7 @@ function saveNewLine(lineBefore, newLine){
     var currentLineText = "";
     var dbLine = {
         "@id" : "",
+        "tpen_line_id" : "",
         "@type" : "oa:Annotation",
         "motivation" : "oad:transcribing",
         "resource" : {
@@ -4167,6 +4171,7 @@ function saveNewLine(lineBefore, newLine){
         $.post(url, params, function(data){
             //data = JSON.parse(data);
             dbLine["@id"] = data;
+            dbLine["tpen_line_id"] = data;
             newLine.attr("lineserverid", data); //data["@id"]
             $("div[newcol='" + true + "']").attr({
                 "startid" : data, //dbLine["@id"]

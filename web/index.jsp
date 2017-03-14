@@ -351,7 +351,7 @@ $(window).load(function(){gapi.plusone.go();});
                         <form action="login.jsp" method="POST">
                             <label for="uname">Email</label><input class="text" type="text" name="uname"><br>
                             <label for="password">Password</label><input class="text" type="password" name="password"><br>
-                            <input type="hidden" name="ref" value="http://t-pen.org/TPEN/login.jsp">
+                            <input type="hidden" name="ref" value="http://t-pen.org/TPEN28/login.jsp">
                             <input class="ui-state-default ui-button ui-corner-all" type="submit" title="Log In" value="Log In">
                         </form>
                             <!--<br> didn't work to fix problem on mac-->

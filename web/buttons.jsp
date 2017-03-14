@@ -38,6 +38,9 @@
                 #sortable1 .ui-state-highlight{min-height:44px;}
                 #sortable2 .ui-state-highlight{min-height:36px;}
                 #sortable { margin: 0; padding: 0; width: 30%; }
+                #sortable2{
+                   margin-bottom: 25px;
+                }
                 #sortable1 li, #sortable1b li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; width: 180px; position:relative;}
                 #sortable1 input[type=text] {width: 80px;}
                 #sortable2 li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; width:430px; position:relative;}
@@ -493,29 +496,30 @@ function equalWidth(){
                     </ul>
                     <input type="button" id="addT" name="addT" value="Add a Tag" class="tpenButton ui-button" onclick="document.getElementById('selecTab').value = 1;" />
                     <input type="submit" onclick="document.getElementById('selecTab').value = 1;" id="update" name="update" value="Save Changes" class="tpenButton ui-button"/><br><br>
-                    <br />
                 </div>
-                    <div class="right">
-                        <a href="buttonProjectImport.jsp?a=1<%out.print(appendProject);%>" class="importButton tpenButton ui-button">Copy Buttons from Another Project</a>
-<%
-if (thisProject.getSchemaURL().length() > 5){%>
-<a href="buttonSchemaImport.jsp?<%out.print(appendProject);%>" class="importButton tpenButton ui-button">Import Buttons from Schema</a>
+                <div class="right">
+                    <a href="buttonProjectImport.jsp?a=1<%out.print(appendProject);%>" class="importButton tpenButton ui-button">Copy Buttons from Another Project</a>
+                    <%
+                    if (thisProject.getSchemaURL().length() > 5){%>
+                    <a href="buttonSchemaImport.jsp?<%out.print(appendProject);%>" class="importButton tpenButton ui-button">Import Buttons from Schema</a>
                     <%}%>
-                    </div>
+                </div>
             </div>
             <input type="hidden" name="selecTab" id="selecTab" value="0"/>
-<%
-        if (p.length() > 0){
+        
+        <%if (p.length() > 0){
             p = request.getParameter("p");
             out.print("<input type='hidden' name='p' value='"+p+"'/>");
         }%>
             </form>
      </div>
-<%
+        <%
         if (projectID > 0){
             String pPiece = "";
-            if(Integer.parseInt(p) > 0){
-                pPiece = "p="+p;
+            if(p != ""){
+                if(Integer.parseInt(p) > 0){
+                    pPiece = "p="+p;
+                }
             }
             out.print("<a class=\"returnButton\" href=\"transcription.html?" + pPiece + appendProject + "\">Return to Transcribing</a>");
         %><a class="returnButton" href="project.jsp?<%out.print(projectAppend);%>">Project Management</a><%
@@ -524,9 +528,9 @@ if (thisProject.getSchemaURL().length() > 5){%>
         <a class="returnButton" href="project.jsp?<%out.print(projectAppend);%>">Return to Project Management</a>
         <%}%>        
         <a class="returnButton" href="index.jsp">T&#8209;PEN Home</a>
-            </div>
-            <div id="space"></div>
+    </div>
+    <div id="space"></div>
     <%@include file="WEB-INF/includes/projectTitle.jspf" %>
-        </div>            
+    </div>            
     </body>
 </html>

@@ -1537,7 +1537,7 @@
             }
             else if (event.which == 18 || event.altKey && (tpen.screen.liveTool !=="parsing")){
                //console.log('ALT KEY');
-            var lineForEditing = $(".activeLine");
+               var lineForEditing = $(".activeLine");
                lineForEditing.resizable();
                if(event.altKey&&event.ctrlKey || event.altKey&&event.metaKey){
                    // hide workspace and move image
@@ -1609,9 +1609,9 @@
                 if(tpen.screen.isMagnifying){
                     return event;
                 }
-                //|| event.altKey is true while it is held down.
                 if(event.which == 18){
-                    $("#imgTop,#imgBottom").unbind("mousemove").css("cursor", "default");
+                    $("#imgTop, #imgBottom").css("cursor", "default");
+                    $("#imgTop, #imgBottom").unbind("mousemove");
                     $("#imgTop, #imgBottom").unbind("mousedown");
                     $("#imgTop, #imgBottom").unbind("mouseup");
                     var lineForEditing = $(".transcriptlet[lineserverid='" + $(".activeLine").attr("lineserverid") + "']");

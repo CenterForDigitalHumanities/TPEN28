@@ -1469,6 +1469,7 @@ function reorderLinesForRTL(lines, tool, preview){
     }
     else{
         tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = lines;
+        tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].resources = lines;
         tpen.screen.focusItem[0] = null;
         tpen.screen.focusItem[1] = null;
         drawLinesDesignateColumns(lines, tool, false, "RTL");
@@ -1513,6 +1514,7 @@ function reorderLinesForLTR(lines){
             })
     );
     tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = lines;
+    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].resources = lines;
     tpen.screen.focusItem[0] = null;
     tpen.screen.focusItem[1] = null;
     drawLinesDesignateColumns(lines, tpen.screen.liveTool, false, "LTR"); 
@@ -1812,6 +1814,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
                             if(dataLineID == idToCheckFor){
                                 currentAnnoList[index].resource["cnt:chars"] = newText;
                                 tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
+                                tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].resources = currentAnnoList;
                                 updateLine(lineToUpdate, false, true);
                                 return false;
                             }
@@ -1903,6 +1906,9 @@ function updatePresentation(transcriptlet) {
     if(tpen.screen.liveTool === "history"){
         History.showLine(transcriptlet.attr("lineserverid"));
     }
+    $.each($(".lineColOnLine"), function(){
+        $(this).css("line-height", $(this).height() + "px");
+    });
 };
 
 /* Helper for position focus onto a specific transcriptlet.  Makes sure workspace stays on screen. */
@@ -2206,7 +2212,7 @@ function moveWorkspace(evt){
     var startImgBottomH = $("#imgBottom").height();
     var mousedownPosition = evt.pageY;
     evt.preventDefault();
-    $(dragHelper).appendTo("body");
+    //$(dragHelper).appendTo("body");
     $(document)
     .disableSelection()
     .mousemove(function(event){
@@ -2219,17 +2225,18 @@ function moveWorkspace(evt){
             "top"   : startImgBottom - (event.pageY - mousedownPosition)
         });
         $("#imgBottom .lineColIndicatorArea").css("top", startImgBottom - (event.pageY - mousedownPosition) + "px");
-        $("#dragHelper").css({
-            top :   event.pageY - 90,
-            left:   event.pageX - 90
-        });
+//        $("#dragHelper").css({
+//            top :   event.pageY - 90,
+//            left:   event.pageX - 90
+//        });
     })
     .mouseup(function(){
-        $("#dragHelper").remove();
+        //$("#dragHelper").remove();
         $("#imgTop,#imgBottom,#imgBottom img").removeClass('noTransition');
         $(document)
             .enableSelection()
-            .unbind("mousemove");
+            .unbind("mousemove")
+            .unbind("mouseup");
         isUnadjusted = false;
     });
 }
@@ -2259,59 +2266,65 @@ function startMoveImg(){
 * Bookmark bounding box moves with top image.
 * @param event Event
 */
-function moveImg(event){
+function moveImg(){
+//    if(tpen.screen.isMoving){
+//        return false;
+//    }
+    //event.preventDefault();
     tpen.screen.isMoving=true;
     var startImgPositionX = parseFloat($("#imgTop img").css("left"));
     var startImgPositionY = parseInt($("#imgTop img").css("top"));
-    var startBottomImgPositionX = parseInt($("#imgBottom img").css("left"));
-    var startBottomImgPositionY = parseInt($("#imgBottom img").css("top"));
-    var mousedownPositionX = event.pageX;
-    var mousedownPositionY = event.pageY;
-    event.preventDefault();
-    $(dragHelper).appendTo("body").css({
-            top :   event.pageY - 90,
-            left:   event.pageX - 90
-        });;
-    $("#imgTop img,#imgBottom img,#imgTop .lineColIndicatorArea, #imgBottom .lineColIndicatorArea, #bookmark").addClass('noTransition');
+//    var startBottomImgPositionX = parseInt($("#imgBottom img").css("left"));
+//    var startBottomImgPositionY = parseInt($("#imgBottom img").css("top"));
+    var mousedownPositionX = 0;
+    var mousedownPositionY = 0;
+    var mouseIsDown = false;
     $("#imgTop, #imgBottom").css("cursor", "url(images/open_grab.png),auto");
-    $(document)
-    .disableSelection()
-    .mousemove(function(event){
-        $("#dragHelper").css({
-            top :   event.pageY - 90,
-            left:   event.pageX - 90
-        });
-        $("#imgTop img").css({
-            top :   startImgPositionY + event.pageY - mousedownPositionY,
-            left:   startImgPositionX + event.pageX - mousedownPositionX
-        });
-        $("#imgTop .lineColIndicatorArea").css({
-            top :   startImgPositionY + event.pageY - mousedownPositionY,
-            left:   startImgPositionX + event.pageX - mousedownPositionX
-        });
-        $("#imgBottom img").css({
-            top :   startBottomImgPositionY + event.pageY - mousedownPositionY,
-            left:   startBottomImgPositionX + event.pageX - mousedownPositionX
-        });
-        $("#imgBottom .lineColIndicatorArea").css({
-            top :   startBottomImgPositionY + event.pageY - mousedownPositionY,
-            left:   startBottomImgPositionX + event.pageX - mousedownPositionX
-        });
+//    $(dragHelper).appendTo("body").css({
+//            top :   event.pageY - 90,
+//            left:   event.pageX - 90
+//        });;
+
+    $("#imgTop, #imgBottom, #imgTop img, #imgBottom img").disableSelection();
+    $("#imgTop, #imgBottom").mousedown(function(event){
+        event.preventDefault();
+        $("#imgTop, #imgBottom").css("cursor", "url(images/close_grab.png),auto");
+        mouseIsDown = true;
+        mousedownPositionX = event.pageX;
+        mousedownPositionY = event.pageY;
     })
     .mouseup(function(){
-        $("#dragHelper").remove();
-        $("#imgTop img,#imgBottom img,#imgTop .lineColIndicatorArea, #imgBottom .lineColIndicatorArea, #bookmark").removeClass('noTransition');
-        if (!tpen.screen.isMagnifying)$("#imgTop, #imgBottom").css("cursor", "url(images/open_grab.png),auto");
-        $(document)
-            .enableSelection()
-            .unbind("mousemove");
+        mouseIsDown = false;
+//        $("#dragHelper").remove();
+        $("#imgTop img,#imgBottom img,#imgTop .lineColIndicatorArea, #imgBottom .lineColIndicatorArea, #bookmark, #imgTop, #imgBottom").removeClass('noTransition');
+        $("#imgTop, #imgBottom").css("cursor", "url(images/open_grab.png),auto");
+        //if (!tpen.screen.isMagnifying)$("#imgTop, #imgBottom").css("cursor", "default");
         tpen.screen.isMoving=false;
         isUnadjusted = false;
     })
-    .keyup(function(event){
-        if(!event.altKey||!(event.ctrlKey||event.metaKey)){
-            tpen.screen.toggleMoveImage(false);
+    .mousemove(function(event){
+        if(mouseIsDown){
+//            $("#dragHelper").css({
+//                top :   event.pageY - 90,
+//                left:   event.pageX - 90
+//            });
+            $("#imgTop img").css({
+                top :   startImgPositionY + event.pageY - mousedownPositionY,
+                left:   startImgPositionX + event.pageX - mousedownPositionX
+            });
         }
+//        $("#imgTop .lineColIndicatorArea").css({
+//            top :   startImgPositionY + event.pageY - mousedownPositionY,
+//            left:   startImgPositionX + event.pageX - mousedownPositionX
+//        });
+//        $("#imgBottom img").css({
+//            top :   startBottomImgPositionY + event.pageY - mousedownPositionY,
+//            left:   startBottomImgPositionX + event.pageX - mousedownPositionX
+//        });
+//        $("#imgBottom .lineColIndicatorArea").css({
+//            top :   startBottomImgPositionY + event.pageY - mousedownPositionY,
+//            left:   startBottomImgPositionX + event.pageX - mousedownPositionX
+//        });
     });
 }
 
@@ -2486,21 +2499,31 @@ function mouseZoom($img,container, event){
 }
 
 tpen.screen.toggleMoveImage = function (event) {
-    if (event && event.altKey && (event.ctrlKey || event.metaKey)) {
-        tpen.screen.toggleMove = true;
+    //if (event && event.altKey && (event.ctrlKey || event.metaKey)) {
+    if(!tpen.screen.toggleMove){
+        $(document).unbind("mousemove");
+        $(document).unbind("mouseup");
         $(".lineColIndicatorArea").hide();
         fullTopImage();
-        $("#imgTop")
-            .mousedown(moveImg) //This will handle the mouse up
-    }
-    else {
-        $(document).unbind("mousemove"); //This is what we needed from the mousup event
+        tpen.screen.toggleMove = true;
+        $("#imgTop img,#imgBottom img,#imgTop .lineColIndicatorArea, #imgBottom .lineColIndicatorArea, #bookmark, #imgTop, #imgBottom").addClass('noTransition');
+        //$("#imgTop, #imgBottom").css("cursor", "url(images/open_grab.png),auto");
+        //$(dragHelper).appendTo("body");
+        moveImg();
+//        $("#imgTop, #imgBottom")
+//        .mousedown() //This will handle the mouse up
+    }   
+    //}
+    if(event === false){
+        $("#imgTop, #imgBottom").unbind("mousedown");
+        $("#imgTop, #imgBottom").unbind("mousemove"); //This is what we needed from the mousup event
+        $("#imgTop, #imgBottom").unbind("mouseup"); //This is what we needed from the mousup event
         tpen.screen.isMoving = false; //This is what we needed from the mouseup event.
         tpen.screen.toggleMove = false;
+        fullPage();
         updatePresentation(tpen.screen.focusItem[1]);
         $(".lineColIndicatorArea").show();
-        $("#imgTop, #imgBottom").css("cursor", "");
-
+        $("#imgTop, #imgBottom").css("cursor", "default");
     }
 };
 
@@ -3868,6 +3891,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
                         if(!preview){
                             tpen.screen.currentAnnoListID = list;
                             tpen.screen.dereferencedLists[canvasIndex] = list;
+                            tpen.manifest.sequences[0].canvases[canvasIndex].resources = list;
                         }
                         if (list.resources) {
                             annos = list.resources;
@@ -4005,6 +4029,7 @@ function updateLine(line, cleanup, updateList){
                 }
                 if(i===currentAnnoList.length -1){
                     tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
+                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].resources = currentAnnoList;
 //                    var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
 //                    var params1 = {"content":JSON.stringify(paramObj1)};
 //                    $.post(url1, params1, function(data){
@@ -4195,7 +4220,8 @@ function saveNewLine(lineBefore, newLine){
                 }
                 currentFolio = parseInt(currentFolio);
                 //Write back to db to update list
-                tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList; //@cubap this is why the FIXMEs above
+                tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
+                tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].resources = currentAnnoList;
                 if(lineBefore){
                     updateLine(lineBefore, false, false); //This will update the line on the server.
                 }
@@ -4541,7 +4567,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
         });
     }
     //When it is just one line being removed, we need to redraw.  When its the whole column, we just delete.
-    cleanupTranscriptlets(draw);
+    cleanupTranscriptlets(false);
 }
 
 /* Remove all transcriptlets in a column */

@@ -617,7 +617,6 @@ public class TagButton {
     * get all of the buttons for this Project and build them.  Specifically for use in buttons.jsp
     */
    public static String buildAllProjectXML(int projectID) throws SQLException {
-       System.out.println("Build the project buttons");
       Date date = new Date(System.currentTimeMillis());
       StackTraceElement[] t = Thread.currentThread().getStackTrace();
       DateFormat formatter = new SimpleDateFormat("yyyy-mm-dd H:M:S");
@@ -627,7 +626,7 @@ public class TagButton {
       for (int i = 0; i < t.length; i++) {
          stackTrace += t[i].toString() + "\n";
       }
-      //LOG.log(Level.SEVERE, "{0} Running tagButton.getAllProjectButtons\n{1}", new Object[]{formatter.format(date), stackTrace});
+      LOG.log(Level.SEVERE, "{0} Running tagButton.getAllProjectButtons\n{1}", new Object[]{formatter.format(date), stackTrace});
       Connection j = null;
       PreparedStatement stmt = null;
       try {
@@ -646,7 +645,6 @@ public class TagButton {
          blank_case[4] = null;
          String buttonHTML = "";
          while (rs.next()) {
-                System.out.println("Button "+ctr);
                 buttonHTML = "";
                 int position = rs.getInt("position");
                 TagButton b = new TagButton(projectID, position, true);
@@ -692,7 +690,6 @@ public class TagButton {
                     buttonHTML += "</span>";
                 }
                 buttonHTML += "</div></li>";
-                System.out.println("Add button "+ctr+" to toret");
                 toret += buttonHTML;
                 ctr++;           
          }

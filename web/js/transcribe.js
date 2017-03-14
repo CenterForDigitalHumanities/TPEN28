@@ -1469,7 +1469,7 @@ function reorderLinesForRTL(lines, tool, preview){
     }
     else{
         tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = lines;
-        tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].resources = lines;
+        tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = lines;
         tpen.screen.focusItem[0] = null;
         tpen.screen.focusItem[1] = null;
         drawLinesDesignateColumns(lines, tool, false, "RTL");
@@ -1514,7 +1514,7 @@ function reorderLinesForLTR(lines){
             })
     );
     tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = lines;
-    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].resources = lines;
+    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = lines;
     tpen.screen.focusItem[0] = null;
     tpen.screen.focusItem[1] = null;
     drawLinesDesignateColumns(lines, tpen.screen.liveTool, false, "LTR"); 
@@ -1814,7 +1814,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
                             if(dataLineID == idToCheckFor){
                                 currentAnnoList[index].resource["cnt:chars"] = newText;
                                 tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
-                                tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].resources = currentAnnoList;
+                                tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
                                 updateLine(lineToUpdate, false, true);
                                 return false;
                             }
@@ -3196,50 +3196,56 @@ function adjustColumn(event){
                         "top"    : newY + "%",
                         "height" : oldHeight + oldTop - newY + "%"
                     });
-                    thisColumn.attr("startid", startLine.attr("lineserverid"));
                 }
+                else{
+                    updateLine(startLine, true, "");
+                }
+                thisColumn.attr("startid", startLine.attr("lineserverid"));
                 $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
             }
-        else if (adjustment === "bottom"){
+            else if (adjustment === "bottom"){
             //technically, we want to track the bottom.  The bottom if the height + top offset
-            var offsetForBtm = $(event.target).position().top;
-            offsetForBtm = (offsetForBtm / $("#imgTop img").height()) * 100;
-            newH = (newH / $("#imgTop img").height()) * 100;
-            var actualBottom = newH + offsetForBtm;
-            //save a new height for the bottom line
-            var endLine = $(".parsing[lineserverid='" + thisColumnID[1] + "']");
-            oldHeight = parseFloat(endLine.attr("lineheight"));
-            oldTop = parseFloat(endLine.attr("linetop"));
-            endLine.attr({
-                "lineheight" : oldHeight + (newH - originalH)
-            });
-            endLine.css({
-                "height" : oldHeight + (newH - originalH) + "%"
-            });
-            if (parseFloat(endLine.attr("linetop")) > actualBottom){
-                //the bottom line isnt large enough to account for the change,
-                // delete lines until we get to a  line that,
-                // when combined with the deleted lines
-                //can account for the requested change.
-                do {
+                var offsetForBtm = $(event.target).position().top;
+                offsetForBtm = (offsetForBtm / $("#imgTop img").height()) * 100;
+                newH = (newH / $("#imgTop img").height()) * 100;
+                var actualBottom = newH + offsetForBtm;
+                //save a new height for the bottom line
+                var endLine = $(".parsing[lineserverid='" + thisColumnID[1] + "']");
                 oldHeight = parseFloat(endLine.attr("lineheight"));
-                    oldTop = parseFloat(endLine.attr("linetop"));
-                    var nextline = endLine.prev(".parsing");
-                    endLine.remove();
-                    removeLine(endLine, true, false);
-                    removeTranscriptlet(endLine.attr("lineserverid"), endLine.attr("lineserverid"), true);
-                    endLine = nextline;
-                } while (parseFloat(endLine.attr("linetop")) > actualBottom);
-                var currentLineTop = parseFloat(endLine.attr("linetop"));
+                oldTop = parseFloat(endLine.attr("linetop"));
                 endLine.attr({
-                    "lineheight" : actualBottom - currentLineTop
+                    "lineheight" : oldHeight + (newH - originalH)
                 });
                 endLine.css({
-                    "height" : actualBottom - currentLineTop + "%"
+                    "height" : oldHeight + (newH - originalH) + "%"
                 });
+                if (parseFloat(endLine.attr("linetop")) > actualBottom){
+                    //the bottom line isnt large enough to account for the change,
+                    // delete lines until we get to a  line that,
+                    // when combined with the deleted lines
+                    //can account for the requested change.
+                    do {
+                    oldHeight = parseFloat(endLine.attr("lineheight"));
+                        oldTop = parseFloat(endLine.attr("linetop"));
+                        var nextline = endLine.prev(".parsing");
+                        endLine.remove();
+                        removeLine(endLine, true, false);
+                        removeTranscriptlet(endLine.attr("lineserverid"), endLine.attr("lineserverid"), true);
+                        endLine = nextline;
+                    } while (parseFloat(endLine.attr("linetop")) > actualBottom);
+                    var currentLineTop = parseFloat(endLine.attr("linetop"));
+                    endLine.attr({
+                        "lineheight" : actualBottom - currentLineTop
+                    });
+                    endLine.css({
+                        "height" : actualBottom - currentLineTop + "%"
+                    });
+                }
+                else{
+                    updateLine(endLine, true, "");
+                }
                 thisColumn.attr("endid", endLine.attr("lineserverid"));
-            }
-            $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
+                $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
         }
         else if (adjustment === "left"){
             //save a new left,width for all these lines
@@ -3891,7 +3897,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
                         if(!preview){
                             tpen.screen.currentAnnoListID = list;
                             tpen.screen.dereferencedLists[canvasIndex] = list;
-                            tpen.manifest.sequences[0].canvases[canvasIndex].resources = list;
+                            tpen.manifest.sequences[0].canvases[canvasIndex].otherContent[0].resources = list;
                         }
                         if (list.resources) {
                             annos = list.resources;
@@ -4029,7 +4035,7 @@ function updateLine(line, cleanup, updateList){
                 }
                 if(i===currentAnnoList.length -1){
                     tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
-                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].resources = currentAnnoList;
+                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
 //                    var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
 //                    var params1 = {"content":JSON.stringify(paramObj1)};
 //                    $.post(url1, params1, function(data){
@@ -4221,7 +4227,7 @@ function saveNewLine(lineBefore, newLine){
                 currentFolio = parseInt(currentFolio);
                 //Write back to db to update list
                 tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
-                tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].resources = currentAnnoList;
+                tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
                 if(lineBefore){
                     updateLine(lineBefore, false, false); //This will update the line on the server.
                 }

@@ -68,7 +68,7 @@
                 .colors {display: none;} /* TODO show when colors are supported */
                 #codeSearch{padding: .4em 1em;width:145px;}
                 .tagWarning {position: absolute;top:0;left:0;}
-                .tag .tagWarning {top:-18px;font-size: smaller;white-space: nowrap;}
+                .tag .tagWarning {top:-28px;font-size: smaller;white-space: nowrap; width: 300px;}
         </style>
     <%
             user.User thisUser = null;
@@ -119,7 +119,7 @@
             })
                 .css("cursor","move");
             var $tabs = $( "#tabs" ).tabs();
-            $(".tag").children('input').change(function(){
+            $(".tag").children('input').keyup(function(){
                 unsavedAlert('#tabs-2');
                 isValidTag(this);
             });
@@ -212,11 +212,11 @@ function equalWidth(){
         $(btn)
             .find(".collapseXML").switchClass("collapseXML","expandXML").end()
             .find(".ui-icon-arrow-4").switchClass("ui-icon-arrow-4","ui-icon-arrowstop-1-n").end()
-            .find(".xmlParams").slideDown();
+            .find(".xmlParams").show(); //we want some kind of animation here, fadeIn() and slideDown() break this.  
     }
     function collapsePanel(btn) {
         $(btn)
-            .find(".xmlParams").slideUp().end()
+            .find(".xmlParams").hide().end() //we want some animation instead of hide(), but it seems to complicate stuff.  
             .find(".expandXML").switchClass("expandXML","collapseXML").end()
             .find(".ui-icon-arrowstop-1-n").switchClass("ui-icon-arrowstop-1-n","ui-icon-arrow-4");
     }

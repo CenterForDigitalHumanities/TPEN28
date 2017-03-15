@@ -4035,18 +4035,16 @@ function updateLine(line, cleanup, updateList){
             //var url1 = "updateAnnoList";
             clearTimeout(typingTimer);
             for(var i=0  ;i < currentAnnoList.length; i++){
-                if(currentAnnoList[i]["@id"] === dbLine['@id']){
+                if(currentAnnoList[i]["tpen_line_id"] === dbLine["tpen_line_id"]){
                     currentAnnoList[i].on = dbLine.on;
                     currentAnnoList[i].resource = dbLine.resource;
                     currentAnnoList[i]._tpen_note = dbLine._tpen_note; //@cubap FIXME:  How do we handle notes now?
-                }
-                if(i===currentAnnoList.length -1){
                     tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
                     tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
-//                    var paramObj1 = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
-//                    var params1 = {"content":JSON.stringify(paramObj1)};
-//                    $.post(url1, params1, function(data){
-//                    });
+                    break;
+                }
+                else if(i===currentAnnoList.length -1){
+                    console.warn("This line was not cached...");
                 }
             }
 
@@ -4081,11 +4079,12 @@ function updateLine(line, cleanup, updateList){
             else{
                 if(updatePositions){
                     $.post(url,params,function(){
-                        console.log(line.attr("linewidth"));
-                        line.attr("hasError",null);
-                        markLineSaved(line);
-                        $("#parsingCover").hide();
-                        if(!updateContent)History.prependEntry(lineID);
+                        if(!updateContent){
+                            line.attr("hasError",null);
+                            History.prependEntry(lineID);
+                            $("#parsingCover").hide();
+                            markLineSaved(line);
+                        }
                         // success
                     }).fail(function(err){
                         line.attr("hasError","Saving Failed "+err.status);
@@ -4480,6 +4479,7 @@ function removeLine(e, columnDelete, deleteOnly){
         else{
             removeTranscriptlet(removedLine.attr("lineserverid"), $(e).attr("lineserverid"), true, "cover");
             removedLine.remove();
+            $("#parsingCover").hide();
             return params;
         }
 
@@ -4546,6 +4546,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
                 currentAnnoList.splice(index, 1);
                 //var url = "updateAnnoList";
                 tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
+                tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
 //                var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
 //                var params = {"content":JSON.stringify(paramObj)};
                 $.post(url, params, function(data){
@@ -4568,10 +4569,10 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     else { // If it is classic T-PEN, we need to update canvas resources
         cosnole.warn("Detected a classic object");
         currentFolio = parseInt(currentFolio);
-        $.each(tpen.manifest.sequences[0].canvases[currentFolio - 1].resources, function(){
+        $.each(tpen.manifest.sequences[0].canvases[currentFolio].resources, function(){
             index++;
             if (this["@id"] == lineid){
-                tpen.manifest.sequences[0].canvases[currentFolio - 1].resources.splice(index, 1);
+                tpen.manifest.sequences[0].canvases[currentFolio].resources.splice(index, 1);
                 //update for real
             }
         });

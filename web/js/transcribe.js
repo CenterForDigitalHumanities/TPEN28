@@ -4455,19 +4455,25 @@ function removeLine(e, columnDelete, deleteOnly){
                     "lineheight":   convertedNewLineHeight
                 });
             }
-            else{ //User is trying to delete a line that is not the last line
+            else{ //User is trying to delete a line that is not the last line, do nothing
                 //removedLine = $(e);
                 //tpen.screen.isDestroyingLine = true;
                 return false;
             }
         }
-        else{ //user is deleting a line, but they are in merge mode
-                alert("To delete a line, deactivate 'Merge Lines' and activate 'Delete Line'.");
-                $("#parsingCover").hide();
-                return false;
+        else{ //user is deleting a line, could be merge or delete mode
+                if(deleteOnly){ //this would mean it is delete happening in delete mode, so allow it.
+                    
+                }
+                else{ //this would mean it is a delete happening in merge mode.
+                    alert("To delete a line, deactivate 'Merge Lines' and activate 'Delete Line'.");
+                    $("#parsingCover").hide();
+                    return false;
+                }
         }
         var params = new Array({name:"remove", value:removedLine.attr("lineserverid")});
-        if(deleteOnly){
+        
+        if(deleteOnly){ //if we are in delete mode deleting a line
             if($(e).hasClass("deletable")){
                 var cfrm = confirm("Removing this line will remove any data contained as well.\n\nContinue?");
                 if (!cfrm){
@@ -4483,7 +4489,7 @@ function removeLine(e, columnDelete, deleteOnly){
                 return false;
             }
         }
-        else{
+        else{ //we are in merge mode merging a line, move forward with this functionality.
             removeTranscriptlet(removedLine.attr("lineserverid"), $(e).attr("lineserverid"), true, "cover");
             removedLine.remove();
             $("#parsingCover").hide();
@@ -4984,7 +4990,6 @@ function bumpLine(direction, activeLine){
 
     //Turn the ruler on
     function applyRuler(line, deleteOnly){
-            //var sRCbkp = selectRulerColor; //select Ruler Color backup
             $("#imageTip").html("Add a Line");
             if(!tpen.screen.isAddingLines){
                 if(deleteOnly){ //delete line
@@ -5008,36 +5013,26 @@ function bumpLine(direction, activeLine){
                     }
                     line.css('cursor','crosshair');
                 }
-               //sRCbkp = 'transparent';
             }
             else{ //add lines
                 line.css('cursor','crosshair');
             }
             line.bind('mousemove', function(e){
-            var imgTopOffset = $("#imgTop").offset().left; //helps because we can center the interface with this and it will still work.
-            var myLeft = line.position().left + imgTopOffset;
-            var myWidth = line.width();
-            $('#imageTip').show().css({
-                left:e.pageX,
-                top:e.pageY+20
-            });
-            $('#ruler1').show().css({
-                left: myLeft,
-                top: e.pageY, 
-                height:'1px',
-                width:myWidth //e.pageX-myLeft-7
-//                    background:"green"
-            });
-//                $('#ruler2').show().css({
-//                    left: e.pageX+7,
-//                    top: e.pageY + 6,
-//                    width: myWidth, //myWidth+myLeft-e.pageX-7
-//                    height:'1px',
-//                    background:"red"
-//                });
-            });
+                var imgTopOffset = $("#imgTop").offset().left; //helps because we can center the interface with this and it will still work.
+                var myLeft = line.position().left + imgTopOffset;
+                var myWidth = line.width();
+                $('#imageTip').show().css({
+                    left:e.pageX,
+                    top:e.pageY+20
+                });
+                $('#ruler1').show().css({
+                    left: myLeft,
+                    top: e.pageY, 
+                    height:'1px',
+                    width:myWidth 
+                });
 
-
+            });
     }
     /**
      * Hides ruler within parsing tool. Called on mouseleave .parsing.

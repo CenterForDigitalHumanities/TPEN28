@@ -2998,7 +2998,7 @@ function destroyPage(){
     else {
         var newURL = "transcription.html?projectID="+getURLVariable('projectID')+"&p="+getURLVariable('p')+"&liveTool=parsing";
         window.location.href= newURL;
-        cleanupTranscriptlets(true, newURL);
+        cleanupTranscriptlets(true);
         $("#parsingCover").hide();
     }
 }
@@ -3937,7 +3937,8 @@ function updateLine(line, cleanup, updateList){
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
-    var ratio = originalCanvasWidth2 / originalCanvasHeight2;
+    //var ratio = originalCanvasWidth2 / originalCanvasHeight2;
+    var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
     //Can I use tpen.screen.originalCanvasHeight and Width?  IDK yet, untested.
 
     lineTop = parseFloat(line.attr("linetop")) * 10;
@@ -3950,7 +3951,7 @@ function updateLine(line, cleanup, updateList){
     lineWidth = Math.round(lineWidth, 0);
     lineHeight = Math.round(lineHeight, 0);
     var lineString = lineLeft + "," + lineTop + "," + lineWidth + "," + lineHeight;
-    var currentLineServerID = line.attr('lineserverid');
+    var currentLineServerID = $(line).attr('lineserverid');
     var currentLineText = $(line).find(".theText").val();
     var currentLineNotes = $(line).find(".notes").val();
     var currentLineTextAttr = unescape(line.attr("data-answer"));
@@ -4145,10 +4146,10 @@ function saveNewLine(lineBefore, newLine){
     var oldLineTop, oldLineLeft, oldLineWidth, oldLineHeight = 0;
     var ratio = originalCanvasWidth2 / originalCanvasHeight2;
     //Can I use tpen.screen.originalCanvasHeight and Width?
-    newLineTop = parseFloat(newLine.attr("linetop"));
-    newLineLeft = parseFloat(newLine.attr("lineleft"));
-    newLineWidth = parseFloat(newLine.attr("linewidth"));
-    newLineHeight = parseFloat(newLine.attr("lineheight"));
+    newLineTop = parseFloat($(newLine).attr("linetop"));
+    newLineLeft = parseFloat($(newLine).attr("lineleft"));
+    newLineWidth = parseFloat($(newLine).attr("linewidth"));
+    newLineHeight = parseFloat($(newLine).attr("lineheight"));
     newLineTop = newLineTop * 10;
     newLineLeft = newLineLeft * (10 * ratio);
     newLineWidth = newLineWidth * (10 * ratio);
@@ -4207,12 +4208,12 @@ function saveNewLine(lineBefore, newLine){
     if (onCanvas !== undefined && onCanvas !== ""){
         $.post(url, params, function(data){
             //data = JSON.parse(data);
-            dbLine["@id"] = data;
-            dbLine["tpen_line_id"] = data;
-            newLine.attr("lineserverid", data); //data["@id"]
+            dbLine["@id"] = "line/"+data;
+            dbLine["tpen_line_id"] = "line/"+data;
+            $(newLine).attr("lineserverid","line/"+data); //data["@id"]
             $("div[newcol='" + true + "']").attr({
-                "startid" : data, //dbLine["@id"]
-                "endid" : data, //dbLine["@id"]
+                "startid" : "line/"+data, //dbLine["@id"]
+                "endid" :"line/"+data, //dbLine["@id"]
                 "newcol":false
             });
             var currentFolio = tpen.screen.currentFolio;
@@ -4221,7 +4222,7 @@ function saveNewLine(lineBefore, newLine){
                 // if it IIIF, we need to update the list
                 if (beforeIndex == - 1){
                     $(".newColumn").attr({
-                        "lineserverid" : data,
+                        "lineserverid" : "line/"+data,
                         "linenum" : $(".parsing").length
                     }).removeClass("newColumn");
                     currentAnnoList.push(dbLine); //@cubap FIXME: what should we do for dbLine here?  What does the currentAnnoList look like.
@@ -4315,7 +4316,7 @@ function saveNewLine(lineBefore, newLine){
                 $("#parsingCover").hide();
                 // QUERY: should we write to the DB here?  This would be in support of old data.
             }
-            cleanupTranscriptlets(true);
+            //cleanupTranscriptlets(false);
         });
     }
     else{
@@ -4454,10 +4455,16 @@ function removeLine(e, columnDelete, deleteOnly){
                     "lineheight":   convertedNewLineHeight
                 });
             }
-            else{
-                removedLine = $(e);
-                tpen.screen.isDestroyingLine = true;
+            else{ //User is trying to delete a line that is not the last line
+                //removedLine = $(e);
+                //tpen.screen.isDestroyingLine = true;
+                return false;
             }
+        }
+        else{ //user is deleting a line, but they are in merge mode
+                alert("To delete a line, deactivate 'Merge Lines' and activate 'Delete Line'.");
+                $("#parsingCover").hide();
+                return false;
         }
         var params = new Array({name:"remove", value:removedLine.attr("lineserverid")});
         if(deleteOnly){
@@ -4501,7 +4508,22 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     var index = 0;
     var toUpdate = $(".transcriptlet[lineserverid='" + updatedLineID + "']");
     var removedLine2 = $(".transcriptlet[lineserverid='" + lineid + "']");
-    var removedText = $(".transcriptlet[lineserverid='" + lineid + "']").find(".theText").val();
+    if(toUpdate.length === 0){ 
+        //cleanupTranscriptlets() at the end of this function has removed all trascriptlets.  Check if parsing line exists, there will be no text.
+        toUpdate = $(".parsing[lineserverid='" + updatedLineID + "']");
+    }
+    if(removedLine2.length === 0){ 
+        //cleanupTranscriptlets() at the end of this function has removed all trascriptlets.  Check if parsing line exists, there will be no text.
+        removedLine2 = $(".parsing[lineserverid='" + lineid + "']");
+    }
+    //If toUpdate or removedLine2 are of length 0 at this point, there will be an error because I will not have ID's to talk to the db with.
+    if(toUpdate.length ==0 || removedLine2.length ==0){
+        console.warn("I could not find the lines to perform this action with, it has gone unsaved.");
+        $(".trexHead").show();
+        $("#genericIssue").show(1000);
+        return false;
+    }
+    var removedText = removedLine2.find(".theText").val() || "";
     var params = new Array({name:'submitted',value:true},{name:'projectID',value:tpen.project.id});
     var currentFolio = parseInt(tpen.screen.currentFolio);
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
@@ -4522,8 +4544,9 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
 //            }
 //            return thisValue;
 //        });
-        var lineHeightForUpdate = parseFloat(toUpdate.attr("lineheight")) + parseFloat(removedLine2.attr("lineheight"));
-        toUpdate.attr("lineheight", lineHeightForUpdate);
+        //toUpdate already has the values on it for updating (when doing merge lines), no need to calculate
+        //var lineHeightForUpdate = parseFloat(toUpdate.attr("lineheight")) + parseFloat(removedLine2.attr("lineheight"));
+        //toUpdate.attr("lineheight", lineHeightForUpdate);
 //        tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
 //                var paramObj = {"@id":tpen.screen.currentAnnoListID, "resources": currentAnnoList};
 //                var params = {"content":JSON.stringify(paramObj)};
@@ -4578,7 +4601,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
         });
     }
     //When it is just one line being removed, we need to redraw.  When its the whole column, we just delete.
-    cleanupTranscriptlets(false);
+    //cleanupTranscriptlets(true);
 }
 
 /* Remove all transcriptlets in a column */
@@ -4982,32 +5005,34 @@ function bumpLine(direction, activeLine){
                     else  {
                         $("#imageTip").html("Delete Line");
                     }
+
                 }
                //sRCbkp = 'transparent';
             }
-            line.css('cursor','crosshair').bind('mousemove', function(e){
-                var imgTopOffset = $("#imgTop").offset().left; //helps because we can center the interface with this and it will still work.
-                var myLeft = line.position().left + imgTopOffset;
-                var myWidth = line.width();
-                $('#imageTip').show().css({
-                    left:e.pageX,
-                    top:e.pageY+20
-                });
-                $('#ruler1').show().css({
-                    left: myLeft,
-                    top: e.pageY, 
-                    height:'1px',
-                    width:myWidth //e.pageX-myLeft-7
-//                    background:"green"
-                });
-//                $('#ruler2').show().css({
-//                    left: e.pageX+7,
-//                    top: e.pageY + 6,
-//                    width: myWidth, //myWidth+myLeft-e.pageX-7
-//                    height:'1px',
-//                    background:"red"
-//                });
-            });
+                    line.css('cursor','crosshair').bind('mousemove', function(e){
+                    var imgTopOffset = $("#imgTop").offset().left; //helps because we can center the interface with this and it will still work.
+                    var myLeft = line.position().left + imgTopOffset;
+                    var myWidth = line.width();
+                    $('#imageTip').show().css({
+                        left:e.pageX,
+                        top:e.pageY+20
+                    });
+                    $('#ruler1').show().css({
+                        left: myLeft,
+                        top: e.pageY, 
+                        height:'1px',
+                        width:myWidth //e.pageX-myLeft-7
+    //                    background:"green"
+                    });
+    //                $('#ruler2').show().css({
+    //                    left: e.pageX+7,
+    //                    top: e.pageY + 6,
+    //                    width: myWidth, //myWidth+myLeft-e.pageX-7
+    //                    height:'1px',
+    //                    background:"red"
+    //                });
+                    });
+
 
     }
     /**

@@ -3102,6 +3102,12 @@ function adjustColumn(event){
     var originalY = 1;
     var originalW = 1;
     var originalH = 1;
+    var newX = 1;
+    var newY = 1;
+    var newW = 1;
+    var newH = 1;
+    var offsetForBtm = 1;
+    var actualBottom = 1;
     var adjustment = "";
     var column = undefined;
     var originalPercentW;
@@ -3126,39 +3132,32 @@ function adjustColumn(event){
             originalPercentX = parseFloat($(this).attr("lineleft"));
         },
         resize      : function(event, ui){
-            if (adjustment === "new"){
-                var originalX = ui.originalPosition.left;
-                var originalY = ui.originalPosition.top;
-                var originalW = ui.originalSize.width;
-                var originalH = ui.originalSize.height;
-                var newX = ui.position.left;
-                var newY = ui.position.top;
-                var newW = ui.size.width;
-                var newH = ui.size.height;
-                var offsetForBtm = $(event.target).position().top;
-                if (Math.abs(originalW - newW) > 5) adjustment = "right";
-                if (Math.abs(originalH - newH) > 5) adjustment = "bottom";
-                if (Math.abs(originalX - newX) > 5) adjustment = "left"; // a left change would affect w and x, order matters
-                if (Math.abs(originalY - newY) > 5) adjustment = "top"; // a top change would affect h and y, order matters
-                offsetForBtm = (offsetForBtm / $("#imgTop img").height()) * 100;
-                newH = (newH / $("#imgTop img").height()) * 100;
-                var actualBottom = newH + offsetForBtm;
-                $("#progress").html("Adjusting " + adjustment + " - unsaved");
-            }
+           
         },
         stop        : function(event, ui){
             attachWindowResize();
             $("#progress").html("Column Resized - Saving...");
             var parseRatio = $("#imgTop img").width() / $("#imgTop img").height();
-            var originalX = ui.originalPosition.left;
-            var originalY = ui.originalPosition.top;
-            var originalW = ui.originalSize.width;
-            var originalH = ui.originalSize.height;
-            var newX = ui.position.left;
-            var newY = ui.position.top;
-            var newW = ui.size.width;
-            var newH = ui.size.height;
+            originalX = ui.originalPosition.left;
+            originalY = ui.originalPosition.top;
+            originalW = ui.originalSize.width;
+            originalH = ui.originalSize.height;
+            newX = ui.position.left;
+            newY = ui.position.top;
+            newW = ui.size.width;
+            newH = ui.size.height;
             var oldHeight, oldTop, oldLeft, newWidth, newLeft;
+            if (adjustment === "new"){
+                offsetForBtm = $(event.target).position().top;
+                //order and condition matters to get this right.
+                if (Math.abs(originalX - newX) > 5) {adjustment = "left";}
+                else if (Math.abs(originalW - newW) > 5) {adjustment = "right";}
+                if (Math.abs(originalY - newY) > 5) {adjustment = "top";} 
+                else if (Math.abs(originalH - newH) > 5){ adjustment = "bottom";}                
+                offsetForBtm = (offsetForBtm / $("#imgTop img").height()) * 100;
+                actualBottom = newH + offsetForBtm;
+                $("#progress").html("Adjusting " + adjustment + " - unsaved");
+            }
             //THESE ORIGINAL AND NEW VALUES ARE EVALUATED AS PIXELS, NOT PERCENTAGES
             if (adjustment === "top") {
                 newY = (newY / $("#imgTop img").height()) * 100;
@@ -3196,6 +3195,7 @@ function adjustColumn(event){
                         "top"    : newY + "%",
                         "height" : oldHeight + oldTop - newY + "%"
                     });
+                    updateLine(startLine, true, "");
                 }
                 else{
                     updateLine(startLine, true, "");
@@ -3205,19 +3205,20 @@ function adjustColumn(event){
             }
             else if (adjustment === "bottom"){
             //technically, we want to track the bottom.  The bottom if the height + top offset
-                var offsetForBtm = $(event.target).position().top;
+                offsetForBtm = $(event.target).position().top;
                 offsetForBtm = (offsetForBtm / $("#imgTop img").height()) * 100;
                 newH = (newH / $("#imgTop img").height()) * 100;
-                var actualBottom = newH + offsetForBtm;
+                originalH = (originalH / $("#imgTop img").height()) * 100;
+                actualBottom = newH + offsetForBtm;
                 //save a new height for the bottom line
                 var endLine = $(".parsing[lineserverid='" + thisColumnID[1] + "']");
                 oldHeight = parseFloat(endLine.attr("lineheight"));
                 oldTop = parseFloat(endLine.attr("linetop"));
                 endLine.attr({
-                    "lineheight" : oldHeight + (newH - originalH)
+                    "lineheight" : oldHeight+(newH - originalH)
                 });
                 endLine.css({
-                    "height" : oldHeight + (newH - originalH) + "%"
+                    "height" : oldHeight+(newH - originalH) + "%"
                 });
                 if (parseFloat(endLine.attr("linetop")) > actualBottom){
                     //the bottom line isnt large enough to account for the change,
@@ -3240,6 +3241,7 @@ function adjustColumn(event){
                     endLine.css({
                         "height" : actualBottom - currentLineTop + "%"
                     });
+                    updateLine(endLine, true, "");
                 }
                 else{
                     updateLine(endLine, true, "");
@@ -3285,7 +3287,12 @@ function adjustColumn(event){
             updateLinesInColumn(thisColumnID, true);
             $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
             
-        } else {
+        } 
+        else { //if the change was less than 5 units, adjustment will still be "new"...we can change the limits if we want.
+            ui.position.left = ui.originalPosition.left;
+            ui.position.top = ui.originalPosition.top ;
+            ui.size.width = ui.originalSize.width;
+            ui.size.height = ui.originalSize.height;
             $("#progress").html("No changes made.").delay(3000).fadeOut(1000);
         }
         $("#lineResizing").delay(3000).fadeOut(1000);
@@ -4475,10 +4482,7 @@ function removeLine(e, columnDelete, deleteOnly){
             removedLine.remove();
             return params;
         }
-        
-        
-        
-        
+
     }
 }
 

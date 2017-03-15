@@ -4987,13 +4987,14 @@ function bumpLine(direction, activeLine){
             //var sRCbkp = selectRulerColor; //select Ruler Color backup
             $("#imageTip").html("Add a Line");
             if(!tpen.screen.isAddingLines){
-                if(deleteOnly){
+                if(deleteOnly){ //delete line
                     $("#imageTip").html("Delete Line");
                     if (line.attr("lineleft") !== line.next("div").attr("lineleft")) {
                         line.addClass('deletable');
                     }
+                    line.css('cursor','pointer');
                 }
-                else{
+                else{ //merge line
                     if (line.attr("lineleft") == line.next("div").attr("lineleft")) {
                         line.next("div").addClass('deletable');
                     }
@@ -5005,33 +5006,36 @@ function bumpLine(direction, activeLine){
                     else  {
                         $("#imageTip").html("Delete Line");
                     }
-
+                    line.css('cursor','crosshair');
                 }
                //sRCbkp = 'transparent';
             }
-                    line.css('cursor','crosshair').bind('mousemove', function(e){
-                    var imgTopOffset = $("#imgTop").offset().left; //helps because we can center the interface with this and it will still work.
-                    var myLeft = line.position().left + imgTopOffset;
-                    var myWidth = line.width();
-                    $('#imageTip').show().css({
-                        left:e.pageX,
-                        top:e.pageY+20
-                    });
-                    $('#ruler1').show().css({
-                        left: myLeft,
-                        top: e.pageY, 
-                        height:'1px',
-                        width:myWidth //e.pageX-myLeft-7
-    //                    background:"green"
-                    });
-    //                $('#ruler2').show().css({
-    //                    left: e.pageX+7,
-    //                    top: e.pageY + 6,
-    //                    width: myWidth, //myWidth+myLeft-e.pageX-7
-    //                    height:'1px',
-    //                    background:"red"
-    //                });
-                    });
+            else{ //add lines
+                line.css('cursor','crosshair');
+            }
+            line.bind('mousemove', function(e){
+            var imgTopOffset = $("#imgTop").offset().left; //helps because we can center the interface with this and it will still work.
+            var myLeft = line.position().left + imgTopOffset;
+            var myWidth = line.width();
+            $('#imageTip').show().css({
+                left:e.pageX,
+                top:e.pageY+20
+            });
+            $('#ruler1').show().css({
+                left: myLeft,
+                top: e.pageY, 
+                height:'1px',
+                width:myWidth //e.pageX-myLeft-7
+//                    background:"green"
+            });
+//                $('#ruler2').show().css({
+//                    left: e.pageX+7,
+//                    top: e.pageY + 6,
+//                    width: myWidth, //myWidth+myLeft-e.pageX-7
+//                    height:'1px',
+//                    background:"red"
+//                });
+            });
 
 
     }

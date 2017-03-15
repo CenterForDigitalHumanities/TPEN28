@@ -1925,10 +1925,10 @@
                         $("#imgTop").children(".line").addClass("parsing").removeClass("line");
                         $(".parsing").bind({
                             mouseenter: function(){
-                                applyRuler($(this));
+                                applyRuler($(this), false);
                             },
                             mouseleave: function(){
-                                removeRuler($(this));
+                                removeRuler($(this), false);
                             },
                             click: function(event){
                                 lineChange($(this), event, false);

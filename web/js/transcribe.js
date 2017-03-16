@@ -5045,11 +5045,13 @@ function bumpLine(direction, activeLine){
                     else  {
                         $("#imageTip").html("Delete Line");
                     }
-                    line.css('cursor','crosshair');
+                    line.css('cursor','pointer');
                 }
+                $('#ruler1').hide();
             }
             else{ //add lines
                 line.css('cursor','crosshair');
+                $('#ruler1').show();
             }
             line.bind('mousemove', function(e){
                 var imgTopOffset = $("#imgTop").offset().left; //helps because we can center the interface with this and it will still work.
@@ -5059,7 +5061,7 @@ function bumpLine(direction, activeLine){
                     left:e.pageX,
                     top:e.pageY+20
                 });
-                $('#ruler1').show().css({
+                $('#ruler1').css({
                     left: myLeft,
                     top: e.pageY, 
                     height:'1px',

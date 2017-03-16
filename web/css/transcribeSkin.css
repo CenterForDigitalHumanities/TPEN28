@@ -871,9 +871,9 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
 .parsing:nth-child(odd){background-color: lightgoldenrodyellow;}
 .parsing[newline=true]:nth-child(even){background-color: blue;}
 .parsing[newline=true]:nth-child(odd){background-color: purple;}
-.deletable {background-color: red !important;cursor:url("css/custom-theme/images/deleteDiv.png"),url("css/custom-theme/images/deleteDiv.cur"),auto !important;}
+.deletable {background-color: red !important;/*cursor:url("css/custom-theme/images/deleteDiv.png"),url("css/custom-theme/images/deleteDiv.cur"),auto !important;*/}
 .mergeable {background-color: blue !important;}
-.adjustable {background-color: white !important;cursor: default;border-right: solid black 4px;}
+.adjustable {background-color: white !important;/*cursor: default;*/border-right: solid black 4px;}
 /*            #toggler {display: none; z-index: 6;position: fixed;right:5px;top:45px;width: auto;}*/
 #imageTip {text-align: center;overflow: visible;display: none;z-index: 6;position:absolute;background-color:#A68329;height: 18px;width:auto; max-width: 100px;color:#FFDB7F;box-shadow:2px 2px 4px black;}
 #ruler1,#ruler2 {display: none;background: black;position: absolute;z-index: 4; pointer-events: none;}

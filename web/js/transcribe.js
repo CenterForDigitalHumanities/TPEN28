@@ -114,7 +114,7 @@ function redraw(parsing) {
                 canvas = tpen.manifest.sequences[0].canvases[0];
                 console.warn("Folio was not found in Manifest. Loading first page...");
             }
-            loadTranscriptionCanvas(canvas, "");
+            loadTranscriptionCanvas(canvas, parsing);
         }
     } else {
     // failed to draw, no Canvas selected
@@ -1292,6 +1292,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
     var lines = [];
 //    var currentFolio = parseInt(tpen.screen.currentFolio);
     if ((canvasObj.resources !== undefined && canvasObj.resources.length > 0)) {
+        //FIXME:  If it happens to be an empty canvas, this will cause a page break.  Should we do something different if canvasObj.resources.length == 0
         //This situation means we got our lines from the SQL and there is no need to query the store.  This is TPEN28 1.0
 //        for (var i = 0; i < canvasObj.resources.length; i++) {
 //            if (isJSON(canvasObj.resources[i])) {   // it is directly an annotation
@@ -1316,11 +1317,23 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
         $("#imgBottom")
             .css("height", "inherit");
     }
-    else if((canvasObj.otherContent[0] !== undefined && canvasObj.otherContent[0].resources !== undefined && canvasObj.otherContent[0].resources.length > 0)){
+    else if((canvasObj.otherContent[0] !== undefined && canvasObj.otherContent[0].resources !== undefined)){ //&& canvasObj.otherContent[0].resources.length > 0
         //This is TPEN28 2.8 using the SQL
         //This situation means we got our lines from the SQL and there is no need to query the store.
-        tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
-        drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
+        if(canvasObj.otherContent[0].resources.length > 0){ 
+            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
+            drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
+        }
+        else{
+            if(parsing === "fromParse"){
+                //This means a user deleted all the lines in parsing and clicked 'Return to Transcribing' and we need to refresh to fire the auto parser.
+                location.reload();
+            }
+            else{
+                //This means somehow a user is trying to load a canvas with no lines, and it didn't happen because of manual parsing.  The auto parser must have failed
+                console.warn("Loading canvas without lines, this should be impossible...");
+            }
+        }
     }
     else {
         throw new Error("Your annotation data is in an unsupported format and cannot be used with this tanscription service.");
@@ -2821,11 +2834,10 @@ function fullPage(){
         $("#transTemplateLoading").show();
         $(".transcriptlet").remove(); //we are about to redraw these, if we dont remove them, then the transcriptlets repeat.
         setTimeout(function(){
-            redraw("");
+            redraw("fromParse");
         }, 750);
     }
     tpen.screen.liveTool = "none";
-
 }
 
 function splitPage(event, tool) {
@@ -4685,11 +4697,11 @@ function cleanupTranscriptlets(draw) {
     if (draw){
         transcriptlets.remove();
         $(".lineColIndicatorArea").children(".lineColIndicator").remove();
-        $("#parsingSplit").find('.fullScreenTrans').unbind(); // QUESTION: Why is this happening? cubap
-        $("#parsingSplit").find('.fullScreenTrans').bind("click", function(){
-            fullPage();
-            drawLinesToCanvas(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], "");
-        });
+//        $("#parsingSplit").find('.fullScreenTrans').unbind(); // QUESTION: Why is this happening? cubap
+//        $("#parsingSplit").find('.fullScreenTrans').bind("click", function(){
+//            fullPage();
+//            drawLinesToCanvas(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], "");
+//        });
     }
 }
 

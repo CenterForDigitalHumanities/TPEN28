@@ -2871,6 +2871,7 @@ function splitPage(event, tool) {
     if(resize){
         attachTemplateResize();
     } else {
+        detachTemplateResize()
         $("#templateResizeBar").hide();
     }
     $("#fullScreenBtn")

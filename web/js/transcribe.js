@@ -2554,6 +2554,7 @@ tpen.screen.toggleMoveImage = function (event) {
         updatePresentation(tpen.screen.focusItem[1]);
         $(".lineColIndicatorArea").show();
         $("#imgTop, #imgBottom").css("cursor", "default");
+        $("#imgTop img,#imgBottom img,#imgTop .lineColIndicatorArea, #imgBottom .lineColIndicatorArea, #bookmark, #imgTop, #imgBottom").removeClass('noTransition');
     }
 };
 
@@ -2837,6 +2838,7 @@ function fullPage(){
             redraw("fromParse");
         }, 750);
     }
+    $("#imgTop img,#imgBottom img,#imgTop .lineColIndicatorArea, #imgBottom .lineColIndicatorArea, #bookmark, #imgTop, #imgBottom").removeClass('noTransition');
     tpen.screen.liveTool = "none";
 }
 

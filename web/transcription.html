@@ -1539,6 +1539,14 @@
                //console.log('ALT KEY');
                var lineForEditing = $(".activeLine");
                lineForEditing.resizable();
+               
+//               lineForEditing.resizable({
+//                    create: function (event, ui) {
+//                        $(this).parent().on('resize', function (e) {
+//                            e.stopPropagation();
+//                        });
+//                    }
+//                });
                if(event.altKey&&event.ctrlKey || event.altKey&&event.metaKey){
                    // hide workspace and move image
                    tpen.screen.toggleMoveImage(event);
@@ -1884,9 +1892,9 @@
                         var thisLine;
                         $(".parsing").addClass("adjustable").removeClass("line");
                         if($(".adjustable").hasClass("ui-resizable")){
-                          $(".adjustable").has(".ui-resizable").resizable("enable");
+                            $(".adjustable").has(".ui-resizable").resizable("enable");
                         }
-                        else {
+                        //else {
                           $(".adjustable").resizable({
                             handles: "e",
                             containment: 'parent',
@@ -1914,7 +1922,11 @@
                               $("#lineResizing").delay(3000).fadeOut(1000);
                             }
                           });
-                        }
+                          //For some reason this bubbles up to #transcriptionTemplate and only allows one resize.  This should stop that from happening
+                          $(".adjustable").on('resize', function (e) {
+                            e.stopPropagation();
+                          });
+                        //}
                     }
                     if (thisID == "addLines"){
                         $("#addLines").addClass("active");

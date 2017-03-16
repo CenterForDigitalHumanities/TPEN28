@@ -4492,6 +4492,7 @@ function removeLine(e, columnDelete, deleteOnly){
             else{ //User is trying to delete a line that is not the last line, do nothing
                 //removedLine = $(e);
                 //tpen.screen.isDestroyingLine = true;
+                $("#parsingCover").hide();
                 return false;
             }
         }

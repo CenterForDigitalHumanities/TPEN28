@@ -3212,8 +3212,9 @@ function adjustColumn(event){
                     var newTopLine = startLine;
                     do {
                         newTopLine = startLine.next('.parsing');
-                        removeLine(startLine, true, false);
+                        //removeLine(startLine, true, false);
                         removeTranscriptlet(startLine.attr("lineserverid"), startLine.attr("lineserverid"), true);
+                        startLine.remove();
                         startLine = newTopLine;
                         oldHeight = parseFloat(startLine.attr("lineheight"));
                         oldTop = parseFloat(startLine.attr("linetop"));
@@ -3261,9 +3262,9 @@ function adjustColumn(event){
                     oldHeight = parseFloat(endLine.attr("lineheight"));
                         oldTop = parseFloat(endLine.attr("linetop"));
                         var nextline = endLine.prev(".parsing");
-                        endLine.remove();
-                        removeLine(endLine, true, false);
+                        //removeLine(endLine, true, false);
                         removeTranscriptlet(endLine.attr("lineserverid"), endLine.attr("lineserverid"), true);
+                        endLine.remove();
                         endLine = nextline;
                     } while (parseFloat(endLine.attr("linetop")) > actualBottom);
                     var currentLineTop = parseFloat(endLine.attr("linetop"));
@@ -3331,6 +3332,10 @@ function adjustColumn(event){
         adjustment = "";
         }
     });
+    $(".parsingColumn").on('resize', function (e) {
+      e.stopPropagation();
+    });
+    
 }
 
 /**

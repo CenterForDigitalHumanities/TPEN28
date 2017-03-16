@@ -1585,6 +1585,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
     $('.lineColIndicatorArea').css('height', tpen.screen.originalCanvasHeight + "px");
     var ratio = 0;
     ratio = theWidth / theHeight;
+    var autoParseCheck = 0;
     //Why does this run twice when i am going fullPage() from parsing interface?
     for (var i = 0; i < lines.length; i++){
         var line = lines[i];
@@ -1599,6 +1600,13 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
         var XYWHarray = [x, y, w, h];
         var lineURL = "";
         var lineID = - 1;
+        var lineCreator = 0;
+        if(line._tpen_creator!==undefined){
+            lineCreator = line._tpen_creator;
+            if(lineCreator > 0){
+                autoParseCheck += 1;
+            }
+        }
         if (line.on !== undefined){
             lineURL = line.on;
         }
@@ -1769,6 +1777,15 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
         $(".lineColIndicatorArea").append(lineColumnIndicator);
         $("#fullpageSplitCanvas").append(fullPageLineColumnIndicator);
         colCounter++;
+    }
+    if(autoParseCheck === 0){ 
+        //if all the line creators were 0, this is auto parsed.  Go straight into the parsing interface.
+        var currentURL = document.location.href;
+        if(currentURL.indexOf("liveTool=parsing") === -1 && currentURL.indexOf("liveTool=none") === -1){
+            //If either of these things are in the URL, then the user has already been on the page and this should not happen.
+            currentURL += "&liveTool=parsing";
+            window.history.pushState("Object", "Title", currentURL);
+        }
     }
     checkParsingReroute(); //If liveTool is fed in from a page refresh, this does not check the pageJump() jumping into parsing.  
     if (update && $(".transcriptlet").eq(0).length > 0){
@@ -3782,7 +3799,8 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
                 "otherContent" : [],
                 "forProject": tpen.manifest['@id'],
                 "_tpen_note" : lineNote,
-                "tpen_line_id" : currentLineServerID
+                "tpen_line_id" : currentLineServerID,
+                "_tpen_creator" : tpen.user.UID
                 //"testing":"TPEN28"
             };
             var index = - 1;
@@ -3982,6 +4000,7 @@ function updateLine(line, cleanup, updateList){
         "otherContent" : [],
         "forProject": tpen.manifest['@id'],
         "_tpen_note" : currentLineNotes,
+        "_tpen_creator" : tpen.user.UID
 //        "testing":"TPEN28"
     };
 //    if (!currentAnnoListID){ //BH 12/21/16 we need to skip this check now since we don't have a anno list ID anymore

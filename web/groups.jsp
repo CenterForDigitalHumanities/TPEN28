@@ -46,7 +46,16 @@
                if (nIn > 3)
                   name = name.substring(0, nIn - 1);
                var cfrm = confirm('This action will grant ' + name +
-                       ' complete access as a Group Leader and cannot be undone.\n\nAre you sure?');
+                       ' complete access as a Group Leader .\n\nAre you sure?');
+               return cfrm;
+            });
+            $('.demoteUser').click(function() {
+               var name = $(this).parent('li').text();
+               var nIn = name.indexOf('Remove');
+               if (nIn > 3)
+                  name = name.substring(0, nIn - 1);
+               var cfrm = confirm('This action will restrict ' + name +
+                       ' to access as a Contributor. \n\nAre you sure?');
                return cfrm;
             });
          });
@@ -107,6 +116,19 @@
                                  thisGroup.setUserRole(UID, Integer.parseInt(request.getParameter("usr")), Group.roles.Leader);
                               }
                            }
+                           //BH edit allow user demotion for parsing editing control
+                           if (request.getParameter("usr") != null && request.getParameter("act") != null && request.getParameter("act").compareTo("demote") == 0) {
+
+                              //Do they have permission to demote this person?  Did they try to demote themselves? That would be either isAdmin==true or current user=group leader
+                              if (thisGroup.isAdmin(UID)) {
+                                  if(Integer.parseInt(request.getParameter("usr")) != UID){
+                                      thisGroup.setUserRole(UID, Integer.parseInt(request.getParameter("usr")), Group.roles.Contributor);
+                                  }
+                                  else{
+                                      //user tried to demote themselves.  
+                                  }
+                              }
+                           }
 
                            //Was this a user add request?
                            if (request.getParameter("uname") != null) {
@@ -125,17 +147,25 @@
                            User[] groupMembers = thisGroup.getMembers();
                            boolean isLeader = thisGroup.isAdmin(thisUser.getUID());
                            out.print("<ol>");
+                           
+                           
                            for (int i = 0; i < groupMembers.length; i++) {
+                               String leadershipString = "";
                               boolean isLeadership = thisGroup.isAdmin(groupMembers[i].getUID());
-                              if (isLeadership) {
-                                 out.print("<li><span class='loud'>Group Leader</span>&nbsp;" + groupMembers[i].getUname() + "</li>");
-                              } else {
-                                 if (isLeader) {
-                                    out.print("<li><a class='promoteUser' title='Promote this user to Group Leader' href='groups.jsp?act=promote&projectID=" + projectID + "&usr=" + groupMembers[i].getUID() + "' ><span class='ui-icon ui-icon-flag'></span></a>" + groupMembers[i].getUname() + "&nbsp;<a class=\"delete\" href=\"groups.jsp?act=rem&projectID=" + projectID + "&usr=" + groupMembers[i].getUID() + "\">Remove member</a></li>");
-                                 } else {
-                                    out.print("<li>" + groupMembers[i].getUname() + "&nbsp;</li>");
-                                 }
-                              }
+                               if(isLeadership){
+                                   leadershipString="<span class='loud'>Group Leader</span>&nbsp;";
+                               }
+                                if (isLeader) {
+                                    if(isLeadership){
+                                        out.print("<li>"+leadershipString+"<a class='demoteUser' title='Demote this user to Contributor' href='groups.jsp?act=demote&projectID=" + projectID + "&usr=" + groupMembers[i].getUID() + "' ><span class='ui-icon ui-icon-flag'></a> " + groupMembers[i].getUname() + "&nbsp; </li>");
+                                    }
+                                    else{
+                                        out.print("<li><a class='promoteUser' title='Promote this user to Group Leader' href='groups.jsp?act=promote&projectID=" + projectID + "&usr=" + groupMembers[i].getUID() + "' ><span class='ui-icon ui-icon-person'></span></a>&nbsp;" + groupMembers[i].getUname() + "&nbsp;<a class=\"delete\" href=\"groups.jsp?act=rem&projectID=" + projectID + "&usr=" + groupMembers[i].getUID() + "\">Remove member</a></li>");
+                                    }
+                                } 
+                                else {
+                                    out.print("<li> "+leadershipString+" &nbsp; "+ groupMembers[i].getUname() + "&nbsp; </li>");
+                                }
 
                            }
                            out.print("</ol>");

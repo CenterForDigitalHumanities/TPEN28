@@ -29,6 +29,9 @@ input:focus, button:focus, a:focus{
 .removechar:hover{
     background-color:black;
 }
+.centerInterface{
+    max-width: 100%;
+}
 .optionCnfrm{
     width: 209px;
     display: block;
@@ -354,6 +357,7 @@ body{
     height:inherit;
     width: 100%;
     background-color: rgba(1,51,90,.5);
+    max-width: 100%;
 }
 
 .instructions{

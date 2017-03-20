@@ -152,6 +152,7 @@
                            for (int i = 0; i < groupMembers.length; i++) {
                                String leadershipString = "";
                               boolean isLeadership = thisGroup.isAdmin(groupMembers[i].getUID());
+                              //Maybe add some helpful tooltips about how this controls who can see parsing? 
                                if(isLeadership){
                                    leadershipString="<span class='loud'>Group Leader</span>&nbsp;";
                                }

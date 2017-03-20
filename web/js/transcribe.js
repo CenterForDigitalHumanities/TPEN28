@@ -2676,10 +2676,10 @@ function hideWorkspaceForParsing(){
         "height":newCanvasHeight+"px"
     });
     if(screen.width == $(window).width() && screen.height == window.outerHeight){
-        $(".centerInterface").css("text-align", "center").css("background-color", "#e1f4fe");
+        $(".centerInterface").css("text-align", "center"); //.css("background-color", "#e1f4fe")
     }
     else{
-        $(".centerInterface").css("text-align", "left").css("background-color", "#e1f4fe");
+        $(".centerInterface").css("text-align", "left"); //.css("background-color", "#e1f4fe")
     }
     $("#transWorkspace,#imgBottom").hide();
     $("#noLineWarning").hide();
@@ -5826,10 +5826,10 @@ tpen.screen.peekZoom = function(cancel){
             var SPLITWIDTH = $("#parsingSplit").width();
             if(tpen.screen.liveTool === 'parsing'){
                 if(screen.width == $(window).width() && screen.height == window.outerHeight){
-                    $(".centerInterface").css("text-align", "center").css("background-color", "#e1f4fe");
+                    $(".centerInterface").css("text-align", "center"); //.css("background-color", "#e1f4fe");
                 }
                 else{
-                    $(".centerInterface").css("text-align", "left").css("background-color", "#e1f4fe");
+                    $(".centerInterface").css("text-align", "left"); //.css("background-color", "#e1f4fe");
                 }
                 if(PAGEHEIGHT <= 625){ //This is the smallest height we allow
                     newCanvasHeight = 625;

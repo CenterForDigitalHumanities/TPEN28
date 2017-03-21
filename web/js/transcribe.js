@@ -1330,8 +1330,37 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
                 location.reload();
             }
             else{
-                //This means somehow a user is trying to load a canvas with no lines, and it didn't happen because of manual parsing.  The auto parser must have failed
+                // This means somehow a user is trying to load a canvas with no lines, and it didn't happen because of manual parsing.  The auto parser must have failed on this canvas
+                // Don't just reload it, put a count on it to stop it after 3 tries. p= must be the correct folio number, otherwise this will load to a different folio.  
+                // open the parsing interface in this case, force it no matter what because we know it at least attempted to auto parse and if it fails, the user will be in parsing. 
+                // cubap and bhaberbe 3-21-17.  Ramon found this while testing.  projectID=5660&p=13224386 is the one we all tested with to find it.  
                 console.warn("Loading canvas without lines, this should be impossible...");
+                var currentURL = document.location.href;
+                var attempts = parseInt(getURLVariable("attempts"));
+                if(attempts){
+                    attempts += 1;
+                }
+                else{
+                    attempts = 1;
+                }
+                updateURL("attempts", attempts);
+                if(currentURL.indexOf("liveTool=parsing") !== -1){ 
+                    
+                }
+                else if(currentURL.indexOf("liveTool=none") !== -1){
+                    currentURL.replace("liveTool=none", "liveTool=parsing");
+                }
+                else{
+                    currentURL += "&liveTool=parsing";
+                }
+                if(attempts > 3){
+                    //do not try to reload again, just leave the user in the parsing page...
+                }
+                else{
+                    //If either of these things are in the URL, then the user has already been on the page and this should not happen.
+                    //window.history.pushState("Object", "Title", currentURL);
+                    document.location.href = currentURL;
+                }
             }
         }
     }
@@ -1431,7 +1460,17 @@ function updateURL(piece, classic){
         }
         var relocator = "buttons.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber+"&projectID="+tpen.project.id;
         $(".editButtons").attr("href", relocator);
-    }    
+    }  
+    else if (piece === "attempts"){
+        if(!getURLVariable("attempts")){
+            toAddressBar += "&attempts=1";
+        }
+        else{
+            var currentAttempt = getURLVariable("attempts");
+            currentAttempt = parseInt(currentAttempt) + 1;
+            toAddressBar = replaceURLVariable("attempts", currentAttempt);
+        }
+    }
     window.history.pushState("", "T&#8209;PEN Transcription", toAddressBar);
 }
 

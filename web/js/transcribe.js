@@ -3728,7 +3728,10 @@ function pageJump(page, parsing){
             redraw(parsing);
             //loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[canvasToJumpTo], parsing);
             setTimeout(function(){
-                hideWorkspaceForParsing();
+                if(tpen.user.isAdmin || tpen.permissions.allow_public_modify || tpen.permissions.allow_public_modify_line_parsing){
+                    $("#canvasControls").click();
+                    $("#parsingBtn").click();
+                }
                 $(".pageTurnCover").fadeOut(1500);
             }, 800);
         }
@@ -6428,7 +6431,7 @@ function checkParsingReroute(){
                 $("#parsingBtn").click();
             }
             $(".pageTurnCover").fadeOut(1500);
-        }, 1100);
+        }, 800);
     }
 }
 

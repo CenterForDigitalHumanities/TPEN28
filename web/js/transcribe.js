@@ -1343,7 +1343,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
                 else{
                     attempts = 1;
                 }
-                updateURL("attempts", attempts);
+                
                 if(currentURL.indexOf("liveTool=parsing") !== -1){ 
                     
                 }
@@ -1353,13 +1353,17 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
                 else{
                     currentURL += "&liveTool=parsing";
                 }
+                window.history.pushState("Object", "Title", currentURL);
+                updateURL("attempts", attempts);
+                updateURL("p");
                 if(attempts > 3){
                     //do not try to reload again, just leave the user in the parsing page...
                 }
                 else{
                     //If either of these things are in the URL, then the user has already been on the page and this should not happen.
                     //window.history.pushState("Object", "Title", currentURL);
-                    document.location.href = currentURL;
+                    location.reload();
+                    //document.location.href = currentURL;
                 }
             }
         }
@@ -6417,11 +6421,14 @@ function setDirectionForElements(){
 function checkParsingReroute(){
     if(getURLVariable('liveTool') == "parsing"){
         setTimeout(function () {
-            hideWorkspaceForParsing();
             var replaceURL = replaceURLVariable("liveTool", "none");
             window.history.pushState("", "T&#8209;PEN Transcription", replaceURL);
+            if(tpen.user.isAdmin || tpen.permissions.allow_public_modify || tpen.permissions.allow_public_modify_line_parsing){
+                $("#canvasControls").click();
+                $("#parsingBtn").click();
+            }
             $(".pageTurnCover").fadeOut(1500);
-        }, 800);
+        }, 1100);
     }
 }
 

@@ -1323,6 +1323,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
         if(canvasObj.otherContent[0].resources.length > 0){ 
             tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
             drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
+            replaceURLVariable("attempts", "0");
         }
         else{
             if(parsing === "fromParse"){
@@ -1348,7 +1349,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
                     
                 }
                 else if(currentURL.indexOf("liveTool=none") !== -1){
-                    currentURL.replace("liveTool=none", "liveTool=parsing");
+                    currentURL = currentURL.replace("liveTool=none", "liveTool=parsing");
                 }
                 else{
                     currentURL += "&liveTool=parsing";

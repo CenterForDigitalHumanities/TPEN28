@@ -198,12 +198,15 @@ DatabaseWrapper.closePreparedStatement(ps);
         Connection j=null;
 PreparedStatement ps=null;
         try{
+            Integer lineID = 0;
             j=DatabaseWrapper.getConnection();
-
+            line = line.replace("line/", "");
+            lineID = Integer.parseInt(line);
             ps=j.prepareStatement("insert into tagtracking(tag,folio,line, projectID) values(?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setString(1, tag);
             ps.setInt(2, folio);
-            ps.setString(3, line);
+            ps.setInt(3, lineID);
+            //gettting error java.sql.SQLException: Incorrect integer value: 'line/102418835' for column 'line' at row 1, so i changed this from a string to an integer and make sure to parse out line/
             ps.setInt(4, thisProject.getProjectID());
             ps.execute();
             ResultSet rs=ps.getGeneratedKeys();

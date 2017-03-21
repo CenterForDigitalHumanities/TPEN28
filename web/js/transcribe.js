@@ -584,7 +584,7 @@ function loadTranscription(pid, tool){
                 var url = "";
                 if(!activeProject.manifest) {
                     $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                    $(".transLoader").find("img").attr("src", "../TPEN28/images/BrokenBook01.jpg");
+                    $(".transLoader").find("img").attr("src", "../images/BrokenBook01.jpg");
                     return false;
                 }
                 setTPENObjectData(activeProject);
@@ -713,7 +713,7 @@ function loadTranscription(pid, tool){
                 }
                 else {
                     $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
-                    $(".transLoader").find("img").attr("src", "../TPEN28/images/BrokenBook01.jpg");
+                    $(".transLoader").find("img").attr("src", "../images/BrokenBook01.jpg");
                 }
 
                 //load Iframes after user check and project information data call
@@ -885,7 +885,7 @@ function loadTranscription(pid, tool){
                      }
                      else {
                          $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
-                         $(".transLoader").find("img").attr("src", "..TPEN28/images/BrokenBook01.jpg");
+                         $(".transLoader").find("img").attr("src", "../images/BrokenBook01.jpg");
                      }
                     //load Iframes after user check and project information data call
                     loadIframes();
@@ -1334,7 +1334,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
                 // This means somehow a user is trying to load a canvas with no lines, and it didn't happen because of manual parsing.  The auto parser must have failed on this canvas
                 // Don't just reload it, put a count on it to stop it after 3 tries. p= must be the correct folio number, otherwise this will load to a different folio.  
                 // open the parsing interface in this case, force it no matter what because we know it at least attempted to auto parse and if it fails, the user will be in parsing. 
-                // cubap and bhaberbe 3-21-17.  Ramon found this while testing.  projectID=5660&p=13224386 is the one we all tested with to find it.  
+                // cubap and bhaberbe 3-21-17.  Ramon found this while testing.  projectID=5660&p=13224386 is the one we all tested with to find the issue.  
                 console.warn("Loading canvas without lines, this should be impossible...");
                 var currentURL = document.location.href;
                 var attempts = parseInt(getURLVariable("attempts"));
@@ -1361,10 +1361,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
                     //do not try to reload again, just leave the user in the parsing page...
                 }
                 else{
-                    //If either of these things are in the URL, then the user has already been on the page and this should not happen.
-                    //window.history.pushState("Object", "Title", currentURL);
                     location.reload();
-                    //document.location.href = currentURL;
                 }
             }
         }

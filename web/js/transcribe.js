@@ -4051,9 +4051,9 @@ function updateLine(line, cleanup, updateList){
     if(tpen.screen.liveTool === "parsing"){
         //OR it was from bump line in the trasncription interface.  How do I detect that?  This is overruled below until we figure that out.
         updatePositions = true;
-        updateContent = false;
-        currentLineText = currentLineTextAttr = "";
-        currentLineNotes = currentLineNotesAttr = "";
+        //updateContent = false;
+        //currentLineText = currentLineTextAttr = "";
+        //currentLineNotes = currentLineNotesAttr = "";
     }
 //    var currentAnnoListID = tpen.screen.currentAnnoListID;
     var dbLine = {
@@ -4162,9 +4162,40 @@ function updateLine(line, cleanup, updateList){
             }
             line.attr("data-answer", currentLineText);
             line.find(".notes").attr("data-answer", currentLineNotes);
-            //FIXME: REST says this should be PUT
+            //We need to separate these situations out.  You cannot fire this posts in parallel.
             if(updatePositions && updateContent){
-                
+                $.post(url,params,function(){
+                    $.post(url2,params2,function(){
+                        line.attr("hasError",null);
+                        markLineSaved(line);
+                        $("#parsingCover").hide();
+                        History.prependEntry(lineID);
+                        // success
+                    }).fail(function(err){
+                        line.attr("hasError","Saving Failed "+err.status);
+                        if(err.status === 403){
+                            var theURL = window.location.href;
+                            return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
+                        }
+                        else{
+                            $(".trexHead").show();
+                            $("#genericIssue").show(1000);
+                        }
+                        throw err;
+                    });
+                        // success
+                }).fail(function(err){
+                    line.attr("hasError","Saving Failed "+err.status);
+                    if(err.status === 403){
+                        var theURL = window.location.href;
+                        return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
+                    }
+                    else{
+                        $(".trexHead").show();
+                        $("#genericIssue").show(1000);
+                    }
+                    throw err;
+                });
             }
             else{
                 if(updatePositions){
@@ -4632,7 +4663,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
         //we need to make sure the height and text of the next line is updated ocrrectly
         removeNextLine = true;
         var lineAfterText = toUpdate.find("textarea").val();
-        updateText = removedText + " " +lineAfterText;
+        updateText = lineAfterText + " " +removedText;
         toUpdate.find(".theText").val(updateText);
 //        (function(){
 //            var thisValue = $(this).val();
@@ -4664,6 +4695,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
 
             if (this.tpen_line_id === lineIDToCheck){
                 //console.log("Got a match in the cached list: "+this.tpen_line_id);
+                currentAnnoList[index-1].resource["cnt:chars"] = updateText;
                 currentAnnoList.splice(index, 1);
                 //var url = "updateAnnoList";
                 tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;

@@ -259,8 +259,143 @@
                 </div><br>
             </div>
         </div>
-            <!-- scrollHelpTo() is not written.  Help.revealHelp() has been rewritten to work with splitPage() -->
-        <div id="helpSplit" class="split">
+        <div id="parsingSplit" class="split" >
+             <div class="fullScreenTrans">
+                     <i class="fa fa-reply fa-flip-vertical"></i>
+             </div>
+             <div class="toolLinks icon-panel">
+                 <div class="icon-panel">
+                    <button onclick='$("#createColumn").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/create_column_md.png" alt="reparse" height="30px" from="createColumn" />
+                    </button>
+                     <button onclick='$("#adjustColumn").click(); toggleSelected($(this).children("img"), true);'>
+                         <img src="css/custom-theme/images/adjust_column_md.png" alt="reparse" from="adjustColumn" />
+                    </button>
+                    <button onclick='$("#destroyColumn").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/destroy_column_md.png" alt="reparse" height="30px" from="destroyColumn" />
+                    </button>
+                    <button onclick='$("#clearColumns").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/reparse_md.png" alt="reparse" from="clearColumns" />
+                    </button>
+                 </div>
+                 <div class="icon-panel">
+                     <button onclick='$("#addLines").click(); toggleSelected($(this).children("img"), true);'>
+                         <img src="css/custom-theme/images/add_line_md.png" alt="reparse" height="30px" from="addLines"/>
+                     </button>
+                     <button onclick='$("#mergeLines").click(); toggleSelected($(this).children("img"), true);'>
+                         <img src="css/custom-theme/images/merge_lines_md.png" alt="reparse" from="mergeLines"/>
+                     </button>
+                     <button onclick='$("#adjustLines").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/adjust_lines_md.png" alt="reparse" from="adjustLines"/>
+                    </button>
+                     <button onclick='$("#removeLine").click(); toggleSelected($(this).children("img"), true);'>
+                         <img src="css/custom-theme/images/delete_line_md.png" alt="reparse" from="removeLine"/>
+                     </button>
+                 </div>
+             </div>
+
+                <div id="parsingDiv" class="">
+                    <div id="parseOptions">
+                        <header id="ctrlColumns" title="Make adjustments at the column level">Edit Columns</header>
+                        <div class="splitBlock">
+                            <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
+                                Create Column
+                                <!--<i class="fa fa-reparse"></i>-->
+                                <img src="css/custom-theme/images/create_column_sm.png" alt="reparse" />
+                            </button>
+                            <small>Click and drag to place</small>
+                        </div>
+                        <div class="splitBlock">
+                            <button id="adjustColumn" class="tpenButton" title="Adjust the size of the columns by dragging the sides or edges.">
+                                Adjust Columns
+                                <img src="css/custom-theme/images/adjust_column_sm.png" alt="reparse" />
+                                <!--<i class="fa fa-reparse"></i>-->
+                            </button>
+                            <small>Drag the edges of an existing column.</small>
+                            <!--<small><i class="fa fa-info-circle"></i> This method does not remove any <acronym title="text, markup, and notes">transcription information</acronym>.</small>-->
+                        </div>
+                        <div class="splitBlock danger">
+                            <button id="destroyColumn" class="tpenButton" title="Remove an entire column and its data with a click">
+                                Destroy Column
+                                <img src="css/custom-theme/images/destroy_column_sm.png" alt="reparse" />
+<!--                                <i class="fa fa-reparse"></i>-->
+                            </button>
+                            <small>Click a column to remove all its lines and transcription data.</small>
+                            <small class="danger"><i class="fa fa-warning"></i> This is a destructive process and cannot be undone.</small>
+                            <!-- Reparsing is not enabled yet <button>-->
+                        </div>
+                        <div class="splitBlock danger">
+                            <button id="clearColumns" class="tpenButton" title="Remove all columns and let the autoparser reparse the page">
+                                Re-parse Page
+                                <img src="css/custom-theme/images/reparse_sm.png" alt="reparse" />
+                                <!--<i class="fa fa-reparse"></i>-->
+                                <!--<i class="fa fa-reparse"></i>-->
+                            </button>
+                            <small class="danger">
+                                <i class="fa fa-warning"></i>
+                                Click to remove all transcription data and lines from this page.
+                                The page will then be automatically re-parsed, which will create new columns.
+                            </small>
+                            <!-- Reparsing is not enabled yet <button>-->
+                        </div>
+                        <header id="ctrlLines" title="Make adjustments at the line level">Edit Lines</header>
+                        <div class="splitBlock">
+                            <button id="addLines" class="tpenButton" title="Split lines to create new ones in a column">
+                                Add Line
+                                <img src="css/custom-theme/images/add_line_sm.png" alt="reparse" />
+                                <!--<i class="fa fa-reparse"></i>-->
+                            </button>
+                                <small>Click within the shaded area to define the bottom of the new line.</small>
+                                <!--<small><i class="fa fa-info-circle"></i> Any <acronym title="text, markup, and notes">transcription information</acronym> will remain with the line above where you click.</small>-->
+                                <br>
+                                <small class="customRulerArea">
+                                    Trouble seeing the ruler? Change the color below.
+                                    <br>
+                                    <span id="sampleRuler"></span>
+                                    <label for="black"><input onclick="rulerColor('black');" CHECKED type="radio" value="black" name="rulerColor"/>Black</label>
+                                    <label for="white"><input onclick='rulerColor("white");' id="white" type="radio" value="white" name="rulerColor"/>White</label>
+
+                                    <label style="margin-left: 10px; margin-right: 3px;" for="customRuler">
+                                        Custom
+                                        <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown."
+                                            type="text" id="customRuler" onfocus="$('input[name=\'rulerColor\']').removeAttr('checked');" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
+                                    </label>
+                                </small>
+
+                            </div>
+                            <div class="splitBlock">
+                                <button id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines">
+                                    Adjust Lines
+                                    <img src="css/custom-theme/images/adjust_lines_sm.png" alt="reparse" />
+                                    <!--<i class="fa fa-reparse"></i>-->
+                                </button>
+                                <small>Click and drag the right side of the line to contain the line accurately.</small>
+                                <!--<small><i class="fa fa-info-circle"></i> Only the right boundary can be moved in this tool.</small>-->
+                            </div>
+                            <div class="splitBlock">
+<!--                                <button id="removeLines" class="tpenButton" title="Merge two lines in a column">-->
+                                <button id="mergeLines" class="tpenButton" title="Merge two lines in a column">
+                                    Merge Lines
+                                    <img src="css/custom-theme/images/merge_lines_sm.png" alt="reparse" />
+                                    <!--<i class="fa fa-reparse"></i>-->
+                                </button>
+                                <small>Click within the shaded area to merge the highlighted lines.</small>
+                                <!--<small><i class="fa fa-info-circle"></i> This method combines your transcription information into the new line.</small>-->
+                            </div>
+                             <div class="splitBlock danger">
+                                <!--<button id="removeLines" class="tpenButton" title="Delete the last line of a column.">-->
+                                <button id="removeLine" class="tpenButton" title="Delete the last line of a column.">
+                                    Delete Line
+                                    <img src="css/custom-theme/images/delete_line_sm.png" alt="reparse" />
+                                    <!--<i class="fa fa-reparse"></i>-->
+                                </button>
+                                <small>Click within the shaded area to delete the <b>last line</b> of a column.</small>
+                                <small><i class="fa fa-info-circle"></i> Deleting a line also removes its associated transcription information..</small>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <div id="helpSplit" class="split">
             <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
             <div id="helpHeaders">
                 <a href='#helpGlossary'> glossary </a>
@@ -477,142 +612,8 @@
             </div>
             </div>
         </div>
-        <div id="parsingSplit" class="split" >
-             <div class="fullScreenTrans">
-                     <i class="fa fa-reply fa-flip-vertical"></i>
-             </div>
-             <div class="toolLinks icon-panel">
-                 <div class="icon-panel">
-                    <button onclick='$("#createColumn").click(); toggleSelected($(this).children("img"), true);'>
-                        <img src="css/custom-theme/images/create_column_md.png" alt="reparse" height="30px" from="createColumn" />
-                    </button>
-                     <button onclick='$("#adjustColumn").click(); toggleSelected($(this).children("img"), true);'>
-                         <img src="css/custom-theme/images/adjust_column_md.png" alt="reparse" from="adjustColumn" />
-                    </button>
-                    <button onclick='$("#destroyColumn").click(); toggleSelected($(this).children("img"), true);'>
-                        <img src="css/custom-theme/images/destroy_column_md.png" alt="reparse" height="30px" from="destroyColumn" />
-                    </button>
-                    <button onclick='$("#clearColumns").click(); toggleSelected($(this).children("img"), true);'>
-                        <img src="css/custom-theme/images/reparse_md.png" alt="reparse" from="clearColumns" />
-                    </button>
-                 </div>
-                 <div class="icon-panel">
-                     <button onclick='$("#addLines").click(); toggleSelected($(this).children("img"), true);'>
-                         <img src="css/custom-theme/images/add_line_md.png" alt="reparse" height="30px" from="addLines"/>
-                     </button>
-                     <button onclick='$("#mergeLines").click(); toggleSelected($(this).children("img"), true);'>
-                         <img src="css/custom-theme/images/merge_lines_md.png" alt="reparse" from="mergeLines"/>
-                     </button>
-                     <button onclick='$("#adjustLines").click(); toggleSelected($(this).children("img"), true);'>
-                        <img src="css/custom-theme/images/adjust_lines_md.png" alt="reparse" from="adjustLines"/>
-                    </button>
-                     <button onclick='$("#removeLine").click(); toggleSelected($(this).children("img"), true);'>
-                         <img src="css/custom-theme/images/delete_line_md.png" alt="reparse" from="removeLine"/>
-                     </button>
-                 </div>
-             </div>
-
-                <div id="parsingDiv" class="">
-                    <div id="parseOptions">
-                        <header id="ctrlColumns" title="Make adjustments at the column level">Edit Columns</header>
-                        <div class="splitBlock">
-                            <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
-                                Create Column
-                                <!--<i class="fa fa-reparse"></i>-->
-                                <img src="css/custom-theme/images/create_column_sm.png" alt="reparse" />
-                            </button>
-                            <small>Click and drag to place</small>
-                        </div>
-                        <div class="splitBlock">
-                            <button id="adjustColumn" class="tpenButton" title="Adjust the size of the columns by dragging the sides or edges.">
-                                Adjust Columns
-                                <img src="css/custom-theme/images/adjust_column_sm.png" alt="reparse" />
-                                <!--<i class="fa fa-reparse"></i>-->
-                            </button>
-                            <small>Drag the edges of an existing column.</small>
-                            <!--<small><i class="fa fa-info-circle"></i> This method does not remove any <acronym title="text, markup, and notes">transcription information</acronym>.</small>-->
-                        </div>
-                        <div class="splitBlock danger">
-                            <button id="destroyColumn" class="tpenButton" title="Remove an entire column and its data with a click">
-                                Destroy Column
-                                <img src="css/custom-theme/images/destroy_column_sm.png" alt="reparse" />
-<!--                                <i class="fa fa-reparse"></i>-->
-                            </button>
-                            <small>Click a column to remove all its lines and transcription data.</small>
-                            <small class="danger"><i class="fa fa-warning"></i> This is a destructive process and cannot be undone.</small>
-                            <!-- Reparsing is not enabled yet <button>-->
-                        </div>
-                        <div class="splitBlock danger">
-                            <button id="clearColumns" class="tpenButton" title="Remove all columns and let the autoparser reparse the page">
-                                Re-parse Page
-                                <img src="css/custom-theme/images/reparse_sm.png" alt="reparse" />
-                                <!--<i class="fa fa-reparse"></i>-->
-                                <!--<i class="fa fa-reparse"></i>-->
-                            </button>
-                            <small class="danger">
-                                <i class="fa fa-warning"></i>
-                                Click to remove all transcription data and lines from this page.
-                                The page will then be automatically re-parsed, which will create new columns.
-                            </small>
-                            <!-- Reparsing is not enabled yet <button>-->
-                        </div>
-                        <header id="ctrlLines" title="Make adjustments at the line level">Edit Lines</header>
-                        <div class="splitBlock">
-                            <button id="addLines" class="tpenButton" title="Split lines to create new ones in a column">
-                                Add Line
-                                <img src="css/custom-theme/images/add_line_sm.png" alt="reparse" />
-                                <!--<i class="fa fa-reparse"></i>-->
-                            </button>
-                                <small>Click within the shaded area to define the bottom of the new line.</small>
-                                <!--<small><i class="fa fa-info-circle"></i> Any <acronym title="text, markup, and notes">transcription information</acronym> will remain with the line above where you click.</small>-->
-                                <br>
-                                <small class="customRulerArea">
-                                    Trouble seeing the ruler? Change the color below.
-                                    <br>
-                                    <span id="sampleRuler"></span>
-                                    <label for="black"><input onclick="rulerColor('black');" CHECKED type="radio" value="black" name="rulerColor"/>Black</label>
-                                    <label for="white"><input onclick='rulerColor("white");' id="white" type="radio" value="white" name="rulerColor"/>White</label>
-
-                                    <label style="margin-left: 10px; margin-right: 3px;" for="customRuler">
-                                        Custom
-                                        <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown."
-                                            type="text" id="customRuler" onfocus="$('input[name=\'rulerColor\']').removeAttr('checked');" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
-                                    </label>
-                                </small>
-
-                            </div>
-                            <div class="splitBlock">
-                                <button id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines">
-                                    Adjust Lines
-                                    <img src="css/custom-theme/images/adjust_lines_sm.png" alt="reparse" />
-                                    <!--<i class="fa fa-reparse"></i>-->
-                                </button>
-                                <small>Click and drag the right side of the line to contain the line accurately.</small>
-                                <!--<small><i class="fa fa-info-circle"></i> Only the right boundary can be moved in this tool.</small>-->
-                            </div>
-                            <div class="splitBlock">
-<!--                                <button id="removeLines" class="tpenButton" title="Merge two lines in a column">-->
-                                <button id="mergeLines" class="tpenButton" title="Merge two lines in a column">
-                                    Merge Lines
-                                    <img src="css/custom-theme/images/merge_lines_sm.png" alt="reparse" />
-                                    <!--<i class="fa fa-reparse"></i>-->
-                                </button>
-                                <small>Click within the shaded area to merge the highlighted lines.</small>
-                                <!--<small><i class="fa fa-info-circle"></i> This method combines your transcription information into the new line.</small>-->
-                            </div>
-                             <div class="splitBlock danger">
-                                <!--<button id="removeLines" class="tpenButton" title="Delete the last line of a column.">-->
-                                <button id="removeLine" class="tpenButton" title="Delete the last line of a column.">
-                                    Delete Line
-                                    <img src="css/custom-theme/images/delete_line_sm.png" alt="reparse" />
-                                    <!--<i class="fa fa-reparse"></i>-->
-                                </button>
-                                <small>Click within the shaded area to delete the <b>last line</b> of a column.</small>
-                                <small><i class="fa fa-info-circle"></i> Deleting a line also removes its associated transcription information..</small>
-                            </div>
-                    </div>
-                </div>
-            </div>
+        
+            
             <div id="linebreakSplit" class="split">
                 <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
             <h3>Linebreak Existing Transcription</h3>
@@ -1236,6 +1237,7 @@
                     </div>
                 </div>
             </div>
+            <div style="clear:both"></div>
         </div>
 <!--                    Linebreaking Tool-->
 
@@ -1569,9 +1571,25 @@
                 $(".magnifyBtn").removeClass("selected");
                 $("#moveImage").removeClass("selected");
                 $(".transcriptlet").children("textarea").removeClass("imageMove").removeAttr("disabled");
+                
+                
                 if(tpen.screen.liveTool && tpen.screen.liveTool !== "none" && tpen.screen.liveTool !== "parsing"){
                     fullPage();
                 }
+                else{ //this stuff needs to happen when tpen.screen.liveTool="parsing"
+                    //Make sure all the parsing stuff is unselected.  The function that does this is toggleSelected(), but it doesn't work quite right here...
+                    $("#addLines").click() //resets the lines UI to their default state
+                    $(".splitBlock.selected").children(".tpenButton.selected").removeClass("selected");
+                    $(".splitBlock.selected").children(".tpenButton.selected").removeClass("active"); //not 100% sure we need this
+                    $(".splitBlock.selected").removeClass("selected");
+                    $(".icon-panel").find(".selected").removeClass("selected");
+                    //This is from fullPage() since it is conditional whether or not you fire it.
+                    $(document).unbind("mousemove");
+                    $(document).unbind("mousedown");
+                    $(document).unbind("mouseup");
+                    $(".parsing").unbind();
+                }
+                
             }
             else if (event.which === 13 && (tpen.screen.liveTool !=="parsing")){ //enter
                 if (event.shiftKey || event.altKey) return true;
@@ -1658,20 +1676,9 @@
                 $("#imgBottom").css("cursor", "default");
                 $(".parsing").removeClass("adjustable");
                 $(".parsing").unbind('mousemove');
-//                $.each($(".parsing"), function(){
-//                        if ($(this).hasClass("ui-resizable")){
-//                            $(this).resizable("destroy");
-//                        }
-//                    });
-//                $.each($(".parsingColumn"), function(){
-//                    if ($(this).hasClass("ui-resizable")){
-//                        $(this).resizable("destroy");
-//                    }
-//                });
                 $("#ruler1").hide();
                 $("#ruler2").hide();
                 var thisID = $(this).attr("id");
-                $(".parsingToolButtons").find(".tpenButton").removeClass("selected");
                 toggleSelected($(this).parent(), true);
                 toggleIcon($(this).attr("id"));
                 if (thisID == "createColumn" || thisID == "destroyColumn" || thisID == "clearColumns" || thisID == "adjustColumn") {

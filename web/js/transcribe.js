@@ -2880,6 +2880,11 @@ function fullPage(){
         }, 750);
     }
     $("#imgTop img,#imgBottom img,#imgTop .lineColIndicatorArea, #imgBottom .lineColIndicatorArea, #bookmark, #imgTop, #imgBottom").removeClass('noTransition');
+    //Make sure all the parsing stuff is unselected.  The function that does this is toggleSelected(), but it doesn't work quite right here...
+    $(".splitBlock.selected").children(".tpenButton.selected").removeClass("selected");
+    $(".splitBlock.selected").children(".tpenButton.selected").removeClass("active"); //not 100% sure we need this
+    $(".splitBlock.selected").removeClass("selected");
+    $(".icon-panel").find(".selected").removeClass("selected");
     tpen.screen.liveTool = "none";
 }
 
@@ -2914,7 +2919,7 @@ function splitPage(event, tool) {
         $("#helpContainer").height(Page.height()-$("#helpContainer").offset().top);
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }
-    if(tool === "parsing"){
+    if(tool === "parsing" || tpen.screen.liveTool == "parsing"){
         resize=false;
     }
     if(tool === "preview"){
@@ -3424,6 +3429,7 @@ function adjustColumn(event){
         // Do not create for self-closing tags
         if (tagName.lastIndexOf("/") === (tagName.length - 1)) return false;
         var tagLineID = tpen.screen.focusItem[1].attr("lineserverid");
+        tagLineID = tagLineID.replace("line/", ""); //back end is just expecting the number.
         var closeTag = document.createElement("div");
         var tagID;
         $.get("tagTracker", {
@@ -3437,7 +3443,7 @@ function adjustColumn(event){
                 $(closeTag).attr({
                     "class"     :   "tags ui-corner-all right ui-state-error",
                     "title"     :   unescape(fullTag),
-                    "data-line" :   tagLineID,
+                    "data-line" :   "line/"+tagLineID,
                     "data-folio":   tpen.project.folios[tpen.screen.currentFolio].folioNumber,
                     "data-tagID":   tagID
                 }).text("/" + tagName);
@@ -4531,12 +4537,14 @@ function removeLine(e, columnDelete, deleteOnly){
                 var currentLineHeight = $(e).height();
                 var newLineHeight = removedLineHeight + currentLineHeight;
                 var convertedNewLineHeight = newLineHeight / $("#imgTop").height() * 100;
+                var transcriptletToUpdate = $(".transcriptlet[lineserverid='"+$(e).attr('lineserverid')+"']");
                 $(e).css({
                     "height" :  convertedNewLineHeight + "%",
                     "top" :     $(e).css("top")
                 }).addClass("newDiv").attr({
                     "lineheight":   convertedNewLineHeight
                 });
+                transcriptletToUpdate.attr("lineheight", convertedNewLineHeight); //Need to put this on the transcriptlet so updateLine() passes the correct value. 
             }
             else{ //User is trying to delete a line that is not the last line, do nothing
                 //removedLine = $(e);
@@ -4576,7 +4584,7 @@ function removeLine(e, columnDelete, deleteOnly){
         else{ //we are in merge mode merging a line, move forward with this functionality.
             removeTranscriptlet(removedLine.attr("lineserverid"), $(e).attr("lineserverid"), true, "cover");
             removedLine.remove();
-            $("#parsingCover").hide();
+            //$("#parsingCover").hide();
             return params;
         }
 
@@ -5080,8 +5088,14 @@ function bumpLine(direction, activeLine){
                     $("#imageTip").html("Delete Line");
                     if (line.attr("lineleft") !== line.next("div").attr("lineleft")) {
                         line.addClass('deletable');
+                        //only let the deleted line get this cursor when deleting
+                        line.css('cursor','pointer');
                     }
-                    line.css('cursor','pointer');
+                    else{
+                        //other lines get the "can't do it" cursor
+                        line.css("cursor", "not-allowed");
+                    }
+                    
                 }
                 else{ //merge line
                     if (line.attr("lineleft") == line.next("div").attr("lineleft")) {
@@ -5095,7 +5109,8 @@ function bumpLine(direction, activeLine){
                     else  {
                         $("#imageTip").html("Delete Line");
                     }
-                    line.css('cursor','pointer');
+                    //line.css('cursor','pointer'); //all the lines should get this cursor when merging
+                    line.css('cursor','cell'); //all the lines should get this cursor when merging
                 }
                 $('#ruler1').hide();
             }
@@ -5120,7 +5135,7 @@ function bumpLine(direction, activeLine){
 
             });
     }
-    /**
+    /*
      * Hides ruler within parsing tool. Called on mouseleave .parsing.
      */
     function removeRuler(line){
@@ -5853,6 +5868,9 @@ tpen.screen.peekZoom = function(cancel){
                 });
             }
         });
+        $("#transcriptionTemplate").on('resize', function (e) {
+            e.stopPropagation();
+        });
     }
 
     //Must explicitly set new height and width for percentages values in the DOM to take effect.
@@ -5860,6 +5878,7 @@ tpen.screen.peekZoom = function(cancel){
     function attachWindowResize(){
         window.onresize = function(event, ui) {
             detachTemplateResize();
+            event.stopPropagation();
             var newImgBtmTop = "0px";
             var newImgTopTop = "0px";
             var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
@@ -5953,8 +5972,15 @@ tpen.screen.peekZoom = function(cancel){
             tpen.screen.textSize();
             tpen.screen.responsiveNavigation();
             clearTimeout(doit);
-            var doit = setTimeout(attachTemplateResize, 100);
+            var doit = "";
+            if(tpen.screen.liveTool !== "parsing"){
+                doit = setTimeout(attachTemplateResize, 100);
+            }
+            
         };
+//        $(window).on('resize', function (e) {
+//            e.stopPropagation();
+//        });
     }
 
 tpen.screen.responsiveNavigation = function(severeCheck){

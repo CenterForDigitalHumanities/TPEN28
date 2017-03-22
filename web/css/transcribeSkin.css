@@ -823,13 +823,15 @@ div#transcriptletArea {
 }
 .parsingColumn.ui-resizable{
     border: 2px solid black;
-    opacity:.6;
+    opacity: 1;
+    background-color: rgba(0,0,0,.3);
 }
 .parsingColumnSelected {
     /*background-image: url('css/custom-theme/images/ui-bg_layered-circles_50_ffc6b9_13x13.png') !important;*/
-    background-color: rgba(255,0,0,.4);
+    background-color: rgba(255,0,0,.2);
     border-color: red !important;
     cursor: pointer;
+    opacity: 1;
     /*cursor:url("css/custom-theme/images/deleteDiv.png"),url("css/custom-theme/images/deleteDiv.cur"),auto !important;}  Visual selection for deleting columns */
 }
 .actions > div {position:relative;z-index: 10;margin: 4px;}

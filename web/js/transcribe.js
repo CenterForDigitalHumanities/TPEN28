@@ -2885,6 +2885,9 @@ function fullPage(){
     $(".splitBlock.selected").children(".tpenButton.selected").removeClass("active"); //not 100% sure we need this
     $(".splitBlock.selected").removeClass("selected");
     $(".icon-panel").find(".selected").removeClass("selected");
+    $(document).unbind("mousemove");
+    $(document).unbind("mousedown");
+    $(document).unbind("mouseup");
     tpen.screen.liveTool = "none";
 }
 
@@ -4259,7 +4262,7 @@ function saveNewLine(lineBefore, newLine){
     var projID = tpen.project.id;
     var beforeIndex = - 1;
     if (lineBefore !== undefined && lineBefore !== null){
-        beforeIndex = parseInt(lineBefore.attr("linenum"));
+        beforeIndex = parseInt(lineBefore.attr("lineid"));
     }
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var newLineTop, newLineLeft, newLineWidth, newLineHeight = 0;
@@ -4535,12 +4538,14 @@ function splitLine(e, event){
         "lineheight" : newLineHeight
     });
     $(e).after(newLine);
+    var currentLine = $(".transcriptlet[lineserverid='"+$(e).attr('lineserverid')+"']");
+    currentLine.attr("lineheight", oldLineHeight);
     var newNum = - 1;
     $.each($(".parsing"), function(){
         newNum++;
         $(this).attr("linenum", newNum);
     });
-    saveNewLine($(e), newLine);
+    saveNewLine(currentLine, newLine);
     $("#progress").html("Line Added").fadeIn(1000).delay(3000).fadeOut(1000);
 }
 
@@ -4695,7 +4700,9 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
 
             if (this.tpen_line_id === lineIDToCheck){
                 //console.log("Got a match in the cached list: "+this.tpen_line_id);
-                currentAnnoList[index-1].resource["cnt:chars"] = updateText;
+                if(index!==0){
+                    currentAnnoList[index-1].resource["cnt:chars"] = updateText;
+                }
                 currentAnnoList.splice(index, 1);
                 //var url = "updateAnnoList";
                 tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;

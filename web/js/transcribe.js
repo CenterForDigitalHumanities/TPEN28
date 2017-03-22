@@ -2539,7 +2539,7 @@ function mouseZoom($img,container, event){
         "width"         : zoomSize,
         "height"        : zoomSize,
         "left"          : zoomPos[0] + 3,
-        "top"           : zoomPos[1] + 3 - $(document).scrollTop() - $(".magnifyBtn").offset().top + imgOffset,
+        "top"           : zoomPos[1] + 3 - $(document).scrollTop() - $(".magnifyBtn").offset().top , //+ imgOffset
         "background-position" : imgLeft+""+imgTop,
         "background-size"     : imgDims[2] * tpen.screen.zoomMultiplier + "px",
         "background-image"    : "url('" + imgURL + "')"
@@ -2561,7 +2561,7 @@ function mouseZoom($img,container, event){
             var imgPos = new Array((imgDims[0] - mouseAt[0] + contain.left) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3, (imgDims[1] - mouseAt[1] + contain.top) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3); //3px border adjustment
             $("#zoomDiv").css({
                 "left"  : zoomPos[0],
-                "top"   : zoomPos[1] - $(document).scrollTop() + imgOffset,
+                "top"   : zoomPos[1] - $(document).scrollTop() , //+ imgOffset
                 "background-size"     : imgDims[2] * tpen.screen.zoomMultiplier + "px",
                 "background-position" : imgPos[0] + "px " + imgPos[1] + "px"
             });

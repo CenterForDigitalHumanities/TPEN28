@@ -1414,7 +1414,11 @@
 //            $("#help").css({"left":"100%"}).fadeOut(1000);
 //        });
         
-        $("#helpMe").click(function(event){Help.revealHelp(event);});
+        $("#helpMe").click(function(event){
+            if(tpen.screen.liveTool === "none"){
+                Help.revealHelp(event);
+            }
+        });
 
         $("#charactersPopin").on("change", function(event){
             var val = $("#charactersPopin").val();
@@ -1534,7 +1538,10 @@
             }
             else if (event.which == 112) { //F1 for help
                 event.preventDefault();
-                Help.revealHelp(event);
+                //DO NOT pull up the help if the user is using another tool that is taking up the screen.  It breaks the interface..  
+                if(tpen.screen.liveTool === "none"){
+                    Help.revealHelp(event);
+                }
                 //$("#helpMe").click();
             }
             else if (event.which == 18 || event.altKey && (tpen.screen.liveTool !=="parsing")){

@@ -1114,7 +1114,7 @@ function focusOnLastModified(){
     });
     if(scribedLines.length!==lines.length){
         var i;
-        for (i=1;i<lines.length;i++){
+        for (i=0;i<lines.length;i++){ //why was it i=1? 3-23-17
             if (lines[i].modified > focusOn.modified) {
                 focusOn = lines[i];
             }
@@ -1197,7 +1197,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                     tpen.project.folioImages[tpen.screen.currentFolio].image =  image;
                     tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //It is now preloaded.
                 }
-                focusOnLastModified();
+                //focusOnLastModified();
                 updatePageLabels(pageTitle);
                 
             }
@@ -1643,7 +1643,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
     //Why does this run twice when i am going fullPage() from parsing interface?
     for (var i = 0; i < lines.length; i++){
         var line = lines[i];
-        var lastLine = {};
+        var lastLine = false;
         var col = letters[letterIndex];
         if (i > 0)lastLine = lines[i - 1];
         var lastLineX = 10000;
@@ -1746,7 +1746,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
                             numberArray[0] = x;
                         }
                         else { //we are in a new column, column indicator needs to increase.
-                            letterIndex++;
+                            if(lastLine.length > 0)letterIndex++;
                             col = letters[letterIndex];
                             colCounter = 1; //Reset line counter so that when the column changes the line# restarts
                         }
@@ -4352,7 +4352,13 @@ function saveNewLine(lineBefore, newLine){
                 }
                 else {
                     currentAnnoList.splice(beforeIndex + 1, 0, dbLine); //@cubap FIXME: what should we do for dbLine here?  What does the currentAnnoList look like?
-                    currentAnnoList[beforeIndex].on = updateLineString;
+                    if(beforeIndex === -1){
+                        currentAnnoList[0].on = updateLineString;
+                    }
+                    else{
+                        currentAnnoList[beforeIndex].on = updateLineString;
+                    }
+                    
                 }
                 currentFolio = parseInt(currentFolio);
                 //Write back to db to update list

@@ -757,13 +757,14 @@ div#transcriptletArea {
 */
 #parsingSplit {
     max-width:20em;
-    position: absolute;
+    /*position: absolute;*/
+    position: relative;
     float: right;
     min-width: 15em;
     overflow-y: auto;
     height: 100%;
     /*float: none;*/
-    /*position: relative;*/
+    
 }
 #overlay{
     display: none;

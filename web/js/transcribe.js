@@ -2851,7 +2851,7 @@ function fullPage(){
     $("#canvasControls").removeClass("selected");
     $('.lineColIndicatorArea').css("max-height","none");
     $('.lineColIndicatorArea').show();
-    $(".centerInterface").css("text-align", "left").css("background-color", "white");
+    $(".centerInterface").css("text-align", "left");
     $("#help").css({"left":"100%"}).fadeOut(1000);
     $("#fullScreenBtn").fadeOut(250);
     tpen.screen.isZoomed = false;

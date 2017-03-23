@@ -2768,7 +2768,7 @@ function makeOverlayDiv(thisLine, originalX, cnt){
     var newX = (X);
     var newH = (H);
     var newW = (W);
-    var lineOverlay = "<div class='parsing' linenum='" + cnt + "' style='top:"
+    var lineOverlay = "<div class='parsing' lineid='" + (parseInt(cnt)-1) + "' style='top:"
         + newY + "%;left:" + newX + "%;height:"
         + newH + "%;width:" + newW + "%;' lineserverid='"
         + thisLine.attr('lineserverid') + "'linetop='"
@@ -4261,7 +4261,8 @@ function updateLine(line, cleanup, updateList){
 function saveNewLine(lineBefore, newLine){
     var projID = tpen.project.id;
     var beforeIndex = - 1;
-    if (lineBefore !== undefined && lineBefore !== null){
+    //Had to make some fixes around this, some things get sketchy with needing to use .parsing vs .transcriptlet.  See splitLine()
+    if (lineBefore !== undefined && lineBefore !== null && lineBefore.length > 0){
         beforeIndex = parseInt(lineBefore.attr("lineid"));
     }
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
@@ -4283,7 +4284,7 @@ function saveNewLine(lineBefore, newLine){
     newLineWidth = Math.round(newLineWidth, 0);
     newLineHeight = Math.round(newLineHeight, 0);
 
-    if(lineBefore){
+    if (lineBefore !== undefined && lineBefore !== null && lineBefore.length > 0){
         oldLineTop = parseFloat(lineBefore.attr("linetop"));
         oldLineLeft = parseFloat(lineBefore.attr("lineleft"));
         oldLineWidth = parseFloat(lineBefore.attr("linewidth"));
@@ -4346,7 +4347,7 @@ function saveNewLine(lineBefore, newLine){
                 if (beforeIndex == - 1){
                     $(".newColumn").attr({
                         "lineserverid" : "line/"+data,
-                        "linenum" : $(".parsing").length
+                        "lineid" : $(".parsing").length-1
                     }).removeClass("newColumn");
                     currentAnnoList.push(dbLine); //@cubap FIXME: what should we do for dbLine here?  What does the currentAnnoList look like.
                 }
@@ -4364,7 +4365,7 @@ function saveNewLine(lineBefore, newLine){
                 //Write back to db to update list
                 tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
                 tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
-                if(lineBefore){
+                if (lineBefore !== undefined && lineBefore !== null && lineBefore.length > 0){
                     updateLine(lineBefore, false, false); //This will update the line on the server.
                 }
                 else{
@@ -4433,7 +4434,7 @@ function saveNewLine(lineBefore, newLine){
                         "lineserverid" : dbLine["@id"],
                         "startid" : dbLine["@id"],
                         "endid" : dbLine["@id"],
-                        "linenum" : $(".parsing").length
+                        "lineid" : $(".parsing").length -1
                     }).removeClass("newColumn");
                     currentFolio = parseInt(currentFolio);
                     tpen.manifest.sequences[0].canvases[currentFolio - 1].resources.push(dbLine);
@@ -4529,6 +4530,7 @@ function splitLine(e, event){
     var newLineHeight = (originalLineHeight - (clickInLines - originalLineTop)) / $("#imgTop").height() * 100;
     var newLineTop = (clickInLines / $("#imgTop").height()) * 100;
     var newLine = $(e).clone(true);
+    var originalLine = $(e).clone(true);
     $(e).css({
         "height"    :   oldLineHeight + "%"
     }).attr({
@@ -4545,11 +4547,16 @@ function splitLine(e, event){
     });
     $(e).after(newLine);
     var currentLine = $(".transcriptlet[lineserverid='"+$(e).attr('lineserverid')+"']");
+    if(currentLine.length === 0){
+        //There may be no transcriptlets yet.  if the user cleared their lines and started from scratch, .transcriptlet won't be here until there is a drawLinesDesignateColumns();
+        //This is a little sketchy, we should optimize things so there isn't confusion here.  
+        currentLine = originalLine; //We have to pass the .parsing line in this case, which is the orignal $(e), that way all the values are correct.
+    }
     currentLine.attr("lineheight", oldLineHeight);
     var newNum = - 1;
     $.each($(".parsing"), function(){
         newNum++;
-        $(this).attr("linenum", newNum);
+        $(this).attr("lineid", newNum);
     });
     saveNewLine(currentLine, newLine);
     $("#progress").html("Line Added").fadeIn(1000).delay(3000).fadeOut(1000);

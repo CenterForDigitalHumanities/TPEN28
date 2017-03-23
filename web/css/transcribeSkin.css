@@ -35,6 +35,7 @@ input:focus, button:focus, a:focus{
 .centerInterface{
     max-width: 100%;
     background-color: #DAE4E8;
+    max-height: 100%;
 }
 .optionCnfrm{
     width: 209px;
@@ -757,12 +758,14 @@ div#transcriptletArea {
 */
 #parsingSplit {
     max-width:20em;
-    /*position: absolute;*/
-    position: relative;
-    float: right;
     min-width: 15em;
     overflow-y: auto;
-    height: 100%;
+    /* either this */
+    position: relative;
+    float: right;
+    /* OR this */
+    /*position: absolute;*/
+    /*height: 100%;*/
     /*float: none;*/
     
 }

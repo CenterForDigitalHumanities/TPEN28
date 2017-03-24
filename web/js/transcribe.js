@@ -5939,6 +5939,8 @@ tpen.screen.peekZoom = function(cancel){
             var PAGEHEIGHT = Page.height();
             var PAGEWIDTH = Page.width();
             var SPLITWIDTH = $("#parsingSplit").width();
+            var widerThanTall = (parseInt(tpen.screen.originalCanvasWidth) > parseInt(tpen.screen.originalCanvasHeight));
+            
             if(tpen.screen.liveTool === 'parsing'){
                 if(screen.width == $(window).width() && screen.height == window.outerHeight){
                     $(".centerInterface").css("text-align", "center"); //.css("background-color", "#e1f4fe");
@@ -5946,8 +5948,10 @@ tpen.screen.peekZoom = function(cancel){
                 else{
                     $(".centerInterface").css("text-align", "left"); //.css("background-color", "#e1f4fe");
                 }
-                if(PAGEHEIGHT <= 625){ //This is the smallest height we allow
-                    newCanvasHeight = 625;
+                if(PAGEHEIGHT <= 625){ //This is the smallest height we allow, unless the image is widerThanTall
+                    if(!widerThanTall){
+                        newCanvasHeight = 625;
+                    }
                 }
                 else if (PAGEHEIGHT <= tpen.screen.originalCanvasHeight){ //allow it to be as tall as possible, but not taller.
                     newCanvasHeight = PAGEHEIGHT;
@@ -5958,15 +5962,24 @@ tpen.screen.peekZoom = function(cancel){
                     newCanvasWidth = tpen.screen.originalCanvasWidth;
                 }
 
-                if(PAGEWIDTH > 900){ //Whenever it gets less wide than this, it prioritizes height and stops resizing by width.
-                    if(PAGEWIDTH < newCanvasWidth + SPLITWIDTH){ //&&tpen.screen.mode === "none
-                        newCanvasWidth = PAGEWIDTH - SPLITWIDTH;
-                        newCanvasHeight = 1/ratio*newCanvasWidth;
+                if(PAGEWIDTH > 900){ //Whenever it is greater than 900 wide
+                    if (PAGEWIDTH < newCanvasWidth + SPLITWIDTH){ //If the page width is less than that of the image width plus the split area
+                        newCanvasWidth = PAGEWIDTH - SPLITWIDTH; //make sure it respects the split area's space
+                        newCanvasHeight = 1/ratio*newCanvasWidth; //make the height of the canvas relative to this width
+                    }
+                    if(widerThanTall){
+                        $("#parsingSplit").show();
                     }
                 }
-                else{ //Just do nothing instead of calling it 900 wide so it defaults to the height math, maybe put a max up there too.
-//                     newCanvasWidth = 900;
-//                     newCanvasHeight = 1/ratio*newCanvasWidth;
+                else{ //Whenever it is less than 900 wide
+                    if(widerThanTall){ //if the image is wider than tall
+                        newCanvasWidth = 900; //make it as wide as the limit.  The split area is hidden, we do not need to take it into account
+                        newCanvasHeight = 1/ratio*newCanvasWidth; //make the height of the image what it needs to be for this width limit
+                        $("#parsingSplit").hide();
+                    }
+                    else{
+                        //The math above will have done everything right for all the areas of an image that is taller than it is wide. 
+                    }
                 }
 
                 $("#transcriptionCanvas").css("height", newCanvasHeight + "px");

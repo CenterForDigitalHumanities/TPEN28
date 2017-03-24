@@ -154,14 +154,20 @@
                               boolean isLeadership = thisGroup.isAdmin(groupMembers[i].getUID());
                               //Maybe add some helpful tooltips about how this controls who can see parsing? 
                                if(isLeadership){
-                                   leadershipString="<span class='loud'>Group Leader</span>&nbsp;";
+                                   leadershipString="<span class='loud'>Group Leader</span>";
                                }
                                 if (isLeader) {
                                     if(isLeadership){
-                                        out.print("<li>"+leadershipString+"<a class='demoteUser' title='Demote this user to Contributor' href='groups.jsp?act=demote&projectID=" + projectID + "&usr=" + groupMembers[i].getUID() + "' ><span class='ui-icon ui-icon-flag'></a> " + groupMembers[i].getUname() + "&nbsp; </li>");
+                                        if(UID != groupMembers[i].getUID()){
+                                            out.print("<li>"+leadershipString+"&nbsp;<a class='demoteUser' title='Demote this user to Contributor' href='groups.jsp?act=demote&projectID=" + projectID + "&usr=" + groupMembers[i].getUID() + "' ><span class='ui-icon ui-icon-flag'></span></a>&nbsp; " + groupMembers[i].getUname() + " </li>");
+                                        }
+                                        else{
+                                            //User's can't demote themselves or be promoted, so just output their name
+                                             out.print("<li> "+leadershipString+" &nbsp; "+ groupMembers[i].getUname() + "&nbsp; </li>");
+                                        }
                                     }
                                     else{
-                                        out.print("<li><a class='promoteUser' title='Promote this user to Group Leader' href='groups.jsp?act=promote&projectID=" + projectID + "&usr=" + groupMembers[i].getUID() + "' ><span class='ui-icon ui-icon-person'></span></a>&nbsp;" + groupMembers[i].getUname() + "&nbsp;<a class=\"delete\" href=\"groups.jsp?act=rem&projectID=" + projectID + "&usr=" + groupMembers[i].getUID() + "\">Remove member</a></li>");
+                                        out.print("<li><a class='promoteUser' title='Promote this user to Group Leader' href='groups.jsp?act=promote&projectID=" + projectID + "&usr=" + groupMembers[i].getUID() + "' ><span class='ui-icon ui-icon-person'></span></a>&nbsp;" + groupMembers[i].getUname() + "&nbsp;&nbsp;<a class=\"delete\" href=\"groups.jsp?act=rem&projectID=" + projectID + "&usr=" + groupMembers[i].getUID() + "\">Remove member</a></li>");
                                     }
                                 } 
                                 else {

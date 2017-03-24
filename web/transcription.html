@@ -1882,13 +1882,16 @@
                             columnSet.addClass("parsingColumnSelected");
                             //var iconToUse = $('<span class="pull-left fa fa-circle"></span>');
                             var columnText = (columnSet.size() === 1) ? "Destroy This Column" : "Destroy "+columnSet.size()+" Columns";
-                            var cfrm = confirm("Destroy "+columnSet.size()+" Column(s)?  The transcription data will be lost.\n\nContinue?");
-                            if (!cfrm){
-                                return false;
-                            }
-                            else{
-                                destroyPage();
-                            }
+                            setTimeout(function(){
+                                var cfrm = confirm("Destroy "+columnSet.size()+" Column(s)?  The transcription data will be lost.\n\nContinue?");
+                                if (!cfrm){
+                                    return false;
+                                }
+                                else{
+                                    destroyPage();
+                                }
+                            }, 400);
+                            
 //                            $(".destroyPage").html('<span class="pull-left fa fa-circle"></span>'+columnText+'')
 //                            .bind('click', function(){destroyPage();})
                     }

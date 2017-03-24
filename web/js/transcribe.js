@@ -2359,10 +2359,26 @@ function moveImg(){
     $("#imgTop, #imgBottom, #imgTop img, #imgBottom img").disableSelection();
     $("#imgTop, #imgBottom").mousedown(function(event){
         event.preventDefault();
-        $("#imgTop, #imgBottom").css("cursor", "url(images/close_grab.png),auto");
-        mouseIsDown = true;
         mousedownPositionX = event.pageX;
         mousedownPositionY = event.pageY;
+        switch (event.which) { //mac is firing right mouse click default behavior.  Does this help?
+            case 1: //left mouse
+                mouseIsDown = true;
+                break;
+            case 2: //middle mouse
+                mouseIsDown = false;        
+                return false;
+                break;
+            case 3: // right mouse
+                mouseIsDown = false;
+                return false;
+                break;
+            default: //strange mouse
+                mouseIsDown = false;
+                return false;
+        }
+        $("#imgTop, #imgBottom").css("cursor", "url(images/close_grab.png),auto");
+      
     })
     .mouseup(function(){
         mouseIsDown = false;

@@ -1112,18 +1112,29 @@ function focusOnLastModified(){
             && l.resource["cnt:chars"]
             && l.resource["cnt:chars"].length > 0;
     });
-    if(scribedLines.length!==0 && scribedLines.length!==lines.length){
+    if(scribedLines.length==0){ //No lines are transcribed.  Load to the first line
+        updatePresentation($(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']"));
+    }
+    else if(scribedLines.length !== lines.length){ //There are transcribed lines among non-transcribed lines
+        //Go over each line that has a transcription, ignoring lines that do not have transcription
         var i;
-        for (i=0;i<lines.length;i++){ //why was it i=1? 3-23-17
-            if (lines[i].modified > focusOn.modified) {
-                focusOn = lines[i];
+        //Note if we changed scribedLines to lines throughout the rest of this else if statement, 
+        //it will also consider lines that DO NOT have transcription text.  We may want that.
+        for (i=0;i<scribedLines.length;i++){ 
+            //**lines.length intead of scribedLines.length?
+            //If this line, which has transcription, was modified at a later date than the one stored as the newest
+            if (scribedLines[i].modified > focusOn.modified) { 
+               //**lines[i].modified intead of scribedLines[i].modified?
+                focusOn = scribedLines[i]; //Update the line considered the newest 
+                // focusOn=lines[i] intead of scribedLines[i]?
             }
-            if(i === lines.length -1){
+            if(i === scribedLines.length -1){ //If we have gone through every line...
+                //load to the line considered the newest
                 updatePresentation($(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']"));
             }
         }
     }
-    else{
+    else{ //all the lines have been transcribed.  Load to the first line
         updatePresentation($(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']"));
     }
     

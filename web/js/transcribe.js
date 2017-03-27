@@ -145,7 +145,7 @@ function scrubNav(){
 function firstFolio () {
     //By updating the active line, we have GUARANTEED everything is saved.  No batch update necessary.
     tpen.screen.currentFolio = 0;
-    var activeLineID = $(".activeLine").attr("lineid");
+    var activeLineID = $(".activeLine:first").attr("lineid");
     var transcriptlet = $("#transcriptlet_"+activeLineID);
     updateLine(transcriptlet, false, false);
     redraw("");
@@ -155,7 +155,7 @@ function firstFolio () {
 function lastFolio(){
     //By updating the active line, we have GUARANTEED everything is saved.  No batch update necessary.
     tpen.screen.currentFolio = tpen.manifest.sequences[0].canvases.length - 1;
-    var activeLineID = $(".activeLine").attr("lineid");
+    var activeLineID = $(".activeLine:first").attr("lineid");
     var transcriptlet = $("#transcriptlet_"+activeLineID);
     updateLine(transcriptlet, false, false);
     redraw("");
@@ -166,7 +166,7 @@ function previousFolio (parsing) {
         throw new Error("You are already on the first page.");
     }
     //By updating the active line, we have GUARANTEED everything is saved.  No batch update necessary.
-    var activeLineID = $(".activeLine").attr("lineid");
+    var activeLineID = $(".activeLine:first").attr("lineid");
     var transcriptlet = $("#transcriptlet_"+activeLineID);
     updateLine(transcriptlet, false, false);
     tpen.screen.currentFolio--;
@@ -179,7 +179,7 @@ function nextFolio(parsing) {
     if (tpen.screen.currentFolio >= tpen.manifest.sequences[0].canvases.length - 1) {
         throw new Error("That page is beyond the last page.");
     }
-    var activeLineID = $(".activeLine").attr("lineid");
+    var activeLineID = $(".activeLine:first").attr("lineid");
     var transcriptlet = $("#transcriptlet_"+activeLineID);
     updateLine(transcriptlet, false, false);
     tpen.screen.currentFolio++;
@@ -1101,7 +1101,7 @@ function checkIPRagreement(id){
 }
 /**
  * Look for the line to start on.
- * If none, suggest parsing; if *xxxxxx first x; else last modifed.
+ * 
  * @returns undefined
  */
 function focusOnLastModified(){
@@ -1112,7 +1112,7 @@ function focusOnLastModified(){
             && l.resource["cnt:chars"]
             && l.resource["cnt:chars"].length > 0;
     });
-    if(scribedLines.length!==lines.length){
+    if(scribedLines.length!==0 && scribedLines.length!==lines.length){
         var i;
         for (i=0;i<lines.length;i++){ //why was it i=1? 3-23-17
             if (lines[i].modified > focusOn.modified) {
@@ -2146,7 +2146,7 @@ function maintainWorkspace(){
 */
 function adjustImgs(positions) {
     //move background images above and below the workspace
-    var lineToMakeActive = $(".lineColIndicator[pair='" + positions.activeLine + "']:first");
+    var linesToMakeActive = $(".lineColIndicator[pair='" + positions.activeLine + "']"); //:first
     var topImageHeight = $("#imgTop img").height();
     $("#imgTop")
         .css({
@@ -2171,7 +2171,7 @@ function adjustImgs(positions) {
             top: positions.bottomImgPositionPx + "px",
             left: "0px"
         });
-    if ($('.activeLine').hasClass('linesHidden')){
+    if ($('.activeLine:first').hasClass('linesHidden')){
         $('.activeLine').hide();
     }
     $(".lineColIndicator")
@@ -2179,7 +2179,7 @@ function adjustImgs(positions) {
         .css({
             "background-color":"transparent"
         });
-    lineToMakeActive.addClass("activeLine");
+    linesToMakeActive.addClass("activeLine");
 }
 
 /* Update the line information of the line currently focused on, then load the focus to a line that was clicked on */
@@ -2486,7 +2486,7 @@ function stopMagnify(){
         var WRAPWIDTH = $("#transcriptionCanvas").width();
         var workspaceHeight = $("#transWorkspace").height();
         var availableRoom = new Array (Page.height()-workspaceHeight,WRAPWIDTH);
-        var bookmark = $('.activeLine');
+        var bookmark = $('.activeLine:first');
         var limitIndex = (bookmark.width()/bookmark.height() > availableRoom[1]/availableRoom[0]) ? 1 : 0;
         var zoomRatio = (limitIndex === 1) ? availableRoom[1]/bookmark.width() : availableRoom[0]/bookmark.height();
         var imgDims = new Array (topImg.height(),topImg.width(),parseInt(topImg.css("left")),parseInt(topImg.css("top"))-bookmark.position().top);
@@ -5833,7 +5833,7 @@ tpen.screen.peekZoom = function(cancel){
         var topImg = $("#imgTop img");
         var btmImg = $("#imgBottom img");
         var availableRoom = new Array (Page.height()-$(".navigation").height(),$("#transcriptionCanvas").width());
-        var line = $(".activeLine");
+        var line = $(".activeLine:first");
         var limitIndex = (line.width()/line.height()> availableRoom[1]/availableRoom[0]) ? 1 : 0;
         var zoomRatio = (limitIndex === 1) ? availableRoom[1]/line.width() : availableRoom[0]/line.height();
         var imgDims = new Array (topImg.height(),topImg.width(),parseInt(topImg.css("left")),-line.position().top);
@@ -6125,46 +6125,47 @@ tpen.screen.responsiveNavigation = function(severeCheck){
     /**
      *  Displays the image of the line in the history tool.
      *
-     *  @param x int left position of history entry
-     *  @param y int top position of the history entry
-     *  @param h height of the history entry
-     *  @param w width of the history entry
+     *  @param x int left position of current .activeLine
+     *  @param y int top position of current .activeLine
+     *  @param h height of current .activeLine
+     *  @param w width of current .activeLine
+     *  These are in percetange values, based off the height and width of the image being used as the transcription canvas.  
      */
-    showImage: function(x,y,h,w){
+    showImage: function(x, y, w, h){
         var buffer = 30; //even is better
         var hView = $("#historyViewer");
         var hImg = hView.find("img");
         var hBookmark = $("#historyBookmark");
-        //var historyRatio = hImg.height()/hImg.width();
-        var historyViewHeightAdjustment = ($("#imgTop").height() / $("#transcriptionCanvas").height()) * hImg.height();
+        $("#historyWrapper").css("height", hImg.height());
+        //There is a race condition here because of #
+        var historyViewHeightAdjustment = ((h * 2)/100) * $("#transcriptionCanvas").height();
+        historyViewHeightAdjustment += 15; //buffer for when top doesn't quite work with us. 
+        if(parseInt(historyViewHeightAdjustment) > 200){
+            historyViewHeightAdjustment = 200;
+        }
+        //($("#imgTop").height() / $("#transcriptionCanvas").height()) * hImg.height();
+        //historyViewHeightAdjustment += 3;
         var topAdjustment = (parseFloat($(".lineColIndicatorArea:first").css("top")) / $(".lineColIndicatorArea:first").height())  * hImg.height();
+        
+        var bookmarkAdjustedHeight = 0;
+        var bookmarkAdjustedTop = 0;
+
+        bookmarkAdjustedTop = y;
+        bookmarkAdjustedHeight = h;
+        var percentageChangeForBookmarkTop = (topAdjustment / hImg.height()) * 100; //This is negative...
+        bookmarkAdjustedTop = bookmarkAdjustedTop + percentageChangeForBookmarkTop;
+        //TODO FIXME:  For some reason, hBookmark does not seem to have the right top or hImg does not have the right top.  x, h and w of the bookmark seems to be right.  
         hImg.css({
             "top" :topAdjustment +"px"
         });
         hView.css({
             "height" : historyViewHeightAdjustment + "px"
         });
-//        hBookmark.css({
-//            "top"   : buffer/2 +"px",
-//            "left"  :x *historyRatio +"px",
-//            "width" :w *historyRatio +"px",
-//            "height":h *historyRatio +"px"
-//        });
-        y = buffer/2;
-        x = x / 100;
-        w = w / 100;
-        h = h / 100;
-
-        //y = y * hImg.height();
-        h = h * hImg.height();
-        w = w * hImg.width();
-        x = x * hImg.width();
-
         hBookmark.css({
-            "top"   : y,
-            "left"  : x,
-            "width" : w,
-            "height": h
+            "top"   : bookmarkAdjustedTop + "%",
+            "left"  : x + "%",
+            "width" : w + "%",
+            "height": bookmarkAdjustedHeight + '%'
         });
 
         // size listings for balance of page for scrolling
@@ -6189,8 +6190,8 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         History.showImage(
             parseFloat(refLine.attr("lineleft")),
             parseFloat(refLine.attr("linetop")),
-            parseFloat(refLine.attr("lineheight")),
-            parseFloat(refLine.attr("linewidth"))
+            parseFloat(refLine.attr("linewidth")),
+            parseFloat(refLine.attr("lineheight"))
         );
     },
     /**
@@ -6207,6 +6208,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
     },
     /**
      *  Shows the changes to parsing when hovering over a history entry.
+     *  
      */
     adjustBookmark: function(archive){
         var buffer = 30; //even is better
@@ -6224,7 +6226,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         };
 
         //We have the correct values for these on the #xywh= for this line in the manifest, that is where we need to gather our values.
-        var JSONline = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources[$(".activeLine").attr("lineid")];
+        var JSONline = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources[$(".activeLine:first").attr("lineid")];
         var onProp = JSONline.on;
         var lineXYWH = onProp.slice(onProp.indexOf("#xywh=") + 6);
         var lineXYWHArray = lineXYWH.split(",");

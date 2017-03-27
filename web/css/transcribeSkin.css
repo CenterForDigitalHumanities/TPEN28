@@ -981,7 +981,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 #progress {bottom:0;right:0;}
 #lineResizing {top:50%;width:auto;max-width: 25%;}
 #zoomDiv {display: none;border-radius : 50%; box-shadow :5px 5px 15px 3px black,15px 15px 100px rgba(230,255,255,.8) inset,-15px -15px 100px rgba(0,0,15,.4) inset;width : 300;height:300;border: 3px gold outset;overflow : hidden;position:fixed;left: 450px;top: 65px;background-color: transparent;background-position: 0px 0px;background-size: auto;background-repeat:no-repeat;}
-#historyListing {height: 100%;overflow: auto;position:relative; overflow: auto; max-height: 83vh !important;}
+#historyListing {height: 100%;overflow: auto;position:relative; overflow: auto; max-height: 83vh !important; z-index: 1; background: #ffebb9;}
 .historyEntry,.historyLine{position: relative;overflow: auto;}
 .historyLine{height:auto; margin-bottom: 20px; display: none;}
 .historyEntry {border-width: 0px; padding:5px 0;margin:2px 0; }
@@ -990,10 +990,14 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 .historyNote {display: none;}
 .historyCreator,.historyDate{position: relative;overflow: hidden;margin: 0 10px;float: left;}
 .historyOptions {position: absolute;right:12px; top:20px;z-index: 10;display: none;}
-#historyViewer {height: 200px;overflow: hidden;position: relative;}
+#historyViewer {height: 200px;overflow: hidden;position: relative; z-index: 0;}
 #historyViewer img {position:absolute;height:auto;width:100%;}
 .historyBookmark {position:absolute;box-shadow:0 0 30px 5px black;border:thin blue solid;z-index: 1;}
 .historyRevert {margin: 0 4px;}
+#historyWrapper{
+    position: relative;
+    z-index: 2;
+}
 .previewText:focus,.previewNotes:focus {box-shadow:0 0 5px #A64129 !important;}
 .isUnsaved textarea {box-shadow: 0 0 10px #A64129;}
 #help {z-index: 10;position: absolute;display: none;left:100%;overflow: hidden;width: 100%; color: rgba(40,40,40,1);-webkit-transition:left 2s;-moz-transition:left 2s;transition:left 2s;font-family: "Palatino Linotype", "Book Antiqua", "Palatino", serif;

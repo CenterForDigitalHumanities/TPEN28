@@ -1757,7 +1757,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
                             numberArray[0] = x;
                         }
                         else { //we are in a new column, column indicator needs to increase.
-                            if(lastLine.length > 0)letterIndex++;
+                            if(lastLine || lastLine.length > 0)letterIndex++;
                             col = letters[letterIndex];
                             colCounter = 1; //Reset line counter so that when the column changes the line# restarts
                         }
@@ -1913,7 +1913,6 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
     if(tpen.screen.mode === "RTL"){
         performInterfaceShift("RTL");
     }
-    
     $("#transTemplateLoading").hide(); //if we drew the lines, this can disappear.;
     createPreviewPages(); //Every time we load a canvas to the screen with its new updates, we want to update previewPages as well.
 }
@@ -6510,15 +6509,21 @@ function dailyTip() {
         "<kbd>TAB</kbd> or <kbd>ALT</kbd>+<kbd>&darr;</kbd> Move forward through lines of transcription.",
         "<kbd>SHIFT</kbd>+<kbd>TAB</kbd> or <kbd>ALT</kbd>+<kbd>&uarr;</kbd> Move backward through lines of transcription.",
         "<kbd>ESC</kbd> Close any open tool & return to fullscreen transcription.",
+        "<kbd>ESC</kbd> Reset the parsing interface to the default state.",
         "<kbd>F1</kbd> Open the help tool.",
         "<kbd>+</kbd> or <kbd>-</kbd> Change the magnification while Inspecting<i class='fa fa-zoom-plus'></i>.",
         "<i class='fa fa-code'></i> Highlight your text before clicking an XML tag to wrap it.",
         "Press <kbd>ENTER</kbd> to push any text after the cursor to the next line.",
         "Change what tools appear in the transcription interface in the project settings.",
         "Add new tools in an iframe in the project settings.",
+        "Manipulate your transcription image using the new Page Tools!",
+        "You can show, hide or change the color of your transcription lines in Page Tools!",
         "Attempt something against your permissions and you will see the T&#8209;PEN t-rex.",
         "Export your project as a SharedCanvas Manifest to use it in other great IIIF tools.",
+        "You can find your project's T&#8209;PEN I.D. by managing your project.  It is also often in your browser's address bar! ",
+        "Access the SharedCanvas Manifest for your project any time by going to http://t-pen.org/TPEN/manifest/{projectID}",
         "The Walter J. Ong, SJ Center for Digital Humanities at Saint Louis University thanks you for using T&#8209;PEN.",
+        "Need a closer look?  Try using the Inspect tool!",
         "Visit the blog for news on TPEN3!"
     ];
     var thisTip = tips[Math.floor(Math.random()*tips.length)];

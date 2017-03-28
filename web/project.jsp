@@ -395,7 +395,10 @@
                                 %>
                                 <p class="ui-state-highlight">You are viewing public project, <span class="loud bold"><%out.print(ESAPI.encoder().decodeFromURL(thisProject.getProjectName()));%></span>. To manage one of your own projects, click below.</p>
                                 <%} else {%>
-                                <p>Active project is <span class="loud"><%out.print(ESAPI.encoder().decodeFromURL(thisProject.getProjectName()));%></span>.</p>
+                                <p>
+                                    Active project is &nbsp;<span class="loud"><%out.print(ESAPI.encoder().decodeFromURL(thisProject.getProjectName()));%></span>.<br>
+                                    Active Project T&#8209;PEN I.D.&nbsp;&nbsp;<span class="loud"><%out.print((thisProject.getProjectID()));%></span>
+                                </p>
                                 <p> To manage a different project, select below. Clicking the X will delete your project.</p>
                                 <%}%>
                                 <h6>All Projects</h6>

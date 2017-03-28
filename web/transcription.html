@@ -232,9 +232,6 @@
                     </div>
                     <div class="flex-container flex-stretch" style="flex-wrap: wrap; justify-content: space-around;">
                         <div id="specialCharsFloat" class="flex-container special-charactered">
-                            <!--                        <div class="closeBtn" onclick="$('#toggleChars').click();">
-                                                        <i class="fa fa-close"></i>
-                                                    </div>-->
                             <div id="charactersPopin" class="specialCharacters"  title="Special Characters" >
                             </div>
                             <a title="Edit Special Characters" class="lookLikeButtons editButtons exitPage" href="buttons.jsp">
@@ -242,9 +239,6 @@
                             </a>
                         </div>
                         <div id="xmlTagFloat" class="flex-container xml-tagged">
-                        <!--                        <div class="closeBtn" onclick="$('#toggleXML').click();">
-                                                    <i class="fa fa-close"></i>
-                                                </div>-->
                             <div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
                             </div>
                             <a title="Edit XML Tags" class="lookLikeButtons editButtons exitPage" href="buttons.jsp">
@@ -300,7 +294,6 @@
                         <div class="splitBlock">
                             <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
                                 Create Column
-                                <!--<i class="fa fa-reparse"></i>-->
                                 <img src="css/custom-theme/images/create_column_sm.png" alt="reparse" />
                             </button>
                             <small>Click and drag to place</small>
@@ -309,44 +302,35 @@
                             <button id="adjustColumn" class="tpenButton" title="Adjust the size of the columns by dragging the sides or edges.">
                                 Adjust Columns
                                 <img src="css/custom-theme/images/adjust_column_sm.png" alt="reparse" />
-                                <!--<i class="fa fa-reparse"></i>-->
                             </button>
                             <small>Drag the edges of an existing column.</small>
-                            <!--<small><i class="fa fa-info-circle"></i> This method does not remove any <acronym title="text, markup, and notes">transcription information</acronym>.</small>-->
                         </div>
                         <div class="splitBlock danger">
                             <button id="destroyColumn" class="tpenButton" title="Remove an entire column and its data with a click">
                                 Destroy Column
                                 <img src="css/custom-theme/images/destroy_column_sm.png" alt="reparse" />
-<!--                                <i class="fa fa-reparse"></i>-->
                             </button>
                             <small>Click a column to remove all its lines and transcription data.</small>
                             <small class="danger"><i class="fa fa-warning"></i> This is a destructive process and cannot be undone.</small>
-                            <!-- Reparsing is not enabled yet <button>-->
                         </div>
                         <div class="splitBlock danger">
                             <button id="clearColumns" class="tpenButton" title="Remove all columns and let the autoparser reparse the page">
                                 Re-parse Page
                                 <img src="css/custom-theme/images/reparse_sm.png" alt="reparse" />
-                                <!--<i class="fa fa-reparse"></i>-->
-                                <!--<i class="fa fa-reparse"></i>-->
                             </button>
                             <small class="danger">
                                 <i class="fa fa-warning"></i>
                                 Click to remove all transcription data and lines from this page.
                                 The page will then be automatically re-parsed, which will create new columns.
                             </small>
-                            <!-- Reparsing is not enabled yet <button>-->
                         </div>
                         <header id="ctrlLines" title="Make adjustments at the line level">Edit Lines</header>
                         <div class="splitBlock">
                             <button id="addLines" class="tpenButton" title="Split lines to create new ones in a column">
                                 Add Line
                                 <img src="css/custom-theme/images/add_line_sm.png" alt="reparse" />
-                                <!--<i class="fa fa-reparse"></i>-->
                             </button>
                                 <small>Click within the shaded area to define the bottom of the new line.</small>
-                                <!--<small><i class="fa fa-info-circle"></i> Any <acronym title="text, markup, and notes">transcription information</acronym> will remain with the line above where you click.</small>-->
                                 <br>
                                 <small class="customRulerArea">
                                     Trouble seeing the ruler? Change the color below.
@@ -367,27 +351,20 @@
                                 <button id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines">
                                     Adjust Lines
                                     <img src="css/custom-theme/images/adjust_lines_sm.png" alt="reparse" />
-                                    <!--<i class="fa fa-reparse"></i>-->
                                 </button>
                                 <small>Click and drag the right side of the line to contain the line accurately.</small>
-                                <!--<small><i class="fa fa-info-circle"></i> Only the right boundary can be moved in this tool.</small>-->
                             </div>
                             <div class="splitBlock">
-<!--                                <button id="removeLines" class="tpenButton" title="Merge two lines in a column">-->
                                 <button id="mergeLines" class="tpenButton" title="Merge two lines in a column">
                                     Merge Lines
                                     <img src="css/custom-theme/images/merge_lines_sm.png" alt="reparse" />
-                                    <!--<i class="fa fa-reparse"></i>-->
                                 </button>
                                 <small>Click within the shaded area to merge the highlighted lines.</small>
-                                <!--<small><i class="fa fa-info-circle"></i> This method combines your transcription information into the new line.</small>-->
                             </div>
                              <div class="splitBlock danger">
-                                <!--<button id="removeLines" class="tpenButton" title="Delete the last line of a column.">-->
                                 <button id="removeLine" class="tpenButton" title="Delete the last line of a column.">
                                     Delete Last Line
                                     <img src="css/custom-theme/images/delete_line_sm.png" alt="reparse" />
-                                    <!--<i class="fa fa-reparse"></i>-->
                                 </button>
                                 <small>Click within the shaded area to delete the <b>last line</b> of a column.</small>
                                 <small><i class="fa fa-info-circle"></i> Deleting a line also removes its associated transcription information..</small>
@@ -396,227 +373,238 @@
                 </div>
             </div>
             <div id="helpSplit" class="split">
-            <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
-            <div id="helpHeaders">
-                <a href='#helpGlossary'> glossary </a>
-                <a href='#helpShortcuts'> shortcuts </a>
-                <a href='#helpTools'> tools </a>
-                <a href='#helpNavigation'> navigation </a>
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
+                <div id="helpHeaders">
+                    <a href='#helpGlossary'> glossary </a>
+                    <a href='#helpShortcuts'> shortcuts </a>
+                    <a href='#helpTools'> tools </a>
+                    <a href='#helpNavigation'> navigation </a>
+                    <a href='#helpDirectNavigation'> navigation </a>
+                </div>
+                <div id="helpContainer">
+                    <div id="helpGlossary" class="helpSection">
+
+                    <p>Commonly used terms in this application</p>
+                    <dl>
+                        <dt>Page</dt>
+                        <dd>A single image and supporting interface. Some source images may contain partial or multiple folios.</dd>
+
+                        <dt>Project</dt>
+                        <dd>Collection of images designated for a specific group of users. Defaults to all images within a selected manuscript, but may be altered.</dd>
+
+                        <dt>Manuscript</dt>
+                        <dd>Collection of images on a repository. Often, but not necessarily exemplary of the artifact document.</dd>
+
+                        <dt>Group</dt>
+                        <dd>Collection of users associated with a single project. Group membership is controlled by a Group Leader.</dd>
+
+                        <dt>User</dt>
+                        <dd>Entity intended to represent the human connected to a T‑PEN account.
+                            Users login with the e-mail address associated with the T‑PEN account and are displayed to others by a first initial and last name.
+
+                        <dt>Transcription</dt>
+                        <dd>Usually referring to the textual data associated with an image region. Transcription metadata include specific location,
+                            date of creation, and associated image data.</dd>
+
+                        <dt>Transcription Area</dt>
+                        <dd>Refers to the white textarea region where the user enters transcription text.</dd>
+
+                        <dt>Parsing/Column Editing</dt>
+                        <dd>Describes the automatic or manual process of logically splitting a page into rectangular regions to
+                            designate individual lines for transcribing. Changes to parsing are saved in the history of a transcription.</dd>
+
+                        <dt>History</dt>
+                        <dd>Previous versions of transcriptions. Changes made to textual and parsing data are recorded.</dd>
+
+                        <dt>Special Characters</dt>
+                        <dd>Custom-coded buttons that automatically enter a unicode character
+                            (typically one not included on the user's keyboard) into the transcription area.
+
+                        <dt>Buttons</dt>
+                        <dd>Typically refers to XML Tag objects customized on the Button Management page.
+                            May also refer to Special Character objects in the same location.
+                            "Buttons" may also used in the generic sense to refer to a graphically distinct, clickable region which invokes an expected action.
+                        </dd>
+                        </dl>
+                    </div>
+                    <div id="helpShortcuts" class="helpSection">
+
+                        <p>Support for most browsers includes the following simple shortcuts:</p>
+                        <dl>
+
+                            <dt>Insert the corresponding special character at the cursor location.</dt>
+                            <dd><kbd>CTRL</kbd>+<kbd>1-9</kbd></dd>
+
+                            <dt>Jump to the first line of the current page.</dt>
+                            <dd><kbd>CTRL</kbd>+<kbd>HOME</kbd></dd>
+
+                            <dt>Move forward through lines of transcription.</dt>
+                            <dd><kbd>TAB</kbd></dd>
+                            <dd><kbd>ALT</kbd>+<kbd>&dArr;</kbd></dd>
+
+                            <dt>Move backward through lines of transcription.</dt>
+                            <dd><kbd>SHIFT</kbd>+<kbd>TAB</kbd></dd>
+                            <dd><kbd>ALT</kbd>+<kbd>&uArr;</kbd></dd>
+
+                            <dt>Top of Page</dt>
+                            <dd><kbd>CTRL</kbd>+<kbd>HOME</kbd></dd>
+                            <dd>Quickly jump to the first line of the current page.</dd>
+
+                            <dt>Close any open tool & return to fullscreen transcription.</dt>
+                            <dd><kbd>ESC</kbd></dd>
+
+                            <dt>Peek-Zoom</dt>
+                            <dd><kbd>ALT</kbd>+<kbd>CTRL</kbd></dd>
+                            <dd>Hold both to use the peek-zoom, which scales the bounded area to fill the screen.</dd>
+
+                            <dt>While Inspecting</dt>
+                            <dd>+ or -</dd>
+                            <dd>Each keystroke will adjust the magnification of the tool by .4x to fine tune the image result.</dd>
+
+                            <dt>Help</dt>
+                            <dd><kbd>F1</kbd></dd>
+
+                            <dt>Browser Fullscreen</dt>
+                            <dd><kbd>F11</kbd></dd>
+                            <dd>Toggle fullscreen, eliminating browser and desktop toolbars.</dd>
+                        </dl>
+                    </div>
+                    <div id="helpTools" class="helpSection">
+                        <div class="helpSubsection">custom characters and XML tags</div>
+
+                        <dl>
+                            <dt>Custom Character Entry </dt>
+                            <dd>To use Custom Characters
+                                <ol>
+                                    <li>Expand the Characters tray <button type="button" onclick="Help.lightUp('#toggleChars')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></li>
+                                    <li>Click on the desired character to insert it on the text field.</li>
+                                </ol>
+                            </dd>
+
+                            <dt>Edit the Custom Characters </dt>
+                            <dd>Click the Edit button on the expanded Custom Characters drawer <button type="button" onclick="Help.lightUp('.editButtons')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </dd>
+
+                            <dt>XML Tag Entry </dt>
+                            <dd>XML tags can always be hand-encoded by the user as they transcribe but XML Tags can be set up for ease of insertion. </dd>
+
+                            <dt>To use XML Tags </dt>
+
+                            <dd>Expand the XML Tag drawer <button type="button" onclick="Help.lightUp('#toggleXML')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </dd>
+                            <dd>Highlight the text and click the desired XML tag button in the XML Tag tray to wrap the tag around the selection.</dd>
+                            <dd>Insert as you type by clicking the XML tag button, adding the opening tag at the cursor
+                                and put a closing tag <span class="tags ui-corner-all right ui-state-error no-point">reminder</span>
+                                in the bottom right of the transcription text entry box.
+                            </dd>
+                            <dd>
+                                To close the tag, place the cursor at the desired end point and click the reminder. Use the "x" to dismiss unwanted reminders.
+                            </dd>
+                        </dl>
+
+                        <div class="helpSubsection">viewing options <button type="button" onclick="Help.lightUp('.buttons')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></div>
+
+                        <dl>
+                            <dt>View the page image </dt>
+                            <dd>To hide the work space to see the image hold <kbd>ALT</kbd>+<kbd>CTRL</kbd>.
+                                While viewing, you can drag the image around with your mouse.
+                                Release the keys to restore the screen. </dd>
+                            <dt>Inspect</dt>
+                            <dd>To view parts of the image under magnification click the Inspect button. <button type="button" onclick="Help.lightUp('#magnify1')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button>
+                                Once in the inspect view you can use <kbd>+</kbd> and <kbd>-</kbd> to change the magnification.
+                                Press <kbd>ESC</kbd> to return to the transcription view.</dd>
+                            <dt>Peek-Zoom</dt>
+                            <dd>To quickly fill the screen with the line being transcribed hold <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>.
+                                This will enlarge the line being transcribed to fill the viewing window above the tool bar.
+                                Release the keys to restore the screen. </dd>
+                        </dl>
+
+                        <div class="helpSubsection"> split screen tools </div>
+
+                        <dl>
+                            <dt>Import Text </dt>
+                            <dd>Upload a file for manual or automatic linebreaking. </dd>
+
+                            <dt>Line History </dt>
+                            <dd>Lists the previous saved versions of the line boundaries and transcription text.
+                                Mouseover the history entries to reveal options to revert to a previous version.
+                            </dd>
+
+                            <dt>Preview Transcription </dt>
+                            <dd>Reveal the transcription text on the previous, current, and following pages.
+                                Edit text in the transcription workspace or within the tool. </dd>
+
+                            <dt>Compare Pages </dt>
+                            <dd>View other pages from this project. Use the inspection tool to take a closer look. </dd>
+
+                            <dt>Capelli Abbreviations </dt>
+                            <dd>A. Capelli's <cite>Lexicon Abbreviaturarum</cite> for Latin and Italian abbreviations. </dd>
+                        </dl>
+
+                        <div class="helpSubsection">page tools <button type="button" onclick="Help.lightUp('#canvasControls')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </div>
+                        <dl>
+                            <dt>Image Controls </dt>
+                            <dd>These tools are designed to allow the user to manipulate the image to facilitate legibility.
+                                All these adjustments are superficial and will not persist.</dd>
+
+                            <dt>Grayscale </dt>
+                            <dd>Presents the image as a grayscale image </dd>
+
+                            <dt>Invert </dt>
+                            <dd>Presents the image with its color inverted. </dd>
+
+                            <dt>Brightness </dt>
+                            <dd>A slider tool to raise and lower the brightness of the image.
+                                <small>Note: not supported by Safari.</small> </dd>
+
+                            <dt>Contrast </dt>
+                            <dd>A slider tool to raise and lower the contrast of the image.
+                                <small>Note: not supported by Safari.</small> </dd>
+                        </dl>
+                        <div class="helpSubsection">column controls</div>
+                            <dl>
+                                <dt>Show Lines </dt>
+                                <dd>Toggle the text column lines on and off. </dd>
+
+                                <dt>Show Labels </dt>
+                                <dd>Toggle the text letter/number labels next to each line on and off. </dd>
+
+                                <dt>Change Line Color </dt>
+                                <dd>Click to change the color of the lines and labels to improve visibility. </dd>
+
+                                <dt>Edit Columns </dt>
+                                <dd>Open the column editing/parsing interface to adjust and edit the columns and lines. </dd>
+                            </dl>
+
+                    </div>
+                    <div id="helpNavigation" class="helpSection">
+                        <dl>
+                            <dt>Location Flag <button type="button" onclick="Help.lightUp('#trimPage')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
+                            <dd>Shows the label for the current page.</dd>
+                            <dt>Jump to page <button type="button" onclick="Help.lightUp('#pageJump')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
+                            <dd>Select any page in the current project.</dd>
+                            <dt>Previous Page <button type="button" onclick="Help.lightUp('#prevPage'); Help.lightUp('#prevCanvas');" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
+                            <dt>Next Page <button type="button" onclick="Help.lightUp('#nextPage'); Help.lighUp('#nextCanvas');" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
+                            <dd>Step through the project one page at a time.</dd>
+                        </dl>
+                    </div>
+                    <div id="helpDirectNavigation" class="helpSection">
+                        <dl>
+                            <dt>http://t-pen.org/TPEN/manifest/{projectID}</dt>
+                            <dd>Shows the SharedCanvas Manifest for this project.</dd>
+                            <dt>http://t-pen.org/TPEN/project/{projectID}</dt>
+                            <dd>Shows the SharedCanvas Manifest for this project.</dd>
+                            <dt>http://t-pen.org/TPEN/project.jsp?projectID={projectID}</dt>
+                            <dd>Go directly to project management for this project.</dd>
+                            <dt>http://t-pen.org/TPEN/transcription.html?projectID={projectID}</dt>
+                            <dd>Go directly to the transcription interface for this project.</dd>
+                            <dt>http://t-pen.org/TPEN/groups.jsp?projectID={projectID}</dt>
+                            <dd>View or Manipulate the users associated with this project.</dd>
+                        </dl>
+                    </div>
+                </div> 
             </div>
-            <div id="helpContainer">
-                <div id="helpGlossary" class="helpSection">
-
-                <p>Commonly used terms in this application</p>
-                <dl>
-                    <dt>Page</dt>
-                    <dd>A single image and supporting interface. Some source images may contain partial or multiple folios.</dd>
-
-                    <dt>Project</dt>
-                    <dd>Collection of images designated for a specific group of users. Defaults to all images within a selected manuscript, but may be altered.</dd>
-
-                    <dt>Manuscript</dt>
-                    <dd>Collection of images on a repository. Often, but not necessarily exemplary of the artifact document.</dd>
-
-                    <dt>Group</dt>
-                    <dd>Collection of users associated with a single project. Group membership is controlled by a Group Leader.</dd>
-
-                    <dt>User</dt>
-                    <dd>Entity intended to represent the human connected to a T‑PEN account.
-                        Users login with the e-mail address associated with the T‑PEN account and are displayed to others by a first initial and last name.
-
-                    <dt>Transcription</dt>
-                    <dd>Usually referring to the textual data associated with an image region. Transcription metadata include specific location,
-                        date of creation, and associated image data.</dd>
-
-                    <dt>Transcription Area</dt>
-                    <dd>Refers to the white textarea region where the user enters transcription text.</dd>
-
-                    <dt>Parsing/Column Editing</dt>
-                    <dd>Describes the automatic or manual process of logically splitting a page into rectangular regions to
-                        designate individual lines for transcribing. Changes to parsing are saved in the history of a transcription.</dd>
-
-                    <dt>History</dt>
-                    <dd>Previous versions of transcriptions. Changes made to textual and parsing data are recorded.</dd>
-
-                    <dt>Special Characters</dt>
-                    <dd>Custom-coded buttons that automatically enter a unicode character
-                        (typically one not included on the user's keyboard) into the transcription area.
-
-                    <dt>Buttons</dt>
-                    <dd>Typically refers to XML Tag objects customized on the Button Management page.
-                        May also refer to Special Character objects in the same location.
-                        "Buttons" may also used in the generic sense to refer to a graphically distinct, clickable region which invokes an expected action.
-                    </dd>
-                    </dl>
-            </div>
-            <div id="helpShortcuts" class="helpSection">
-
-                <p>Support for most browsers includes the following simple shortcuts:</p>
-                <dl>
-
-                        <dt>Insert the corresponding special character at the cursor location.</dt>
-                        <dd><kbd>CTRL</kbd>+<kbd>1-9</kbd></dd>
-
-                    <dt>Jump to the first line of the current page.</dt>
-                    <dd><kbd>CTRL</kbd>+<kbd>HOME</kbd></dd>
-
-                    <dt>Move forward through lines of transcription.</dt>
-                    <dd><kbd>TAB</kbd></dd>
-                    <dd><kbd>ALT</kbd>+<kbd>&dArr;</kbd></dd>
-
-                    <dt>Move backward through lines of transcription.</dt>
-                    <dd><kbd>SHIFT</kbd>+<kbd>TAB</kbd></dd>
-                    <dd><kbd>ALT</kbd>+<kbd>&uArr;</kbd></dd>
-
-                    <dt>Top of Page</dt>
-                    <dd><kbd>CTRL</kbd>+<kbd>HOME</kbd></dd>
-                    <dd>Quickly jump to the first line of the current page.</dd>
-
-                    <dt>Close any open tool & return to fullscreen transcription.</dt>
-                    <dd><kbd>ESC</kbd></dd>
-
-                    <dt>Peek-Zoom</dt>
-                    <dd><kbd>ALT</kbd>+<kbd>CTRL</kbd></dd>
-                    <dd>Hold both to use the peek-zoom, which scales the bounded area to fill the screen.</dd>
-
-                    <dt>While Inspecting</dt>
-                    <dd>+ or -</dd>
-                    <dd>Each keystroke will adjust the magnification of the tool by .4x to fine tune the image result.</dd>
-
-                    <dt>Help</dt>
-                    <dd><kbd>F1</kbd></dd>
-
-                    <dt>Browser Fullscreen</dt>
-                    <dd><kbd>F11</kbd></dd>
-                    <dd>Toggle fullscreen, eliminating browser and desktop toolbars.</dd>
-                </dl>
-            </div>
-            <div id="helpTools" class="helpSection">
-                <div class="helpSubsection">custom characters and XML tags</div>
-
-                <dl>
-                    <dt>Custom Character Entry </dt>
-                    <dd>To use Custom Characters
-                        <ol>
-                            <li>Expand the Characters tray <button type="button" onclick="Help.lightUp('#toggleChars')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></li>
-                            <li>Click on the desired character to insert it on the text field.</li>
-                        </ol>
-                    </dd>
-
-                    <dt>Edit the Custom Characters </dt>
-                    <dd>Click the Edit button on the expanded Custom Characters drawer <button type="button" onclick="Help.lightUp('.editButtons')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </dd>
-
-                    <dt>XML Tag Entry </dt>
-                    <dd>XML tags can always be hand-encoded by the user as they transcribe but XML Tags can be set up for ease of insertion. </dd>
-
-                    <dt>To use XML Tags </dt>
-
-                    <dd>Expand the XML Tag drawer <button type="button" onclick="Help.lightUp('#toggleXML')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </dd>
-                    <dd>Highlight the text and click the desired XML tag button in the XML Tag tray to wrap the tag around the selection.</dd>
-                    <dd>Insert as you type by clicking the XML tag button, adding the opening tag at the cursor
-                        and put a closing tag <span class="tags ui-corner-all right ui-state-error no-point">reminder</span>
-                        in the bottom right of the transcription text entry box.
-                    </dd>
-                    <dd>
-                        To close the tag, place the cursor at the desired end point and click the reminder. Use the "x" to dismiss unwanted reminders.
-                    </dd>
-                </dl>
-
-                <div class="helpSubsection">viewing options <button type="button" onclick="Help.lightUp('.buttons')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></div>
-
-                <dl>
-                    <dt>View the page image </dt>
-                    <dd>To hide the work space to see the image hold <kbd>ALT</kbd>+<kbd>CTRL</kbd>.
-                        While viewing, you can drag the image around with your mouse.
-                        Release the keys to restore the screen. </dd>
-                    <dt>Inspect</dt>
-                    <dd>To view parts of the image under magnification click the Inspect button. <button type="button" onclick="Help.lightUp('#magnify1')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button>
-                        Once in the inspect view you can use <kbd>+</kbd> and <kbd>-</kbd> to change the magnification.
-                        Press <kbd>ESC</kbd> to return to the transcription view.</dd>
-                    <dt>Peek-Zoom</dt>
-                    <dd>To quickly fill the screen with the line being transcribed hold <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>.
-                        This will enlarge the line being transcribed to fill the viewing window above the tool bar.
-                        Release the keys to restore the screen. </dd>
-                </dl>
-
-                <div class="helpSubsection"> split screen tools </div>
-
-                <dl>
-                    <dt>Import Text </dt>
-                    <dd>Upload a file for manual or automatic linebreaking. </dd>
-
-                    <dt>Line History </dt>
-                    <dd>Lists the previous saved versions of the line boundaries and transcription text.
-                        Mouseover the history entries to reveal options to revert to a previous version.
-                    </dd>
-
-                    <dt>Preview Transcription </dt>
-                    <dd>Reveal the transcription text on the previous, current, and following pages.
-                        Edit text in the transcription workspace or within the tool. </dd>
-
-                    <dt>Compare Pages </dt>
-                    <dd>View other pages from this project. Use the inspection tool to take a closer look. </dd>
-
-                    <dt>Capelli Abbreviations </dt>
-                    <dd>A. Capelli's <cite>Lexicon Abbreviaturarum</cite> for Latin and Italian abbreviations. </dd>
-                </dl>
-
-                <div class="helpSubsection">page tools <button type="button" onclick="Help.lightUp('#canvasControls')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </div>
-                <dl>
-                    <dt>Image Controls </dt>
-                    <dd>These tools are designed to allow the user to manipulate the image to facilitate legibility.
-                        All these adjustments are superficial and will not persist.</dd>
-
-                    <dt>Grayscale </dt>
-                    <dd>Presents the image as a grayscale image </dd>
-
-                    <dt>Invert </dt>
-                    <dd>Presents the image with its color inverted. </dd>
-
-                    <dt>Brightness </dt>
-                    <dd>A slider tool to raise and lower the brightness of the image.
-                        <small>Note: not supported by Safari.</small> </dd>
-
-                    <dt>Contrast </dt>
-                    <dd>A slider tool to raise and lower the contrast of the image.
-                        <small>Note: not supported by Safari.</small> </dd>
-                </dl>
-
-
-                <div class="helpSubsection">column controls</div>
-                <dl>
-                    <dt>Show Lines </dt>
-                    <dd>Toggle the text column lines on and off. </dd>
-
-                    <dt>Show Labels </dt>
-                    <dd>Toggle the text letter/number labels next to each line on and off. </dd>
-
-                    <dt>Change Line Color </dt>
-                    <dd>Click to change the color of the lines and labels to improve visibility. </dd>
-
-                    <dt>Edit Columns </dt>
-                    <dd>Open the column editing/parsing interface to adjust and edit the columns and lines. </dd>
-                    </dl>
-
-            </div>
-            <div id="helpNavigation" class="helpSection">
-                <dl>
-                    <dt>Location Flag <button type="button" onclick="Help.lightUp('#trimPage')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
-                    <dd>Shows the label for the current page.</dd>
-                    <dt>Jump to page <button type="button" onclick="Help.lightUp('#pageJump')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
-                    <dd>Select any page in the current project.</dd>
-                    <dt>Previous Page <button type="button" onclick="Help.lightUp('#prevPage'); Help.lightUp('#prevCanvas');" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
-                    <dt>Next Page <button type="button" onclick="Help.lightUp('#nextPage'); Help.lighUp('#nextCanvas');" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
-                    <dd>Step through the project one page at a time.</dd>
-                </dl>
-            </div>
-            </div>
-        </div>
-        
-            
             <div id="linebreakSplit" class="split">
                 <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
-            <h3>Linebreak Existing Transcription</h3>
+                <h3>Linebreak Existing Transcription</h3>
                 <div id="linebreakTextContainer">
                     <!-- visible if text is saved -->
                     <div>
@@ -651,7 +639,6 @@
                 <!-- no text saved -->
                     Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to linebreak
                 </div>
-
             </div>
             <div id="compareSplit" class="split">
                 <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
@@ -663,10 +650,8 @@
                     <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
                     <button class="magnifyBtn" magnifyImg="compare" >Inspect <i class="fa fa-search-plus"></i></button>
                 </div>
-
                 <img class="compareImage" folioNum="1"></img>
             </div>
-
             <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
                 <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
                 <div style="padding:0 15px;">
@@ -687,7 +672,6 @@
                         Contrast  <i class="fa fa-adjust"></i>
                         <div id="contrastSlider"></div>
                     </div>
-
                     <header> Column Controls</header>
                     <button id="showTheLines" role="button" class="block" onclick="toggleLineMarkers();">
                         Lines
@@ -714,7 +698,6 @@
                     </div>
                 </div>
             </div>
-
             <div id="abbreviationSplit" class="split">
                 <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
                 <!--                        Image is loaded in Data.postLoader()-->
@@ -1200,7 +1183,6 @@
                     </select>
                 </div>
             </div>
-
             <div id="previewSplit" class="split">
                 <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
                 <div class="toolLinks">
@@ -1241,11 +1223,8 @@
             </div>
             <div style="clear:both"></div>
         </div>
-<!--                    Linebreaking Tool-->
-
         <div id="zoomDiv" class="ui-corner-all"></div>
         <div id="ruler1"></div><div id="ruler2"></div>
-
         <div id="requestAccessContainer" style="display: none;">
             <div id="requestAccess" class="ui-widget ui-corner-all ui-widget-content">
                 <h2 class="ui-widget-header ui-corner-all ui-state-error">Restricted Access</h2>
@@ -1261,7 +1240,6 @@
                 <a class="returnButton exitPage" href="index.jsp">Return Home</a>
             </div>
         </div>
-
         <div id="genericIssue" class="ui-widget ui-corner-all ui-widget-content">
             <h2 class="ui-widget-header ui-corner-all">Data Error</h2>
             <p>
@@ -1272,7 +1250,6 @@
                 <button class="ui-button tpenButton" onclick="document.location.reload();">OK</button>
             </div>
         </div>
-
         <div id="iprAccept" class="ui-widget ui-corner-all ui-widget-content">
             <h2 class="ui-widget-header ui-corner-all">Accept IPR Agreement</h2>
             <p>Please read and accept the IPR agreement below to access <span id="ipr_who" class="loud"></span>. You only need to do this once.</p>
@@ -1283,19 +1260,12 @@
                 <button class="ui-button tpenButton" onclick="document.location='index.jsp'">I do not agree</button>
             </div>
         </div>
-
-
         <div id="overlay" class="ui-widget-overlay">
             <div id="overlayNote">Click the page to return</div>
         </div>
         <div id="location" class="ui-widget-content ui-corner-tr">
-        <!--<select class="clear left" onchange="Interaction.navigateTo(this);">
-            <option SELECTED>Jump to page</option>
-        </select>-->
         </div>
         <div class="trexHead"></div>
-        
-
         <script>
 
     var leftovers = tpen.project.remainingText;
@@ -2268,7 +2238,7 @@
         toggleSelected($("img[from='"+fromBtn+"']"), true);
     }
 
-</script>
+        </script>
         <noscript>
             <div id="noscript">
                 You are blocking scripts on this page. T-PEN uses 

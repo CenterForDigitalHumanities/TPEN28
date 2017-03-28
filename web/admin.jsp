@@ -977,6 +977,34 @@
                                     <dt>Patrick Cuba, Web Developer</dt>
                                     <dd>Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
                                 </dl>
+                                <!--
+                                <dl>
+                                        <dt>Dr. Jim Ginther, Principal Investigator</dt>
+                                        <dd>Dean of the Faculty of Theology at University of St. Michael’s College </dd>
+                                        <dt>Dr. Abigail Firey, co-Principal Investigator</dt>
+                                        <dd><a href="http://ccl.rch.uky.edu" target="_blank" title="Carolingian Canon Law">CCL</a>&nbsp;Project&nbsp;Director, University&nbsp;of&nbsp;Kentucky</dd>
+                                        <dt>Dr. Tomás O’Sullivan, Research Fellow (2010-11)</dt>
+                                        <dd>Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
+                                        <dt>Dr. Alison Walker, Research Fellow (2011-12)</dt>
+                                        <dd>Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
+                                        <dt>Michael Elliot, Research Assistant</dt>
+                                        <dd>University&nbsp;of&nbsp;Toronto</dd>
+                                        <dt>Meredith Gaffield, Research Assistant</dt>
+                                        <dd>University&nbsp;of&nbsp;Kentucky</dd>
+                                        <dt>Dr. Thomas Finan, Director</dt>
+                                        <dd>The Walter J. Ong, SJ Center for Digital Humanities at Saint Louis University</dd>
+                                        <dt>Jon Deering, Senior Developer</dt>
+                                        <dd>The Walter J. Ong, SJ Center for Digital Humanities at Saint Louis University</dd>
+                                        <dt>Patrick Cuba, Web Developer</dt>
+                                        <dd>The Walter J. Ong, SJ Center for Digital Humanities at Saint Louis University</dd>
+                                        <dt>Bryan Haberberger, Web Developer</dt>
+                                        <dd>The Walter J. Ong, SJ Center for Digital Humanities at Saint Louis University</dd>
+                                        <dt>Domhnall Ó h'Éigheartaigh, Project Manager</dt>
+                                        <dd>The Walter J. Ong, SJ Center for Digital Humanities at Saint Louis University</dd>
+                                        <dt>Sameersingh Gautam Deeljore, Server Administrator </dt>
+                                        <dd>Pius XII Memorial Library at Saint Louis University</dd>
+                                </dl>
+                                -->
                             </li>
                             <li class="gui-tab-section">
                                 <h3>Contributors</h3>

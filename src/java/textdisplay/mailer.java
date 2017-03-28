@@ -35,8 +35,8 @@ public class mailer {
     
     public mailer()
     {
-        this.mailServer = Folio.getRbTok("MAIL_SERVER");
-        this.mailFrom = Folio.getRbTok("MAIL_FROM");
+        this.mailServer = Folio.getRbTok("EMAILSERVER");
+        this.mailFrom = Folio.getRbTok("NOTIFICATIONEMAIL");
     }
     
     

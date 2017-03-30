@@ -582,9 +582,17 @@ function loadTranscription(pid, tool){
             type:"GET",
             success: function(activeProject){
                 var url = "";
+                //If it is most definitely not an object AND it is a string
+                if(activeProject !== null && typeof activeProject === "string"){
+                    //we can parse it and it may be what we are looking for.  
+                    //FIXME Why is the servlet returning a string instead of a json object sometimes?
+                    activeProject = JSON.parse(activeProject);
+                }
+                //at this proint, activeProject should be an object.  Check for existence of manifest.
                 if(!activeProject.manifest) {
+                    //The return must contain the manifest, otherwise we cannot use it
                     $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                    $(".transLoader").find("img").attr("src", "../images/BrokenBook01.jpg");
+                    $(".transLoader").find("img").attr("src", "..TPENimages/BrokenBook01.jpg");
                     return false;
                 }
                 setTPENObjectData(activeProject);
@@ -672,13 +680,17 @@ function loadTranscription(pid, tool){
                         $("#splitScreenTools").append(splitToolSelector);
                     }
                 });
-                $.each(tpen.project.tools, function(){
+                $.each(tpen.project.tools, function(i){
                     var splitHeight = window.innerHeight + "px";
                     var toolLabel = this.name;
                     var toolSource = this.url;
+                    var frameReset = "";
+                    if(toolLabel === "Middle English Dictionary"){
+                        frameReset = '<div class="frameToolReset"><a href="' + toolSource + '" target="frame'+i+'" title="Reset to seach again" class="frameReset">Reset<span class="ui-icon ui-icon-refresh left"></span></a></div>';
+                    }
                     var splitTool = $('<div toolName="' + toolLabel
-                        + '" class="split iTool"><div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div></div>');
-                    var splitToolIframe = $('<iframe style="height:' + splitHeight
+                        + '" class="split iTool"><div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>'+frameReset+'</div>');
+                    var splitToolIframe = $('<iframe name="frame'+i+'" id="frame'+i+'" style="height:' + splitHeight
                         + ';" src="' + toolSource + '"></iframe>');
                     var splitToolSelector = $('<option splitter="' + toolLabel
                         + '" class="splitTool">' + toolLabel + '</option>');
@@ -972,7 +984,7 @@ function loadTranscription(pid, tool){
 function activateTool(tool){
 	// TODO: Include other tools here.
     if(tool === "parsing"){
-        if(tpen.user.isAdmin || tpen.permissions.allow_public_modify || tpen.permissions.allow_public_modify_line_parsing){
+        if(tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing){
             $("#parsingBtn").click();
             tpen.screen.liveTool = "parsing";
         }
@@ -3761,7 +3773,7 @@ function pageJump(page, parsing){
             redraw(parsing);
             //loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[canvasToJumpTo], parsing);
             setTimeout(function(){
-                if(tpen.user.isAdmin || tpen.permissions.allow_public_modify || tpen.permissions.allow_public_modify_line_parsing){
+                if(tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing){
                     $("#canvasControls").click();
                     $("#parsingBtn").click();
                 }
@@ -6549,7 +6561,7 @@ function checkParsingReroute(){
         setTimeout(function () {
             var replaceURL = replaceURLVariable("liveTool", "none");
             window.history.pushState("", "T&#8209;PEN Transcription", replaceURL);
-            if(tpen.user.isAdmin || tpen.permissions.allow_public_modify || tpen.permissions.allow_public_modify_line_parsing){
+            if(tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing){
                 $("#canvasControls").click();
                 $("#parsingBtn").click();
             }

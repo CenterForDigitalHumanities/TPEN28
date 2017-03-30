@@ -136,10 +136,31 @@
                 var addTagData = {projectID:projectID};
                 $.post("addTag", $.param(addTagData),function(data){
                     var position = data;    //tag position from servlet
-                    $("#sortable2").children("li").eq(-1).clone(true).appendTo($("#sortable2"))
-                    .children("input.description").attr("name", "description"+position).val("New Tag").end()
+                    //$("#sortable2").children("li").eq(-1).clone(true).appendTo($("#sortable2"))
+                    var buttonHTML = "";
+                     buttonHTML += "<li class=\"ui-state-default xmlPanel\">";
+                    buttonHTML += "<span class='ui-icon ui-icon-arrow-4 toggleXML left'></span>";
+                    buttonHTML += "<a class=\"ui-icon ui-icon-closethick right\" onclick=\"deleteTag(" + position + ");\">delete</a>";
+                    buttonHTML += "<input class=\"description\" onchange=\"unsavedAlert('#tabs-2');\" type=\"text\" placeholder=\"Button Name\" name=description"+(position)+" value=\"description\">";
+                //    out.println("<input class=\"colors\" onchange=\"unsavedAlert('#tabs-2');\" type=\"text\" placeholder=\"black\" name=xmlColor"+(position)+" value=\""+"b.getXMLColor"+"\">");
+                    buttonHTML += "<div class='xmlParams'>";
+                    buttonHTML += "<span class=\"firstRow collapseXML\"><span class=\"bold tag\"><input name=\"b"+position+"\" id=\"b"+position+"\" type=\"text\" class='collapseXML' value=\"New Tag\"></input></span>";
+                    buttonHTML += "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder=\"parameter\" type=\"text\" name=\"b"+position+"p1\" />";
+                    buttonHTML += "<span class=\"right ui-icon moreParameters ui-icon-plus\" title=\"Add more parameters to this button\"></span></span>"; //close .firstRow%>
+                    buttonHTML += "<span class='clear-left secondRow collapseXML'>";
+                    buttonHTML += "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder=\"parameter\" type=\"text\" name=\"b"+position+"p2\" />";
+                    buttonHTML += "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder=\"parameter\" type=\"text\" name=\"b"+position+"p3\" />";
+                    buttonHTML += "<span class='right ui-icon moreParameters ui-icon-plus' title='Add more parameters to this button'></span>";
+                    buttonHTML += "</span>";
+                    buttonHTML += "<span class='clear-left lastRow collapseXML'>";
+                    buttonHTML += "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder=\"parameter\" type=\"text\" name=\"b"+position+">p4\" />";
+                    buttonHTML += "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder=\"parameter\" type=\"text\" name=\"b"+position+"p5\" />";
+                    buttonHTML += "</span>";
+                    
+                    var theButton = $(buttonHTML);
+                    $("#sortable2").append(theButton); //Make the new button and put it in
 //                    .children("input.colors").attr("name","xmlColor"+position).val("black").end()
-                    .children(".xmlParams").find("input").each(function(index,param){
+                    $("#sortable2").children(".xmlParams").find("input").each(function(index,param){
                         var rename = (index > 0) ? "b"+position+"p"+index :  "b"+position;
                         $(param).attr("name", rename).val("");
                     });
@@ -307,6 +328,7 @@ function equalWidth(){
             .submit();
     }
     function deleteTag(position){
+        document.getElementById('selecTab').value = 1;
         $("#buttonForm")
             .append("<input type='hidden' value=true name='deletetag'/><input type='hidden' value="+position+" name='position'/>")
             .submit();

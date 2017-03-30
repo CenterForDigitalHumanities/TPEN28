@@ -7,6 +7,18 @@ and open the template in the editor.
     Created on : Jan 27, 2015, 10:05:37 AM
     Author     : bhaberbe
 */
+.frameToolReset{
+    position: absolute;
+    top: 7px;
+    left: 1px;
+    border: 1px solid black;
+    background-color: #DAE4E8;
+    padding: 1px 6px;
+    
+}
+a.frameReset{
+    color:black !important;
+}
 #newCol{
     opacity: .3 !important;
 }

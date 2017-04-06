@@ -130,12 +130,15 @@ public class JsonLDExporter {
       int canvasWidth = 0;
       if (pageDim != null) {
           // Convert to canvas coordinates.
-        if(pageDim.height > 0){
-            canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
-        }
-        else{ //We were unable to resolve the image, so we have a height of 0.
-            canvasHeight = 0;
-        }
+            if(pageDim.height > 0){
+                if(storedDims.getNaturalImageDimensions().height <= 0){ //There was no foliodim entry, so create one
+                    FolioDims.createFolioDimsRecord(pageDim.width, pageDim.height, f.getFolioNumber());
+                }
+                canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
+            }
+            else{ //We were unable to resolve the image, so we have a height of 0.
+                canvasHeight = 0;
+            }
       }
       result.put("width", canvasWidth);
       result.put("height", canvasHeight);

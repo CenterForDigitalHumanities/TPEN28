@@ -124,6 +124,9 @@ public class CanvasServlet extends HttpServlet{
       if (pageDim != null) {
          imageResource.element("height", pageDim.height ); 
          imageResource.element("width", pageDim.width ); 
+         if(storedDims.getNaturalImageDimensions().height <= 0 && pageDim.height > 0){ //There was no foliodim entry, so create one
+             FolioDims.createFolioDimsRecord(pageDim.width, pageDim.height, f.getFolioNumber());
+         }
       }
       imageAnnot.element("resource", imageResource);
       imageAnnot.element("on", canvasID);

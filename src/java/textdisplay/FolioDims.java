@@ -23,9 +23,9 @@ public class FolioDims {
         Construct a FolioDim object from a given projectfolio ID
         @params folioID: a folio id
     */
-    public FolioDims(int projectfolioID) throws SQLException{
+    public FolioDims(int folioDimsID) throws SQLException{
         try (Connection j = DatabaseWrapper.getConnection()) {
-            projectfolioID = projectfolioID;
+            folioDimID = folioDimsID;
             try (PreparedStatement stmt = j.prepareStatement("Select * from foliodim where projectfolioID=?")) {
                 stmt.setInt(1, projectfolioID);
                 ResultSet rs = stmt.executeQuery();
@@ -33,7 +33,7 @@ public class FolioDims {
                    folioID = rs.getInt("folioID");
                    height = rs.getInt("height");
                    width = rs.getInt("width");
-                   folioDimID = rs.getInt("folioDimID");
+                   projectfolioID = rs.getInt("projectfolioID");
                    generateDimension(width, height);
                 }
             }
@@ -66,9 +66,9 @@ public class FolioDims {
         Construct a FolioDim object from a given projectfolioID
         @params folioID: a folio id
     */
-    public FolioDims(int folioDimsID, boolean flag, boolean projectfolioFlag) throws SQLException{
+    public FolioDims(int projectFolioID, boolean flag, boolean projectfolioFlag) throws SQLException{
         try (Connection j = DatabaseWrapper.getConnection()) {
-            folioDimID = folioDimsID;
+            projectfolioID = projectFolioID;
             try (PreparedStatement stmt = j.prepareStatement("Select * from foliodim where folioDimID=?")) {
                 stmt.setInt(1, projectfolioID);
                 ResultSet rs = stmt.executeQuery();
@@ -76,7 +76,7 @@ public class FolioDims {
                    folioID = rs.getInt("folioID");
                    height = rs.getInt("height");
                    width = rs.getInt("width");
-                   projectfolioID = rs.getInt("projectfolioID");
+                   folioDimID = rs.getInt("folioDimID");
                    generateDimension(width, height);
                 }
             }

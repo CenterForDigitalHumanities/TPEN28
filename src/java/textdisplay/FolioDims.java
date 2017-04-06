@@ -84,7 +84,7 @@ public class FolioDims {
     }
     
     /*
-      Create a new FolioDims record in SQL with a given width and height.  Return the ID generated.  
+      Create a new FolioDims record in SQL with a given width, height, folioID and projectFolioID.  Return the ID generated.  
     */
     public static int createFolioDimsRecord(int w, int h, int folioID, int projectFolioID) throws SQLException{
         Connection j = null;
@@ -95,6 +95,34 @@ public class FolioDims {
            stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
            stmt.setInt(1, folioID);
            stmt.setInt(2, projectFolioID);
+           stmt.setInt(3, w);
+           stmt.setInt(4, h);
+           stmt.execute();
+           ResultSet rs = stmt.getGeneratedKeys();
+           if (rs.next()) {
+              int toret = rs.getInt(1); //primary key when the table is created, which is going to be folioDimID
+              return (toret);
+           } else {
+              return 0;
+           }
+        } finally {
+           DatabaseWrapper.closeDBConnection(j);
+           DatabaseWrapper.closePreparedStatement(stmt);
+        }
+    }
+    
+    /*
+      Create a new FolioDims record in SQL with a given width, height and folioID.  Return the ID generated.  
+    */
+    public static int createFolioDimsRecord(int w, int h, int folioID) throws SQLException{
+        Connection j = null;
+        PreparedStatement stmt = null;
+        try {
+           String query = "insert into foliodim (folioID, projectfolioID, width, height) values(?,?,?,?)";
+           j = DatabaseWrapper.getConnection();
+           stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+           stmt.setInt(1, folioID);
+           stmt.setInt(2, -1);
            stmt.setInt(3, w);
            stmt.setInt(4, h);
            stmt.execute();

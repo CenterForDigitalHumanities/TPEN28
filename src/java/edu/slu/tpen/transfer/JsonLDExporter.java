@@ -34,6 +34,7 @@ import user.User;
 import static edu.slu.util.LangUtils.buildQuickMap;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import textdisplay.FolioDims;
 
 /**
  * Class which manages serialisation to JSON-LD. Builds a Map containing the
@@ -109,11 +110,16 @@ public class JsonLDExporter {
       //String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
       //System.out.println("Need pageDim in buildPage()");
       Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
+      FolioDims storedDims = new FolioDims(f.getFolioNumber());
       JSONArray otherContent;
       //System.out.println("Build page for "+f.getFolioNumber());
       if (pageDim == null) {
-         //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
-         pageDim = f.getImageDimension();
+         
+         pageDim = storedDims.getNaturalImageDimensions(); //Try to get image dimensions from the foliodim table
+         if(pageDim.height == 0){
+            //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
+            pageDim = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+         }
       }
       LOG.log(Level.INFO, "pageDim={0}", pageDim);
       Map<String, Object> result = new LinkedHashMap<>();

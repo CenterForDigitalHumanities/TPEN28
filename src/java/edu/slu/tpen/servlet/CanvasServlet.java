@@ -23,6 +23,7 @@ import static edu.slu.util.LangUtils.buildQuickMap;
 import javax.servlet.http.HttpServlet;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import textdisplay.FolioDims;
 
 
 /**
@@ -91,11 +92,16 @@ public class CanvasServlet extends HttpServlet{
       Integer msID = f.getMSID();
       String msID_str = msID.toString();
       String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();  
-      Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
+      Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());//Try to get image dimensions from the imagecache table
       String[] otherContent;
+      FolioDims storedDims = new FolioDims(f.getFolioNumber());
       if (pageDim == null) {
-         //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
-         pageDim = f.getImageDimension();
+         
+         pageDim = storedDims.getNaturalImageDimensions(); //Try to get image dimensions from the foliodim table
+         if(pageDim.height == 0){
+            //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
+            pageDim = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+         }
       }
       LOG.log(Level.INFO, "pageDim={0}", pageDim);
 

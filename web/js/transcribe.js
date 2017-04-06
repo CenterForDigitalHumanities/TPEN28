@@ -64,6 +64,7 @@ var tpen = {
 };
 var dragHelper = "<div id='dragHelper'></div>";
 var typingTimer;
+var preloadTimeout;
 
 /**
  * Make sure all image tools reset to their default values.
@@ -505,10 +506,8 @@ function setTPENObjectData(data){
         tpen.user.authorizedManuscripts = JSON.parse(data.user_mans_auth);
     }
 
-    var count = 0;
-    var length = tpen.project.leaders.length;
-    $.each(tpen.project.user_list, function(){
-        count++;
+    
+    $.each(tpen.project.user_list, function(i){
         if (this.UID === parseInt(data.cuser)){
             if(this.fname){
                 tpen.user.fname = this.fname;
@@ -519,21 +518,33 @@ function setTPENObjectData(data){
             if(this.openID){
                 tpen.user.openID = this.openID;
             }
+            //Do we only want to fire this here?  It is fired if they are a leader too
             setTranscribingUser();
             return false;
             //tpen.user.UID = parseInt(this.UID);
         }
-        if(count == length){ //we did not find this user in the list of project users.
+        if(i === tpen.project.user_list.length){ //we did not find this user in the list of project users.
             console.warn("Not a user of this project.");
         }
     });
-    $.each(tpen.project.leaders, function(){
-        count++;
+
+    $.each(tpen.project.leaders, function(i){
         if (this.UID === parseInt(data.cuser)){
             tpen.user.isAdmin = true;
+            if(this.fname){
+                tpen.user.fname = this.fname;
+            }
+            if(this.lname){
+                tpen.user.lname = this.lname;
+            }
+            if(this.openID){
+                tpen.user.openID = this.openID;
+            }
+            //Do we only want to fire this here?  It is fired if they are a member of the group too
+            setTranscribingUser();
             return false;
         }
-        if(count == length){ //we did not find this user in the list of leaders.
+        if(i == tpen.project.leaders.length){ //we did not find this user in the list of leaders.
             console.warn("Not an admin");
         }
     });
@@ -1222,6 +1233,10 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 }
                 //focusOnLastModified();
                 updatePageLabels(pageTitle);
+                clearTimeout(preloadTimeout);
+                preloadTimeout = window.setTimeout(function(){
+                    preloadFolioImages();
+                }, 15000);
                 
             }
             else{
@@ -1249,9 +1264,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 };
                 image2.src = "images/missingImage.png";
             }
-            window.setTimeout(function(){
-                preloadFolioImages();
-            }, 15000);
+            
             scrubNav();
         }; // the extra () ensures this only runs once.
         image.onerror =function(){
@@ -2806,12 +2819,16 @@ function makeOverlayDiv(thisLine, originalX, cnt){
     var newX = (X);
     var newH = (H);
     var newW = (W);
+    var hasTrans = false;
+    if(thisLine.attr("data-answer") !== undefined && thisLine.attr("data-answer")!==""){
+        hasTrans = true;
+    }
     var lineOverlay = "<div class='parsing' lineid='" + (parseInt(cnt)-1) + "' style='top:"
         + newY + "%;left:" + newX + "%;height:"
         + newH + "%;width:" + newW + "%;' lineserverid='"
         + thisLine.attr('lineserverid') + "'linetop='"
         + Y + "'lineleft='" + X + "'lineheight='"
-        + H + "'linewidth='" + W + "'></div>";
+        + H + "'linewidth='" + W + "' hastranscription='"+hasTrans+"'></div>";
     return lineOverlay;
 }
 
@@ -3086,7 +3103,14 @@ function gatherColumns(startIndex){
         var $lastLine = $(".parsing[lineleft='" + colX + "']:last");
         colH = parseFloat($lastLine.attr("linetop")) - colY + parseFloat($lastLine.attr("lineheight"));
         var lastLineIndex = $(".parsing").index($lastLine);
-        tpen.screen.gatheredColumns.push([colX, colY, colW, colH, $(line).attr("lineserverid"), $lastLine.attr("lineserverid"), true]);
+        for(var j=startIndex+1; j<=lastLineIndex; j++){
+            var textCheckLine = $($(".parsing")[j]);
+            if(textCheckLine.attr("hastranscription") === "true"){
+                hasTranscription = true;
+                break;
+            }
+        }
+        tpen.screen.gatheredColumns.push([colX, colY, colW, colH, $(line).attr("lineserverid"), $lastLine.attr("lineserverid"), hasTranscription]);
         gatherColumns(lastLineIndex);
     }
 }
@@ -4898,8 +4922,23 @@ function loadIframes(){
     });
 }
 
+/*
+ * Check to see if we can preload the image before and after the current folio we are on
+ * @returns {undefined}
+ * 
+ */
 function preloadFolioImages(){
-    for(var i=0; i<tpen.manifest.sequences[0].canvases.length; i++){
+    var currentFolio = tpen.screen.currentFolio;
+    var startFolio = currentFolio;
+    var endFolio = currentFolio;
+    if(currentFolio > 0){
+        startFolio = currentFolio - 1;
+    }
+    if(currentFolio < tpen.manifest.sequences[0].canvases.length - 1){
+        endFolio = currentFolio + 1;
+    }
+    for(var i=startFolio; i<=endFolio; i++){
+    //for(var i=0; i<tpen.manifest.sequences[0].canvases.length; i++){
         var folioImageToGet = tpen.manifest.sequences[0].canvases[i].images[0].resource["@id"];
         if(tpen.project.folioImages[i].image === null || !tpen.project.folioImages[i].preloaded ){
             tpen.project.folioImages[i].image = new Image();

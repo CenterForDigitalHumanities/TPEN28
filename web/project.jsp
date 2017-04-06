@@ -769,8 +769,8 @@
                                     <h4 class="clear-left" title="These options are unique to each user">User Tools</h4>
                                     <%
                                     // User Tools
-                                        String[] toolCheck = new String[16];
-                                        String[] toolName = new String[16];
+                                        String[] toolCheck = new String[20];
+                                        String[] toolName = new String[20];
                                         String track = "";
                                         Tool.tools[] TOOLS = 
                                         {Tool.tools.abbreviation, Tool.tools.compare, Tool.tools.parsing, Tool.tools.preview, Tool.tools.history, Tool.tools.linebreak, Tool.tools.fullpage, Tool.tools.paleography,
@@ -817,64 +817,74 @@
                                             String toolLabel = projectTools[i].getName();
                                             String toolURL = projectTools[i].getUrl();
                                             if (toolURL.endsWith("vulsearch")) {
-                                                toolCheck[11] = "checked=true";
-                                                toolName[11] = toolLabel;
+                                                toolCheck[14] = "checked=true";
+                                                toolName[14] = toolLabel;
                                                 continue;
                                             }
                                             // redacted below, but placeholding
+                                            //BH this was the Persus tool.  Now it is toolCheck and toolName [19] because I realized it too late. 4-5-17
 //                                            if (toolURL.endsWith("=latin")) {
 //                                                toolCheck[7] = "checked=true"; 
 //                                                toolName[7] = toolLabel;
 //                                                continue;
 //                                            }
                                             if (toolURL.endsWith("lookup.html")) {
-                                                toolCheck[12] = "checked=true";
-                                                toolName[12] = toolLabel;
-                                                continue;
-                                            }
-                                            if (toolURL.endsWith("morphologie/")) {
-                                                toolCheck[13] = "checked=true";
-                                                toolName[13] = toolLabel;
-                                                continue;
-                                            }
-                                            if (toolURL.endsWith("production.pl")) {
-                                                toolCheck[14] = "checked=true";
-                                                toolName[14] = toolLabel;
-                                                continue;
-                                            }
-                                            if (toolURL.indexOf("enigma")>-1){
                                                 toolCheck[15] = "checked=true";
                                                 toolName[15] = toolLabel;
                                                 continue;
                                             }
+                                            if (toolURL.endsWith("morphologie/")) {
+                                                toolCheck[16] = "checked=true";
+                                                toolName[16] = toolLabel;
+                                                continue;
+                                            }
+                                            if (toolURL.endsWith("production.pl")) {
+                                                toolCheck[17] = "checked=true";
+                                                toolName[17] = toolLabel;
+                                                continue;
+                                            }
+                                            if (toolURL.indexOf("enigma")>-1){
+                                                toolCheck[18] = "checked=true";
+                                                toolName[18] = toolLabel;
+                                                continue;
+                                            }
+                                            if (toolLabel.equals("Latin Dictionary")){
+                                                toolCheck[19] = "checked=true";
+                                                toolName[19] = toolLabel;
+                                                continue;
+                                            }
                                             toolOptions.append("<label class='projectTools'><input type='checkbox' checked=true name='projectTool[]' ").append("value='").append(toolURL).append("'/><span contentEditable=true>").append(toolLabel).append("</span></label>");
                                         }
-                                        if (toolName[11] == null) {
-                                            toolName[11] = "Latin Vulgate Search";
+                                        if (toolName[14] == null) {
+                                            toolName[14] = "Latin Vulgate Search";
                                         }
 //                                        if (toolName[7] == null) {
+                                        //BH see toolName[19] below, it is a repeat of this.  We can make 19 to be 7 if we want. 4-5-17
 //                                            toolName[7] = "Latin Dictionary";
 //                                        }
-                                        if (toolName[12] == null) {
-                                            toolName[12] = "Middle English Dictionary";
-                                        }
-                                        if (toolName[13] == null) {
-                                            toolName[13] = "French Dictionary";
-                                        }
-                                        if (toolName[14] == null) {
-                                            toolName[14] = "Dictionary of Old English";
-                                        }
                                         if (toolName[15] == null) {
-                                            toolName[15] = "Enigma";
+                                            toolName[15] = "Middle English Dictionary";
+                                        }
+                                        if (toolName[16] == null) {
+                                            toolName[16] = "French Dictionary";
+                                        }
+                                        if (toolName[17] == null) {
+                                            toolName[17] = "Dictionary of Old English";
+                                        }
+                                        if (toolName[18] == null) {
+                                            toolName[18] = "Enigma";
+                                        }
+                                        if (toolName[19] == null) {
+                                            toolName[19] = "Latin Dictionary";
                                         }
                                         out.print(toolOptions.toString());
                                     %>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[11]);%> value="http://vulsearch.sourceforge.net/cgi-bin/vulsearch" title="Latin Vulgate Search"/><span contentEditable="true"><%out.print(toolName[11]);%></span></label>
-
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[12]);%> value="http://quod.lib.umich.edu/m/med/lookup.html" title="Middle English Dictionary"/><span contentEditable="true"><%out.print(toolName[12]);%></span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[13]);%> value="http://www.cnrtl.fr/morphologie/" title="French Dictionary"/><span contentEditable="true"><%out.print(toolName[13]);%></span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[14]);%> value="http://tapor.library.utoronto.ca/cgi-bin/doe/production.pl" title="Dictionary of Old English"/><span contentEditable="true"><%out.print(toolName[14]);%></span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[15]);%> value="http://ciham-digital.huma-num.fr/enigma/" title="Enigma"/><span contentEditable="true"><%out.print(toolName[15]);%></span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[14]);%> value="http://vulsearch.sourceforge.net/cgi-bin/vulsearch" title="Latin Vulgate Search"/><span contentEditable="true"><%out.print(toolName[14]);%></span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[19]);%> value="http://www.perseus.tufts.edu/hopper/resolveform?lang=latin" title="Latin Dictionary"/><span contentEditable="true"><%out.print(toolName[19]);%></span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[15]);%> value="http://quod.lib.umich.edu/m/med/lookup.html" title="Middle English Dictionary"/><span contentEditable="true"><%out.print(toolName[15]);%></span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[16]);%> value="http://www.cnrtl.fr/morphologie/" title="French Dictionary"/><span contentEditable="true"><%out.print(toolName[16]);%></span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[17]);%> value="http://tapor.library.utoronto.ca/cgi-bin/doe/production.pl" title="Dictionary of Old English"/><span contentEditable="true"><%out.print(toolName[17]);%></span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[18]);%> value="http://ciham-digital.huma-num.fr/enigma/" title="Enigma"/><span contentEditable="true"><%out.print(toolName[18]);%></span></label>
                                     <input type="hidden" name="p" value="<%out.print(pageno);%>"/>
                                     <input type="hidden" name="projectID" value="<%out.print(projectID);%>"/>
                                     <input type="hidden" name="selecTab" value="3"/>

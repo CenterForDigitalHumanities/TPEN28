@@ -265,19 +265,25 @@ public class GetProjectTPENServlet extends HttpServlet {
                             //System.out.println("17");
                             response.setStatus(HttpServletResponse.SC_OK);
                             out.println(JSONObject.fromObject(jsonMap));
+                            System.gc(); //Force garbage cleaning to remove null pointers, empty variables, and new Whatevers that were destroyed by return statements.
                         } else {
                            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                           System.gc();
                         }
                     } else {
                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                       System.gc();
                     }
                 } else {
                    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                   System.gc();
                 }
             } catch (NumberFormatException | SQLException | IOException ex) {
+                System.gc();
                throw new ServletException(ex);
             }
         } else {
+            System.gc();
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
    }

@@ -428,7 +428,7 @@ public class Transcription {
             orderedTranscriptions.add(new Transcription(transcriptionIDs.getString(1)));
          }
          if (orderedTranscriptions.size() == 0) {
-             System.out.println("No orderedTranscriptions");
+             System.out.println("No orderedTranscriptions...prepare for the auto parser.");
             //create Transcription(s) based on Project settings and Line parsing
             Project p = new Project(projectID);
             //System.out.println("Got project");
@@ -501,7 +501,7 @@ public class Transcription {
          DatabaseWrapper.closeDBConnection(j);
          DatabaseWrapper.closePreparedStatement(ps);
       }
-
+      
    }
 
    /**

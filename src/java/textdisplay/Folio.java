@@ -120,7 +120,7 @@ public class Folio {
    public Folio(int folNum, boolean ignored) throws SQLException, IOException {
       try (Connection j = DatabaseWrapper.getConnection()) {
          folioNumber = folNum;
-         
+         //*Note imagepositions must be made in the auto parser, because any normal user parsing interaction writes to the transcription table.
          try (PreparedStatement stmt3 = j.prepareStatement("Select * from imagepositions where folio=? and width>0 order by colstart,top")) {
             stmt3.setInt(1, folioNumber);
             ResultSet rs = stmt3.executeQuery();

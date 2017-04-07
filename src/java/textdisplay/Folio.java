@@ -1401,13 +1401,14 @@ public class Folio {
                // If that path changes on the system, then update the variable updateLocation in version.properties, or this will still fail.  4-7-17
                if(!path.startsWith(imageDir)){
                 path = imageDir+path;
-                }
+               }
                if (!path.endsWith(".jpg") && !path.endsWith(".JPG")) {
                   path += ".jpg";
                }
                 LOG.log(Level.INFO, "Loading private image from {0}", path);
                return new FileInputStream(path);
-            } else if (!onlyLocal) {
+            } 
+            else if (!onlyLocal) {
                 LOG.log(Level.INFO, "Loading image with URL {0}", imageURL);
                HttpURLConnection conn = (HttpURLConnection)imageURL.openConnection();
                conn.connect();

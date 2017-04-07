@@ -37,7 +37,7 @@ public class FolioDims {
                    imageheight = rs.getInt("imageheight");
                    imagewidth = rs.getInt("imagewidth");
                    canvasheight = rs.getInt("canvasheight");
-                   canvaswidth = rs.getInt("cavaswidth");
+                   canvaswidth = rs.getInt("canvaswidth");
                    projectfolioID = rs.getInt("projectfolioID");
                    generateImageDimension(imagewidth, imageheight);
                 }
@@ -60,7 +60,7 @@ public class FolioDims {
                    imageheight = rs.getInt("imageheight");
                    imagewidth = rs.getInt("imagewidth");
                    canvasheight = rs.getInt("canvasheight");
-                   canvaswidth = rs.getInt("cavaswidth");
+                   canvaswidth = rs.getInt("canvaswidth");
                    folioDimID = rs.getInt("folioDimID");
                    generateImageDimension(imagewidth, imageheight);
                 }

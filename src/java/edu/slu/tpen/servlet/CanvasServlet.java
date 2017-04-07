@@ -95,8 +95,9 @@ public class CanvasServlet extends HttpServlet{
       Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());//Try to get image dimensions from the imagecache table
       String[] otherContent;
       FolioDims storedDims = new FolioDims(f.getFolioNumber());
+      int canvasWidth = 0;
+      int canvasHeight = 1000;
       if (pageDim == null) {
-         
          pageDim = storedDims.getNaturalImageDimensions(); //Try to get image dimensions from the foliodim table
          if(pageDim.height == 0){
             //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
@@ -109,23 +110,25 @@ public class CanvasServlet extends HttpServlet{
       result.element("@id", canvasID);
       result.element("@type", "sc:Canvas");
       result.element("label", f.getPageName());
-      int canvasHeight = 1000;
       result.element("height", canvasHeight);
-      if (pageDim != null) {
-         int canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
-         result.element("width", canvasWidth);
-      }
+      result.element("width", canvasWidth);
+      
       JSONArray images = new JSONArray();
       JSONObject imageAnnot = new JSONObject();
       imageAnnot.element("@type", "oa:Annotation");
       imageAnnot.element("motivation", "sc:painting");
       Map<String, Object> imageResource_map = buildQuickMap("@id", String.format("%s%s", Folio.getRbTok("SERVERURL"), f.getImageURLResize()), "@type", "dctypes:Image", "format", "image/jpeg");
       JSONObject imageResource = JSONObject.fromObject(imageResource_map);
-      if (pageDim != null) {
+      imageResource.element("height",0 ); 
+      imageResource.element("width",0 ); 
+      
+      if (pageDim != null) { //If it is null, then we don't want to worry about any of the following.  The image would not resolve and we had no existing entry for it and we can't make a good one.
+         canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
+         result.element("width", canvasWidth);
          imageResource.element("height", pageDim.height ); 
          imageResource.element("width", pageDim.width ); 
-         if(storedDims.getNaturalImageDimensions().height <= 0 && pageDim.height > 0){ //There was no foliodim entry, so create one
-             FolioDims.createFolioDimsRecord(pageDim.width, pageDim.height, f.getFolioNumber());
+         if(storedDims.getNaturalImageDimensions().height <= 0 && pageDim.height > 0){ //There was no foliodim entry and we have a proper pageDim we can make one from, so create one
+             FolioDims.createFolioDimsRecord(pageDim.width, pageDim.height, canvasWidth, canvasHeight, f.getFolioNumber());
          }
       }
       imageAnnot.element("resource", imageResource);

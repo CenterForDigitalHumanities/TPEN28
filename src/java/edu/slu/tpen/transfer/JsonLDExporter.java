@@ -114,7 +114,6 @@ public class JsonLDExporter {
       JSONArray otherContent;
       //System.out.println("Build page for "+f.getFolioNumber());
       if (pageDim == null) {
-         
          pageDim = storedDims.getNaturalImageDimensions(); //Try to get image dimensions from the foliodim table
          if(pageDim.height == 0){
             //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
@@ -128,13 +127,13 @@ public class JsonLDExporter {
       result.put("label", f.getPageName());
       int canvasHeight = 1000;
       int canvasWidth = 0;
-      if (pageDim != null) {
+      if (pageDim != null) {// if it is null, there was no previous entry and we could not resolve the image, so we can't perform any of the following.
           // Convert to canvas coordinates.
-            if(pageDim.height > 0){
-                if(storedDims.getNaturalImageDimensions().height <= 0){ //There was no foliodim entry, so create one
-                    FolioDims.createFolioDimsRecord(pageDim.width, pageDim.height, f.getFolioNumber());
-                }
+            if(pageDim.height > 0){ //If the height is 0, something went wrong.
                 canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
+                if(storedDims.getNaturalImageDimensions().height <= 0){ //There was no foliodim entry, so create one
+                    FolioDims.createFolioDimsRecord(pageDim.width, pageDim.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                }
             }
             else{ //We were unable to resolve the image, so we have a height of 0.
                 canvasHeight = 0;

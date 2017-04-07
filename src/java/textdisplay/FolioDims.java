@@ -16,12 +16,15 @@ public class FolioDims {
     public int projectfolioID = -1;
     private Dimension naturalImageSize = new Dimension(0,0); //The other classes expect a Dimension object sometimes, so let's be responsible for creating it here.
     private int folioDimID= -1;
-    public int height = 0;
-    public int width = 0;
+    public int imageheight = 0;
+    public int imagewidth = 0;
+    public int canvasheight = 0;
+    public int canvaswidth = 0;
     
-    /* 
-        Construct a FolioDim object from a given projectfolio ID
-        @params folioID: a folio id
+    /**
+     * Construct a FolioDim object from a given projectfolio ID
+     * @params folioID: a folio id
+     *       
     */
     public FolioDims(int folioDimsID) throws SQLException{
         try (Connection j = DatabaseWrapper.getConnection()) {
@@ -31,10 +34,12 @@ public class FolioDims {
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                    folioID = rs.getInt("folioID");
-                   height = rs.getInt("height");
-                   width = rs.getInt("width");
+                   imageheight = rs.getInt("imageheight");
+                   imagewidth = rs.getInt("imagewidth");
+                   canvasheight = rs.getInt("canvasheight");
+                   canvaswidth = rs.getInt("cavaswidth");
                    projectfolioID = rs.getInt("projectfolioID");
-                   generateDimension(width, height);
+                   generateImageDimension(imagewidth, imageheight);
                 }
             }
         }
@@ -52,10 +57,12 @@ public class FolioDims {
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                    projectfolioID = rs.getInt("projectfolioID");
-                   height = rs.getInt("height");
-                   width = rs.getInt("width");
+                   imageheight = rs.getInt("imageheight");
+                   imagewidth = rs.getInt("imagewidth");
+                   canvasheight = rs.getInt("canvasheight");
+                   canvaswidth = rs.getInt("cavaswidth");
                    folioDimID = rs.getInt("folioDimID");
-                   generateDimension(width, height);
+                   generateImageDimension(imagewidth, imageheight);
                 }
             }
         }
@@ -74,10 +81,12 @@ public class FolioDims {
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                    folioID = rs.getInt("folioID");
-                   height = rs.getInt("height");
-                   width = rs.getInt("width");
+                   imageheight = rs.getInt("imageheight");
+                   imagewidth = rs.getInt("imagewidth");
+                   canvasheight = rs.getInt("canvasheight");
+                   canvaswidth = rs.getInt("canvaswidth");
                    folioDimID = rs.getInt("folioDimID");
-                   generateDimension(width, height);
+                   generateImageDimension(imagewidth, imageheight);
                 }
             }
         }
@@ -86,17 +95,19 @@ public class FolioDims {
     /*
       Create a new FolioDims record in SQL with a given width, height, folioID and projectFolioID.  Return the ID generated.  
     */
-    public static int createFolioDimsRecord(int w, int h, int folioID, int projectFolioID) throws SQLException{
+    public static int createFolioDimsRecord(int imagew, int imageh, int canvasw, int canvash, int folioID, int projectFolioID) throws SQLException{
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-           String query = "insert into foliodim (folioID, projectfolioID, width, height) values(?,?,?,?)";
+           String query = "insert into foliodim (folioID, projectfolioID, imagewidth, imageheight, canvaswidth, canvasheight) values(?,?,?,?,?,?)";
            j = DatabaseWrapper.getConnection();
            stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
            stmt.setInt(1, folioID);
            stmt.setInt(2, projectFolioID);
-           stmt.setInt(3, w);
-           stmt.setInt(4, h);
+           stmt.setInt(3, imagew);
+           stmt.setInt(4, imageh);
+           stmt.setInt(5, canvasw);
+           stmt.setInt(6, canvash);
            stmt.execute();
            ResultSet rs = stmt.getGeneratedKeys();
            if (rs.next()) {
@@ -114,17 +125,19 @@ public class FolioDims {
     /*
       Create a new FolioDims record in SQL with a given width, height and folioID.  Return the ID generated.  
     */
-    public static int createFolioDimsRecord(int w, int h, int folioID) throws SQLException{
+    public static int createFolioDimsRecord(int imagew, int imageh, int canvasw, int canvash, int folioID) throws SQLException{
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-           String query = "insert into foliodim (folioID, projectfolioID, width, height) values(?,?,?,?)";
+           String query = "insert into foliodim (folioID, projectfolioID, imagewidth, imageheight, canvaswidth, canvasheight) values(?,?,?,?,?,?)";
            j = DatabaseWrapper.getConnection();
            stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
            stmt.setInt(1, folioID);
            stmt.setInt(2, -1);
-           stmt.setInt(3, w);
-           stmt.setInt(4, h);
+           stmt.setInt(3, imagew);
+           stmt.setInt(4, imageh);
+           stmt.setInt(5, canvasw);
+           stmt.setInt(4, canvash);
            stmt.execute();
            ResultSet rs = stmt.getGeneratedKeys();
            if (rs.next()) {
@@ -142,9 +155,9 @@ public class FolioDims {
     /*
         From a given width and height, generate the Dimension object stored with this FolioDim
     */
-    private void generateDimension(int w, int h){
-        width = w;
-        height = h;
+    private void generateImageDimension(int w, int h){
+        imagewidth = w;
+        imageheight = h;
         naturalImageSize = new Dimension(w,h);   
     }
     
@@ -160,11 +173,17 @@ public class FolioDims {
     public int getFolioDimsID(){
         return folioDimID;
     }
-    public int getDimHeight(){
-        return height;
+    public int getImageHeight(){
+        return imageheight;
     }
-    public int getDimWidth(){
-        return width;
+    public int getImageWidth(){
+        return imagewidth;
+    }
+    public int getCanvasHeight(){
+        return canvasheight;
+    }
+    public int getCanvasWidth(){
+        return canvaswidth;
     }
     
     public void setFolioID(int fID){
@@ -176,11 +195,17 @@ public class FolioDims {
     public void setNaturalImageSize(Dimension size){
         naturalImageSize = size;
     }
-    public void setDimheight(int dimheight){
-        height = dimheight;
+    public void setImageheight(int imgheight){
+        imageheight = imgheight;
     }
-    public void setDimwidth(int dimwidth){
-        width = dimwidth;
+    public void setImagewidth(int imgwidth){
+        imagewidth = imgwidth;
+    }
+    public void setCanvasheight(int cheight){
+        canvasheight = cheight;
+    }
+    public void setCanvaswidth(int cwidth){
+        canvaswidth = cwidth;
     }
     
        

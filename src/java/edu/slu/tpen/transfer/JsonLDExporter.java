@@ -128,7 +128,6 @@ public class JsonLDExporter {
       int canvasHeight = storedDims.getCanvasHeight();
       int canvasWidth = storedDims.getCanvasWidth();
       if (pageDim != null) {// if it is null, there was no previous entry and we could not resolve the image, so we can't perform any of the following.
-          // Convert to canvas coordinates.
             if(pageDim.height > 0){ 
                  // Convert to canvas coordinates.
                 if(storedDims.getNaturalImageDimensions().height <= 0){ //There was no foliodim entry, so create one

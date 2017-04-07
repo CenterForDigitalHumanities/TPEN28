@@ -137,18 +137,18 @@ public class JsonLDExporter {
       if (pageDim != null) {// if it is null, there was no previous entry and we could not resolve the image, so we can't perform any of the following.
           
             if(pageDim.height > 0){ 
-                System.out.println("pageDim 2nd check was greater than 0");
+                //System.out.println("pageDim 2nd check was greater than 0");
                  // Convert to canvas coordinates.
-                System.out.println("Strored dim height..." + storedDims.getNaturalImageDimensions().height);
+                //System.out.println("Strored dim height..." + storedDims.getNaturalImageDimensions().height);
                 if(storedDims.getNaturalImageDimensions().height <= 0){ //There was no foliodim entry, so create one
-                    System.out.println("creating a foliodim for..."+f.getFolioNumber());
+                    //System.out.println("creating a foliodim for..."+f.getFolioNumber());
                     canvasHeight = 1000;
                     canvasWidth = pageDim.width * canvasHeight / pageDim.height; 
                     //FolioDims.createFolioDimsRecord(pageDim.width, pageDim.height, canvasWidth, canvasHeight, f.getFolioNumber());
                 }
             }
             else{ //We were unable to resolve the image, so we have a height of 0.
-                System.out.println("We had trouble.  Returning a height and width of 0");
+                //System.out.println("We had trouble.  Returning a height and width of 0");
                 canvasHeight = 0;
                 canvasWidth = 0;
             }

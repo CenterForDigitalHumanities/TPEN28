@@ -1324,6 +1324,9 @@ public class Folio {
             // For reasons unknown, for private images, the uploadLocation is already stored as
             // part of the imageName, so we don't need the imageDir.
             imageName = getImageName();
+            if(!imageName.startsWith(imageDir)){
+                imageName = imageDir+imageName;
+            }
             LOG.log(Level.INFO, "Loading private image {0}.jpg", imageName);
             return imageName + ".jpg";
       }

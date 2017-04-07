@@ -137,7 +137,7 @@ public class FolioDims {
            stmt.setInt(3, imagew);
            stmt.setInt(4, imageh);
            stmt.setInt(5, canvasw);
-           stmt.setInt(4, canvash);
+           stmt.setInt(6, canvash);
            stmt.execute();
            ResultSet rs = stmt.getGeneratedKeys();
            if (rs.next()) {

@@ -110,15 +110,22 @@ public class JsonLDExporter {
       //String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
       //System.out.println("Need pageDim in buildPage()");
       Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
-      FolioDims storedDims = new FolioDims(f.getFolioNumber());
+      FolioDims storedDims = new FolioDims(f.getFolioNumber(), true);
+      
       JSONArray otherContent;
       //System.out.println("Build page for "+f.getFolioNumber());
       if (pageDim == null) {
          pageDim = storedDims.getNaturalImageDimensions(); //Try to get image dimensions from the foliodim table
-         if(pageDim.height == 0){
+         //System.out.println("Checking foliodim for this..."+f.getFolioNumber());
+         //System.out.println(pageDim.height);
+         if(pageDim.height <= 0){
+             //System.out.println("Did not find foliodim, resolving image for..."+f.getFolioNumber());
             //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
             pageDim = f.getImageDimension(); //Resolve the image headers and get the image dimensions
          }
+      }
+      else{
+          //System.out.println("Got pageDim from imagecache for this..."+f.getFolioNumber());
       }
       LOG.log(Level.INFO, "pageDim={0}", pageDim);
       Map<String, Object> result = new LinkedHashMap<>();
@@ -128,15 +135,20 @@ public class JsonLDExporter {
       int canvasHeight = storedDims.getCanvasHeight();
       int canvasWidth = storedDims.getCanvasWidth();
       if (pageDim != null) {// if it is null, there was no previous entry and we could not resolve the image, so we can't perform any of the following.
+          
             if(pageDim.height > 0){ 
+                System.out.println("pageDim 2nd check was greater than 0");
                  // Convert to canvas coordinates.
+                System.out.println("Strored dim height..." + storedDims.getNaturalImageDimensions().height);
                 if(storedDims.getNaturalImageDimensions().height <= 0){ //There was no foliodim entry, so create one
+                    System.out.println("creating a foliodim for..."+f.getFolioNumber());
                     canvasHeight = 1000;
                     canvasWidth = pageDim.width * canvasHeight / pageDim.height; 
-                    FolioDims.createFolioDimsRecord(pageDim.width, pageDim.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                    //FolioDims.createFolioDimsRecord(pageDim.width, pageDim.height, canvasWidth, canvasHeight, f.getFolioNumber());
                 }
             }
             else{ //We were unable to resolve the image, so we have a height of 0.
+                System.out.println("We had trouble.  Returning a height and width of 0");
                 canvasHeight = 0;
                 canvasWidth = 0;
             }

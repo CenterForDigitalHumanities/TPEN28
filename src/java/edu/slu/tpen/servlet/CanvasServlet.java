@@ -94,15 +94,20 @@ public class CanvasServlet extends HttpServlet{
       String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();  
       Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());//Try to get image dimensions from the imagecache table
       String[] otherContent;
-      FolioDims storedDims = new FolioDims(f.getFolioNumber());
+      FolioDims storedDims = new FolioDims(f.getFolioNumber(), true);
       int canvasWidth = 0;
       int canvasHeight = 0;
       if (pageDim == null) {
          pageDim = storedDims.getNaturalImageDimensions(); //Try to get image dimensions from the foliodim table
-         if(pageDim.height == 0){
+         //System.out.println("Checking foliodim for this..."+f.getFolioNumber());
+         if(pageDim.height <= 0){
+             //System.out.println("Did not find foliodim, resolving image for..."+f.getFolioNumber());
             //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
             pageDim = f.getImageDimension(); //Resolve the image headers and get the image dimensions
          }
+      }
+      else{
+          //System.out.println("Got pageDim from imagecache for this..."+f.getFolioNumber());
       }
       LOG.log(Level.INFO, "pageDim={0}", pageDim);
 
@@ -126,6 +131,7 @@ public class CanvasServlet extends HttpServlet{
          if(storedDims.getNaturalImageDimensions().height <= 0 && pageDim.height > 0){ //There was no foliodim entry and we have a proper pageDim we can make one from, so create one
              canvasHeight = 1000;
              canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
+             //System.out.println("creating a foliodim for..."+f.getFolioNumber());
              FolioDims.createFolioDimsRecord(pageDim.width, pageDim.height, canvasWidth, canvasHeight, f.getFolioNumber());
          }
          else{ //There was a foliodim entry, so get those values

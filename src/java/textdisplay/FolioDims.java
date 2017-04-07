@@ -29,8 +29,8 @@ public class FolioDims {
     public FolioDims(int folioDimsID) throws SQLException{
         try (Connection j = DatabaseWrapper.getConnection()) {
             folioDimID = folioDimsID;
-            try (PreparedStatement stmt = j.prepareStatement("Select * from foliodim where projectfolioID=?")) {
-                stmt.setInt(1, projectfolioID);
+            try (PreparedStatement stmt = j.prepareStatement("Select * from foliodim where folioDimsID=?")) {
+                stmt.setInt(1, folioDimsID);
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                    folioID = rs.getInt("folioID");

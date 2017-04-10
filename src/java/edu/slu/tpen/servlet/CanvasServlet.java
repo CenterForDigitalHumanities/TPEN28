@@ -92,23 +92,18 @@ public class CanvasServlet extends HttpServlet{
       Integer msID = f.getMSID();
       String msID_str = msID.toString();
       String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();  
-      Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());//Try to get image dimensions from the imagecache table
       String[] otherContent;
-      FolioDims storedDims = new FolioDims(f.getFolioNumber(), true);
+      FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
+      Dimension storedDims = null;
       int canvasWidth = 0;
       int canvasHeight = 0;
-      if (pageDim == null) {
-         pageDim = storedDims.getNaturalImageDimensions(); //Try to get image dimensions from the foliodim table
-         //System.out.println("Checking foliodim for this..."+f.getFolioNumber());
-         if(pageDim.height <= 0){
-             //System.out.println("Did not find foliodim, resolving image for..."+f.getFolioNumber());
-            //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
-            pageDim = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+      if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
+          storedDims = ImageCache.getImageDimension(f.getFolioNumber());
+         if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry, or there was a bad one we can't use
+            storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
          }
       }
-      else{
-          //System.out.println("Got pageDim from imagecache for this..."+f.getFolioNumber());
-      }
+      
       LOG.log(Level.INFO, "pageDim={0}", pageDim);
 
       JSONObject result = new JSONObject();
@@ -125,22 +120,27 @@ public class CanvasServlet extends HttpServlet{
       imageResource.element("height",0 ); 
       imageResource.element("width",0 ); 
       
-      if (pageDim != null) { //If it is null, then we don't want to worry about any of the following.  The image would not resolve and we had no existing entry for it and we can't make a good one.
-         imageResource.element("height", pageDim.height ); 
-         imageResource.element("width", pageDim.width ); 
-         if(storedDims.getNaturalImageDimensions().height <= 0 && pageDim.height > 0){ //There was no foliodim entry and we have a proper pageDim we can make one from, so create one
-             canvasHeight = 1000;
-             canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
-             //System.out.println("creating a foliodim for..."+f.getFolioNumber());
-             FolioDims.createFolioDimsRecord(pageDim.width, pageDim.height, canvasWidth, canvasHeight, f.getFolioNumber());
-         }
-         else{ //There was a foliodim entry, so get those values
-             canvasWidth = storedDims.getCanvasWidth();
-             canvasHeight = storedDims.getCanvasHeight();
-         }
+      if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
+            if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
+                if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.
+                    //generate canvas values for foliodim
+                    canvasHeight = 1000;
+                    canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
+                    FolioDims.createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                }
+            }
+            else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
+                canvasHeight = 0;
+                canvasWidth = 0;
+            }
       }
+      //We will return 0 for the values here no matter what so that the object returned is valid IIIF from this servlet.
+      //We could do the same check that JsonLDExporter does and return the object without the height and width so it is invalid (on purpose).
       result.element("width", canvasWidth);
       result.element("height", canvasHeight);
+      imageResource.element("height",0 ); 
+      imageResource.element("width",0 ); 
+      
       imageAnnot.element("resource", imageResource);
       imageAnnot.element("on", canvasID);
       images.add(imageAnnot);

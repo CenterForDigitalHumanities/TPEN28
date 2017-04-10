@@ -109,46 +109,35 @@ public class JsonLDExporter {
       //annotationList.element("testing", "msid_creation");
       //String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
       //System.out.println("Need pageDim in buildPage()");
-      Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
-      FolioDims storedDims = new FolioDims(f.getFolioNumber(), true);
+      
+      FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
+      Dimension storedDims = null;
       
       JSONArray otherContent;
-      //System.out.println("Build page for "+f.getFolioNumber());
-      if (pageDim == null) {
-         pageDim = storedDims.getNaturalImageDimensions(); //Try to get image dimensions from the foliodim table
-         //System.out.println("Checking foliodim for this..."+f.getFolioNumber());
-         //System.out.println(pageDim.height);
-         if(pageDim.height <= 0){
-             //System.out.println("Did not find foliodim, resolving image for..."+f.getFolioNumber());
-            //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
-            pageDim = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+      if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
+         storedDims = ImageCache.getImageDimension(f.getFolioNumber());
+         if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
+            storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
          }
       }
-      else{
-          //System.out.println("Got pageDim from imagecache for this..."+f.getFolioNumber());
-      }
+
       LOG.log(Level.INFO, "pageDim={0}", pageDim);
       Map<String, Object> result = new LinkedHashMap<>();
       result.put("@id", canvasID);
       result.put("@type", "sc:Canvas");
       result.put("label", f.getPageName());
-      int canvasHeight = storedDims.getCanvasHeight();
-      int canvasWidth = storedDims.getCanvasWidth();
-      if (pageDim != null) {// if it is null, there was no previous entry and we could not resolve the image, so we can't perform any of the following.
-          
-            if(pageDim.height > 0){ 
-                //System.out.println("pageDim 2nd check was greater than 0");
-                 // Convert to canvas coordinates.
-                //System.out.println("Strored dim height..." + storedDims.getNaturalImageDimensions().height);
-                if(storedDims.getNaturalImageDimensions().height <= 0){ //There was no foliodim entry, so create one
-                    //System.out.println("creating a foliodim for..."+f.getFolioNumber());
+      int canvasHeight = pageDim.getCanvasHeight();
+      int canvasWidth = pageDim.getCanvasWidth();
+      if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
+            if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
+                if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.
+                    //generate canvas values for foliodim
                     canvasHeight = 1000;
-                    canvasWidth = pageDim.width * canvasHeight / pageDim.height; 
-                    //FolioDims.createFolioDimsRecord(pageDim.width, pageDim.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                    canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
+                    FolioDims.createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
                 }
             }
-            else{ //We were unable to resolve the image, so we have a height of 0.
-                //System.out.println("We had trouble.  Returning a height and width of 0");
+            else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
                 canvasHeight = 0;
                 canvasWidth = 0;
             }
@@ -160,11 +149,11 @@ public class JsonLDExporter {
       imageAnnot.put("@type", "oa:Annotation");
       imageAnnot.put("motivation", "sc:painting");
       Map<String, Object> imageResource = buildQuickMap("@id", String.format("%s%s&user=%s", Folio.getRbTok("SERVERURL"), f.getImageURLResize(), u.getUname()), "@type", "dctypes:Image", "format", "image/jpeg");
-      //System.out.println("Have image resources");
-//      imageResource.put("iiif", ?);
-      if (pageDim != null) {
-         imageResource.put("height", pageDim.height ); 
-         imageResource.put("width", pageDim.width ); 
+      
+      if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
+          //doing this check will return invalid images because we will not include height and width of 0.
+         imageResource.put("height", storedDims.height ); 
+         imageResource.put("width", storedDims.width ); 
       }
       imageAnnot.put("resource", imageResource);
       imageAnnot.put("on", canvasID);

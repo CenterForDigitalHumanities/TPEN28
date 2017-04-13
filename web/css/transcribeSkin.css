@@ -1859,6 +1859,13 @@ a.editButtons {
 .navigation.collapsed #titleSection{
     max-width: 6em;
 }
+#pageJump{
+    position: relative;
+    height: 2em;
+    border: none;
+    z-index: 3;
+    text-align: center;
+}
 .navigation.collapsed #pageJump {
     max-width: 1.5em;
     margin: 0 .5em;

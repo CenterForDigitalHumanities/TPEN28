@@ -379,12 +379,12 @@
                     <a href='#helpShortcuts'> shortcuts </a>
                     <a href='#helpTools'> tools </a>
                     <a href='#helpNavigation'> navigation </a>
-                    <a href='#helpDirectNavigation'> navigation </a>
+                    <!--<a href='#helpDirectNavigation'> advanced </a>-->
                 </div>
                 <div id="helpContainer">
                     <div id="helpGlossary" class="helpSection">
-
-                    <p>Commonly used terms in this application</p>
+                    <div class="helpSubsection">Glossary</div>
+                    <p>Commonly used terms in this application include</p>
                     <dl>
                         <dt>Page</dt>
                         <dd>A single image and supporting interface. Some source images may contain partial or multiple folios.</dd>
@@ -428,7 +428,7 @@
                         </dl>
                     </div>
                     <div id="helpShortcuts" class="helpSection">
-
+                        <div class="helpSubsection">Keyboard Shortcuts</div>
                         <p>Support for most browsers includes the following simple shortcuts:</p>
                         <dl>
 
@@ -471,7 +471,6 @@
                     </div>
                     <div id="helpTools" class="helpSection">
                         <div class="helpSubsection">custom characters and XML tags</div>
-
                         <dl>
                             <dt>Custom Character Entry </dt>
                             <dd>To use Custom Characters
@@ -499,9 +498,7 @@
                                 To close the tag, place the cursor at the desired end point and click the reminder. Use the "x" to dismiss unwanted reminders.
                             </dd>
                         </dl>
-
                         <div class="helpSubsection">viewing options <button type="button" onclick="Help.lightUp('.buttons')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></div>
-
                         <dl>
                             <dt>View the page image </dt>
                             <dd>To hide the work space to see the image hold <kbd>ALT</kbd>+<kbd>CTRL</kbd>.
@@ -575,6 +572,7 @@
                             </dl>
 
                     </div>
+                    <div class="helpSubsection"> navigation </div>
                     <div id="helpNavigation" class="helpSection">
                         <dl>
                             <dt>Location Flag <button type="button" onclick="Help.lightUp('#trimPage')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
@@ -587,6 +585,7 @@
                         </dl>
                     </div>
                     <div id="helpDirectNavigation" class="helpSection">
+                        <div class="helpSubsection"> advanced </div>
                         <dl>
                             <dt>http://t-pen.org/TPEN/manifest/{projectID}</dt>
                             <dd>Shows the SharedCanvas Manifest for this project.</dd>

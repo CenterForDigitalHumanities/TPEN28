@@ -142,6 +142,9 @@ public class JsonLDExporter {
                 canvasWidth = 0;
             }
       }
+      else{ //define a 0, 0 storedDims
+          storedDims = new Dimension(0,0);
+      }
       result.put("width", canvasWidth);
       result.put("height", canvasHeight);
       List<Object> images = new ArrayList<>();

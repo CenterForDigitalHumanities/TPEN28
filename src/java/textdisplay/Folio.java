@@ -1308,7 +1308,7 @@ public class Folio {
    }
 
    private String getImagePath(String archive) throws SQLException {
-      String imageDir = getRbTok("LOCALIMAGESTORE");
+      String imageDir = getRbTok("uploadLocation");
 		String imageName;
       switch (archive) {
          case "TPEN":
@@ -1323,7 +1323,15 @@ public class Folio {
          case "private":
             // For reasons unknown, for private images, the uploadLocation is already stored as
             // part of the imageName, so we don't need the imageDir.
+             // BH To get around this, we check for the existance of the directory path at the start of the imageName.  if it is not there, add it in here.
+             // If that path changes on the system, then update the variable updateLocation in version.properties, or this will still fail.  4-7-17
             imageName = getImageName();
+            
+            if(!imageName.startsWith(imageDir)){
+                System.out.println("nope...");
+                imageName = imageDir+imageName;
+                System.out.println("Now does it?   "+imageName);
+            }
             LOG.log(Level.INFO, "Loading private image {0}.jpg", imageName);
             return imageName + ".jpg";
       }
@@ -1360,7 +1368,7 @@ public class Folio {
       //small hack for one repository we use, not needed generally
       url = url.replace("64.19.142.12/88.48.84.154", "88.48.84.154");
       URL imageURL = new URL(url);
-   
+      String imageDir = getRbTok("uploadLocation");
       String archName = getArchive();
       Archive a = new Archive(archName);
       String path;
@@ -1387,12 +1395,20 @@ public class Folio {
          case none:
             if ("private".equals(archName)) {
                path = getImageName();
+               // For reasons unknown, for private images, the uploadLocation is already stored as
+               // part of the imageName, so we don't need the imageDir.
+               // BH To get around this, we check for the existance of the directory path at the start of the imageName.  if it is not there, add it in here.
+               // If that path changes on the system, then update the variable updateLocation in version.properties, or this will still fail.  4-7-17
+               if(!path.startsWith(imageDir)){
+                path = imageDir+path;
+               }
                if (!path.endsWith(".jpg") && !path.endsWith(".JPG")) {
                   path += ".jpg";
                }
                 LOG.log(Level.INFO, "Loading private image from {0}", path);
                return new FileInputStream(path);
-            } else if (!onlyLocal) {
+            } 
+            else if (!onlyLocal) {
                 LOG.log(Level.INFO, "Loading image with URL {0}", imageURL);
                HttpURLConnection conn = (HttpURLConnection)imageURL.openConnection();
                conn.connect();

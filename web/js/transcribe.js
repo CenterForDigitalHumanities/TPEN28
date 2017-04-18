@@ -302,6 +302,7 @@ function populatePreview(lines, pageLabel, currentPage, order){
                 }
             }
         }
+        //all data-linenumber can be removed here.
         var previewLine = $('<div class="previewLine" data-lineNumber="' + j + '">'
             + '<span class="previewLineNumber" lineserverid="' + lineID + '" data-lineNumber="' + j + '"  data-column="' + col + '"  data-lineOfColumn="' + j + '">'
             + col + '' + num + '</span>'
@@ -5766,9 +5767,9 @@ var Help = {
      *  @param current element textarea in which change is made.
      */
      updateLine: function(current) {
-            var lineid = $(current).parent(".transcriptlet").attr("lineid");
+            var lineid = $(current).parent(".transcriptlet").attr("lineserverid");
             var previewText = ($(current).hasClass("theText")) ? ".previewText" : ".previewNotes";
-            $(".previewLineNumber[data-linenumber='"+lineid+"']").siblings(previewText).html(Preview.scrub($(current).val()));
+            $(".previewLineNumber[lineserverid='"+lineid+"']").siblings(previewText).html(Preview.scrub($(current).val()));
             // Data.makeUnsaved();
      },
     /**
@@ -5781,7 +5782,7 @@ var Help = {
         var columnLineShift = 0;
         var oldLeftPreview = allTrans.eq(0).find(".lineLeft").val();
         // empty the current page
-        var currentPreview = $("[data-pagenumber='"+folio+"']");
+        var currentPreview = $("[data-pagenumber='"+tpen.screen.currentFolio+"']");
         currentPreview.find(".previewLine").remove();
         var newPage = new Array();
         allTrans.each(function(index){
@@ -5791,6 +5792,7 @@ var Help = {
                 columnLineShift = (index+1);
                 oldLeftPreview = columnLeft;
             }
+            //all data-linenumber attributes can be removed here
             newPage.push("<div class='previewLine' data-linenumber='",
                     (index+1),"'>",
                 "<span class='previewLineNumber' lineserverid='",

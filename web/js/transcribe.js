@@ -607,6 +607,14 @@ function loadTranscription(pid, tool){
                 if(activeProject !== null && typeof activeProject === "string"){
                     //we can parse it and it may be what we are looking for.  
                     //FIXME Why is the servlet returning a string instead of a json object sometimes?
+                    try {
+                       activeProject = JSON.parse(str);
+                    } catch (e) {
+                        clearTimeout(longLoadingProject);
+                        $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                        $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                        return false;
+                    }
                     activeProject = JSON.parse(activeProject);
                 }
                 //at this proint, activeProject should be an object.  Check for existence of manifest.

@@ -2503,6 +2503,11 @@ function stopMagnify(){
     $("button[magnifyimg='full']").removeClass("selected");
     $("button[magnifyimg='compare']").removeClass("selected");
     $("button[magnifyimg='trans']").removeClass("selected");
+    var imgBtmTop = $("#imgBottom img").css("top");
+    imgBtmTop = parseFloat(imgBtmTop) + 53;
+    $("#imgBottom img").css({
+        "top" : imgBtmTop + "px"
+    });
     restoreWorkspace();
 }
 
@@ -2578,7 +2583,12 @@ function mouseZoom($img,container, event){
     
     var imgTop = $img.find("img").css("top");
     var imgLeft = $img.find("img").css("left");
-    if(imgTop === "auto")imgTop="0px";
+    if(imgTop === "auto"){
+        imgTop="0px";
+    }
+    else{
+        imgTop = parseFloat(imgTop) + 40;
+    }
     if(imgLeft === "auto")imgLeft="0px";
     var imgOffset = $img.find("img").offset().top;
     var imgDims = new Array(parseInt(imgLeft), parseInt(imgTop), $img.width(), $img.height());
@@ -2857,9 +2867,13 @@ function restoreWorkspace(){
 function hideWorkspaceToSeeImage(which){
     if(which === "trans"){
         $("#transWorkspace").hide();
+        var imgBtmTop = $("#imgBottom img").css("top");
+        imgBtmTop = parseFloat(imgBtmTop) - 53;
         $("#imgBottom").css({
-            "height": "100%"
+            "height": "100%",
         });
+        $("#imgBottom img").css("top", imgBtmTop+"px");
+//        $("#imgTop").hide();
         $(".hideMe").hide();
         $(".showMe2").show();
     }

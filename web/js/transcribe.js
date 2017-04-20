@@ -570,6 +570,12 @@ function setTranscribingUser(){
     $("#ipr_user").html(user);
 }
 
+/* Display a message to the user letting them know the project will take a long time to load. */
+function longLoad(){
+    var newMessage = "This project is large and may take a long time to load.  A message will appear here if there is an error.  This may take up to 10 minutes.  Thank you for your patience.";
+    $(".turnMsg").html(newMessage);
+}
+
 /*
 * Load the transcription from the text in the text area.
 * This is the first thing called when coming into
@@ -583,6 +589,9 @@ function loadTranscription(pid, tool){
     var canvasIndex = 0;
     $("#projectsBtn").attr("href", "project.jsp?projectID="+pid);
     $("#transTemplateLoading").show();
+    longLoadingProject = window.setTimeout(function(){
+        longLoad();
+    }, 25000);
     if (pid || $.isNumeric(userTranscription)){
         //The user can put the project ID in directly and a call will be made to newberry proper to grab it.
         projectID = pid || userTranscription;
@@ -603,8 +612,9 @@ function loadTranscription(pid, tool){
                 //at this proint, activeProject should be an object.  Check for existence of manifest.
                 if(!activeProject.manifest) {
                     //The return must contain the manifest, otherwise we cannot use it
+                    clearTimeout(longLoadingProject);
                     $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                    $(".transLoader").find("img").attr("src", "..TPENimages/BrokenBook01.jpg");
+                    $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                     return false;
                 }
                 setTPENObjectData(activeProject);
@@ -732,12 +742,14 @@ function loadTranscription(pid, tool){
             },
             error: function(jqXHR, error, errorThrown) {
                 if (jqXHR.status && jqXHR.status === 404){
+                    clearTimeout(longLoadingProject);
                    $(".turnMsg").html("Could not find this project.  Check the project ID. Refresh the page to try again or contact your T&#8209;PEN admin.");
-                   $(".transLoader").find("img").attr("src", "../TPEN28/images/missingImage.png");
+                   $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
                 }
                 else {
+                    clearTimeout(longLoadingProject);
                     $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
-                    $(".transLoader").find("img").attr("src", "../images/BrokenBook01.jpg");
+                    $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                 }
 
                 //load Iframes after user check and project information data call
@@ -904,12 +916,14 @@ function loadTranscription(pid, tool){
                 },
                 error: function(jqXHR, error, errorThrown) {
                     if (jqXHR.status && jqXHR.status === 404){
+                        clearTimeout(longLoadingProject);
                         $(".turnMsg").html("Could not find this project.  Check the project ID.  Refresh the page to try again or contact your T&#8209;PEN admin.");
-                        $(".transLoader").find("img").attr("src", "..TPEN28/images/missingImage.png");
+                        $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
                      }
                      else {
+                         clearTimeout(longLoadingProject);
                          $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
-                         $(".transLoader").find("img").attr("src", "../images/BrokenBook01.jpg");
+                         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                      }
                     //load Iframes after user check and project information data call
                     loadIframes();
@@ -1206,6 +1220,8 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
             $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
             $("#imgTop img, #imgBottom img").css("width", "100%");
             $("#imgBottom").css("height", "inherit");
+            $(".turnMsg").html("Please wait while we load the transcription interface.");
+            clearTimeout(longLoadingProject);
             if(permissionForImage){
                 $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
                 $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
@@ -2508,6 +2524,7 @@ function stopMagnify(){
     $("#imgBottom img").css({
         "top" : imgBtmTop + "px"
     });
+    tpen.screen.liveTool = "none";
     restoreWorkspace();
 }
 
@@ -5613,14 +5630,19 @@ var Help = {
         var position = $element.offset();
         $("#overlay").show().after(look);
         if ((position == null) || (position.top < 1)){
-            position = {left:(Page.width()-260)/2,top:(Page.height()-46)/2};
-            look.prepend("<div id='offscreen' class='ui-corner-all ui-state-error'>This element is not currently displayed.</div>")
+            position = {left:'39%',top:$("#transWorkspace").offset().top + 175};
+            look.css({
+                "height" : "50px"
+            });
+            look.prepend("<div style='margin: 5px 0px;' id='offscreen' class='ui-corner-all ui-state-error'>This element is not currently displayed.</div>")
             .css({
                 "left"  : position.left,
-                "top"   : position.top
+                "top"   : position.top,
+                "background-color" : "#005a8c"
             }).delay(2000).show("fade",0,function(){
                 $(this).remove();
                 $("#overlay").hide("fade",2000);
+                look.remove();
             });
         } else {
             $("#highlight").css({

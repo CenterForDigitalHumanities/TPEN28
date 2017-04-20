@@ -36,6 +36,7 @@
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
         <script src="js/manuscriptFilters.js" type="text/javascript"></script>
         <script src="js/tpen.js" type="text/javascript"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
         <style>
             #footer { width: 1010px; position: fixed;left:0;right:0; bottom:0;margin: 0 auto;}
             #foot { background: url(images/footer.png) top left no-repeat;position:relative;padding:50px 125px; }

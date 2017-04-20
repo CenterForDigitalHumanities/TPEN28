@@ -46,6 +46,7 @@ String location = "";
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
         <script type="text/javascript" src="js/tpen.js"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
         <style type="text/css">
             #content{max-width: 60%;min-width: 500px;padding:10px;}       
             #fileUpload{position: relative;}

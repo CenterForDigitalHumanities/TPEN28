@@ -608,7 +608,7 @@ function loadTranscription(pid, tool){
                     //we can parse it and it may be what we are looking for.  
                     //FIXME Why is the servlet returning a string instead of a json object sometimes?
                     try {
-                       activeProject = JSON.parse(str);
+                       activeProject = JSON.parse(activeProject);
                     } catch (e) {
                         clearTimeout(longLoadingProject);
                         $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");

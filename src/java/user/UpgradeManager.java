@@ -26,17 +26,17 @@ public class UpgradeManager {
     
     /* Get the current upgrade settings */
     public UpgradeManager() throws SQLException{
-        Connection j = null;
-        try (PreparedStatement stmt = j.prepareStatement("Select * from upgrademanager")) {
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-               upgradeDate = rs.getTimestamp("upgradeDate");
-               //upgradeTime = rs.getTimestamp("upgradeTime");
-               upgradeMessage = rs.getString("upgradeMessage");
-               countdown = rs.getBoolean("countdown");
-               active = rs.getBoolean("active");
-            }
-        } 
+        Connection j = DatabaseWrapper.getConnection();
+        PreparedStatement stmt = null;
+        stmt = j.prepareStatement("Select * from upgrademanager");
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+           upgradeDate = rs.getTimestamp("upgradeDate");
+           //upgradeTime = rs.getTimestamp("upgradeTime");
+           upgradeMessage = rs.getString("upgradeMessage");
+           countdown = rs.getBoolean("countdown");
+           active = rs.getBoolean("active");
+        }
     }
     
     /* Set new upgrade settings */
@@ -46,18 +46,18 @@ public class UpgradeManager {
         PreparedStatement stmt2 = null;
         try {
            String query = "update upgrademanager set upgradeDate=?, upgradeMessage=?, countdown=?, active=true where managerID=1";
-           String query2 = "insert into upgrademanager (upgradeDate, upgradeTime, upgradeMessage, countdown) values(?,?,?) WHERE changes() = 0";
+           //String query2 = "insert into upgrademanager (upgradeDate, upgradeMessage, countdown, active) values(?,?,?,true) WHERE changes() = 0";
            j = DatabaseWrapper.getConnection();
            stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
            stmt.setTimestamp(1, d);
            stmt.setString(2, m);
            stmt.setBoolean(3, c);
            stmt.execute();
-           stmt2 = j.prepareStatement(query2, PreparedStatement.RETURN_GENERATED_KEYS);
-           stmt2.setTimestamp(1, d);
-           stmt2.setString(2, m);
-           stmt2.setBoolean(3, c);
-           stmt2.execute();
+//           stmt2 = j.prepareStatement(query2, PreparedStatement.RETURN_GENERATED_KEYS);
+//           stmt2.setTimestamp(1, d);
+//           stmt2.setString(2, m);
+//           stmt2.setBoolean(3, c);
+//           stmt2.execute();
            upgradeDate = d;
            //upgradeTime = t;
            upgradeMessage = m;

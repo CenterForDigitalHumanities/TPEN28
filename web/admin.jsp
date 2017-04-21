@@ -243,7 +243,7 @@
                         <li><a title="Manage Users" href="#tabs-3">Manage Users</a><div id="userAlert" class='ui-icon-alert ui-icon right' style="display:none;margin: 8px 8px 0 0;"></div></li>
                         <li><a title="Reports" href="#reportsTab">Reports</a></li>
                         <%}%>
-                        <li><a title="Update T-PEN" href="#updateTab">About T&#8209;PEN</a></li>
+                        <!--<li><a title="Update T-PEN" href="#updateTab">About T&#8209;PEN</a></li>-->
                         <li><a title="About the T&#8209;PEN project" href="#aboutTab">About T&#8209;PEN</a></li>
                     </ul>
                     <div id="tabs-1">
@@ -785,7 +785,7 @@
                     <%} // end of isAdmin()
                                     }%>
                     <!--                end of tabs-3, manage users-->
-                    <div id="updateTab">
+<!--                    <div id="updateTab">
                         <ul id="updateManagement">
                             <li class="gui-tab-section">
                                 <h3>Create a warning about down time during web site updates and upgrades</h3>
@@ -793,9 +793,9 @@
                                 <div id="upgradeSettings">
                                     <input type="hidden" name="cancelUpgrade" value="false">
                                     <input type="hidden" name="active" value="true">
-                                    <span>Date and time (mm-dd-yyyy zz:zz:zz) : </span><input type="text" name="updateDate" placeholder="Date and time upgrade will take place">
-                                    <!--<span>Time the upgrade will take place (xx:xx AM/PM): </span><input type="text" name="updateTime" placeholder="Time upgrade will take place">-->
-                                    <span>Message to display to the user: </span><input type="text" name="updateMessage" placeholder="Custom message for the user">
+                                    <span>Date and time (mm-dd-yyyy zz:zz:zz) : </span><input type="text" name="upgradeDate" placeholder="Date and time upgrade will take place">
+                                    <span>Time the upgrade will take place (xx:xx AM/PM): </span><input type="text" name="updateTime" placeholder="Time upgrade will take place">
+                                    <span>Message to display to the user: </span><input type="text" name="upgradeMessage" placeholder="Custom message for the user">
                                     <span>Check to include a countdown: </span><input type="checkbox" name="updateTimer" >
                                     <input type="button" value="Set Update Settings" onclick="setUpgrade();">
                                 </div>
@@ -807,7 +807,7 @@
                                 <input type="button" value="Remove Update Settings" onclick="removeUpgrade();">
                             </li>
                         </ul>
-                    </div>
+                    </div>-->
                     <div id="aboutTab">
                         <ul id="about">
                             <li class="gui-tab-section">
@@ -1104,16 +1104,22 @@
         <textarea id="userEmailList" class="popover"></textarea>
         <script type="text/javascript">
             function setUpgrade(){
-                var url = "upgradeManager";
+                var url = "upgradeManagement";
                 var upgradeDate = $("input[name='upgradeDate']").val();
                 var upgradeMessage = $("input[name='upgradeMessage']").val();
-                var countdown = $("input[name='updateTimer']").val();
- 
+                var countdown = false;
+                if($("input[name='updateTimer']:checked").length){
+                    countdown = "true";
+                }
+                else{
+                    countdown = "false";
+                }
                 var params = {
                     "upgradeDate" : upgradeDate,
                     "upgradeMessage": upgradeMessage,
                     "countdown" : countdown,
                     "cancelUpgrade" : "false",
+                    "getSettings" : "false",
                     "active" : "true"
                 };
                 $.post(url, params)
@@ -1123,7 +1129,7 @@
                 );
             }
             function removeUpgrade(){
-                var url = "upgradeManager";
+                var url = "upgradeManagement";
                 var params = {"cancelUpgrade":"true"};
                 $.post(url, params)
                     .done(function(){

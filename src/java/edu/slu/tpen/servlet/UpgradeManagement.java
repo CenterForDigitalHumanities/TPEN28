@@ -5,6 +5,7 @@
  */
 package edu.slu.tpen.servlet;
 
+import com.mongodb.util.JSON;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import net.sf.json.JSONObject;
 import user.UpgradeManager;
 
 /**
@@ -50,17 +52,26 @@ public class UpgradeManagement extends HttpServlet {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
         if (null != thisUser && thisUser.isAdmin()){
-            String uDate = (String) request.getAttribute("upgradeDate");
+            String uDate = request.getParameter("upgradeDate");
             //String uTime = (String)request.getAttribute("upgradeTime");
-            String uMessage = (String)request.getAttribute("upgradeMessage");
-            String countdown = (String)request.getAttribute("countdown");
-            if(request.getAttribute("cancelUpgrade").equals("true")){
+            String uMessage = (String)request.getParameter("upgradeMessage");
+            String countdown = (String)request.getParameter("countdown");
+            if(request.getParameter("cancelUpgrade").equals("true")){
                 upgrader = new UpgradeManager();
                 upgrader.deactivateUpgrade();
                 out.println("Upgrade settings deactivated");
             }
+            else if(request.getParameter("getSettings").equals("get")){
+                upgrader = new UpgradeManager();
+                JSONObject jo_manager = new JSONObject();
+                jo_manager.element("active", upgrader.checkActive());
+                jo_manager.element("upgradeMessage", upgrader.getUpgradeMessage());
+                jo_manager.element("upgradeDate", upgrader.getUpgradeDate());
+                jo_manager.element("countdown", upgrader.checkCountdown());
+                out.print(jo_manager);
+            }
             else{
-                SimpleDateFormat sdf = new SimpleDateFormat("MM.dd.yyyy.HH.mm.ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH.mm.ss");
                 Date parsedDate = sdf.parse(uDate);
                 Timestamp upgradeDate = new Timestamp(parsedDate.getTime());
                 //Timestamp upgradeTime = new Timestamp(uTime);

@@ -231,6 +231,10 @@
         <servlet-name>GetHistory</servlet-name>
         <servlet-class>edu.slu.tpen.servlet.GetHistory</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpgradeManagement</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.UpgradeManagement</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>imageResize</servlet-name>
         <url-pattern>/imageResize</url-pattern>
@@ -657,6 +661,10 @@
     <servlet-mapping>
         <servlet-name>GetHistory</servlet-name>
         <url-pattern>/getHistory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpgradeManagement</servlet-name>
+        <url-pattern>/upgradeManagement</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>720</session-timeout>

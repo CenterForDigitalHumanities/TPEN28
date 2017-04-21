@@ -243,6 +243,7 @@
                         <li><a title="Manage Users" href="#tabs-3">Manage Users</a><div id="userAlert" class='ui-icon-alert ui-icon right' style="display:none;margin: 8px 8px 0 0;"></div></li>
                         <li><a title="Reports" href="#reportsTab">Reports</a></li>
                         <%}%>
+                        <li><a title="Update T-PEN" href="#updateTab">About T&#8209;PEN</a></li>
                         <li><a title="About the T&#8209;PEN project" href="#aboutTab">About T&#8209;PEN</a></li>
                     </ul>
                     <div id="tabs-1">
@@ -784,6 +785,29 @@
                     <%} // end of isAdmin()
                                     }%>
                     <!--                end of tabs-3, manage users-->
+                    <div id="updateTab">
+                        <ul id="updateManagement">
+                            <li class="gui-tab-section">
+                                <h3>Create a warning about down time during web site updates and upgrades</h3>
+                                <div></div>
+                                <div id="upgradeSettings">
+                                    <input type="hidden" name="cancelUpgrade" value="false">
+                                    <input type="hidden" name="active" value="true">
+                                    <span>Date and time (mm-dd-yyyy zz:zz:zz) : </span><input type="text" name="updateDate" placeholder="Date and time upgrade will take place">
+                                    <!--<span>Time the upgrade will take place (xx:xx AM/PM): </span><input type="text" name="updateTime" placeholder="Time upgrade will take place">-->
+                                    <span>Message to display to the user: </span><input type="text" name="updateMessage" placeholder="Custom message for the user">
+                                    <span>Check to include a countdown: </span><input type="checkbox" name="updateTimer" >
+                                    <input type="button" value="Set Update Settings" onclick="setUpgrade();">
+                                </div>
+                            </li>
+                            <li class="gui-tab-section">
+                                <h3>Cancel an Upgrade</h3>
+                                <div>If you already have an update message set, you can cancel it here. <button class="tpenButton" onclick="getUpgradeSettings();">See my current upgrade settings</button></div>
+                                <div id="currentUpgrade"></div>
+                                <input type="button" value="Remove Update Settings" onclick="removeUpgrade();">
+                            </li>
+                        </ul>
+                    </div>
                     <div id="aboutTab">
                         <ul id="about">
                             <li class="gui-tab-section">
@@ -1079,9 +1103,38 @@
         </div>
         <textarea id="userEmailList" class="popover"></textarea>
         <script type="text/javascript">
+            function setUpgrade(){
+                var url = "upgradeManager";
+                var upgradeDate = $("input[name='upgradeDate']").val();
+                var upgradeMessage = $("input[name='upgradeMessage']").val();
+                var countdown = $("input[name='updateTimer']").val();
+ 
+                var params = {
+                    "upgradeDate" : upgradeDate,
+                    "upgradeMessage": upgradeMessage,
+                    "countdown" : countdown,
+                    "cancelUpgrade" : "false",
+                    "active" : "true"
+                };
+                $.post(url, params)
+                    .done(function(){
+                            
+                    }
+                );
+            }
+            function removeUpgrade(){
+                var url = "upgradeManager";
+                var params = {"cancelUpgrade":"true"};
+                $.post(url, params)
+                    .done(function(){
+                            
+                    }
+                );
+            }
+            
             <%
-                    if (mss.length > 0) {%>
-                        $("#taskList").append("<p title='Click on the \"Manuscript\" tab'>Update information or restrict access to manuscripts you control (<%out.print(mss.length);%> total).</p>")
+                if (mss.length > 0) {%>
+                    $("#taskList").append("<p title='Click on the \"Manuscript\" tab'>Update information or restrict access to manuscripts you control (<%out.print(mss.length);%> total).</p>")
             <%}%>
         </script>
     </body>

@@ -615,7 +615,6 @@ function loadTranscription(pid, tool){
                         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                         return false;
                     }
-                    activeProject = JSON.parse(activeProject);
                 }
                 //at this proint, activeProject should be an object.  Check for existence of manifest.
                 if(!activeProject.manifest) {
@@ -4709,7 +4708,7 @@ function removeLine(e, columnDelete, deleteOnly){
                     
                 }
                 else{ //this would mean it is a delete happening in merge mode.
-                    alert("To delete a line, deactivate 'Merge Lines' and activate 'Delete Line'.");
+                    alert("To delete a line, deactivate 'Merge Lines' and activate 'Delete Last Line'.");
                     $("#parsingCover").hide();
                     return false;
                 }

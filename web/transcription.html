@@ -1299,7 +1299,7 @@
         $("#imgTop, #imgBottom").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("width", "auto");
-        $('.transcriptionImage').attr('src', "images/loading2.gif"); //background loader if there is a hang time waiting for image
+       // $('.transcriptionImage').attr('src', "images/loading2.gif"); //background loader if there is a hang time waiting for image
         //check if logged in
         var url = "geti";
         $.ajax({
@@ -1413,7 +1413,7 @@
                 $(document).off("mousemove");
                 $(this).removeClass("ui-state-active");
             } else {
-                if(tpen.screen.liveTool == "none"){
+                if(tpen.screen.liveTool == "none" || tpen.screen.liveTool == "fullpage" || tpen.screen.liveTool == "compare"){
                     $(this).addClass("ui-state-active");
                     tpen.screen.isMagnifying=true;
                     magnify($(this).attr("magnifyImg"),event);
@@ -2024,9 +2024,6 @@
                 .children(".fa-triangle-down").switchClass("fa-triangle-down","fa-triangle-right");
             $(this).next("div").slideDown();
         }
-
-
-
         if (thisID === "reparseColumns") {
                 //load the adjustment tool and then show the reparsing instructions
                 $(".parsingColumn").removeClass("parsingColumnSelected");

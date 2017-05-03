@@ -3019,6 +3019,11 @@ function splitPage(event, tool) {
     if(tool === "parsing" || tpen.screen.liveTool == "parsing"){
         resize=false;
     }
+    else{
+        var splitWidthAdjustment = window.innerWidth - ($("#transcriptionCanvas").width() + 35) + "px"; ;
+        $(".split img").css("max-width", splitWidthAdjustment);
+        $(".split:visible").css("width", splitWidthAdjustment);
+    }
     if(tool === "preview"){
         $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
         $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
@@ -6063,7 +6068,7 @@ tpen.screen.peekZoom = function(cancel){
             var PAGEWIDTH = Page.width();
             var SPLITWIDTH = $("#parsingSplit").width();
             var widerThanTall = (parseInt(tpen.screen.originalCanvasWidth) > parseInt(tpen.screen.originalCanvasHeight));
-            
+            var splitWidthAdjustment = window.innerWidth - (newCanvasWidth + 35) + "px";
             if(tpen.screen.liveTool === 'parsing'){
                 if(screen.width == $(window).width() && screen.height == window.outerHeight){
                     $(".centerInterface").css("text-align", "center"); //.css("background-color", "#e1f4fe");
@@ -6116,6 +6121,8 @@ tpen.screen.peekZoom = function(cancel){
             else if (tpen.screen.liveTool === "preview"){
                 $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
                 $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
+                $(".split img").css("max-width", splitWidthAdjustment);
+                $(".split:visible").css("width", splitWidthAdjustment);
             }
             else if(tpen.screen.liveTool !== "" && tpen.screen.liveTool!=="none"){
                 newCanvasWidth = Page.width() * .55;

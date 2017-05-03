@@ -144,7 +144,9 @@ public class CanvasServlet extends HttpServlet{
       imageAnnot.element("resource", imageResource);
       imageAnnot.element("on", canvasID);
       images.add(imageAnnot);
+      //FIXME this looks for data on anno store.  Cannot build list this way for canvas servlet while not looking to anno store.  
       otherContent = Canvas.getAnnotationListsForProject(-1, canvasID, 0);
+      //otherContent = Canvas.getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID());
       //it seems like it wants me to do Arrays.toString(otherContent), but then it is not formatted correctly.  
       result.element("otherContent", JSONArray.fromObject(otherContent));
       result.element("images", images);

@@ -96,20 +96,21 @@ public class JsonLDExporter {
     * serialisation
     */
    private Map<String, Object> buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
-      Integer msID = f.getMSID();
-      String msID_str = msID.toString();
+      //Integer msID = f.getMSID();
+      //String msID_str = msID.toString();
       String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
-      JSONObject annotationList = new JSONObject();
-      JSONArray resources_array = new JSONArray();
-      annotationList.element("@type", "sc:AnnotationList");
-      annotationList.element("label", canvasID+" List");
-      annotationList.element("proj", projID);
-      annotationList.element("on", canvasID);
-      annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
+      //JSONObject annotationList = new JSONObject();
+      //JSONArray resources_array = new JSONArray();
+ //     String annoListID = Folio.getRbTok("SERVERURL")+"project/"+projID+"/annotations/"+f.getFolioNumber();  
+//      annotationList.element("@id", annoListID);
+//      annotationList.element("@type", "sc:AnnotationList");
+//      annotationList.element("label", canvasID+" List");
+//      annotationList.element("proj", projID);
+//      annotationList.element("on", canvasID);
+//      annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
       //annotationList.element("testing", "msid_creation");
       //String canvasID = projName + "/canvas/" + URLEncoder.encode(f.getPageName(), "UTF-8");
       //System.out.println("Need pageDim in buildPage()");
-      
       FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
       Dimension storedDims = null;
       

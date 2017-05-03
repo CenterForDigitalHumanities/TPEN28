@@ -40,24 +40,22 @@ public class UpgradeManager {
     }
     
     /* Set new upgrade settings */
-    public UpgradeManager(Timestamp d, String m, Boolean c, boolean a) throws SQLException{
+    public UpgradeManager(Timestamp d, String m, boolean c, boolean a) throws SQLException{
         Connection j = null;
         PreparedStatement stmt = null;
         PreparedStatement stmt2 = null;
+        System.out.println("NEW UPGRADE SETTINGS!");
         try {
-           String query = "update upgrademanager set upgradeDate=?, upgradeMessage=?, countdown=?, active=true where managerID=1";
-           //String query2 = "insert into upgrademanager (upgradeDate, upgradeMessage, countdown, active) values(?,?,?,true) WHERE changes() = 0";
+           String query = "update upgrademanager set upgradeDate=?, upgradeMessage=?, countdown=?, active=? where managerID=1";
            j = DatabaseWrapper.getConnection();
            stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
            stmt.setTimestamp(1, d);
            stmt.setString(2, m);
            stmt.setBoolean(3, c);
+           stmt.setBoolean(4, true);
+           System.out.println("SQL statement...");
            stmt.execute();
-//           stmt2 = j.prepareStatement(query2, PreparedStatement.RETURN_GENERATED_KEYS);
-//           stmt2.setTimestamp(1, d);
-//           stmt2.setString(2, m);
-//           stmt2.setBoolean(3, c);
-//           stmt2.execute();
+           System.out.println("SQL statement executed!");
            upgradeDate = d;
            //upgradeTime = t;
            upgradeMessage = m;

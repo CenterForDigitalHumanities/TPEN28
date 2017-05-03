@@ -280,7 +280,7 @@ function populatePreview(lines, pageLabel, currentPage, order){
         currentLineXYWH = currentLineXYWH.split(",");
         var currentLineX = currentLineXYWH[0];
         var line = lines[j];
-        var lineID = line["tpen_line_id"];
+        var lineID = line["_tpen_line_id"];
         var rawLineText = line.resource["cnt:chars"];
         rawLineText = $("<div/>").text(rawLineText).html();
         var lineText = highlightTags(rawLineText);
@@ -1158,7 +1158,7 @@ function focusOnLastModified(){
             && l.resource["cnt:chars"].length > 0;
     });
     if(scribedLines.length==0){ //No lines are transcribed.  Load to the first line
-        updatePresentation($(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']"));
+        updatePresentation($(".transcriptlet[lineserverid='"+focusOn._tpen_line_id+"']"));
     }
     else if(scribedLines.length !== lines.length){ //There are transcribed lines among non-transcribed lines
         //Go over each line that has a transcription, ignoring lines that do not have transcription
@@ -1175,12 +1175,12 @@ function focusOnLastModified(){
             }
             if(i === scribedLines.length -1){ //If we have gone through every line...
                 //load to the line considered the newest
-                updatePresentation($(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']"));
+                updatePresentation($(".transcriptlet[lineserverid='"+focusOn._tpen_line_id+"']"));
             }
         }
     }
     else{ //all the lines have been transcribed.  Load to the first line
-        updatePresentation($(".transcriptlet[lineserverid='"+focusOn.tpen_line_id+"']"));
+        updatePresentation($(".transcriptlet[lineserverid='"+focusOn._tpen_line_id+"']"));
     }
     
 };
@@ -1733,7 +1733,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
         }
         else {
             //undereferencable line.
-            lineID = line.tpen_line_id;
+            lineID = line._tpen_line_id;
         }
         thisContent = "";
         if (lineURL.indexOf('#') > - 1){ //string must contain this to be valid
@@ -1889,7 +1889,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
         lineColumnIndicator.find('.lineColOnLine').attr("style", "line-height:" + lineHeight + ";");
         //Put to the DOM
         $(".lineColIndicatorArea").append(lineColumnIndicator);
-        $("#fullpageSplitCanvas").append(fullPageLineColumnIndicator);
+        $("#fullPageSplitCanvas").append(fullPageLineColumnIndicator);
         colCounter++;
     }
     if(autoParseCheck === 0){ 
@@ -1941,7 +1941,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
                     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
                     // if it IIIF, we need to update the list
                         $.each(currentAnnoList, function(index, data){
-                            var dataLineID = data.tpen_line_id.replace("line/", "");
+                            var dataLineID = data._tpen_line_id.replace("line/", "");
                             if(dataLineID == idToCheckFor){
                                 currentAnnoList[index].resource["cnt:chars"] = newText;
                                 tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
@@ -2496,7 +2496,7 @@ function magnify(imgFlag, event){
         $("button[magnifyimg='compare']").addClass("selected");
     }
     else if (imgFlag === "full"){
-        img = $("#fullpageSplitCanvas");
+        img = $("#fullPageSplitCanvas");
         container = "fullpageSplit";
         $("#magnifyTools").fadeIn(800).css({
             "left":$("#fullpageSplit").css("left"),
@@ -3073,10 +3073,10 @@ function splitPage(event, tool) {
     if(tool === "fullpage"){ //set this to be the max height initially when the split happens.
         var fullPageMaxHeight = window.innerHeight - 125; //100 comes from buttons above image and topTrim
         $("#fullPageImg").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
-        $("#fullpageSplitCanvas").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
-        $("#fullpageSplitCanvas").css("max-width", $("#fullPageImg").width()); //If we want to keep the full image on page, it cant be taller than that.
-        $("#fullpageSplitCanvas").height($("#fullPageImg").height());
-        $("#fullpageSplitCanvas").width($("#fullPageImg").width());
+        $("#fullPageSplitCanvas").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
+        $("#fullPageSplitCanvas").css("max-width", $("#fullPageImg").width()); //If we want to keep the full image on page, it cant be taller than that.
+        $("#fullPageSplitCanvas").height($("#fullPageImg").height());
+        $("#fullPageSplitCanvas").width($("#fullPageImg").width());
         $(".fullP").each(function(i){
             this.title = $("#transcriptlet_"+i+" .theText").text();
         })
@@ -3972,7 +3972,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
                 "otherContent" : [],
                 "forProject": tpen.manifest['@id'],
                 "_tpen_note" : lineNote,
-                "tpen_line_id" : currentLineServerID,
+                "_tpen_line_id" : currentLineServerID,
                 "_tpen_creator" : tpen.user.UID
                 //"testing":"TPEN28"
             };
@@ -3980,7 +3980,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
             //find the line in the anno list resources and replace its position with the new line resource.
             $.each(currentAnnoList, function(){
                 index++;
-                if (this.tpen_line_id === currentLineServerID){
+                if (this._tpen_line_id === currentLineServerID){
                     currentAnnoList[index] = dbLine;
                     return false;
                 }
@@ -4162,7 +4162,7 @@ function updateLine(line, cleanup, updateList){
 //    var currentAnnoListID = tpen.screen.currentAnnoListID;
     var dbLine = {
         "@id" : currentLineServerID,
-        "tpen_line_id" :  currentLineServerID,
+        "_tpen_line_id" :  currentLineServerID,
         "@type" : "oa:Annotation",
         "motivation" : "oad:transcribing",
         "resource" : {
@@ -4229,7 +4229,7 @@ function updateLine(line, cleanup, updateList){
             //var url1 = "updateAnnoList";
             clearTimeout(typingTimer);
             for(var i=0  ;i < currentAnnoList.length; i++){
-                if(currentAnnoList[i]["tpen_line_id"] === dbLine["tpen_line_id"]){
+                if(currentAnnoList[i]["_tpen_line_id"] === dbLine["_tpen_line_id"]){
                     currentAnnoList[i].on = dbLine.on;
                     currentAnnoList[i].resource = dbLine.resource;
                     currentAnnoList[i]._tpen_note = dbLine._tpen_note; //@cubap FIXME:  How do we handle notes now?
@@ -4405,7 +4405,7 @@ function saveNewLine(lineBefore, newLine){
     var currentLineText = "";
     var dbLine = {
         "@id" : "",
-        "tpen_line_id" : "",
+        "_tpen_line_id" : "",
         "@type" : "oa:Annotation",
         "motivation" : "oad:transcribing",
         "resource" : {
@@ -4434,7 +4434,7 @@ function saveNewLine(lineBefore, newLine){
         $.post(url, params, function(data){
             //data = JSON.parse(data);
             dbLine["@id"] = "line/"+data;
-            dbLine["tpen_line_id"] = "line/"+data;
+            dbLine["_tpen_line_id"] = "line/"+data;
             $(newLine).attr("lineserverid","line/"+data); //data["@id"]
             $("div[newcol='" + true + "']").attr({
                 "startid" : "line/"+data, //dbLine["@id"]
@@ -4812,8 +4812,8 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     if (currentAnnoList !== "noList" && currentAnnoList !== "empty"){
         $.each(currentAnnoList, function(index){
 
-            if (this.tpen_line_id === lineIDToCheck){
-                //console.log("Got a match in the cached list: "+this.tpen_line_id);
+            if (this._tpen_line_id === lineIDToCheck){
+                //console.log("Got a match in the cached list: "+this._tpen_line_id);
                 if(index!==0){
                     currentAnnoList[index-1].resource["cnt:chars"] = updateText;
                 }
@@ -4834,6 +4834,7 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
                         updateLine(toUpdate, false, false);
                     }
                 });
+                return false;
             }
         });
     }
@@ -6025,8 +6026,8 @@ tpen.screen.peekZoom = function(cancel){
                 //var newHeight2 = parseFloat($(".compareImage").height()) + parseFloat($("#compareSplit .toolLinks").height()); //For resizing properly when transcription template is resized
                 var fullPageMaxHeight = window.innerHeight - 125; //100 comes from buttons above image and topTrim
                 $("#fullPageImg").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
-                $("#fullpageSplitCanvas").height($("#fullPageImg").height());
-                $("#fullpageSplitCanvas").width($("#fullPageImg").width());
+                $("#fullPageSplitCanvas").height($("#fullPageImg").height());
+                $("#fullPageSplitCanvas").width($("#fullPageImg").width());
                 var newImgBtmTop = tpen.screen.imgBottomPositionRatio * height;
                 var newImgTopTop = tpen.screen.imgTopPositionRatio * height;
                 $("#imgBottom img").css("top", newImgBtmTop + "px");
@@ -6128,9 +6129,9 @@ tpen.screen.peekZoom = function(cancel){
                 $(".split img").css("max-width", splitWidth);
                 $(".split:visible").css("width", splitWidth);
                 $("#fullPageImg").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
-                $("#fullpageSplitCanvas").height(fullPageMaxHeight);
-                $("#fullpageSplitCanvas").height($("#fullPageImg").height());
-                $("#fullpageSplitCanvas").width($("#fullPageImg").width());
+                $("#fullPageSplitCanvas").height(fullPageMaxHeight);
+                $("#fullPageSplitCanvas").height($("#fullPageImg").height());
+                $("#fullPageSplitCanvas").width($("#fullPageImg").width());
                 $("#transcriptionTemplate").css("width", newCanvasWidth + "px");
                 $("#transcriptionCanvas").css("width", newCanvasWidth + "px");
                 $("#transcriptionCanvas").css("height", newCanvasHeight + "px");

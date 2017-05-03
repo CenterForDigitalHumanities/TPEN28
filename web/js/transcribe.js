@@ -1838,10 +1838,11 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
             //ERROR.  malformed line.
             update = false;
         }
-        if (line["@id"] !== undefined && line["@id"] !== ""){
-            lineID = line['@id'];
-        }
-        else {
+//        if (line["@id"] !== undefined && line["@id"] !== ""){
+//            lineID = line['@id'];
+//        }
+
+        if (line._tpen_line_id !== undefined && line._tpen_line_id !== null){      
             //undereferencable line.
             lineID = line._tpen_line_id;
         }
@@ -3099,11 +3100,35 @@ function splitPage(event, tool) {
     tpen.screen.liveTool = tool;
     var resize = true;
     var newCanvasWidth = tpen.screen.originalCanvasWidth * .55;
+    var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
+    var newCanvasHeight = 1 / ratio * newCanvasWidth;
+    
+    var newImgBtmTop = tpen.screen.imgBottomPositionRatio * newCanvasHeight;
+    var newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
     $("#transcriptionTemplate").css({
         "width"   :   "55%",
         "display" : "inline-table"
     });
     $("#templateResizeBar").show();
+    var splitWidthAdjustment = window.innerWidth - ($("#transcriptionCanvas").width() + 35) + "px";
+    $("#fullScreenBtn")
+        .fadeIn(250);
+        $('.split').hide();
+    if(tool){
+        $("#transcriptionCanvas").css({
+            "width"   :   newCanvasWidth + "px",
+            "height"   :   newCanvasHeight + "px"
+        });
+        var splitScreen = $("#" + tool + "Split");
+        if(!splitScreen.size()) splitScreen = $('div[toolname="' + tool + '"]');
+        splitScreen.css("display", "block");
+        $(".split:visible")
+        .find('img')
+        .css({
+            'max-height': window.innherHeight + 350 + "px",
+            'max-width': splitWidthAdjustment
+        });
+    }
     if(tool==="controls"){
         if($("#controlsSplit").is(":visible")){
             return fullPage();
@@ -3129,27 +3154,17 @@ function splitPage(event, tool) {
     if(tool === "parsing" || tpen.screen.liveTool == "parsing"){
         resize=false;
     }
-    else{
-        var splitWidthAdjustment = window.innerWidth - ($("#transcriptionCanvas").width() + 35) + "px"; ;
-        $(".split img").css("max-width", splitWidthAdjustment);
-        $(".split:visible").css("width", splitWidthAdjustment);
-    }
+ 
     if(tool === "preview"){
         $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
         $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
+        $(".split img").css("max-width", splitWidthAdjustment);
+        $(".split:visible").css("width", splitWidthAdjustment);
 //        if(tpen.screen.mode === "RTL"){
 //            $(".previewText").css("text-align", "right"); //For a more natural right to left reading?
 //        }
     }
-    var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
-    var newCanvasHeight = 1 / ratio * newCanvasWidth;
-    if(tool)
-    $("#transcriptionCanvas").css({
-        "width"   :   newCanvasWidth + "px",
-        "height"   :   newCanvasHeight + "px"
-    });
-    var newImgBtmTop = tpen.screen.imgBottomPositionRatio * newCanvasHeight;
-    var newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
+    
     //$(".lineColIndicatorArea").css("max-height", newCanvasHeight + "px");
     $(".lineColIndicatorArea").css("height", newCanvasHeight + "px");
     $("#imgBottom img").css("top", newImgBtmTop + "px");
@@ -3163,27 +3178,15 @@ function splitPage(event, tool) {
         detachTemplateResize()
         $("#templateResizeBar").hide();
     }
-    $("#fullScreenBtn")
-        .fadeIn(250);
-        $('.split').hide();
-    //show/manipulate whichever split tool is activated.
-    //This is a user added iframe tool.  tool is toolID= attribute of the tool div to show.
-    var splitScreen = $("#" + tool + "Split");
-    if(!splitScreen.size()) splitScreen = $('div[toolname="' + tool + '"]');
-    splitScreen.css("display", "block");
-    $(".split:visible")
-        .find('img')
-        .css({
-            'max-height': window.innherHeight + 350 + "px",
-            'max-width': $(".split:visible")
-                .width() + "px"
-        });
+    
     if(tool==="history"){
         $("#historyBookmark").empty();
         var splitSrc = $(".transcriptionImg:first").attr("src");
         $("#historyViewer").find("img").attr("src", splitSrc);
         History.showLine(tpen.screen.focusItem[1].attr("lineserverid"));
         $(".historyText").attr("dir", "auto"); //These elements don't always get set on page load, so make sure they are auto here.   
+        $(".split img").css("max-width", splitWidthAdjustment);
+        $(".split:visible").css("width", splitWidthAdjustment);
     }
     if(tool === "fullpage"){ //set this to be the max height initially when the split happens.
         var fullPageMaxHeight = window.innerHeight - 125; //100 comes from buttons above image and topTrim
@@ -3196,11 +3199,17 @@ function splitPage(event, tool) {
             this.title = $("#transcriptlet_"+i+" .theText").text();
         })
             .tooltip();
+    
+        $(".split img").css("max-width", splitWidthAdjustment);
+        $(".split:visible").css("width", splitWidthAdjustment);
     }
     if(tool === "compare"){
          var fullPageMaxHeight = window.innerHeight - 125; //100 comes from buttons above image and topTrim
         $("#compareSplit img").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
+        $(".split img").css("max-width", splitWidthAdjustment);
+        $(".split:visible").css("width", splitWidthAdjustment);
     }
+    
     setTimeout(function(){
         $.each($(".lineColOnLine"), function(){
             $(this).css("line-height", $(this).parent().height() + "px");

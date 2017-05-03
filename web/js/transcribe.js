@@ -425,34 +425,104 @@ function populateXML(){
 function setTPENObjectData(data){
     if(data.project){
         if(data.projectTool){
-            tpen.project.tools = JSON.parse(data.projectTool);
+            try {
+                 tpen.project.tools = JSON.parse(data.projectTool);
+             } catch (e) {
+                 clearTimeout(longLoadingProject);
+                 $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                 $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                 return false;
+             }
         }
         if(data.userTool){
-            tpen.project.userTools = JSON.parse(data.userTool);
+            try {
+                 tpen.project.userTools = JSON.parse(data.userTool);
+             } catch (e) {
+                 clearTimeout(longLoadingProject);
+                 $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                 $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                 return false;
+             }          
         }
         if(data.ls_u){
-            tpen.project.user_list = JSON.parse(data.ls_u);
+            try {
+                 tpen.project.user_list = JSON.parse(data.ls_u);
+             } catch (e) {
+                 clearTimeout(longLoadingProject);
+                 $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                 $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                 return false;
+             }               
         }
         if(data.ls_leader){
-            tpen.project.leaders = JSON.parse(data.ls_leader);
+            try {
+                 tpen.project.leaders = JSON.parse(data.ls_leader);
+             } catch (e) {
+                 clearTimeout(longLoadingProject);
+                 $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                 $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                 return false;
+             }              
         }
         if(data.projectButtons){
-            tpen.project.specialChars = JSON.parse(data.projectButtons);
+            try {
+                 tpen.project.specialChars = JSON.parse(data.projectButtons);
+             } catch (e) {
+                 clearTimeout(longLoadingProject);
+                 $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                 $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                 return false;
+             }           
         }
         if(data.ls_hk){
-            tpen.project.hotkeys = JSON.parse(data.ls_hk);
+            try {
+                 tpen.project.hotkeys = JSON.parse(data.ls_hk);
+             } catch (e) {
+                 clearTimeout(longLoadingProject);
+                 $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                 $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                 return false;
+             }             
         }
         if(data.xml){
-            tpen.project.xml = JSON.parse(data.xml);
+            try {
+                 tpen.project.xml = JSON.parse(data.xml);
+             } catch (e) {
+                 clearTimeout(longLoadingProject);
+                 $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                 $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                 return false;
+             }                
         }
         if(data.projper){
-            tpen.project.permissions = JSON.parse(data.projper);
+            try {
+                 tpen.project.permissions = JSON.parse(data.projper);
+             } catch (e) {
+                 clearTimeout(longLoadingProject);
+                 $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                 $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                 return false;
+             }             
         }
         if(data.metadata){
-            tpen.project.metadata = JSON.parse(data.metadata);
+            try {
+                 tpen.project.metadata = JSON.parse(data.metadata);
+             } catch (e) {
+                 clearTimeout(longLoadingProject);
+                 $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                 $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                 return false;
+             }                 
         }
         if(data.ls_fs){
-            tpen.project.folios = JSON.parse(data.ls_fs);
+            try {
+                 tpen.project.folios = JSON.parse(data.ls_fs);
+             } catch (e) {
+                 clearTimeout(longLoadingProject);
+                 $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                 $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                 return false;
+             }    
             for(var i=0; i<tpen.project.folios.length; i++){
                 var preloadObj = {
                     "preloaded" : false,
@@ -465,25 +535,25 @@ function setTPENObjectData(data){
         if(data.projectName){
             tpen.project.projectName = data.projectName;
         }
-        if(data.project.projectID){
+        if(data.project.projectID){     
             tpen.project.id = parseInt(data.project.projectID);
         }
-        if(data.project.groupID){
+        if(data.project.groupID){    
             tpen.project.groupID = parseInt(data.project.groupID);
         }
-        if(data.project.linebreakSymbol){
+        if(data.project.linebreakSymbol){    
             tpen.project.linebreakSymbol = data.project.linebreakSymbol;
         }
-        if(data.project.projectImageBounding){
+        if(data.project.projectImageBounding){   
             tpen.project.projectImageBounding = data.project.projectImageBounding;
         }
-        if(data.project.linebreakCharacterLimit){
+        if(data.project.linebreakCharacterLimit){ 
             tpen.project.linebreakCharacterLimit = parseInt(data.project.linebreakCharacterLimit);
         }
 
-    if(data.remainingText){
-        tpen.project.remainingText = data.remainingText;
-    }
+        if(data.remainingText){   
+            tpen.project.remainingText = data.remainingText;
+        }
         // update the uploadLocation for linebreaking tool
         var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio || 0].folioNumber
             +"&projectID="+tpen.project.id;
@@ -491,19 +561,42 @@ function setTPENObjectData(data){
         $("#lbText").html(unescape(tpen.project.remainingText));
         $("#linebreakTextContainer").show();
         $("#linebreakNoTextContainer").hide();
-        
-    
+
     }
 
     if(data.manifest){
+        try {
+            tpen.project.projectName = data.projectName;
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }      
         tpen.manifest = JSON.parse(data.manifest);
     }
 
     if(data.cuser){
+        try {
+            tpen.project.projectName = data.projectName;
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }      
         tpen.user.UID = parseInt(data.cuser);
     }
 
     if(data.user_mans_auth){
+        try {
+            tpen.project.projectName = data.projectName;
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }      
         tpen.user.authorizedManuscripts = JSON.parse(data.user_mans_auth);
     }
 
@@ -766,7 +859,15 @@ function loadTranscription(pid, tool){
 
     }
     else if (isJSON(userTranscription)){
-        tpen.manifest = userTranscription = JSON.parse(userTranscription);
+        try {
+            tpen.manifest = userTranscription = JSON.parse(userTranscription);
+         } catch (e) {
+             clearTimeout(longLoadingProject);
+             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+             return false;
+         }
+        
         if (userTranscription.sequences[0] !== undefined
             && userTranscription.sequences[0].canvases !== undefined
             && userTranscription.sequences[0].canvases.length > 0)
@@ -841,7 +942,16 @@ function loadTranscription(pid, tool){
                     tpen.project.id = projectID; //this must be set or the canvas won't draw
                     setTPENObjectData(activeProject);
                     var userToolsAvailable = activeProject.userTool;
-                    var projectPermissions = JSON.parse(activeProject.projper);
+                    var projectPermissions = ""
+                    try {
+                        projectPermissions = JSON.parse(activeProject.projper);
+                     } catch (e) {
+                         clearTimeout(longLoadingProject);
+                         $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+                         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                         return false;
+                     }
+                     
                     activateUserTools(tpen.project.userTools, tpen.project.permissions);
                     if (tpen.manifest.sequences[0] !== undefined
                         && tpen.manifest.sequences[0].canvases !== undefined

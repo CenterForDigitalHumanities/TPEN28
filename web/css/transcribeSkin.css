@@ -1761,13 +1761,14 @@ a.editButtons {
     text-decoration: underline;
 }
 
-.compareImage{
+/* Center the images inside compare page and view full page */
+/*.compareImage, #fullPageImg{
     left: 0;
     right: 0;
     margin: 0 auto;
     position: absolute;
-    /* max-height: 98%; cubap: what? */
-}
+     max-height: 98%; cubap: what? 
+}*/
 
 /* The help area CSS */
 #helpSplit{

@@ -2000,7 +2000,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
         lineColumnIndicator.find('.lineColOnLine').attr("style", "line-height:" + lineHeight + ";");
         //Put to the DOM
         $(".lineColIndicatorArea").append(lineColumnIndicator);
-        $("#fullPageSplitCanvas").append(fullPageLineColumnIndicator);
+        $("#fullpageSplitCanvas").append(fullPageLineColumnIndicator);
         colCounter++;
     }
     if(autoParseCheck === 0){ 
@@ -2607,8 +2607,8 @@ function magnify(imgFlag, event){
         $("button[magnifyimg='compare']").addClass("selected");
     }
     else if (imgFlag === "full"){
-        img = $("#fullPageSplitCanvas");
-        container = "fullpageSplit";
+        img = $("#fullpageSplitCanvas");
+        container = "fullpageSplitCanvas";
         $("#magnifyTools").fadeIn(800).css({
             "left":$("#fullpageSplit").css("left"),
             "top" : "100px"
@@ -3097,9 +3097,9 @@ function fullPage(){
 }
 
 function splitPage(event, tool) {
-    tpen.screen.liveTool = tool;
     var resize = true;
-    var newCanvasWidth = tpen.screen.originalCanvasWidth * .55;
+    //var newCanvasWidth = tpen.screen.originalCanvasWidth * .55;
+    var newCanvasWidth = window.innerWidth * .55;
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
     
@@ -3110,27 +3110,15 @@ function splitPage(event, tool) {
         "display" : "inline-table"
     });
     $("#templateResizeBar").show();
-    var splitWidthAdjustment = window.innerWidth - ($("#transcriptionCanvas").width() + 35) + "px";
+    var splitWidthAdjustment = window.innerWidth - (newCanvasWidth + 35) + "px";
     $("#fullScreenBtn")
         .fadeIn(250);
         $('.split').hide();
-    if(tool){
-        $("#transcriptionCanvas").css({
-            "width"   :   newCanvasWidth + "px",
-            "height"   :   newCanvasHeight + "px"
-        });
-        var splitScreen = $("#" + tool + "Split");
-        if(!splitScreen.size()) splitScreen = $('div[toolname="' + tool + '"]');
-        splitScreen.css("display", "block");
-        $(".split:visible")
-        .find('img')
-        .css({
-            'max-height': window.innherHeight + 350 + "px",
-            'max-width': splitWidthAdjustment
-        });
-    }
+    var splitScreen = $("#" + tool + "Split");
+    if(!splitScreen.size()) splitScreen = $('div[toolname="' + tool + '"]');
+    splitScreen.css("display", "block");
     if(tool==="controls"){
-        if($("#controlsSplit").is(":visible")){
+        if(tpen.screen.liveTool === "controls"){
             return fullPage();
         }
         $("#transcriptionCanvas").css("width", Page.width()-200 + "px");
@@ -3140,8 +3128,8 @@ function splitPage(event, tool) {
         $("#controlsSplit").show();
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }
-    if(tool==="help"){
-        if($("#helpSplit").is(":visible")){
+    else if(tool==="help"){
+        if(tpen.screen.liveTool === "help"){
             return fullPage();
         }
         $("#transcriptionCanvas").css("width", Page.width()-500 + "px");
@@ -3151,11 +3139,11 @@ function splitPage(event, tool) {
         $("#helpContainer").height(Page.height()-$("#helpContainer").offset().top);
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }
-    if(tool === "parsing" || tpen.screen.liveTool == "parsing"){
+    else if(tool === "parsing" || tpen.screen.liveTool == "parsing"){
         resize=false;
     }
  
-    if(tool === "preview"){
+    else if(tool === "preview"){
         $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
         $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
         $(".split img").css("max-width", splitWidthAdjustment);
@@ -3165,21 +3153,7 @@ function splitPage(event, tool) {
 //        }
     }
     
-    //$(".lineColIndicatorArea").css("max-height", newCanvasHeight + "px");
-    $(".lineColIndicatorArea").css("height", newCanvasHeight + "px");
-    $("#imgBottom img").css("top", newImgBtmTop + "px");
-    $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
-    $("#imgTop img").css("top", newImgTopTop + "px");
-    $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
-    
-    if(resize){
-        attachTemplateResize();
-    } else {
-        detachTemplateResize()
-        $("#templateResizeBar").hide();
-    }
-    
-    if(tool==="history"){
+    else if(tool==="history"){
         $("#historyBookmark").empty();
         var splitSrc = $(".transcriptionImg:first").attr("src");
         $("#historyViewer").find("img").attr("src", splitSrc);
@@ -3188,26 +3162,51 @@ function splitPage(event, tool) {
         $(".split img").css("max-width", splitWidthAdjustment);
         $(".split:visible").css("width", splitWidthAdjustment);
     }
-    if(tool === "fullpage"){ //set this to be the max height initially when the split happens.
+    else if(tool === "fullpage"){ //set this to be the max height initially when the split happens.
         var fullPageMaxHeight = window.innerHeight - 125; //100 comes from buttons above image and topTrim
         $("#fullPageImg").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
-        $("#fullPageSplitCanvas").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
-        $("#fullPageSplitCanvas").css("max-width", $("#fullPageImg").width()); //If we want to keep the full image on page, it cant be taller than that.
-        $("#fullPageSplitCanvas").height($("#fullPageImg").height());
-        $("#fullPageSplitCanvas").width($("#fullPageImg").width());
+        $("#fullpageSplitCanvas").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
+        $("#fullpageSplitCanvas").css("width", $("#fullPageImg").width()); //If we want to keep the full image on page, it cant be taller than that.
+        //$("#fullpageSplitCanvas").height(fullPageMaxHeight);
+        //$("#fullpageSplitCanvas").width(splitWidthAdjustment);
         $(".fullP").each(function(i){
             this.title = $("#transcriptlet_"+i+" .theText").text();
         })
             .tooltip();
     
-        $(".split img").css("max-width", splitWidthAdjustment);
-        $(".split:visible").css("width", splitWidthAdjustment);
+        //$(".split img").css("max-width", splitWidthAdjustment);
+        //$(".split:visible").css("width", splitWidthAdjustment);
     }
-    if(tool === "compare"){
+    else if(tool === "compare"){
          var fullPageMaxHeight = window.innerHeight - 125; //100 comes from buttons above image and topTrim
         $("#compareSplit img").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
         $(".split img").css("max-width", splitWidthAdjustment);
         $(".split:visible").css("width", splitWidthAdjustment);
+    }
+    else{
+//        $(".split:visible")
+//        .find('img')
+//        .css({
+//            'max-height': window.innherHeight + 350 + "px",
+//            'max-width': splitWidthAdjustment
+//        });
+    }
+    tpen.screen.liveTool = tool;
+    $("#transcriptionCanvas").css({
+        "width"   :   newCanvasWidth + "px",
+        "height"   :   newCanvasHeight + "px"
+    });
+    
+    $(".lineColIndicatorArea").css("height", newCanvasHeight + "px");
+    $("#imgBottom img").css("top", newImgBtmTop + "px");
+    $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
+    $("#imgTop img").css("top", newImgTopTop + "px");
+    $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
+    if(resize){
+        attachTemplateResize();
+    } else {
+        detachTemplateResize()
+        $("#templateResizeBar").hide();
     }
     
     setTimeout(function(){
@@ -6150,8 +6149,8 @@ tpen.screen.peekZoom = function(cancel){
                 //var newHeight2 = parseFloat($(".compareImage").height()) + parseFloat($("#compareSplit .toolLinks").height()); //For resizing properly when transcription template is resized
                 var fullPageMaxHeight = window.innerHeight - 125; //100 comes from buttons above image and topTrim
                 $("#fullPageImg").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
-                $("#fullPageSplitCanvas").height($("#fullPageImg").height());
-                $("#fullPageSplitCanvas").width($("#fullPageImg").width());
+                $("#fullpageSplitCanvas").css("height",fullPageMaxHeight);
+                $("#fullpageSplitCanvas").css("width",$("#fullPageImg").width());
                 var newImgBtmTop = tpen.screen.imgBottomPositionRatio * height;
                 var newImgTopTop = tpen.screen.imgTopPositionRatio * height;
                 $("#imgBottom img").css("top", newImgBtmTop + "px");
@@ -6255,9 +6254,8 @@ tpen.screen.peekZoom = function(cancel){
                 $(".split img").css("max-width", splitWidth);
                 $(".split:visible").css("width", splitWidth);
                 $("#fullPageImg").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
-                $("#fullPageSplitCanvas").height(fullPageMaxHeight);
-                $("#fullPageSplitCanvas").height($("#fullPageImg").height());
-                $("#fullPageSplitCanvas").width($("#fullPageImg").width());
+                $("#fullpageSplitCanvas").css("height",fullPageMaxHeight);
+                $("#fullpageSplitCanvas").css("width", $("#fullPageImg").width());
                 $("#transcriptionTemplate").css("width", newCanvasWidth + "px");
                 $("#transcriptionCanvas").css("width", newCanvasWidth + "px");
                 $("#transcriptionCanvas").css("height", newCanvasHeight + "px");

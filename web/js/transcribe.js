@@ -3145,7 +3145,7 @@ function splitPage(event, tool) {
         $("#helpContainer").height(Page.height()-$("#helpContainer").offset().top);
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
     }
-    else if(tool === "parsing" || tpen.screen.liveTool == "parsing"){
+    else if(tool === "parsing"){
         resize=false;
     }
  
@@ -6155,7 +6155,7 @@ tpen.screen.peekZoom = function(cancel){
                 //var newHeight2 = parseFloat($(".compareImage").height()) + parseFloat($("#compareSplit .toolLinks").height()); //For resizing properly when transcription template is resized
                 var fullPageMaxHeight = window.innerHeight - 125; //100 comes from buttons above image and topTrim
                 $("#fullPageImg").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
-                $("#fullpageSplitCanvas").css("height",fullPageMaxHeight);
+                $("#fullpageSplitCanvas").css("height",$("#fullPageImg").height());
                 $("#fullpageSplitCanvas").css("width",$("#fullPageImg").width());
                 var newImgBtmTop = tpen.screen.imgBottomPositionRatio * height;
                 var newImgTopTop = tpen.screen.imgTopPositionRatio * height;

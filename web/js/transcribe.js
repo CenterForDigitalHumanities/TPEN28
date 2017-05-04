@@ -2711,7 +2711,7 @@ function stopMagnify(){
 */
 function mouseZoom($img,container, event){
     tpen.screen.isMagnifying = true;
-    var contain = $("#"+container).position();
+    var contain = $("#"+container).offset();
     var imgURL = $img.find("img:first").attr("src");
     var page = $("#transcriptionTemplate");
     //collect information about the img
@@ -2719,12 +2719,12 @@ function mouseZoom($img,container, event){
     var imgTop = $img.find("img").css("top");
     var imgLeft = $img.find("img").css("left");
     if(imgTop === "auto"){
-        imgTop="0px";
+        imgTop= $img.find("img").offset().top;
     }
-    else{
-        imgTop = parseFloat(imgTop) + 40;
-    }
-    if(imgLeft === "auto")imgLeft="0px";
+//    else{
+//        imgTop = parseFloat(imgTop) + 40;
+//    }
+    if(imgLeft === "auto")imgLeft= $img.find("img").offset().left;
     var imgOffset = $img.find("img").offset().top;
     var imgDims = new Array(parseInt(imgLeft), parseInt(imgTop), $img.width(), $img.height());
     //build the zoomed div
@@ -2748,14 +2748,16 @@ function mouseZoom($img,container, event){
                 $("#zoomDiv").hide();
             }
             var mouseAt = new Array(event.pageX, event.pageY);
-            if ( mouseAt[0] < contain.left - $("#"+container).offset().left
+            if ( mouseAt[0] < contain.left
                 || mouseAt[0] > contain.left+$("#"+container).width()
                 || mouseAt[1] < contain.top
                 || mouseAt[1] > contain.top+$("#"+container).height()){
                 return false; // drop out, you've left containment
             }
-            var zoomPos = new Array(mouseAt[0] - zoomSize / 2, mouseAt[1] - zoomSize / 2);
-            var imgPos = new Array((imgDims[0] - mouseAt[0] + contain.left) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3, (imgDims[1] - mouseAt[1] + contain.top) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3); //3px border adjustment
+            var zoomPos = new Array(mouseAt[0]-zoomSize/2,mouseAt[1]-zoomSize/2);
+            var imgPos = new Array((imgDims[0]-mouseAt[0])*tpen.screen.zoomMultiplier+zoomSize/2-3,(imgDims[1]-mouseAt[1])*tpen.screen.zoomMultiplier+zoomSize/2-3); //3px border adjustment
+//            var zoomPos = new Array(mouseAt[0] - zoomSize / 2, mouseAt[1] - zoomSize / 2);
+//            var imgPos = new Array((imgDims[0] - mouseAt[0] + contain.left) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3, (imgDims[1] - mouseAt[1] + contain.top) * tpen.screen.zoomMultiplier + zoomSize / 2 - 3); //3px border adjustment
             $("#zoomDiv").css({
                 "left"  : zoomPos[0],
                 "top"   : zoomPos[1] - $(document).scrollTop() , //+ imgOffset
@@ -2874,12 +2876,16 @@ function hideWorkspaceForParsing(){
     if($(window).width() > 900){ //Whenever it gets less wide than this, it prioritizes height and stops resizing by width.
         if($(window).width() < newCanvasWidth + $("#parsingSplit").width()){
             newCanvasWidth = $(window).width() - $("#parsingSplit").width();
-            newCanvasHeight = 1/ratio*newCanvasWidth;
+            newCanvasHeight = ratio*newCanvasWidth;
         }
     }
     else{ //Just do nothing instead of calling it 900 wide so it defaults to the height math, maybe put a max up there too.
 //                     newCanvasWidth = 900;
 //                     newCanvasHeight = 1/ratio*newCanvasWidth;
+    }
+    if(newCanvasHeight > window.innerHeight -40){ //never let the bottom of the image go off screen.
+        newCanvasHeight = window.innerHeight - 40;
+        newCanvasWidth = ratio * newCanvasHeight;
     }
     $("#transcriptionTemplate").css("width","auto");
     $("#transcriptionCanvas").css("height", newCanvasHeight + "px");

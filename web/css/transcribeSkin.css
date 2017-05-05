@@ -137,7 +137,7 @@ body{
 .activeLine{
     box-shadow: 0 0 15px black;
     display: block !important;
-    opacity: 1 !important;
+    /*opacity: 1 !important;*/
     border-radius: 2px;
 }
 .lookLikeButtons, button{

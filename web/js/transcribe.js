@@ -3170,16 +3170,11 @@ function splitPage(event, tool) {
         $("#fullPageImg").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
         $("#fullpageSplitCanvas").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
         $("#fullpageSplitCanvas").css("width", $("#fullPageImg").width()); //If we want to keep the full image on page, it cant be taller than that.
-        //$("#fullpageSplitCanvas").height(fullPageMaxHeight);
-        //$("#fullpageSplitCanvas").width(splitWidthAdjustment);
         
         $(".fullP").each(function(i){
             this.title = $("#transcriptlet_"+i+" .theText").text();
         })
         .tooltip();
-    
-        //$(".split img").css("max-width", splitWidthAdjustment);
-        //$(".split:visible").css("width", splitWidthAdjustment);
     }
     else if(tool === "compare"){
          var fullPageMaxHeight = window.innerHeight - 125; //100 comes from buttons above image and topTrim
@@ -3188,12 +3183,8 @@ function splitPage(event, tool) {
         $(".split:visible").css("width", splitWidthAdjustment);
     }
     else{
-//        $(".split:visible")
-//        .find('img')
-//        .css({
-//            'max-height': window.innherHeight + 350 + "px",
-//            'max-width': splitWidthAdjustment
-//        });
+        //a strange way to split, most likely just an added iframe tool.  
+        
     }
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
     var newImgBtmTop = tpen.screen.imgBottomPositionRatio * newCanvasHeight;
@@ -3203,7 +3194,6 @@ function splitPage(event, tool) {
         "width"   :   newCanvasWidth + "px",
         "height"   :   newCanvasHeight + "px"
     });
-    
     $(".lineColIndicatorArea").css("height", newCanvasHeight + "px");
     $("#imgBottom img").css("top", newImgBtmTop + "px");
     $("#imgBottom .lineColIndicatorArea").css("top", newImgBtmTop + "px");
@@ -4007,7 +3997,7 @@ function markerColors(){
 //    var oneToChange = tpen.screen.colorThisTime.lastIndexOf(")") - 2;
 //    var borderColor = tpen.screen.colorThisTime.substr(0, oneToChange) + '.2' + tpen.screen.colorThisTime.substr(oneToChange + 1);
 //    var lineColor = tpen.screen.colorThisTime.replace(".4", ".9"); //make this color opacity 100
-    $('.lineColIndicator').css('border', '1px solid ' + color);
+    $('.lineColIndicator').css('border', '2px solid ' + color);
     $('.lineColOnLine').css({'border-left':'1px solid ' + color, 'color':color});
     $("#markerColors").css("color", colorNextTime);
     $('.activeLine').css({

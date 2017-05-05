@@ -1440,21 +1440,24 @@
         $("#imgTop").hover(
             function(){
                 $('.activeLine').css('box-shadow', '0 0 15px 1em rgba(0,0,0,.4)');
+                $('.activeLine').css('opacity', '1');
             },
             function(){
                 $('.activeLine').css('box-shadow', '0 0 15px 0 rgba(0,0,0,1)');
+                $('.activeLine').css('opacity', '.36');
             }
         );
 
-//        $("#imgBottom").hover(
-//            function(){
-//                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor);
-//            },
-//            function(){
-//                var lineColor2 = lineColor.replace(".9", ".4");
-//                $('.activeLine').css('box-shadow', '0px 0px 15px 8px '+lineColor2);
-//            }
-//        );
+        $("#imgBottom").hover(
+            function(){
+                $('.activeLine').css('box-shadow', '0 0 15px 1em rgba(0,0,0,.4)');
+                $('.activeLine').css('opacity', '1');
+            },
+            function(){
+                $('.activeLine').css('box-shadow', '0 0 15px 0 rgba(0,0,0,1)');
+                $('.activeLine').css('opacity', '.36');
+            }
+        );
 
         document.addEventListener("mousewheel", function(e){
             if(tpen.screen.isMagnifying){

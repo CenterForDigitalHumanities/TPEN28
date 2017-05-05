@@ -135,9 +135,9 @@ body{
     margin: 0;
 }
 .activeLine{
-    box-shadow: 0 0 15px black;
+    box-shadow: 0 0 15px .5em black;
     display: block !important;
-    /*opacity: 1 !important;*/
+    opacity: .6;
     border-radius: 2px;
 }
 .lookLikeButtons, button{
@@ -1540,6 +1540,7 @@ button.active {
     opacity: .36;
     display: none;
     box-sizing: border-box;
+    box-shadow: none;
 }
 .lineColIndicator:hover{
     opacity: 1;

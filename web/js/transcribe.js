@@ -2347,8 +2347,15 @@ function adjustImgs(positions) {
     $(".lineColIndicator")
         .removeClass('activeLine')
         .css({
-            "background-color":"transparent"
+            "background-color":"transparent",
+            "opacity" : ".36",
+            "box-shadow": "none",
+            "border" : "2px solid "+tpen.screen.colorThisTime
         });
+    linesToMakeActive.css({
+        "box-shadow" : "0 0 15px .5em rgba(0,0,0,1)",
+        "opacity" : ".6"
+    });
     linesToMakeActive.addClass("activeLine");
 }
 
@@ -4003,7 +4010,7 @@ function markerColors(){
     $('.activeLine').css({
 //        'box-shadow' : '0px 0px 15px 8px ' + color,
         'box-shadow' : '0 0 15px black',
-        'opacity' : .4
+        'opacity' : .6
     }); //keep this color opacity .4 until imgTop is hovered.
 }
 

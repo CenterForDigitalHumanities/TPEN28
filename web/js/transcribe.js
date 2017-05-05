@@ -3107,10 +3107,6 @@ function splitPage(event, tool) {
     //var newCanvasWidth = tpen.screen.originalCanvasWidth * .55;
     var newCanvasWidth = window.innerWidth * .55;
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
-    var newCanvasHeight = 1 / ratio * newCanvasWidth;
-    
-    var newImgBtmTop = tpen.screen.imgBottomPositionRatio * newCanvasHeight;
-    var newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
     $("#transcriptionTemplate").css({
         "width"   :   "55%",
         "display" : "inline-table"
@@ -3138,6 +3134,7 @@ function splitPage(event, tool) {
         if(tpen.screen.liveTool === "help"){
             return fullPage();
         }
+        
         $("#transcriptionCanvas").css("width", Page.width()-500 + "px");
         $("#transcriptionTemplate").css("width", Page.width()-500 + "px");
         newCanvasWidth = Page.width()-500;
@@ -3175,10 +3172,11 @@ function splitPage(event, tool) {
         $("#fullpageSplitCanvas").css("width", $("#fullPageImg").width()); //If we want to keep the full image on page, it cant be taller than that.
         //$("#fullpageSplitCanvas").height(fullPageMaxHeight);
         //$("#fullpageSplitCanvas").width(splitWidthAdjustment);
+        
         $(".fullP").each(function(i){
             this.title = $("#transcriptlet_"+i+" .theText").text();
         })
-            .tooltip();
+        .tooltip();
     
         //$(".split img").css("max-width", splitWidthAdjustment);
         //$(".split:visible").css("width", splitWidthAdjustment);
@@ -3197,6 +3195,9 @@ function splitPage(event, tool) {
 //            'max-width': splitWidthAdjustment
 //        });
     }
+    var newCanvasHeight = 1 / ratio * newCanvasWidth;
+    var newImgBtmTop = tpen.screen.imgBottomPositionRatio * newCanvasHeight;
+    var newImgTopTop = tpen.screen.imgTopPositionRatio * newCanvasHeight;
     tpen.screen.liveTool = tool;
     $("#transcriptionCanvas").css({
         "width"   :   newCanvasWidth + "px",
@@ -4034,7 +4035,7 @@ function toggleLineMarkers(){
 
 /* Toggle the drawn lines in the transcription interface. */
 function toggleLineCol(){
-    if ($('.lineColOnLine:first').is(":visible")){
+    if ($('.lineColOnLine:first').css("display") === "block"){
         $('.lineColOnLine').hide();
         $("#showTheLabels").removeClass("selected");
     }

@@ -7,6 +7,9 @@ and open the template in the editor.
     Created on : Jan 27, 2015, 10:05:37 AM
     Author     : bhaberbe
 */
+div[role="tooltip"]{
+    z-index: 50;
+}
 .frameToolReset{
     position: absolute;
     top: 7px;

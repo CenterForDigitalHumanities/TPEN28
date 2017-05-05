@@ -4009,7 +4009,7 @@ function markerColors(){
     $("#markerColors").css("color", colorNextTime);
     $('.activeLine').css({
 //        'box-shadow' : '0px 0px 15px 8px ' + color,
-        'box-shadow' : '0 0 15px black',
+        'box-shadow' : '0 0 15px .5em black',
         'opacity' : .6
     }); //keep this color opacity .4 until imgTop is hovered.
 }

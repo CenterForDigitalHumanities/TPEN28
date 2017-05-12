@@ -6210,7 +6210,7 @@ tpen.screen.peekZoom = function(cancel){
                     }
                 }
                 else if (PAGEHEIGHT <= tpen.screen.originalCanvasHeight){ //allow it to be as tall as possible, but not taller.
-                    newCanvasHeight = PAGEHEIGHT;
+                    newCanvasHeight = fullPageMaxHeight;
                     newCanvasWidth = ratio*newCanvasHeight;
                 }
                 else if(PAGEHEIGHT > tpen.screen.originalCanvasHeight){ //I suppose this is possible for small images, so handle if its trying to be bigger than possible
@@ -6222,6 +6222,10 @@ tpen.screen.peekZoom = function(cancel){
                     if (PAGEWIDTH < newCanvasWidth + SPLITWIDTH){ //If the page width is less than that of the image width plus the split area
                         newCanvasWidth = PAGEWIDTH - SPLITWIDTH; //make sure it respects the split area's space
                         newCanvasHeight = 1/ratio*newCanvasWidth; //make the height of the canvas relative to this width
+                        if(newCanvasHeight > fullPageMaxHeight){
+                            newCanvasHeight = fullPageMaxHeight;
+                            newCanvasWidth = ratio * newCanvasHeight;
+                        }
                     }
                     if(widerThanTall){
                         $("#parsingSplit").show();
@@ -6231,6 +6235,10 @@ tpen.screen.peekZoom = function(cancel){
                     if(widerThanTall){ //if the image is wider than tall
                         newCanvasWidth = 900; //make it as wide as the limit.  The split area is hidden, we do not need to take it into account
                         newCanvasHeight = 1/ratio*newCanvasWidth; //make the height of the image what it needs to be for this width limit
+                        if(newCanvasHeight > fullPageMaxHeight){
+                            newCanvasHeight = fullPageMaxHeight;
+                            newCanvasWidth = ratio * newCanvasHeight;
+                        }
                         $("#parsingSplit").hide();
                     }
                     else{

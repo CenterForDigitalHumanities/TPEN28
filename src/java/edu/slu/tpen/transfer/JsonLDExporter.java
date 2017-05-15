@@ -35,6 +35,7 @@ import static edu.slu.util.LangUtils.buildQuickMap;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import textdisplay.FolioDims;
+import textdisplay.Metadata;
 
 /**
  * Class which manages serialisation to JSON-LD. Builds a Map containing the
@@ -65,6 +66,7 @@ public class JsonLDExporter {
          manifestData.put("@id", projName + "/manifest.json");
          manifestData.put("@type", "sc:Manifest");
          manifestData.put("label", proj.getProjectName());
+         manifestData.put("metadata", Metadata.getMetadataAsJSON(projID));
 
          Map<String, Object> pages = new LinkedHashMap<>();
          pages.put("@id", Folio.getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");

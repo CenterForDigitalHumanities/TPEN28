@@ -561,8 +561,11 @@ function setTPENObjectData(data){
             tpen.project.remainingText = data.remainingText;
         }
         // update the uploadLocation for linebreaking tool
-        var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio || 0].folioNumber
+        var uploadLocation = "";
+        if(tpen.project.folios.length > 0){
+            uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio || 0].folioNumber
             +"&projectID="+tpen.project.id;
+        }
         $("#uploadText").add("#newText").attr("href",uploadLocation);
         $("#lbText").html(unescape(tpen.project.remainingText));
         $("#linebreakTextContainer").show();

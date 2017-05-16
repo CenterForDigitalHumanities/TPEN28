@@ -1169,12 +1169,13 @@
                         var dateForUser = new Date(mdate);
                         var message = managerData.upgradeMessage;
                         var countdown = managerData.countdown;
-                        if(countdown > 0){
-                            setCountdown(mdate);
-                        }
+                        
                         if(managerData.active > 0){
                             $("#upgradeMessage").html(message);
                             $("#schedmaintenance").html(dateForUser.format('l, F jS, Y g:00a'));
+                            if(countdown > 0){
+                                setCountdown(mdate);
+                            }
                             //return(dateForUser.format('l, F jS, Y g:00a'));
                         }
                         else{

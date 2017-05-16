@@ -158,6 +158,11 @@
                 height: 100% !important;
                 /*overflow: auto;*/
             }
+            #upgradeMessage{
+                left: 17px;
+                display: block;
+                position: relative;
+            }
         </style>
         <script type="text/javascript">
             $(function() {
@@ -254,12 +259,13 @@
                         var dateForUser = new Date(mdate);
                         var message = managerData.upgradeMessage;
                         var countdown = managerData.countdown;
-                        if(countdown > 0){
-                            setCountdown(mdate);
-                        }
+                        
                         if(managerData.active > 0){
                             $("#upgradeMessage").html(message);
                             $("#schedmaintenance").html(dateForUser.format('l, F jS, Y g:00a'));
+                            if(countdown > 0){
+                                setCountdown(mdate);
+                            }
                             //return(dateForUser.format('l, F jS, Y g:00a'));
                         }
                         else{

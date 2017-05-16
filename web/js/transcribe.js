@@ -3151,9 +3151,9 @@ function splitPage(event, tool) {
             return fullPage();
         }
         
-        $("#transcriptionCanvas").css("width", Page.width()-500 + "px");
-        $("#transcriptionTemplate").css("width", Page.width()-500 + "px");
-        newCanvasWidth = Page.width()-500;
+        $("#transcriptionCanvas").css("width", Page.width()-520 + "px");
+        $("#transcriptionTemplate").css("width", Page.width()-520 + "px");
+        newCanvasWidth = Page.width()-520;
         $("#helpSplit").show().height(Page.height()-$("#helpSplit").offset().top).scrollTop(0); // header space
         $("#helpContainer").height(Page.height()-$("#helpContainer").offset().top);
         resize = false; //interupts parsing resizing funcitonaliy, dont need to resize for this anyway.
@@ -6811,6 +6811,8 @@ function firstBy(){function n(n){return n}function t(n){return"string"==typeof n
         return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){return n=r(n,t),n.thenBy=u,n}
     function u(n,t){var u=this;return n=r(n,t),e(function(t,r){return u(t,r)||n(t,r)})}return e;
 }
+
+
     
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?

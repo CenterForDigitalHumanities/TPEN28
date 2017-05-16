@@ -243,7 +243,7 @@
                         <li><a title="Manage Users" href="#tabs-3">Manage Users</a><div id="userAlert" class='ui-icon-alert ui-icon right' style="display:none;margin: 8px 8px 0 0;"></div></li>
                         <li><a title="Reports" href="#reportsTab">Reports</a></li>
                         <%}%>
-                        <li><a title="Update T-PEN" href="#updateTab">About T&#8209;PEN</a></li>
+                        <li><a title="Update T-PEN" href="#updateTab">Manage Upgrade</a></li>
                         <li><a title="About the T&#8209;PEN project" href="#aboutTab">About T&#8209;PEN</a></li>
                     </ul>
                     <div id="tabs-1">
@@ -785,7 +785,7 @@
                     <%} // end of isAdmin()
                                     }%>
                     <!--                end of tabs-3, manage users-->
-<!--                    <div id="updateTab">
+                    <div id="updateTab">
                         <ul id="updateManagement">
                             <li class="gui-tab-section">
                                 <h3>Create a warning about down time during web site updates and upgrades</h3>
@@ -793,21 +793,31 @@
                                 <div id="upgradeSettings">
                                     <input type="hidden" name="cancelUpgrade" value="false">
                                     <input type="hidden" name="active" value="true">
-                                    <span>Date and time (mm/dd/yyyy hh:mm:ss) : </span><input type="text" name="upgradeDate" placeholder="Date and time upgrade will take place">
-                                    <span>Time the upgrade will take place (xx:xx AM/PM): </span><input type="text" name="updateTime" placeholder="Time upgrade will take place">
-                                    <span>Message to display to the user: </span><input type="text" name="upgradeMessage" placeholder="Custom message for the user">
-                                    <span>Check to include a countdown: </span><input type="checkbox" name="updateTimer" >
+                                    <span>Date and time (yyyy-mm-dd hh:mm:ss) : </span><input type="text" name="upgradeDate" placeholder="Date and time upgrade will take place"><br>
+                                    <span>Message to display to the user: </span><input type="text" name="upgradeMessage" placeholder="Custom message for the user"><br>
+                                    <span>Check to include a countdown: </span><input type="checkbox" name="updateTimer" ><br>
                                     <input type="button" value="Set Update Settings" onclick="setUpgrade();">
                                 </div>
                             </li>
                             <li class="gui-tab-section">
                                 <h3>Cancel an Upgrade</h3>
-                                <div>If you already have an update message set, you can cancel it here. <button class="tpenButton" onclick="getUpgradeSettings();">See my current upgrade settings</button></div>
-                                <div id="currentUpgrade"></div>
+                                <div>
+                                    If you already have an update message set, you can cancel it here and the default will be displayed instead. 
+                                </div>
+                                <span id="schedmaintenance">
+                                    
+                                </span>
+                                <span id="countdown">
+                                    
+                                </span> <br>
+                                <span id="upgradeMessage">
+                                    
+                                </span> 
+                                <br>
                                 <input type="button" value="Remove Update Settings" onclick="removeUpgrade();">
                             </li>
                         </ul>
-                    </div>-->
+                    </div>
                     <div id="aboutTab">
                         <ul id="about">
                             <li class="gui-tab-section">
@@ -1103,16 +1113,22 @@
         </div>
         <textarea id="userEmailList" class="popover"></textarea>
         <script type="text/javascript">
+            $(function() {
+                maintenanceDate();  
+            });
+            if(!Date.prototype.format){Date.prototype.format=(function(){var a={d:function(){var b=this.getDate().toString();return b.length===1?"0"+b:b},D:function(){return a.l.call(this).slice(0,3)},j:function(){return this.getDate()},l:function(){switch(this.getDay()){case 0:return"Sunday";case 1:return"Monday";case 2:return"Tuesday";case 3:return"Wednesday";case 4:return"Thursday";case 5:return"Friday";case 6:return"Saturday"}},N:function(){return this.getDay()===0?7:this.getDay()},S:function(){if(this.getDate()>3&&this.getDate()<21){return"th"}switch(this.getDate().toString().slice(-1)){case"1":return"st";case"2":return"nd";case"3":return"rd";default:return"th"}},w:function(){return this.getDay()},z:function(){return Math.floor(((this-new Date(this.getFullYear(),0,1))/86400000),0)},W:function(){var b=new Date(this.getFullYear(),0,1);return Math.ceil((((this-b)/86400000)+b.getDay()+1)/7)},F:function(){switch(this.getMonth()){case 0:return"January";case 1:return"February";case 2:return"March";case 3:return"April";case 4:return"May";case 5:return"June";case 6:return"July";case 7:return"August";case 8:return"September";case 9:return"October";case 10:return"November";case 11:return"December"}},m:function(){var b=(this.getMonth()+1).toString();return b.length===1?"0"+b:b},M:function(){return a.F.call(this).slice(0,3)},n:function(){return this.getMonth()+1},t:function(){return 32-new Date(this.getFullYear(),this.getMonth(),32).getDate()},L:function(){return new Date(this.getFullYear(),1,29).getDate()===29?1:0},o:function(){return null},Y:function(){return this.getFullYear()},y:function(){return this.getFullYear().toString().slice(-2)},a:function(){return this.getHours()<12?"am":"pm"},A:function(){return this.getHours()<12?"AM":"PM"},B:function(){return null},g:function(){var b=this.getHours();return b>12?b-12:b},G:function(){return this.getHours()},h:function(){var b=a.g.call(this).toString();return b.length===1?"0"+b:b},H:function(){var b=a.G.call(this).toString();return b.length===1?"0"+b:b},i:function(){return this.getMinutes()<10?"0"+this.getMinutes():this.getMinutes()},s:function(){return this.getSeconds()<10?"0"+this.getSeconds():this.getSeconds()},u:function(){return this.getMilliseconds()},e:function(){return null},I:function(){return null},O:function(){var b=this.getTimezoneOffset()/60;return(b<0?"":"+")+(b<10?"0"+b.toString():b.toString())+"00"},P:function(){var b=a.O.call(this);return b.slice(0,3)+":"+b.slice(-2)},T:function(){return null},Z:function(){return parseInt(a.O.call(this),10)*60},c:function(){function c(d){return d<10?"0"+d.toString():d.toString()}var b="";b+=this.getUTCFullYear()+"-";b+=c(this.getUTCMonth()+1)+"-";b+=c(this.getUTCDate())+"T";b+=c(this.getUTCHours())+":";b+=c(this.getUTCMinutes())+":";b+=c(this.getUTCSeconds())+"Z";return b},r:function(){return this.toUTCString()},U:function(){return this.getTime()}};return function(b){var c="",e="",d;for(d=0;d<=b.length;d+=1){e=b.charAt(d);if(a.hasOwnProperty(e)){c+=a[e].call(this).toString()}else{c+=e}}return c}}())};
+
             function setUpgrade(){
                 var url = "upgradeManagement";
                 var upgradeDate = $("input[name='upgradeDate']").val();
+                //var formattedDate = new Date(upgradeDate);
                 var upgradeMessage = $("input[name='upgradeMessage']").val();
-                var countdown = false;
+                var countdown = 0;
                 if($("input[name='updateTimer']:checked").length){
-                    countdown = true;
+                    countdown = 1;
                 }
                 else{
-                    countdown = false;
+                    countdown = 0;
                 }
                 var params = {
                     "upgradeDate" : upgradeDate,
@@ -1120,11 +1136,16 @@
                     "countdown" : countdown,
                     "cancelUpgrade" : "false",
                     "getSettings" : "false",
-                    "active" : true
+                    "active" : 1
                 };
                 $.post(url, params)
-                    .done(function(){
-                            
+                    .done(function(data){
+                        if(data === "date parse error"){
+                            alert("Bad date syntax");
+                        }
+                        else{
+                             maintenanceDate();  
+                        }
                     }
                 );
             }
@@ -1133,10 +1154,76 @@
                 var params = {"cancelUpgrade":"true"};
                 $.post(url, params)
                     .done(function(){
-                            
+                        $("#schedmaintenance").html("The Default");
+                        $("#countdown").html("");
                     }
                 );
             }
+            function maintenanceDate(){
+                var url="upgradeManagement";
+                var params = {"getSettings" : "get", "cancelUpgrade":"false"};
+                $.post(url, params)
+                    .done(function(data){
+                        var managerData = JSON.parse(data);
+                        var mdate = managerData.upgradeDate;
+                        var dateForUser = new Date(mdate);
+                        var message = managerData.upgradeMessage;
+                        var countdown = managerData.countdown;
+                        if(countdown > 0){
+                            setCountdown(mdate);
+                        }
+                        if(managerData.active > 0){
+                            $("#upgradeMessage").html(message);
+                            $("#schedmaintenance").html(dateForUser.format('l, F jS, Y g:00a'));
+                            //return(dateForUser.format('l, F jS, Y g:00a'));
+                        }
+                        else{
+                            var today = new Date();
+                            while ((today.getDay() !== 1) && (today.getDay() !== 3) && (today.getDay() !== 5)){
+                                today.setDate(today.getDate()+1);
+                            }
+                            // set to 8am Central Time
+                            today.setHours(14 - today.getTimezoneOffset()/60);
+                            //return(today.format('l, F jS, Y g:00a'));
+                            $("#schedmaintenance").html(today.format('l, F jS, Y g:00a'));
+                        }
+                    });
+            }
+                                                                                                         
+            function setCountdown(endtime){
+                var end = new Date(endtime);
+
+                var _second = 1000;
+                var _minute = _second * 60;
+                var _hour = _minute * 60;
+                var _day = _hour * 24;
+                var timer;
+
+                function showRemaining() {
+                    var now = new Date();
+                    var distance = end - now;
+                    if (distance < 0) {
+
+                        clearInterval(timer);
+                        document.getElementById('countdown').innerHTML = 'EXPIRED!';
+
+                        return;
+                    }
+                    var days = Math.floor(distance / _day);
+                    var hours = Math.floor((distance % _day) / _hour);
+                    var minutes = Math.floor((distance % _hour) / _minute);
+                    var seconds = Math.floor((distance % _minute) / _second);
+
+                    document.getElementById('countdown').innerHTML = days + 'days ';
+                    document.getElementById('countdown').innerHTML += hours + 'hrs ';
+                    document.getElementById('countdown').innerHTML += minutes + 'mins ';
+                    document.getElementById('countdown').innerHTML += seconds + 'secs';
+                }
+
+                timer = setInterval(showRemaining, 1000);
+            }
+            
+    
             
             <%
                 if (mss.length > 0) {%>

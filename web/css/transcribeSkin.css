@@ -1773,8 +1773,7 @@ a.editButtons {
 /* The help area CSS */
 #helpSplit{
     width: 520px;
-    max-width: 500px;
-    overflow-y: scroll;
+    max-width: 520px;
     background-color: white;
 }
 #helpHeaders{
@@ -1809,7 +1808,7 @@ a.editButtons {
 }
 #helpContainer{
     padding:0 2em;
-    height: auto;
+    overflow-y: scroll;
 }
 .no-point{
     pointer-events: none;

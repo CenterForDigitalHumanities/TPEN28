@@ -45,6 +45,7 @@ public class UpgradeManagement extends HttpServlet {
         UpgradeManager upgrader = null;
         PrintWriter out = response.getWriter();
         System.out.println("Upgarde serverlet");
+        int ucountdown = 0;
         if (session.getAttribute("UID") != null) {
             thisUser = new user.User(Integer.parseInt(session.getAttribute("UID").toString()));
         }
@@ -55,8 +56,8 @@ public class UpgradeManagement extends HttpServlet {
             System.out.println("U1");
             String uDate = request.getParameter("upgradeDate");
             //String uTime = (String)request.getAttribute("upgradeTime");
-            String uMessage = (String)request.getParameter("upgradeMessage");
-            String countdown = (String)request.getParameter("countdown");
+            String uMessage = request.getParameter("upgradeMessage");
+            String countdown = request.getParameter("countdown");
             System.out.println("U2");
             if(request.getParameter("cancelUpgrade").equals("true")){
                 System.out.println("U3");
@@ -82,23 +83,26 @@ public class UpgradeManagement extends HttpServlet {
             }
             else{
                 System.out.println("U11");
-                SimpleDateFormat sdf = new SimpleDateFormat("mm/dd/yyyy hh:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
                 System.out.println("Date to parse...");
                 System.out.println(uDate);
-                Date parsedDate = sdf.parse(uDate);
-                System.out.println("New date is ");
-                System.out.println(parsedDate);
-                Timestamp upgradeDate = new Timestamp(parsedDate.getTime());
-                System.out.println("New date2 is ");
-                System.out.println(upgradeDate);
-                //Timestamp upgradeTime = new Timestamp(uTime);
-                boolean ucountdown = false;
-                if(countdown.equals("true")) ucountdown = true;
-                System.out.println("countdown flag is "+ucountdown);
-                System.out.println("U13");
-                upgrader = new UpgradeManager(upgradeDate, uMessage, ucountdown, true);
-                System.out.println("U14");
-                out.println("Upgrade settings applied");
+                try{
+                    Date parsedDate = sdf.parse(uDate);
+                    System.out.println("New date is ");
+                    //Timestamp upgradeTime = new Timestamp(uTime);
+                    System.out.println("countdown flag is "+countdown);
+                    System.out.println("U13");
+                    if(countdown.equals("1")){
+                        ucountdown = 1;
+                    }
+                    upgrader = new UpgradeManager(uDate, uMessage, ucountdown, 1);
+                    System.out.println("U14");
+                    out.println("Upgrade settings applied");
+                }
+                catch (Exception e){
+                    out.println("date parse error");
+                }
+               
             }
         }
     }

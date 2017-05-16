@@ -6330,11 +6330,15 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         });
         return w;
     })();
+    var addClass = (severeCheck) ? "severe" : "collapsed";
     if(contentWidth>width-(7*20)){ // margin not accounted for otherwise
         // content is encroaching and will overlap
-        var addClass = (severeCheck) ? "severe" : "collapsed";
-        $('.navigation').addClass(addClass);
+        $('.topTrim.navigation').addClass(addClass);
         tpen.screen.navMemory = contentWidth;
+        !severeCheck && tpen.screen.responsiveNavigation(true);
+    }
+    if(window.innerWidth < 820){
+        $('#transWorkspace .navigation').addClass(addClass);
         !severeCheck && tpen.screen.responsiveNavigation(true);
     }
 };

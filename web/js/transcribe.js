@@ -6337,7 +6337,10 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         tpen.screen.navMemory = contentWidth;
         !severeCheck && tpen.screen.responsiveNavigation(true);
     }
-    if(window.innerWidth < 820){
+    var visibleButtons = $(".buttons button:visible").length + 1; //+1 for split screen 
+    if(window.innerWidth < 700){
+        //We could account for what buttons are visible, but this also controls the buttons to the side of the 
+        //textarea in the .transcriptlet, so I think this minimum is good all around
         $('#transWorkspace .navigation').addClass(addClass);
         !severeCheck && tpen.screen.responsiveNavigation(true);
     }

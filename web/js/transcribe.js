@@ -6331,7 +6331,8 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         return w;
     })();
     var addClass = (severeCheck) ? "severe" : "collapsed";
-    if(contentWidth>width-(7*20)){ // margin not accounted for otherwise
+    var trims = $(".trimSection:visible").length;
+    if(contentWidth>width-(trims*20)){ // margin not accounted for otherwise
         // content is encroaching and will overlap
         $('.topTrim.navigation').addClass(addClass);
         tpen.screen.navMemory = contentWidth;

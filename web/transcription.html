@@ -175,13 +175,14 @@
                         </div>
                     </div>
                     <div class="flex-container flex-stretch">
-                        <div class="flex-bookend">
+                        <div class="flex-bookend navigation">
                             <button id="prevLine" class="pull-right" title="Prev" onclick="previousTranscriptlet();">
-                                <i class="fa fa-chevron-left"></i> Prev
+                                <i class="fa fa-chevron-left"></i> 
+                                <!--Prev-->
                             </button>
                             <button id="prevPage" title="Previous Page" onclick="previousFolio();">
                                 <i class="fa fa-caret-left fa-2x"></i>
-                                Previous Page
+                                <!--Previous Page-->
                             </button>
                         </div>
                         <div id="transcriptletArea" class="flex-wide">
@@ -189,25 +190,27 @@
                             <div class="xmlClosingTags"></div>
                         </div>
 
-                        <div class="flex-bookend">
+                        <div class="flex-bookend navigation">
                             <button class="pull-left" id="nextLine" title="Next Line" onclick="nextTranscriptlet();">
-                                Next <i class="fa fa-chevron-right"></i>
+                                <!--Next--> 
+                                <i class="fa fa-chevron-right"></i>
                             </button>
                             <button id="nextPage" title="Next Page" onclick="nextFolio();">
+                                <!--Next Page-->
                                 <i class="fa fa-forward fa-2x"></i>
-                                Next Page
                             </button>
                             <button id="toggleNotes" class="pull-left clear-left" role="button" onclick="$('.notes').fadeToggle('slow')" title="Toggle Notes">
-                                Notes <i class="fa fa-comment"></i>
+                                <!--Notes--> 
+                                <i class="fa fa-comment"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="flex-container flex-stretch buttons">
+                    <div class="flex-container flex-stretch buttons navigation">
                         <select id="splitScreenTools" class="let">
                             <option selected>Splitscreen Tools</option>
                         </select>
                         <button id="canvasControls" title="Page Tools">
-                            Page Tools
+                            <!--Page Tools-->
                             <i class="fa fa-file-image-o"></i>
                         </button>
 <!--                        <button style="display:inline-block;" id="ltrSwitch" title="Change Interface">
@@ -219,15 +222,15 @@
                             <i class="fa fa-file-image-o"></i>
                         </button>-->
                         <button id="magnify1" class="magnifyBtn let" magnifyImg="trans" title="Inspect Transcription Image" >
-                            Inspect
+                            <!--Inspect-->
                             <i class="fa fa-search-plus"></i>
                         </button> <!--Page event on the listener for this class in js.-->
                         <button id="toggleChars" title="Move Transcription Image" onclick="toggleSpecialChars(event);">
-                            Characters
+                            <!--Characters-->
                             <i class="fa fa-keyboard-o"></i>
                         </button>
                         <button id="toggleXML" class="let" title="Move Transcription Image" onclick="toggleXMLTags(event);">
-                            XML Tags
+                            <!--XML Tags-->
                             <i class="fa fa-code"></i>
                         </button>
                     </div>

@@ -1819,6 +1819,8 @@ a.editButtons {
     border-radius: 2px;
     height: auto;
 }
+
+/* Control what hides/shows during page resize collapse */
 #classicSwitch::before {
     content:"Classic ";
 }
@@ -1840,12 +1842,63 @@ a.editButtons {
     content:"Transcribing as ";
     white-space: nowrap;
 }
+#prevPage::after {
+    content:"Prev";
+    white-space: nowrap;
+}
+#prevLine::after{
+    content:"Prev";
+    white-space: nowrap;
+}
+#nextPage::before {
+    content:"Next";
+    white-space: nowrap;
+}
+#nextLine::before{
+    content:"Next";
+    white-space: nowrap;
+}
+#toggleNotes::after{
+    content:"Notes";
+    white-space: nowrap;
+}
+#canvasControls::before {
+    content:"Page Tools ";
+    white-space: nowrap;
+}
+#magnify1::before {
+    content:"Inspect ";
+    white-space: nowrap;
+}
+#toggleChars::before {
+    content:"Characters ";
+    white-space: nowrap;
+}
+#toggleXML::before {
+    content:"XML Tags ";
+    white-space: nowrap;
+}
+
+#transWorkspace .navigation{
+    background-color: transparent !important;
+}
+
 .navigation.collapsed #classicSwitch::before,
 .navigation.collapsed #helpMe::before,
 .navigation.collapsed #currentUser::before,
 .navigation.collapsed #homeBtn::after,
 .navigation.collapsed #projectsBtn::after,
-.navigation.collapsed #helpContact::before{
+.navigation.collapsed #toggleNotes::after,
+.navigation.collapsed #helpContact::before,
+.navigation.collapsed #prevPage::after,
+.navigation.collapsed #prevLine::after,
+.navigation.collapsed #nextPage::before,
+.navigation.collapsed #nextLine::before,
+.navigation.collapsed #canvasControls::before,
+.navigation.collapsed #magnify1::before,
+.navigation.collapsed #toggleChars::before,
+.navigation.collapsed #toggleXML::before
+{
     content:"";
 }
 .navigation.collapsed #trimPage,.navigation.collapsed #titleSection {
@@ -1876,6 +1929,8 @@ a.editButtons {
 {
     display:none;
 }
+/* End collapse control */
+
 .clear-left {
     clear: left;
 }

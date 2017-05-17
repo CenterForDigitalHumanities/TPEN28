@@ -63,7 +63,7 @@ public class ProjectServlet extends HttpServlet {
 //            uid = getUID(req, resp);
 //        }     
         System.out.println("Project Servlet");
-        //resp.addHeader("Access-Control-Allow-Origin", "*");
+        resp.addHeader("Access-Control-Allow-Origin", "*");
         resp.addHeader("Access-Control-Allow-Headers", "Content-Type");
         resp.addHeader("Access-Control-Allow-Methods", "GET");
         if (uid >= 0) {

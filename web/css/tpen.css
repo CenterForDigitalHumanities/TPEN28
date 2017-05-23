@@ -4,6 +4,24 @@ body *{                     /* Change default behavior from content-box */
     -moz-box-sizing:border-box;
     box-sizing:border-box;
 }
+.shadow_overlay{
+    width: 100%;
+    height: 200%;
+    position: absolute;
+    top:0px;
+    left: 0px;
+    background-color: rgba(0,0,0,.7);
+    z-index: 6;
+    display: none;
+}
+#closeHelpVideo{
+    position: absolute;
+    right: 9px;
+    font-weight: bold;
+    font-size: 17pt;
+    top: 3px;
+    cursor: pointer;
+}
 html {
     margin:0;
     padding:0;

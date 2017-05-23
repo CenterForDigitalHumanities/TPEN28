@@ -100,6 +100,9 @@
             </span>
             <div style="position:absolute;right:0;top:0;z-index: 1;">
                 <span class="trimSection">
+                    <a id="videoBtn_trans" class="videoBtn wBtn ui-state-default ui-button" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/Koq62W_qZqE');"><span class="vInvert"></span></a>
+                </span>
+                <span class="trimSection">
                     <a id="homeBtn" class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="fa fa-home"></span></a>
                     <a id="projectsBtn" class="exitPage wBtn ui-state-default ui-button" title="My Projects" href="project.jsp"><span class="fa fa-book"></span></a>
                 </span>
@@ -126,7 +129,7 @@
         </div>
 
         <div id="setTranscriptionObjectArea">
-            <textarea id="transcriptionText" placeholder="Transcribe this line"></textarea>
+            <textarea id="transcriptionText" placeholder="Input project or manifest here"></textarea>
         </div>
 
         <button id="loadBtn" class="hideme" onclick="loadTranscription();"> Load Transcription </button>
@@ -268,9 +271,12 @@
             </div>
         </div>
         <div id="parsingSplit" class="split" >
-             <div class="fullScreenTrans">
-                     <i class="fa fa-reply fa-flip-vertical"></i>
-             </div>
+            <div class="videoBtnWrapper">
+                <div class="fullScreenTrans">
+                    <i class="fa fa-share fa-flip-vertical"></i>
+                </div>
+                <a id="videoBtn_parse" class="videoBtn" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/Koq62W_qZqE');"><span class="videoLink"></span></a>
+            </div>
              <div class="toolLinks icon-panel">
                  <div class="icon-panel">
                     <button onclick='$("#createColumn").click(); toggleSelected($(this).children("img"), true);'>
@@ -387,7 +393,9 @@
                 </div>
             </div>
             <div id="helpSplit" class="split">
-                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
+                <div class="fullScreenTrans">
+                    <i class="fa fa-share fa-flip-vertical"></i>
+                </div>
                 <div id="helpHeaders">
                     <a href='#helpGlossary'> glossary </a>
                     <a href='#helpShortcuts'> shortcuts </a>
@@ -611,6 +619,19 @@
                             <dd>Go directly to the transcription interface for this project.</dd>
                             <dt>http://t-pen.org/TPEN/groups.jsp?projectID={projectID}</dt>
                             <dd>View or Manipulate the users associated with this project.</dd>
+                        </dl>
+                    </div>
+                    <div id="helpVideoLinks" class="helpSection">
+                        <div class="helpSubsection"> help videos </div>
+                        <dl>
+                            <dt><a target="_blank" href="https://www.youtube.com?video_id=0S5ilvLM9fw">http://www.youtube.com?video_id=0S5ilvLM9fw</a></dt>
+                            <dd>How to get started</dd>
+                            <dt><a target="_blank" href="https://www.youtube.com?video_id=bbEeeFLta7Q">http://www.youtube.com?video_id=bbEeeFLta7Q</a></dt>
+                            <dd>New transcription interface</dd>
+                            <dt><a target="_blank" href="https://www.youtube.com?video_id=knrKXRg6HTY">http://www.youtube.com?video_id=knrKXRg6HTY</a></dt>
+                            <dd>New parsing interface</dd>
+                            <dt><a target="_blank" href="https://www.youtube.com?video_id=2ot-nGSZP2g">http://www.youtube.com?video_id=2ot-nGSZP2g</a></dt>
+                            <dd>Project management</dd>
                         </dl>
                     </div>
                 </div> 
@@ -1279,6 +1300,14 @@
         <div id="location" class="ui-widget-content ui-corner-tr">
         </div>
         <div class="trexHead"></div>
+        <div class="shadow_overlay"></div>
+        <div id="helpVideoArea"  class="ui-widget ui-corner-all ui-widget-content">
+            <div id="closeHelpVideo" onclick="closeHelpVideo();"> X </div>
+            <h2 class="ui-widget-header ui-corner-all">Help Video Player</h2>
+            <div style="text-align: center;">
+                <iframe width="800" height="600" id="helpVideo" src="" frameborder="0" allowfullscreen> </iframe>                                                                                               
+            </div>
+        </div>
         <script>
     if(!Date.prototype.format){Date.prototype.format=(function(){var a={d:function(){var b=this.getDate().toString();return b.length===1?"0"+b:b},D:function(){return a.l.call(this).slice(0,3)},j:function(){return this.getDate()},l:function(){switch(this.getDay()){case 0:return"Sunday";case 1:return"Monday";case 2:return"Tuesday";case 3:return"Wednesday";case 4:return"Thursday";case 5:return"Friday";case 6:return"Saturday"}},N:function(){return this.getDay()===0?7:this.getDay()},S:function(){if(this.getDate()>3&&this.getDate()<21){return"th"}switch(this.getDate().toString().slice(-1)){case"1":return"st";case"2":return"nd";case"3":return"rd";default:return"th"}},w:function(){return this.getDay()},z:function(){return Math.floor(((this-new Date(this.getFullYear(),0,1))/86400000),0)},W:function(){var b=new Date(this.getFullYear(),0,1);return Math.ceil((((this-b)/86400000)+b.getDay()+1)/7)},F:function(){switch(this.getMonth()){case 0:return"January";case 1:return"February";case 2:return"March";case 3:return"April";case 4:return"May";case 5:return"June";case 6:return"July";case 7:return"August";case 8:return"September";case 9:return"October";case 10:return"November";case 11:return"December"}},m:function(){var b=(this.getMonth()+1).toString();return b.length===1?"0"+b:b},M:function(){return a.F.call(this).slice(0,3)},n:function(){return this.getMonth()+1},t:function(){return 32-new Date(this.getFullYear(),this.getMonth(),32).getDate()},L:function(){return new Date(this.getFullYear(),1,29).getDate()===29?1:0},o:function(){return null},Y:function(){return this.getFullYear()},y:function(){return this.getFullYear().toString().slice(-2)},a:function(){return this.getHours()<12?"am":"pm"},A:function(){return this.getHours()<12?"AM":"PM"},B:function(){return null},g:function(){var b=this.getHours();return b>12?b-12:b},G:function(){return this.getHours()},h:function(){var b=a.g.call(this).toString();return b.length===1?"0"+b:b},H:function(){var b=a.G.call(this).toString();return b.length===1?"0"+b:b},i:function(){return this.getMinutes()<10?"0"+this.getMinutes():this.getMinutes()},s:function(){return this.getSeconds()<10?"0"+this.getSeconds():this.getSeconds()},u:function(){return this.getMilliseconds()},e:function(){return null},I:function(){return null},O:function(){var b=this.getTimezoneOffset()/60;return(b<0?"":"+")+(b<10?"0"+b.toString():b.toString())+"00"},P:function(){var b=a.O.call(this);return b.slice(0,3)+":"+b.slice(-2)},T:function(){return null},Z:function(){return parseInt(a.O.call(this),10)*60},c:function(){function c(d){return d<10?"0"+d.toString():d.toString()}var b="";b+=this.getUTCFullYear()+"-";b+=c(this.getUTCMonth()+1)+"-";b+=c(this.getUTCDate())+"T";b+=c(this.getUTCHours())+":";b+=c(this.getUTCMinutes())+":";b+=c(this.getUTCSeconds())+"Z";return b},r:function(){return this.toUTCString()},U:function(){return this.getTime()}};return function(b){var c="",e="",d;for(d=0;d<=b.length;d+=1){e=b.charAt(d);if(a.hasOwnProperty(e)){c+=a[e].call(this).toString()}else{c+=e}}return c}}())};
     var leftovers = tpen.project.remainingText;
@@ -1306,7 +1335,7 @@
     }
     
     //Page load event triggers and attached here.
-    $(document).ready(function(){
+    $(window).on('load',function(){
         dailyTip();
         attachWindowResize();
         maintenanceDate();

@@ -6809,6 +6809,20 @@ function checkParsingReroute(){
     }
 }
 
+function openHelpVideo(source){
+    $("#helpVideoArea").show();
+    $(".shadow_overlay").show();
+    $(".trexHead").show();
+    $("#helpVideo").attr("src", source);
+}
+
+function closeHelpVideo(){
+    //Need to stop the video?
+    $("#helpVideoArea").hide();
+    $(".shadow_overlay").hide();
+    $(".trexHead").hide();
+}
+
 //https://github.com/Teun/thenBy.js/blob/master/README.md
 /* Copyright 2013 Teun Duynstee Licensed under the Apache License, Version 2.0 */
 //This is a helper function for drawLinesDesignateColumns()

@@ -7,6 +7,74 @@ and open the template in the editor.
     Created on : Jan 27, 2015, 10:05:37 AM
     Author     : bhaberbe
 */
+#helpVideoArea{
+    top: 5%;
+    height: 85%;
+    position: absolute;
+    width: 80%;
+    left: 10%;
+    display: none;
+    z-index: 7;
+}
+#closeHelpVideo{
+    position: absolute;
+    right: 9px;
+    font-weight: bold;
+    font-size: 17pt;
+    top: 3px;
+    cursor: pointer;
+}
+.shadow_overlay{
+    width: 100%;
+    height: 200%;
+    position: absolute;
+    top:0px;
+    left: 0px;
+    background-color: rgba(0,0,0,.7);
+    z-index: 6;
+    display: none;
+}
+.videoLink{
+    display: inline-block;
+    position: relative;
+    height: 25px;
+    width: 25px;
+    background-image: url(../images/helppositive.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    top: 4px;
+}
+.vInvert{
+   display: inline-block;
+    position: relative;
+    height: 25px;
+    width: 25px;
+    background-image: url(../images/helpinvert.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    top: 4px;
+}
+.videoBtn{
+    
+}
+.videoBtnWrapper .fullScreenTrans{
+    display: inline-block;
+    margin-right: 11px;
+}
+.videoBtnWrapper .videoBtn{
+    display: inline-block;
+    position: relative;
+}
+.videoBtnWrapper .videoLink{
+    display: inline-block;
+    position: relative;
+    height: 33px;
+    width: 33px;
+    background-image: url(../images/helppositive.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    top: 9px;
+}
 div[role="tooltip"]{
     z-index: 50;
 }
@@ -81,6 +149,15 @@ textarea:focus{
     top: 33px;
     background-color: white;
     position: absolute;
+    z-index: 6;
+}
+.shadow_overlay{
+    width: 100%;
+    height: 200%;
+    position: absolute;
+    top:0px;
+    left: 0px;
+    background-color: rgba(0,0,0,.7);
     z-index: 6;
 }
 #parsingCover{
@@ -1926,7 +2003,8 @@ a.editButtons {
 .navigation.collapsed.severe #classicSection,
 .navigation.collapsed.severe #currentUser,
 .navigation.collapsed.severe #contactSection,
-.navigation.collapsed.severe #maintenance
+.navigation.collapsed.severe #maintenance,
+.navigation.collapsed.severe #videoBtn_trans
 {
     display:none;
 }

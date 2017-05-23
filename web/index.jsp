@@ -1,7 +1,7 @@
 <%--
     Document   : index
     Created on : Oct 26, 2010, 12:08:31 PM
-    Author     : cubap,jdeerin1
+    Author     : cubap,jdeerin1,bhaberbe
 --%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.util.Date"%>
@@ -163,6 +163,38 @@
                 display: block;
                 position: relative;
             }
+            .videoLink{
+                display: inline-block;
+                position: relative;
+                height: 25px;
+                width: 25px;
+                background-image: url(../TPEN28/images/helppositive.png);
+                background-size: contain;
+                top: 0px;
+            }
+            .vInvert{
+               display: inline-block;
+                position: relative;
+                height: 25px;
+                width: 25px;
+                background-image: url(../TPEN28/images/helpinvert.png);
+                background-size: contain;
+                background-repeat: no-repeat;
+                top: 0px;
+            }
+            .videoShare{
+                width: 25px !important;
+            }
+            #helpVideoArea{
+                top: 5%;
+                height: 85%;
+                position: absolute;
+                width: 80%;
+                left: 10%;
+                display: none;
+                z-index: 7;
+            }
+            
         </style>
         <script type="text/javascript">
             $(function() {
@@ -470,7 +502,8 @@ $(window).load(function(){gapi.plusone.go();});
                         </div>
                     <%} else {%>
                     <%}%>    
-                                    <div id='sharing'>
+                <div id='sharing'>
+                    <a id="videoBtn" class="share" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/Koq62W_qZqE');"><img class="videoShare" src="../TPEN28/images/helpinvert.png"/></a>                    
                     <a id="shareFacebook" class="share" 
                        href="http://www.facebook.com/pages/The-T-Pen-project/155508371151230"
                        sharehref="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.t-pen.org"
@@ -595,7 +628,7 @@ $(window).load(function(){gapi.plusone.go();});
                     </table>
                         </div><%
                         } else {
-                            out.print("Getting Started:<br/><iframe src='http://www.youtube.com/embed/KZWIlzD9H_o' allowfullscreen></iframe>");
+                            out.print("Getting Started:<br/><iframe src='http://www.youtube.com/video_id=0S5ilvLM9fw' allowfullscreen></iframe>");
                         }
                    } catch (SQLException err) {
                     out.print("<p class=ui-state-error-text>Error retreiving list of projects.</p>");
@@ -1144,7 +1177,7 @@ $(window).load(function(){gapi.plusone.go();});
                     </div>
                     <div class="column">
                         <p><em>Watch a video of real transcribing in action (11 minutes):</em><br/>
-                            <iframe src="http://www.youtube.com/embed/_81fJbOpTcE" frameborder="0" allowfullscreen></iframe>
+                            <iframe src="http://www.youtube.com/embed/Koq62W_qZqE" frameborder="0" allowfullscreen></iframe>
                         </p>
 <!--                        <p><em>Learn more about transcribing in this five minute tour <span class="quiet small">(please note this is for version 0.4, current is <%out.print(Folio.getRbTok("VERSION"));%>)</span>:</em><br/>
                             <iframe src="http://www.youtube.com/embed/sOnJtWtCFZc" frameborder="0" allowfullscreen></iframe>
@@ -1240,7 +1273,28 @@ $(window).load(function(){gapi.plusone.go();});
             $("html").addClass("IE");
                 document.write('<div id="IEflag" class="ui-state-error">T&#8209;PEN has been optimized in webkit and gecko (Chrome, Firefox, Safari, Camino, etc.). <br/><strong>Old versions of Internet Explorer and many mobile browsers are not supported</strong>. <br/>To take advantage of all the tools on T&#8209;PEN, use the latest version of a supported browser.<br/><input onclick="$(this).parent().slideUp();" class="ui-button tpenButton" value="Thanks, got it." /></div>');
         }
+        function openHelpVideo(source){
+            $("#helpVideoArea").show();
+            $(".shadow_overlay").show();
+            $(".trexHead").show();
+            $("#helpVideo").attr("src", source);
+        }
+
+        function closeHelpVideo(){
+            //Need to stop the video?
+            $("#helpVideoArea").hide();
+            $(".shadow_overlay").hide();
+            $(".trexHead").hide();
+        }
     </script>
 <%@include file="WEB-INF/includes/noscript.jspf" %>
+    <div class="shadow_overlay"></div>
+    <div id="helpVideoArea"  class="ui-widget ui-corner-all ui-widget-content">
+        <div id="closeHelpVideo" onclick="closeHelpVideo();"> X </div>
+        <h2 class="ui-widget-header ui-corner-all">Help Video Player</h2>
+        <div style="text-align: center;">
+            <iframe width="800" height="600" id="helpVideo" src="" frameborder="0" allowfullscreen> </iframe>                                                                                               
+        </div>
+    </div>
     </body>
 </html>

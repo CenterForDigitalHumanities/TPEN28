@@ -957,7 +957,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
                 -webkit-box-shadow: 0 0 5px #A64129;
                 box-shadow:0 0 5px #A64129;}
 #abbreviations select {width:100%;}
-iframe {background: url('../images/linen.png') white scroll repeat; position: relative;width: 100%;height:100%;}
+.iTool {background: url('../images/linen.png') white scroll repeat; position: relative;width: 100%;height:100%;}
 .xmlClosingTags {
         position: absolute;
         bottom: 0px;
@@ -1669,6 +1669,9 @@ button.active {
 #imageTools .ui-slider-horizontal .ui-slider-handle {
     background: #002a5c;
     border: 1px solid black;
+}
+#helpVideoLinks a{
+    color: black;
 }
 a{
     text-decoration: none !important;

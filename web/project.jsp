@@ -414,7 +414,7 @@
                     </div>
                 </div>
                 <div id="tabs">
-                    <a id="videoBtn_project" class="videoBtn" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/Koq62W_qZqE');"><span class="vInvert"></span></a>
+                    <a id="videoBtn_project" class="videoBtn" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/2ot-nGSZP2g');"><span class="vInvert"></span></a>
                     <ul>
                         <li><a title="Switch between projects or manage pages" href="#tabs-1">Projects</a></li>
                         <li><a title="Alter linebreaks and parsings" href="#tabs-2">Manuscripts</a></li>

@@ -182,9 +182,7 @@
                 background-repeat: no-repeat;
                 top: 0px;
             }
-            .videoShare{
-                width: 25px !important;
-            }
+
             #helpVideoArea{
                 top: 5%;
                 height: 85%;
@@ -503,7 +501,7 @@ $(window).load(function(){gapi.plusone.go();});
                     <%} else {%>
                     <%}%>    
                 <div id='sharing'>
-                    <a id="videoBtn" class="share" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/Koq62W_qZqE');"><img class="videoShare" src="../TPEN28/images/helpinvert.png"/></a>                    
+                    <a id="videoBtn" class="share" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/0S5ilvLM9fw');"><img class="videoShare" src="../TPEN28/images/helpinvert.png"/></a>                    
                     <a id="shareFacebook" class="share" 
                        href="http://www.facebook.com/pages/The-T-Pen-project/155508371151230"
                        sharehref="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.t-pen.org"
@@ -628,7 +626,7 @@ $(window).load(function(){gapi.plusone.go();});
                     </table>
                         </div><%
                         } else {
-                            out.print("Getting Started:<br/><iframe src='http://www.youtube.com/video_id=0S5ilvLM9fw' allowfullscreen></iframe>");
+                            out.print("Getting Started:<br/><iframe src='http://www.youtube.com/embed/0S5ilvLM9fw' allowfullscreen></iframe>");
                         }
                    } catch (SQLException err) {
                     out.print("<p class=ui-state-error-text>Error retreiving list of projects.</p>");
@@ -1177,7 +1175,7 @@ $(window).load(function(){gapi.plusone.go();});
                     </div>
                     <div class="column">
                         <p><em>Watch a video of real transcribing in action (11 minutes):</em><br/>
-                            <iframe src="http://www.youtube.com/embed/Koq62W_qZqE" frameborder="0" allowfullscreen></iframe>
+                            <iframe src="http://www.youtube.com/embed/0S5ilvLM9fw" frameborder="0" allowfullscreen></iframe>
                         </p>
 <!--                        <p><em>Learn more about transcribing in this five minute tour <span class="quiet small">(please note this is for version 0.4, current is <%out.print(Folio.getRbTok("VERSION"));%>)</span>:</em><br/>
                             <iframe src="http://www.youtube.com/embed/sOnJtWtCFZc" frameborder="0" allowfullscreen></iframe>

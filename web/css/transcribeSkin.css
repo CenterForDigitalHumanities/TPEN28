@@ -9,9 +9,10 @@ and open the template in the editor.
 */
 #helpVideoArea{
     top: 5%;
-    height: 85%;
+    height:  675px;
     position: absolute;
     width: 80%;
+    min-width: 825px;
     left: 10%;
     display: none;
     z-index: 7;
@@ -56,6 +57,9 @@ and open the template in the editor.
 }
 .videoBtn{
     
+}
+.videoBtnWrapper{
+    text-align: center;
 }
 .videoBtnWrapper .fullScreenTrans{
     display: inline-block;
@@ -2002,6 +2006,10 @@ a.editButtons {
     max-width: 1.5em;
     margin: 0 .5em;
 }
+.navigation.collapsed #maintenance{
+    
+}
+
 .navigation.collapsed.severe #titleSection,
 .navigation.collapsed.severe #classicSection,
 .navigation.collapsed.severe #currentUser,

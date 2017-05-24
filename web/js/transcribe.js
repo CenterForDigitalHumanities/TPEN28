@@ -2921,7 +2921,7 @@ function hideWorkspaceForParsing(){
     $("#parsingSplit")
     .css({
         "display": "inline-block",
-        //"height": window.innerHeight + "px"
+        "height": window.innerHeight + "px"
     })
     .fadeIn();
 

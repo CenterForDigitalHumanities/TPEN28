@@ -185,9 +185,10 @@
 
             #helpVideoArea{
                 top: 5%;
-                height: 85%;
+                height:  675px;
                 position: absolute;
                 width: 80%;
+                min-width: 825px;
                 left: 10%;
                 display: none;
                 z-index: 7;
@@ -1174,7 +1175,7 @@ $(window).load(function(){gapi.plusone.go();});
                         </ul>
                     </div>
                     <div class="column">
-                        <p><em>Watch a video of real transcribing in action (11 minutes):</em><br/>
+                        <p><em>Watch a video on how to get started with T-PEN 2.8 (9 minutes):</em><br/>
                             <iframe src="http://www.youtube.com/embed/0S5ilvLM9fw" frameborder="0" allowfullscreen></iframe>
                         </p>
 <!--                        <p><em>Learn more about transcribing in this five minute tour <span class="quiet small">(please note this is for version 0.4, current is <%out.print(Folio.getRbTok("VERSION"));%>)</span>:</em><br/>

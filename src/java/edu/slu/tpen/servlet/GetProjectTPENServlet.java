@@ -89,6 +89,7 @@ public class GetProjectTPENServlet extends HttpServlet {
         catch (SQLException e) {
                 e.printStackTrace();
         }
+        //System.out.println("++++++ GET PROJECT TPEN SERVLET START ++++++++");
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), "UTF8"), true);
         String manifest_obj_str = "";
@@ -107,9 +108,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                 Project proj = new Project(projID);
                 if (proj.getProjectID() > 0) {
                     Group group = new Group(proj.getGroupID());
-                    System.out.println("1");
                     ProjectPermissions pms = new ProjectPermissions(proj.getProjectID());
-                    System.out.println("2");
                     jsonMap.put("projper", gson.toJson(pms));
                     
 //                    System.out.println("Parameter test to receive project data / manifest");
@@ -118,6 +117,7 @@ public class GetProjectTPENServlet extends HttpServlet {
 //                    System.out.println("this is a public project? "+pms.getAllow_public_read_transcription());
                     if (group.isMember(uid) || isTPENAdmin || pms.getAllow_public_read_transcription()) { //check for public project here
                         if (checkModified(request, proj)) {
+//                            System.out.println("++++++ USER APPROVED FOR GET ++++++++");
                             jsonMap.put("project", gson.toJson(proj));
 //                            System.out.println("3");
 //                            System.out.println("project json ====== " + gson.toJson(proj));
@@ -126,6 +126,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                             JSONArray folios_array = JSONArray.fromObject(gson.toJson(folios));
                             JSONObject folio_obj = null;
                             //TODO need to get the ipr agreement status for the archive of this folio for this user 
+//                            System.out.println("++++++ GATHER FOLIO AND MANUSCRIPT PERMISSIONS AND CONNECTIONS ++++++++");
                             for(int x=0; x<folios.length; x++){
                                 Integer folioNum = folios[x].getFolioNumber();
                                 Manuscript forThisFolio = new Manuscript(folioNum);
@@ -182,21 +183,25 @@ public class GetProjectTPENServlet extends HttpServlet {
                             jsonMap.put("user_mans_auth", mans_and_restrictions.toString());
                             //System.out.println("21");
 //                            System.out.println("folios json ========== " + gson.toJson(folios));
-                            JSONObject manifest = new JSONObject();                            
+                            JSONObject manifest = new JSONObject();  
+ //                           System.out.println("++++++ GATHER JSON MANIFEST THROUGH JSON EXPORTER ++++++++");
                             manifest_obj_str = new JsonLDExporter(proj, user).export();
-                            //System.out.println("5");
                            // }
-                            try{ //Try to parse the manifest string
-                                man_obj = JSONObject.fromObject(manifest_obj_str);
-                                manifest = man_obj;
-                            }
-                            catch (JSONException e2){
-                                jo_error.element("error", "Not a valid JSON manifest");
-                                manifest = jo_error;
-                            }
-                            jsonMap.put("manifest", manifest.toString());
+//                            System.out.println("++++++ ATTEMPT TO PARSE JSON MANIFEST FROM EXPORTER ++++++++");
+//                            try{ //Try to parse the manifest string
+//                                man_obj = JSONObject.fromObject(manifest_obj_str);
+//                                manifest = man_obj;
+//                                System.out.println("++++++ PARSE PASS ++++++++");
+//                            }
+//                            catch (JSONException e2){
+//                                jo_error.element("error", "Not a valid JSON manifest");
+//                                manifest = jo_error;
+//                                System.out.println("++++++ PARSE FAIL ++++++++");
+//                            }
+                            jsonMap.put("manifest", manifest_obj_str);
                             //System.out.println("6");
                             //get project header
+ //                           System.out.println("++++++ GATHER PROJECT LEVEL INFO ++++++++");
                             String header = proj.getHeader();
                             jsonMap.put("ph", header);
                             //System.out.println("7");
@@ -214,6 +219,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                             User[] leaders = group.getLeader();
                             //System.out.println("10");
                             // if current user is admin AND not in leaders, add them to leaders array
+//                            System.out.println("++++++ GATHER USERS AND LEADERS ++++++++");
                             boolean isLeader = false;
                             for (User u: leaders) {
                                 if (u.getUID() == uid) {
@@ -237,6 +243,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                             
 //                            System.out.println("project permission json ========= " + gson.toJson(pms));
                             //get project buttons
+ //                           System.out.println("++++++ KEYS, BUTTONS, TOOLS, METADATA ++++++++");
                             Hotkey hk = new Hotkey();
                             List<Hotkey> ls_hk = hk.getProjectHotkeyByProjectID(projectID, uid);
                             jsonMap.put("ls_hk", gson.toJson(ls_hk));
@@ -264,7 +271,9 @@ public class GetProjectTPENServlet extends HttpServlet {
                             jsonMap.put("projectButtons", hk.javascriptToAddProjectButtonsRawData(projectID));
                             //System.out.println("17");
                             response.setStatus(HttpServletResponse.SC_OK);
+//                            System.out.println("++++++ PARSE THE WHOLE OBJECT AS JSON AND RETURN IT AS THAT TYPE ++++++++");
                             out.println(JSONObject.fromObject(jsonMap));
+//                            System.out.println("++++++ GARBAGE CLEAN ++++++++");
                             System.gc(); //Force garbage cleaning to remove null pointers, empty variables, and new Whatevers that were destroyed by return statements.
                         } else {
                            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);

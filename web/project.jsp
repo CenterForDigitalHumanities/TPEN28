@@ -187,9 +187,10 @@
             }
             #helpVideoArea{
                 top: 5%;
-                height: 85%;
+                height:  675px;
                 position: absolute;
                 width: 80%;
+                min-width: 825px;
                 left: 10%;
                 display: none;
                 z-index: 7;

@@ -28,6 +28,7 @@ if (request.getParameter("projectID")!=null){
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>   
         <script type="text/javascript" src="js/tpen.js"></script>   
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
         <style type="text/css">
             .label { min-width: 75px;display:inline-block;}
             #fullText {width:100%;overflow: auto;position: relative; background: url('images/linen.png') fixed 0 0 repeat;z-index: 3;}

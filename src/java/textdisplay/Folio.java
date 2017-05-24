@@ -1328,9 +1328,7 @@ public class Folio {
             imageName = getImageName();
             
             if(!imageName.startsWith(imageDir)){
-                System.out.println("nope...");
                 imageName = imageDir+imageName;
-                System.out.println("Now does it?   "+imageName);
             }
             LOG.log(Level.INFO, "Loading private image {0}.jpg", imageName);
             return imageName + ".jpg";

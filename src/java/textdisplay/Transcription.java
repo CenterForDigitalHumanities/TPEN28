@@ -501,7 +501,7 @@ public class Transcription {
          DatabaseWrapper.closeDBConnection(j);
          DatabaseWrapper.closePreparedStatement(ps);
       }
-      
+
    }
 
    /**

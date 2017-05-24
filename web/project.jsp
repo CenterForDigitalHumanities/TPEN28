@@ -36,6 +36,7 @@
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
         <script src="js/manuscriptFilters.js" type="text/javascript"></script>
         <script src="js/tpen.js" type="text/javascript"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
         <style>
             #footer { width: 1010px; position: fixed;left:0;right:0; bottom:0;margin: 0 auto;}
             #foot { background: url(images/footer.png) top left no-repeat;position:relative;padding:50px 125px; }
@@ -161,6 +162,43 @@
                 height: 100px;
                 left: 48px;
                 position: relative;
+            }
+            .videoLink{
+                display: inline-block;
+                position: relative;
+                height: 25px;
+                width: 25px;
+                background-image: url(../TPEN28/images/helppositive.png);
+                background-size: contain;
+                top: 0px;
+            }
+            .vInvert{
+               display: inline-block;
+                position: relative;
+                height: 25px;
+                width: 25px;
+                background-image: url(../TPEN28/images/helpinvert.png);
+                background-size: contain;
+                background-repeat: no-repeat;
+                top: 0px;
+            }
+            .videoShare{
+                width: 25px !important;
+            }
+            #helpVideoArea{
+                top: 5%;
+                height:  675px;
+                position: absolute;
+                width: 80%;
+                min-width: 825px;
+                left: 10%;
+                display: none;
+                z-index: 7;
+            }
+            .videoBtn{
+                position: absolute;
+                right: 9px;
+                top: 9px;
             }
         </style>
         <%
@@ -377,6 +415,7 @@
                     </div>
                 </div>
                 <div id="tabs">
+                    <a id="videoBtn_project" class="videoBtn" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/2ot-nGSZP2g');"><span class="vInvert"></span></a>
                     <ul>
                         <li><a title="Switch between projects or manage pages" href="#tabs-1">Projects</a></li>
                         <li><a title="Alter linebreaks and parsings" href="#tabs-2">Manuscripts</a></li>
@@ -1501,7 +1540,28 @@ $("#samplePreview").hover(function(){
                                             location.reload(); //This is to force pagination to get this project into the project list
                                         });
                                     }
+                                    function openHelpVideo(source){
+                                        $("#helpVideoArea").show();
+                                        $(".shadow_overlay").show();
+                                        $(".trexHead").show();
+                                        $("#helpVideo").attr("src", source);
+                                    }
+
+                                    function closeHelpVideo(){
+                                        //Need to stop the video?
+                                        $("#helpVideoArea").hide();
+                                        $(".shadow_overlay").hide();
+                                        $(".trexHead").hide();
+                                    }
                 </script>
+        <div class="shadow_overlay"></div>
+        <div id="helpVideoArea"  class="ui-widget ui-corner-all ui-widget-content">
+            <div id="closeHelpVideo" onclick="closeHelpVideo();"> X </div>
+            <h2 class="ui-widget-header ui-corner-all">Help Video Player</h2>
+            <div style="text-align: center;">
+                <iframe width="800" height="600" id="helpVideo" src="" frameborder="0" allowfullscreen> </iframe>                                                                                               
+            </div>
+        </div>
     </body>
     <%    //sent request to link schema
         if (request.getParameter("xmlImport") != null) {

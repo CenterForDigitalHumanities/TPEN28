@@ -30,6 +30,7 @@
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
         <script type="text/javascript" src="js/tpen.js"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 <!--        <script src="js/jquery.simple-color-picker.js" type="text/javascript"></script>-->
         <style type="text/css" >
                 input[type=text]{font-size: 14px;width: 200px;}
@@ -144,7 +145,7 @@
                     buttonHTML += "<input class=\"description\" onchange=\"unsavedAlert('#tabs-2');\" type=\"text\" placeholder=\"Button Name\" name=description"+(position)+" value=\"description\">";
                 //    out.println("<input class=\"colors\" onchange=\"unsavedAlert('#tabs-2');\" type=\"text\" placeholder=\"black\" name=xmlColor"+(position)+" value=\""+"b.getXMLColor"+"\">");
                     buttonHTML += "<div class='xmlParams'>";
-                    buttonHTML += "<span class=\"firstRow collapseXML\"><span class=\"bold tag\"><input name=\"b"+position+"\" id=\"b"+position+"\" type=\"text\" class='collapseXML' value=\"New Tag\"></input></span>";
+                    buttonHTML += "<span class=\"firstRow expandXML\"><span class=\"bold tag\"><input name=\"b"+position+"\" id=\"b"+position+"\" type=\"text\" class='collapseXML' value=\"New Tag\"></input></span>";
                     buttonHTML += "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder=\"parameter\" type=\"text\" name=\"b"+position+"p1\" />";
                     buttonHTML += "<span class=\"right ui-icon moreParameters ui-icon-plus\" title=\"Add more parameters to this button\"></span></span>"; //close .firstRow%>
                     buttonHTML += "<span class='clear-left secondRow collapseXML'>";
@@ -152,7 +153,7 @@
                     buttonHTML += "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder=\"parameter\" type=\"text\" name=\"b"+position+"p3\" />";
                     buttonHTML += "<span class='right ui-icon moreParameters ui-icon-plus' title='Add more parameters to this button'></span>";
                     buttonHTML += "</span>";
-                    buttonHTML += "<span class='clear-left lastRow collapseXML'>";
+                    buttonHTML += "<span class='clear-left lastRow expandXML'>";
                     buttonHTML += "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder=\"parameter\" type=\"text\" name=\"b"+position+">p4\" />";
                     buttonHTML += "<input onchange=\"unsavedAlert('#tabs-2');\" placeholder=\"parameter\" type=\"text\" name=\"b"+position+"p5\" />";
                     buttonHTML += "</span>";
@@ -164,7 +165,20 @@
                         var rename = (index > 0) ? "b"+position+"p"+index :  "b"+position;
                         $(param).attr("name", rename).val("");
                     });
-                    $("[name='b"+position+"']").val("New Tag");                        
+                    $("[name='b"+position+"']").val("New Tag");
+                    $(".tag").children('input').keyup(function(){
+                        unsavedAlert('#tabs-2');
+                        isValidTag(this);
+                    });
+                    $(".moreParameters").click(function(){
+                        $(this)
+                            .hide()
+                            .parent().next().slideDown();
+                    });
+                    $(".xmlPanel").focusin(function() {
+                        $(".xmlPanel").not(this).each(function(){collapsePanel(this);});
+                        expandPanel(this);
+                    });
                 },"html");           
             });
             $("#addH").click(function(){

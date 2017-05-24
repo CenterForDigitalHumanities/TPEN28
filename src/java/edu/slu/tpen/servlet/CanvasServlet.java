@@ -23,6 +23,7 @@ import static edu.slu.util.LangUtils.buildQuickMap;
 import javax.servlet.http.HttpServlet;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import textdisplay.FolioDims;
 
 
 /**
@@ -91,38 +92,61 @@ public class CanvasServlet extends HttpServlet{
       Integer msID = f.getMSID();
       String msID_str = msID.toString();
       String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();  
-      Dimension pageDim = ImageCache.getImageDimension(f.getFolioNumber());
       String[] otherContent;
-      if (pageDim == null) {
-         //LOG.log(Level.INFO, "Image for {0} not found in cache, loading image...", f.getFolioNumber());
-         pageDim = f.getImageDimension();
+      FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
+      Dimension storedDims = null;
+      int canvasWidth = 0;
+      int canvasHeight = 0;
+      if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
+          storedDims = ImageCache.getImageDimension(f.getFolioNumber());
+         if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry, or there was a bad one we can't use
+            storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+         }
       }
+      
       LOG.log(Level.INFO, "pageDim={0}", pageDim);
 
       JSONObject result = new JSONObject();
       result.element("@id", canvasID);
       result.element("@type", "sc:Canvas");
       result.element("label", f.getPageName());
-      int canvasHeight = 1000;
-      result.element("height", canvasHeight);
-      if (pageDim != null) {
-         int canvasWidth = pageDim.width * canvasHeight / pageDim.height;  // Convert to canvas coordinates.
-         result.element("width", canvasWidth);
-      }
+      
       JSONArray images = new JSONArray();
       JSONObject imageAnnot = new JSONObject();
       imageAnnot.element("@type", "oa:Annotation");
       imageAnnot.element("motivation", "sc:painting");
       Map<String, Object> imageResource_map = buildQuickMap("@id", String.format("%s%s", Folio.getRbTok("SERVERURL"), f.getImageURLResize()), "@type", "dctypes:Image", "format", "image/jpeg");
       JSONObject imageResource = JSONObject.fromObject(imageResource_map);
-      if (pageDim != null) {
-         imageResource.element("height", pageDim.height ); 
-         imageResource.element("width", pageDim.width ); 
+      imageResource.element("height",0 ); 
+      imageResource.element("width",0 ); 
+      
+      if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
+            if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
+                if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.
+                    //generate canvas values for foliodim
+                    canvasHeight = 1000;
+                    canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
+                    FolioDims.createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                }
+            }
+            else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
+                canvasHeight = 0;
+                canvasWidth = 0;
+            }
       }
+      //We will return 0 for the values here no matter what so that the object returned is valid IIIF from this servlet.
+      //We could do the same check that JsonLDExporter does and return the object without the height and width so it is invalid (on purpose).
+      result.element("width", canvasWidth);
+      result.element("height", canvasHeight);
+      imageResource.element("height",0 ); 
+      imageResource.element("width",0 ); 
+      
       imageAnnot.element("resource", imageResource);
       imageAnnot.element("on", canvasID);
       images.add(imageAnnot);
+      //FIXME this looks for data on anno store.  Cannot build list this way for canvas servlet while not looking to anno store.  
       otherContent = Canvas.getAnnotationListsForProject(-1, canvasID, 0);
+      //otherContent = Canvas.getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID());
       //it seems like it wants me to do Arrays.toString(otherContent), but then it is not formatted correctly.  
       result.element("otherContent", JSONArray.fromObject(otherContent));
       result.element("images", images);

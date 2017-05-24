@@ -52,6 +52,7 @@
         <title>T&#8209;PEN Transcription</title>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
         <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css" rel="stylesheet" />
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
         <style type="text/css">
             #wrapper {opacity:0;
             -webkit-transition:opacity 1s;

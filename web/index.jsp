@@ -1,7 +1,7 @@
 <%--
     Document   : index
     Created on : Oct 26, 2010, 12:08:31 PM
-    Author     : cubap,jdeerin1
+    Author     : cubap,jdeerin1,bhaberbe
 --%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.util.Date"%>
@@ -57,7 +57,7 @@
         <meta itemprop="name" content="T&#8209;PEN">
         <meta itemprop="description" content="Digital tool for transcription">
         <meta itemprop="image" content="https://lh3.googleusercontent.com/-TysT8pvMcgI/AAAAAAAAAAI/AAAAAAAAADI/PWEsFECiPwE/s250-c-k/photo.jpg">        
-        <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico">
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
         <title>TPEN <%out.println("Version " + Folio.getRbTok("VERSION"));%></title>
         <link rel="stylesheet" href="css/tpen.css" type="text/css" media="screen, projection">
         <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
@@ -158,6 +158,42 @@
                 height: 100% !important;
                 /*overflow: auto;*/
             }
+            #upgradeMessage{
+                left: 17px;
+                display: block;
+                position: relative;
+            }
+            .videoLink{
+                display: inline-block;
+                position: relative;
+                height: 25px;
+                width: 25px;
+                background-image: url(../TPEN28/images/helppositive.png);
+                background-size: contain;
+                top: 0px;
+            }
+            .vInvert{
+               display: inline-block;
+                position: relative;
+                height: 25px;
+                width: 25px;
+                background-image: url(../TPEN28/images/helpinvert.png);
+                background-size: contain;
+                background-repeat: no-repeat;
+                top: 0px;
+            }
+
+            #helpVideoArea{
+                top: 5%;
+                height:  675px;
+                position: absolute;
+                width: 80%;
+                min-width: 825px;
+                left: 10%;
+                display: none;
+                z-index: 7;
+            }
+            
         </style>
         <script type="text/javascript">
             $(function() {
@@ -243,7 +279,40 @@
             // John Strickler						
             // http://www.opensource.org/licenses/mit-license.php
             if(!Date.prototype.format){Date.prototype.format=(function(){var a={d:function(){var b=this.getDate().toString();return b.length===1?"0"+b:b},D:function(){return a.l.call(this).slice(0,3)},j:function(){return this.getDate()},l:function(){switch(this.getDay()){case 0:return"Sunday";case 1:return"Monday";case 2:return"Tuesday";case 3:return"Wednesday";case 4:return"Thursday";case 5:return"Friday";case 6:return"Saturday"}},N:function(){return this.getDay()===0?7:this.getDay()},S:function(){if(this.getDate()>3&&this.getDate()<21){return"th"}switch(this.getDate().toString().slice(-1)){case"1":return"st";case"2":return"nd";case"3":return"rd";default:return"th"}},w:function(){return this.getDay()},z:function(){return Math.floor(((this-new Date(this.getFullYear(),0,1))/86400000),0)},W:function(){var b=new Date(this.getFullYear(),0,1);return Math.ceil((((this-b)/86400000)+b.getDay()+1)/7)},F:function(){switch(this.getMonth()){case 0:return"January";case 1:return"February";case 2:return"March";case 3:return"April";case 4:return"May";case 5:return"June";case 6:return"July";case 7:return"August";case 8:return"September";case 9:return"October";case 10:return"November";case 11:return"December"}},m:function(){var b=(this.getMonth()+1).toString();return b.length===1?"0"+b:b},M:function(){return a.F.call(this).slice(0,3)},n:function(){return this.getMonth()+1},t:function(){return 32-new Date(this.getFullYear(),this.getMonth(),32).getDate()},L:function(){return new Date(this.getFullYear(),1,29).getDate()===29?1:0},o:function(){return null},Y:function(){return this.getFullYear()},y:function(){return this.getFullYear().toString().slice(-2)},a:function(){return this.getHours()<12?"am":"pm"},A:function(){return this.getHours()<12?"AM":"PM"},B:function(){return null},g:function(){var b=this.getHours();return b>12?b-12:b},G:function(){return this.getHours()},h:function(){var b=a.g.call(this).toString();return b.length===1?"0"+b:b},H:function(){var b=a.G.call(this).toString();return b.length===1?"0"+b:b},i:function(){return this.getMinutes()<10?"0"+this.getMinutes():this.getMinutes()},s:function(){return this.getSeconds()<10?"0"+this.getSeconds():this.getSeconds()},u:function(){return this.getMilliseconds()},e:function(){return null},I:function(){return null},O:function(){var b=this.getTimezoneOffset()/60;return(b<0?"":"+")+(b<10?"0"+b.toString():b.toString())+"00"},P:function(){var b=a.O.call(this);return b.slice(0,3)+":"+b.slice(-2)},T:function(){return null},Z:function(){return parseInt(a.O.call(this),10)*60},c:function(){function c(d){return d<10?"0"+d.toString():d.toString()}var b="";b+=this.getUTCFullYear()+"-";b+=c(this.getUTCMonth()+1)+"-";b+=c(this.getUTCDate())+"T";b+=c(this.getUTCHours())+":";b+=c(this.getUTCMinutes())+":";b+=c(this.getUTCSeconds())+"Z";return b},r:function(){return this.toUTCString()},U:function(){return this.getTime()}};return function(b){var c="",e="",d;for(d=0;d<=b.length;d+=1){e=b.charAt(d);if(a.hasOwnProperty(e)){c+=a[e].call(this).toString()}else{c+=e}}return c}}())};
-            function maintenanceDate(){
+           
+             function maintenanceDate(){
+                var url="upgradeManagement";
+                var params = {"getSettings" : "get", "cancelUpgrade":"false"};
+                $.post(url, params)
+                    .done(function(data){
+                        var managerData = JSON.parse(data);
+                        var mdate = managerData.upgradeDate;
+                        var dateForUser = new Date(mdate);
+                        var message = managerData.upgradeMessage;
+                        var countdown = managerData.countdown;
+                        
+                        if(managerData.active > 0){
+                            $("#upgradeMessage").html(message);
+                            $("#schedmaintenance").html(dateForUser.format('l, F jS, Y g:00a'));
+                            if(countdown > 0){
+                                setCountdown(mdate);
+                            }
+                            //return(dateForUser.format('l, F jS, Y g:00a'));
+                        }
+                        else{
+                            var today = new Date();
+                            while ((today.getDay() !== 1) && (today.getDay() !== 3) && (today.getDay() !== 5)){
+                                today.setDate(today.getDate()+1);
+                            }
+                            // set to 8am Central Time
+                            today.setHours(14 - today.getTimezoneOffset()/60);
+                            //return(today.format('l, F jS, Y g:00a'));
+                            $("#schedmaintenance").html(today.format('l, F jS, Y g:00a'));
+                        }
+                    });
+            }
+                                                                                                
+            function maintenanceDateDefault(){
                 var today = new Date();
                 while ((today.getDay() !== 1) && (today.getDay() !== 3) && (today.getDay() !== 5)){
                     today.setDate(today.getDate()+1);
@@ -252,6 +321,38 @@
                 today.setHours(14 - today.getTimezoneOffset()/60);
                 return(today.format('l, F jS, Y g:00a'));
             }
+            
+            function setCountdown(endtime){
+                var end = new Date(endtime);
+
+                var _second = 1000;
+                var _minute = _second * 60;
+                var _hour = _minute * 60;
+                var _day = _hour * 24;
+                var timer;
+
+                function showRemaining() {
+                    var now = new Date();
+                    var distance = end - now;
+                    if (distance < 0) {
+                        clearInterval(timer);
+                        document.getElementById('countdown').innerHTML = 'UPGRADING!';
+                        return;
+                    }
+                    var days = Math.floor(distance / _day);
+                    var hours = Math.floor((distance % _day) / _hour);
+                    var minutes = Math.floor((distance % _hour) / _minute);
+                    var seconds = Math.floor((distance % _minute) / _second);
+
+                    document.getElementById('countdown').innerHTML = days + 'days ';
+                    document.getElementById('countdown').innerHTML += hours + 'hrs ';
+                    document.getElementById('countdown').innerHTML += minutes + 'mins ';
+                    document.getElementById('countdown').innerHTML += seconds + 'secs';
+                }
+
+                timer = setInterval(showRemaining, 1000);
+            }
+            
             var blogTags = new Array();
             function blogPostsJson(data) {
                         var posts = data.feed;
@@ -366,7 +467,13 @@ $(window).load(function(){gapi.plusone.go();});
             <div align="center" class="tagline">
                 transcription for paleographical and editorial notation</div>
             <div id="header2">
-                <div id="maintenance" class="loud"><span class="ui-icon ui-icon-info left"></span>Scheduled Maintenance: <script type="text/javascript">document.write(maintenanceDate());</script></div>
+                <div id="maintenance" class="loud">
+                    <span class="ui-icon ui-icon-info left"></span>
+                    Scheduled Maintenance: <span id="schedmaintenance"></span>
+                    <span id="countdown"></span> <br>
+                    <span id="upgradeMessage"></span>
+                    <script type="text/javascript">maintenanceDate();</script>
+                </div>
                     <%
                     // #266 This only returns the person in session at the moment...
                     if (thisUser != null){
@@ -394,7 +501,8 @@ $(window).load(function(){gapi.plusone.go();});
                         </div>
                     <%} else {%>
                     <%}%>    
-                                    <div id='sharing'>
+                <div id='sharing'>
+                    <a id="videoBtn" class="share" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/0S5ilvLM9fw');"><img class="videoShare" src="../TPEN28/images/helpinvert.png"/></a>                    
                     <a id="shareFacebook" class="share" 
                        href="http://www.facebook.com/pages/The-T-Pen-project/155508371151230"
                        sharehref="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.t-pen.org"
@@ -519,7 +627,7 @@ $(window).load(function(){gapi.plusone.go();});
                     </table>
                         </div><%
                         } else {
-                            out.print("Getting Started:<br/><iframe src='http://www.youtube.com/embed/KZWIlzD9H_o' allowfullscreen></iframe>");
+                            out.print("Getting Started:<br/><iframe src='http://www.youtube.com/embed/0S5ilvLM9fw' allowfullscreen></iframe>");
                         }
                    } catch (SQLException err) {
                     out.print("<p class=ui-state-error-text>Error retreiving list of projects.</p>");
@@ -1067,8 +1175,8 @@ $(window).load(function(){gapi.plusone.go();});
                         </ul>
                     </div>
                     <div class="column">
-                        <p><em>Watch a video of real transcribing in action (11 minutes):</em><br/>
-                            <iframe src="http://www.youtube.com/embed/_81fJbOpTcE" frameborder="0" allowfullscreen></iframe>
+                        <p><em>Watch a video on how to get started with T-PEN 2.8 (9 minutes):</em><br/>
+                            <iframe src="http://www.youtube.com/embed/0S5ilvLM9fw" frameborder="0" allowfullscreen></iframe>
                         </p>
 <!--                        <p><em>Learn more about transcribing in this five minute tour <span class="quiet small">(please note this is for version 0.4, current is <%out.print(Folio.getRbTok("VERSION"));%>)</span>:</em><br/>
                             <iframe src="http://www.youtube.com/embed/sOnJtWtCFZc" frameborder="0" allowfullscreen></iframe>
@@ -1164,7 +1272,28 @@ $(window).load(function(){gapi.plusone.go();});
             $("html").addClass("IE");
                 document.write('<div id="IEflag" class="ui-state-error">T&#8209;PEN has been optimized in webkit and gecko (Chrome, Firefox, Safari, Camino, etc.). <br/><strong>Old versions of Internet Explorer and many mobile browsers are not supported</strong>. <br/>To take advantage of all the tools on T&#8209;PEN, use the latest version of a supported browser.<br/><input onclick="$(this).parent().slideUp();" class="ui-button tpenButton" value="Thanks, got it." /></div>');
         }
+        function openHelpVideo(source){
+            $("#helpVideoArea").show();
+            $(".shadow_overlay").show();
+            $(".trexHead").show();
+            $("#helpVideo").attr("src", source);
+        }
+
+        function closeHelpVideo(){
+            //Need to stop the video?
+            $("#helpVideoArea").hide();
+            $(".shadow_overlay").hide();
+            $(".trexHead").hide();
+        }
     </script>
 <%@include file="WEB-INF/includes/noscript.jspf" %>
+    <div class="shadow_overlay"></div>
+    <div id="helpVideoArea"  class="ui-widget ui-corner-all ui-widget-content">
+        <div id="closeHelpVideo" onclick="closeHelpVideo();"> X </div>
+        <h2 class="ui-widget-header ui-corner-all">Help Video Player</h2>
+        <div style="text-align: center;">
+            <iframe width="800" height="600" id="helpVideo" src="" frameborder="0" allowfullscreen> </iframe>                                                                                               
+        </div>
+    </div>
     </body>
 </html>

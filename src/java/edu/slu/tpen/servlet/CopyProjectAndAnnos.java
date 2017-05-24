@@ -154,7 +154,7 @@ public class CopyProjectAndAnnos extends HttpServlet {
                                       Map<String, Object> lineAnnot = new LinkedHashMap<>();
                                       String lineURI = templateProject.getProjectName() + "/line/" + lineID;
                                       //lineAnnot.put("@id", lineURI);
-                                      lineAnnot.put("tpen_line_id", lineURI);
+                                      lineAnnot.put("_tpen_line_id", lineURI);
                                       lineAnnot.put("@type", "oa:Annotation");
                                       lineAnnot.put("motivation", "oad:transcribing"); 
                                       lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(rs.getString("text"))));

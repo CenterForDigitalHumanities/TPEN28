@@ -29,6 +29,7 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.owasp.esapi.ESAPI;
 import textdisplay.Annotation;
+import textdisplay.Folio;
 import textdisplay.Transcription;
 
 /**
@@ -173,6 +174,8 @@ public class Canvas {
         JSONObject annotationList = new JSONObject();
         JSONArray resources_array = new JSONArray();
         String dateString = "";
+        String annoListID = Folio.getRbTok("SERVERURL")+"project/"+projectID+"/annotations/"+folioNumber;  
+        annotationList.element("@id", annoListID);
         annotationList.element("@type", "sc:AnnotationList");
         annotationList.element("label", canvasID+" List");
         annotationList.element("proj", projectID);
@@ -198,8 +201,10 @@ public class Canvas {
                 int lineID = lines[i].getLineID();
                 Map<String, Object> lineAnnot = new LinkedHashMap<>();
                 String lineURI = "line/" + lineID;
+                String annoLineID = Folio.getRbTok("SERVERURL")+"line/"+lineID;  
                 //lineAnnot.put("@id", lineURI);
-                lineAnnot.put("tpen_line_id", lineURI);
+                lineAnnot.put("@id", annoLineID);
+                lineAnnot.put("_tpen_line_id", lineURI);
                 lineAnnot.put("@type", "oa:Annotation");
                 lineAnnot.put("motivation", "oad:transcribing"); 
                 lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(lines[i].getText())));

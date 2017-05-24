@@ -87,6 +87,7 @@
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
         <script type="text/javascript" src="js/tpen.js"></script>
         <script type="text/javascript" src="js/transcription.js"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
         
 <!--<link rel="stylesheet" type="text/css" href="jwysiwyg/jquery.wysiwyg.css" />
 <script type="text/javascript" src="jwysiwyg/jquery.wysiwyg.js"></script>        -->

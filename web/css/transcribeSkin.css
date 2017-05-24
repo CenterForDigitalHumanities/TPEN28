@@ -7,6 +7,81 @@ and open the template in the editor.
     Created on : Jan 27, 2015, 10:05:37 AM
     Author     : bhaberbe
 */
+#helpVideoArea{
+    top: 5%;
+    height:  675px;
+    position: absolute;
+    width: 80%;
+    min-width: 825px;
+    left: 10%;
+    display: none;
+    z-index: 7;
+}
+#closeHelpVideo{
+    position: absolute;
+    right: 9px;
+    font-weight: bold;
+    font-size: 17pt;
+    top: 3px;
+    cursor: pointer;
+}
+.shadow_overlay{
+    width: 100%;
+    height: 200%;
+    position: absolute;
+    top:0px;
+    left: 0px;
+    background-color: rgba(0,0,0,.7);
+    z-index: 6;
+    display: none;
+}
+.videoLink{
+    display: inline-block;
+    position: relative;
+    height: 25px;
+    width: 25px;
+    background-image: url(../images/helppositive.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    top: 4px;
+}
+.vInvert{
+   display: inline-block;
+    position: relative;
+    height: 25px;
+    width: 25px;
+    background-image: url(../images/helpinvert.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    top: 4px;
+}
+.videoBtn{
+    
+}
+.videoBtnWrapper{
+    text-align: center;
+}
+.videoBtnWrapper .fullScreenTrans{
+    display: inline-block;
+    margin-right: 11px;
+}
+.videoBtnWrapper .videoBtn{
+    display: inline-block;
+    position: relative;
+}
+.videoBtnWrapper .videoLink{
+    display: inline-block;
+    position: relative;
+    height: 33px;
+    width: 33px;
+    background-image: url(../images/helppositive.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    top: 9px;
+}
+div[role="tooltip"]{
+    z-index: 50;
+}
 .frameToolReset{
     position: absolute;
     top: 7px;
@@ -80,6 +155,15 @@ textarea:focus{
     position: absolute;
     z-index: 6;
 }
+.shadow_overlay{
+    width: 100%;
+    height: 200%;
+    position: absolute;
+    top:0px;
+    left: 0px;
+    background-color: rgba(0,0,0,.7);
+    z-index: 6;
+}
 #parsingCover{
     cursor: url(../images/loading.gif), auto;
     /*cursor: not-allowed;*/
@@ -128,13 +212,11 @@ textarea:focus{
 .promoteUser, .removeUser, .demoteUser{
     cursor: pointer;
 }
-body{
-    margin: 0;
-}
+
 .activeLine{
-    box-shadow: 0 0 15px black;
+    box-shadow: 0 0 15px .5em black;
     display: block !important;
-    opacity: 1 !important;
+    opacity: .6;
     border-radius: 2px;
 }
 .lookLikeButtons, button{
@@ -879,7 +961,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
                 -webkit-box-shadow: 0 0 5px #A64129;
                 box-shadow:0 0 5px #A64129;}
 #abbreviations select {width:100%;}
-iframe {background: url('../images/linen.png') white scroll repeat; position: relative;width: 100%;height:100%;}
+.iTool {background: url('../images/linen.png') white scroll repeat; position: relative;width: 100%;height:100%;}
 .xmlClosingTags {
         position: absolute;
         bottom: 0px;
@@ -949,7 +1031,7 @@ iframe {background: url('../images/linen.png') white scroll repeat; position: re
 .adjustable {background-color: white !important;/*cursor: default;*/border-right: solid black 4px;}
 /*            #toggler {display: none; z-index: 6;position: fixed;right:5px;top:45px;width: auto;}*/
 #imageTip {text-align: center;overflow: visible;display: none;z-index: 6;position:absolute;background-color:#A68329;height: 18px;width:auto; max-width: 100px;color:#FFDB7F;box-shadow:2px 2px 4px black;}
-#ruler1,#ruler2 {display: none;background: black;position: absolute;z-index: 4; pointer-events: none;}
+#ruler1,#ruler2 {display: none;background: black;position: absolute;z-index: 6; pointer-events: none;}
 #sampleRuler {overflow: hidden;position:relative;background:black;width:80%;margin:0 auto;height:2px;top:-10px;}
 #savedChanges {display: none; opacity:0;position: fixed;right:20px;min-width:150px;top:100%;padding: 4px;text-align: center;z-index: 50;}
 #linebreakDiv {height:100%; padding: 4px;overflow: auto;width:auto;}
@@ -1493,16 +1575,16 @@ kbd {
     cursor: pointer;
     color: #d14836;
 }
-#ruler1,#ruler2 {display: none;background: black;position: absolute;z-index: 6;}
+/*#ruler1,#ruler2 {display: none;background: black;position: absolute;z-index: 6; pointer-events: none;}*/
 
 html{
     overflow: hidden;
 }
 body{
     font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-    overflow-x: hidden;
     height: 100%;
-    height: 100vh;
+    margin: 0;
+    overflow: hidden;
 }
 button, #uploadText, .lookLikeButtons {
     color:white;
@@ -1537,6 +1619,7 @@ button.active {
     opacity: .36;
     display: none;
     box-sizing: border-box;
+    box-shadow: none;
 }
 .lineColIndicator:hover{
     opacity: 1;
@@ -1590,6 +1673,9 @@ button.active {
 #imageTools .ui-slider-horizontal .ui-slider-handle {
     background: #002a5c;
     border: 1px solid black;
+}
+#helpVideoLinks a{
+    color: black;
 }
 a{
     text-decoration: none !important;
@@ -1656,9 +1742,7 @@ html {
     height: 100%;
     height: 100vh;
 }
-body {
-    overflow: hidden;
-}
+
 #helpBtns {
     float: right;
 }
@@ -1761,20 +1845,20 @@ a.editButtons {
     text-decoration: underline;
 }
 
-.compareImage{
+/* Center the images inside compare page and view full page */
+/*.compareImage, #fullPageImg{
     left: 0;
     right: 0;
     margin: 0 auto;
     position: absolute;
-    /* max-height: 98%; cubap: what? */
-}
+     max-height: 98%; cubap: what? 
+}*/
 
 /* The help area CSS */
 #helpSplit{
-    width: 500px;
-    max-width: 500px;
-    overflow: hidden;
-    background-color: #e1f4fe;
+    width: 520px;
+    max-width: 520px;
+    background-color: white;
 }
 #helpHeaders{
     padding: 1em 0;
@@ -1808,8 +1892,7 @@ a.editButtons {
 }
 #helpContainer{
     padding:0 2em;
-    overflow: auto;
-    margin-bottom: 8em;
+    overflow-y: scroll;
 }
 .no-point{
     pointer-events: none;
@@ -1820,6 +1903,8 @@ a.editButtons {
     border-radius: 2px;
     height: auto;
 }
+
+/* Control what hides/shows during page resize collapse */
 #classicSwitch::before {
     content:"Classic ";
 }
@@ -1841,12 +1926,63 @@ a.editButtons {
     content:"Transcribing as ";
     white-space: nowrap;
 }
+#prevPage::after {
+    content:"Prev";
+    white-space: nowrap;
+}
+#prevLine::after{
+    content:"Prev";
+    white-space: nowrap;
+}
+#nextPage::before {
+    content:"Next";
+    white-space: nowrap;
+}
+#nextLine::before{
+    content:"Next";
+    white-space: nowrap;
+}
+#toggleNotes::after{
+    content:"Notes";
+    white-space: nowrap;
+}
+#canvasControls::before {
+    content:"Page Tools ";
+    white-space: nowrap;
+}
+#magnify1::before {
+    content:"Inspect ";
+    white-space: nowrap;
+}
+#toggleChars::before {
+    content:"Characters ";
+    white-space: nowrap;
+}
+#toggleXML::before {
+    content:"XML Tags ";
+    white-space: nowrap;
+}
+
+#transWorkspace .navigation{
+    background-color: transparent !important;
+}
+
 .navigation.collapsed #classicSwitch::before,
 .navigation.collapsed #helpMe::before,
 .navigation.collapsed #currentUser::before,
 .navigation.collapsed #homeBtn::after,
 .navigation.collapsed #projectsBtn::after,
-.navigation.collapsed #helpContact::before{
+.navigation.collapsed #toggleNotes::after,
+.navigation.collapsed #helpContact::before,
+.navigation.collapsed #prevPage::after,
+.navigation.collapsed #prevLine::after,
+.navigation.collapsed #nextPage::before,
+.navigation.collapsed #nextLine::before,
+.navigation.collapsed #canvasControls::before,
+.navigation.collapsed #magnify1::before,
+.navigation.collapsed #toggleChars::before,
+.navigation.collapsed #toggleXML::before
+{
     content:"";
 }
 .navigation.collapsed #trimPage,.navigation.collapsed #titleSection {
@@ -1859,24 +1995,42 @@ a.editButtons {
 .navigation.collapsed #titleSection{
     max-width: 6em;
 }
+#pageJump{
+    position: relative;
+    height: 2em;
+    border: none;
+    z-index: 3;
+    text-align: center;
+}
 .navigation.collapsed #pageJump {
     max-width: 1.5em;
     margin: 0 .5em;
 }
+.navigation.collapsed #maintenance{
+    
+}
+
 .navigation.collapsed.severe #titleSection,
 .navigation.collapsed.severe #classicSection,
 .navigation.collapsed.severe #currentUser,
-.navigation.collapsed.severe #contactSection
+.navigation.collapsed.severe #contactSection,
+.navigation.collapsed.severe #maintenance,
+.navigation.collapsed.severe #videoBtn_trans
 {
     display:none;
 }
+/* End collapse control */
+
 .clear-left {
     clear: left;
 }
 .clear-right {
     clear: right;
 }
-
+#countdown{
+    color: blue;
+    margin-left: 20px;
+}
 button,.navigation, #contribution,
 #saveReport,#imgTop,#imgBottom,.tags,
 .buttons, #specialCharsFloat, #xmlTagFloat,

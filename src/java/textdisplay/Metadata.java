@@ -20,6 +20,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import user.Group;
 import user.User;
 
@@ -222,6 +224,16 @@ public class Metadata {
          }
       }
    }
+   
+    /**
+    * Fetch the metadata for the given project, returning it in JSON format.
+    *
+    * @param projectID
+    * @throws SQLException
+    */
+   public Metadata(int projectID, boolean jaysohn) throws SQLException {
+      
+   }
 
    /**
     * netbean constructor, can be used to populate values and commit or set projid and build
@@ -261,6 +273,89 @@ public class Metadata {
       }
 
    }
+   
+   public static JSONArray getMetadataAsJSON(int projectID) throws SQLException{
+        String query = "select * from metadata where projectID=?";
+        Connection j = null;
+        PreparedStatement ps = null;
+        j = DatabaseWrapper.getConnection();
+        ps = j.prepareStatement(query);
+        ps.setInt(1, projectID);
+        ResultSet rs = ps.executeQuery();
+        JSONArray metadata = new JSONArray();
+        JSONObject metadata_entry = new JSONObject();
+        if (rs.next()) {            
+           String title = rs.getString("title");
+           metadata_entry.element("label", "title");
+           metadata_entry.element("value", title);
+           metadata.add(metadata_entry);
+
+           String subtitle = rs.getString("subtitle");
+           metadata_entry.element("label", "subtitle");
+           metadata_entry.element("value", subtitle);
+           metadata.add(metadata_entry);
+
+           String msIdentifier = rs.getString("msIdentifier");
+           metadata_entry.element("label", "msIdentifier");
+           metadata_entry.element("value", msIdentifier);
+           metadata.add(metadata_entry);
+
+           String msSettlement = rs.getString("msSettlement");
+           metadata_entry.element("label", "msSettlement");
+           metadata_entry.element("value", msSettlement);
+           metadata.add(metadata_entry);
+
+           String msRepository = rs.getString("msRepository");
+           metadata_entry.element("label", "msRepository");
+           metadata_entry.element("value", msRepository);
+           metadata.add(metadata_entry);
+
+           String msIdNumber = rs.getString("msIdNumber");
+           metadata_entry.element("label","msIdNumber");
+           metadata_entry.element("value", msIdNumber);
+           metadata.add(metadata_entry);
+
+           String subject = rs.getString("subject");
+           metadata_entry.element("label", "subject");
+           metadata_entry.element("value", subject);
+           metadata.add(metadata_entry);
+
+           String date = rs.getString("date");
+           metadata_entry.element("label", "date");
+           metadata_entry.element("value", date);
+           metadata.add(metadata_entry);
+
+           String language = rs.getString("language");
+           metadata_entry.element("label", "language");
+           metadata_entry.element("value", language);
+           metadata.add(metadata_entry);
+
+           String author = rs.getString("author");
+           metadata_entry.element("label", "author");
+           metadata_entry.element("value", author);
+           metadata.add(metadata_entry);
+
+           String description = rs.getString("description");
+           metadata_entry.element("label", "description");
+           metadata_entry.element("value", description);
+           metadata.add(metadata_entry);
+
+           String location = rs.getString("location");
+           metadata_entry.element("label", "location");
+           metadata_entry.element("value", location);
+           metadata.add(metadata_entry);
+
+           String msCollection = rs.getString("msCollection");
+           metadata_entry.element("label", "msCollection");
+           metadata_entry.element("value", msCollection);
+           metadata.add(metadata_entry);
+
+        }
+        DatabaseWrapper.closeDBConnection(j);
+        DatabaseWrapper.closePreparedStatement(ps);
+        return metadata;
+  }
+   
 
    /**
     * Generate a TEI header from the Metadata TPEN stores

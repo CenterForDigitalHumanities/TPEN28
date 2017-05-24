@@ -2283,9 +2283,6 @@ var Interaction = {
      * @return boolean to accept keystroke
      */
      keyhandler: function(e) {
-         if (tpen.screen.liveTool !=="parsing") {
-             return false;
-         }
         var pressedkey=e.which;
         if(e.keyCode) pressedkey=e.keyCode;
         if(pressedkey==13) {  //pressed return, move any text in front of the cursor down to the next line
@@ -2295,8 +2292,10 @@ var Interaction = {
         }
         if(pressedkey>48 && pressedkey<59) {
             if(e.ctrlKey) {
-                var theChar = window["char" + pressedkey];
-                this.addchar(String.fromCharCode(theChar));
+                //bhaberbe and cubap PATCH 5-24-17.  window["char" + pressedkey] started being undefined at some point
+                //var theChar = window["char" + pressedkey];
+                //this.addchar(String.fromCharCode(theChar));
+                $("#charactersPopinList").children("span").eq(String.fromCharCode(pressedkey)-1).click();
                 return false;
             }
         }

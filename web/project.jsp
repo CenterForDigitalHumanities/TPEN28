@@ -168,7 +168,7 @@
                 position: relative;
                 height: 25px;
                 width: 25px;
-                background-image: url(../TPEN28/images/helppositive.png);
+                background-image: url(../TPEN/images/helppositive.png);
                 background-size: contain;
                 top: 0px;
             }
@@ -177,7 +177,7 @@
                 position: relative;
                 height: 25px;
                 width: 25px;
-                background-image: url(../TPEN28/images/helpinvert.png);
+                background-image: url(../TPEN/images/helpinvert.png);
                 background-size: contain;
                 background-repeat: no-repeat;
                 top: 0px;

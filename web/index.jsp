@@ -168,7 +168,7 @@
                 position: relative;
                 height: 25px;
                 width: 25px;
-                background-image: url(../TPEN28/images/helppositive.png);
+                background-image: url(../TPEN/images/helppositive.png);
                 background-size: contain;
                 top: 0px;
             }
@@ -177,7 +177,7 @@
                 position: relative;
                 height: 25px;
                 width: 25px;
-                background-image: url(../TPEN28/images/helpinvert.png);
+                background-image: url(../TPEN/images/helpinvert.png);
                 background-size: contain;
                 background-repeat: no-repeat;
                 top: 0px;
@@ -452,7 +452,7 @@ $(window).load(function(){gapi.plusone.go();});
                         <form action="login.jsp" method="POST">
                             <label for="uname">Email</label><input class="text" type="text" name="uname"><br>
                             <label for="password">Password</label><input class="text" type="password" name="password"><br>
-                            <input type="hidden" name="ref" value="http://t-pen.org/TPEN28/login.jsp">
+                            <input type="hidden" name="ref" value="http://t-pen.org/TPEN/login.jsp">
                             <input class="ui-state-default ui-button ui-corner-all" type="submit" title="Log In" value="Log In">
                         </form>
                             <!--<br> didn't work to fix problem on mac-->
@@ -502,7 +502,7 @@ $(window).load(function(){gapi.plusone.go();});
                     <%} else {%>
                     <%}%>    
                 <div id='sharing'>
-                    <a id="videoBtn" class="share" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/0S5ilvLM9fw');"><img class="videoShare" src="../TPEN28/images/helpinvert.png"/></a>                    
+                    <a id="videoBtn" class="share" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/0S5ilvLM9fw');"><img class="videoShare" src="../TPEN/images/helpinvert.png"/></a>                    
                     <a id="shareFacebook" class="share" 
                        href="http://www.facebook.com/pages/The-T-Pen-project/155508371151230"
                        sharehref="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.t-pen.org"

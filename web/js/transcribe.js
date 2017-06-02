@@ -925,12 +925,12 @@ function loadTranscription(pid, tool){
     else if (userTranscription.indexOf("http://") >= 0 || userTranscription.indexOf("https://") >= 0) {
         //TODO: allow users to include the p variable and load a page?
         var localProject = false;
-        if (userTranscription.indexOf("/TPEN28/project") > - 1 || userTranscription.indexOf("/TPEN28/manifest") > - 1){
+        if (userTranscription.indexOf("/TPEN/project") > - 1 || userTranscription.indexOf("/TPEN/manifest") > - 1){
             localProject = true;
-            if(userTranscription.indexOf("/TPEN28/project") > - 1){
+            if(userTranscription.indexOf("/TPEN/project") > - 1){
                 projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/project/') + 9));
             }
-            else if(userTranscription.indexOf("/TPEN28/manifest") > - 1){
+            else if(userTranscription.indexOf("/TPEN/manifest") > - 1){
                 projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/manifest/') + 10).replace("/manifest.json", ""));
             }
 
@@ -1200,7 +1200,7 @@ function activateUserTools(tools, permissions){
 }
 
 /*
- * Checks the TPEN28 object for the manuscript permissions from a specific folio.  If this user has not accepted the
+ * Checks the TPEN object for the manuscript permissions from a specific folio.  If this user has not accepted the
  * agreement, then they will see a pop up requiring them to request access.
  * @param {type} id
  * @returns {Boolean}
@@ -1244,7 +1244,7 @@ function acceptIPR(folio){
 }
 
 /*
- * Checks the TPEN28 object for the IPR agreement from a specific folio.  If this user has not accepted the
+ * Checks the TPEN object for the IPR agreement from a specific folio.  If this user has not accepted the
  * agreement, then they will see a pop up requiring them to request access.
  * @param {type} id
  * @returns {Boolean}
@@ -1472,7 +1472,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
 //    var currentFolio = parseInt(tpen.screen.currentFolio);
     if ((canvasObj.resources !== undefined && canvasObj.resources.length > 0)) {
         //FIXME:  If it happens to be an empty canvas, this will cause a page break.  Should we do something different if canvasObj.resources.length == 0
-        //This situation means we got our lines from the SQL and there is no need to query the store.  This is TPEN28 1.0
+        //This situation means we got our lines from the SQL and there is no need to query the store.  This is TPEN 1.0
 //        for (var i = 0; i < canvasObj.resources.length; i++) {
 //            if (isJSON(canvasObj.resources[i])) {   // it is directly an annotation
 //                lines.push(canvasObj.resources[i]);
@@ -1497,7 +1497,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
             .css("height", "inherit");
     }
     else if((canvasObj.otherContent[0] !== undefined && canvasObj.otherContent[0].resources !== undefined)){ //&& canvasObj.otherContent[0].resources.length > 0
-        //This is TPEN28 2.8 using the SQL
+        //This is TPEN 2.8 using the SQL
         //This situation means we got our lines from the SQL and there is no need to query the store.
         if(canvasObj.otherContent[0].resources.length > 0){ 
             tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
@@ -1565,7 +1565,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
         $("#imgBottom")
             .css("height", "inherit");
         // we have the anno list for this canvas (potentially), so query for it.
-        // This is TPEN28 2.8, using the annotation store.
+        // This is TPEN 2.8, using the annotation store.
 //        var annosURL = "getAnno";
 //        var onValue = canvasObj["@id"];
 //        var properties = {
@@ -2873,6 +2873,10 @@ function hideWorkspaceForParsing(){
     //$("#transcriptionCanvas").css("max-height", window.innerHeight + "px");
     //$("#transcriptionTemplate").css("max-height", window.innerHeight + "px");
     $("#controlsSplit").hide();
+    var widerThanTall = false;
+    if(tpen.screen.originalCanvasWidth > tpen.screen.originalCanvasHeight){
+        widerThanTall = true;
+    }
     var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
     var newCanvasWidth = tpen.screen.originalCanvasWidth * .55;
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
@@ -2881,8 +2885,10 @@ function hideWorkspaceForParsing(){
         newCanvasHeight = 625;
     }
     else if ($(window).height() <= tpen.screen.originalCanvasHeight){ //allow it to be as tall as possible, but not taller.
-        newCanvasHeight = $(window).height();
-        newCanvasWidth = ratio*newCanvasHeight;
+        if(!widerThanTall){
+            newCanvasHeight = $(window).height();
+            newCanvasWidth = ratio*newCanvasHeight;
+        }
     }
     else if($(window).height() > tpen.screen.originalCanvasHeight){ //I suppose this is possible for small images, so handle if its trying to be bigger than possible
         newCanvasHeight = tpen.screen.originalCanvasHeight;
@@ -2893,16 +2899,21 @@ function hideWorkspaceForParsing(){
         if($(window).width() < newCanvasWidth + $("#parsingSplit").width()){
             newCanvasWidth = $(window).width() - $("#parsingSplit").width();
             newCanvasHeight = ratio*newCanvasWidth;
+            if(widerThanTall){
+                newCanvasHeight = 1/ratio*newCanvasWidth;
+            }
         }
     }
     else{ //Just do nothing instead of calling it 900 wide so it defaults to the height math, maybe put a max up there too.
 //                     newCanvasWidth = 900;
 //                     newCanvasHeight = 1/ratio*newCanvasWidth;
-    }
+    }    
+    
     if(newCanvasHeight > window.innerHeight -40){ //never let the bottom of the image go off screen.
         newCanvasHeight = window.innerHeight - 40;
         newCanvasWidth = ratio * newCanvasHeight;
     }
+    
     $("#transcriptionTemplate").css("width","auto");
     $("#transcriptionCanvas").css("height", newCanvasHeight + "px");
     $("#transcriptionCanvas").css("width", newCanvasWidth + "px");
@@ -4110,7 +4121,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
                 "_tpen_note" : lineNote,
                 "_tpen_line_id" : currentLineServerID,
                 "_tpen_creator" : tpen.user.UID
-                //"testing":"TPEN28"
+                //"testing":"TPEN"
             };
             var index = - 1;
             //find the line in the anno list resources and replace its position with the new line resource.
@@ -4310,7 +4321,7 @@ function updateLine(line, cleanup, updateList){
         "forProject": tpen.manifest['@id'],
         "_tpen_note" : currentLineNotes,
         "_tpen_creator" : tpen.user.UID
-//        "testing":"TPEN28"
+//        "testing":"TPEN"
     };
 //    if (!currentAnnoListID){ //BH 12/21/16 we need to skip this check now since we don't have a anno list ID anymore
 //        if(!currentAnnoList){
@@ -4553,7 +4564,7 @@ function saveNewLine(lineBefore, newLine){
         "forProject": tpen.manifest['@id'],
         "_tpen_note": "",
         "_tpen_creator" : tpen.user.UID,
-        //"testing":"TPEN28"
+        //"testing":"TPEN"
     };
     var url = "updateLinePositions"; //saveNewTransLineServlet
     var params = new Array(
@@ -4637,7 +4648,7 @@ function saveNewLine(lineBefore, newLine){
                     "forkFromID" : "",
                     "resources" : [],
                     "proj" : projID,
-                    "testing":"TPEN28"
+                    "testing":"TPEN"
                 };
                 var url2 = "saveNewTransLineServlet";
                 var params2 = {"content": JSON.stringify(newAnnoList)};

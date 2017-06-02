@@ -142,9 +142,12 @@ public class ImageResize extends HttpServlet {
                toResize = ImageHelpers.scale(toResize, height, width);
                
                //Set CORS response headers for images here. 
-               response.addHeader("Access-Control-Allow-Origin", "*");
-               response.addHeader("Access-Control-Allow-Headers", "Content-Type");
-               response.addHeader("Access-Control-Allow-Methods", "GET");
+               if(!response.containsHeader("Access-Control-Allow-Origin")){
+                   System.out.println("Allow origin header in imageResize");
+                   response.addHeader("Access-Control-Allow-Origin", "*");
+                    response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+                    response.addHeader("Access-Control-Allow-Methods", "GET");
+               }
                OutputStream os = response.getOutputStream();
                IIOImage image = new IIOImage(toResize, null, null);
                writer.setOutput(ImageIO.createImageOutputStream(os));

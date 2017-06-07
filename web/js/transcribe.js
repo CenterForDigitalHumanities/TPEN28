@@ -811,6 +811,7 @@ function loadTranscription(pid, tool){
                         $("#splitScreenTools").append(splitToolSelector);
                     }
                 });
+                var toolHeight = window.innerHeight - 80;
                 $.each(tpen.project.tools, function(i){
                     var splitHeight = window.innerHeight + "px";
                     var toolLabel = this.name;
@@ -830,6 +831,7 @@ function loadTranscription(pid, tool){
                     .append(splitToolSelector);
                     $(".split:last")
                     .after(splitTool);
+                    splitTool.find("iframe").css("height", toolHeight + "px");
                 });
                 if (tpen.project.specialChars) {
                     populateSpecialCharacters();

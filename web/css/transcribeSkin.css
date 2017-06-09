@@ -1988,6 +1988,12 @@ a.editButtons {
 {
     content:"";
 }
+.navigation.collapsed #maintenance #countdown{
+    display: none;
+}
+.navigation.collasped #maintenance #schedmaintenance{
+    display: none;
+}
 .navigation.collapsed #trimPage,.navigation.collapsed #titleSection {
     max-width: 4em;
     display: block;
@@ -2008,9 +2014,6 @@ a.editButtons {
 .navigation.collapsed #pageJump {
     max-width: 1.5em;
     margin: 0 .5em;
-}
-.navigation.collapsed #maintenance{
-    
 }
 
 .navigation.collapsed.severe #titleSection,

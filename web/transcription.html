@@ -94,7 +94,7 @@
                     
             </span>
             <span id="maintenance" class="trimSection">
-                <span class="fa fa-wrench" title="Make sure to save all your work before the scheduled maintenance time."></span>
+                <span class="fa fa-wrench"></span>
                  <span id="schedmaintenance"></span>
                 <span id="countdown"></span> <br>
             </span>
@@ -2294,6 +2294,7 @@
                 var mdate = managerData.upgradeDate;
                 var dateForUser = new Date(mdate);
                 var countdown = managerData.countdown;
+                $("#maintenance").attr("title", "Maintenance sheduled on "+dateForUser);
                 if(managerData.active > 0){
                     if(countdown > 0){
                         setCountdown(mdate);

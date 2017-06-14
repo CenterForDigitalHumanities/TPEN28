@@ -58,7 +58,7 @@
         <meta itemprop="description" content="Digital tool for transcription">
         <meta itemprop="image" content="https://lh3.googleusercontent.com/-TysT8pvMcgI/AAAAAAAAAAI/AAAAAAAAADI/PWEsFECiPwE/s250-c-k/photo.jpg">        
         <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-        <title>TPEN <%out.println("Version " + Folio.getRbTok("VERSION"));%></title>
+        <title>T&#8209;PEN <%out.println("Version " + Folio.getRbTok("VERSION"));%></title>
         <link rel="stylesheet" href="css/tpen.css" type="text/css" media="screen, projection">
         <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
         <!--[if lt IE 8]><link rel="stylesheet" href="css/ie.css" type="text/css" media="screen, projection"><![endif]-->

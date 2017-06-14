@@ -57,10 +57,10 @@
         <meta itemprop="name" content="T&#8209;PEN">
         <meta itemprop="description" content="Digital tool for transcription">
         <meta itemprop="image" content="https://lh3.googleusercontent.com/-TysT8pvMcgI/AAAAAAAAAAI/AAAAAAAAADI/PWEsFECiPwE/s250-c-k/photo.jpg">        
-        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
         <title>T&#8209;PEN <%out.println("Version " + Folio.getRbTok("VERSION"));%></title>
         <link rel="stylesheet" href="css/tpen.css" type="text/css" media="screen, projection">
         <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
         <!--[if lt IE 8]><link rel="stylesheet" href="css/ie.css" type="text/css" media="screen, projection"><![endif]-->
         <link type="text/css" href="css/custom-theme/jQuery.css" rel="stylesheet" />
         <link href='http://fonts.googleapis.com/css?family=Stardos+Stencil:700' rel='stylesheet' type='text/css'>

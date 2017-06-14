@@ -37,7 +37,7 @@
                 #sortable1 .ui-sortable-helper{padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; width: 180px !important; height:44px !important;}
                 #sortable2 .ui-sortable-helper{padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; width: 430px !important; height:36px !important;}
                 #sortable1 .ui-state-highlight{min-height:44px;}
-                #sortable2 .ui-state-highlight{min-height:36px;}
+                #sortable2 .ui-state-highlight{height:20px;}
                 #sortable { margin: 0; padding: 0; width: 30%; }
                 #sortable2{
                    margin-bottom: 25px;
@@ -321,7 +321,7 @@ function equalWidth(){
         var closingTag = /\s\//; // &nbsp;/  = self closing tag for this field.  This holds up logically.
         var msg = '';
         if(closingTag.test(tagVal)){
-            msg = ['info','highlight','Using the / will make this a self closing tag (<'+tagVal+' ... />)'];
+            msg = ['info','highlight','Using the / will make this a self closing tag.'];
         } else if (hasSpace.test(tagVal)){
             msg = ['alert','error','XML does not allow spaces in tag names'];
         } else if (isIllegalChar.test(tagVal)){
@@ -337,7 +337,14 @@ function equalWidth(){
             var warningFlag = "<div class='tagWarning ui-corner-all ui-state-"+msg[1]+"'><span class='ui-icon left ui-icon-"+msg[0]+"' title='"+msg[2]+"'></span></div>";
             $(tag).after(warning)
             .parents('.xmlPanel').find('.description').after(warningFlag);
+            if(msg[1] === "error"){
+                $("#updateXML").attr("disabled", "disabled");
+            }
         }
+        else{
+            $("#updateXML").removeAttr("disabled", "disabled");
+        }
+            
     }
     function deleteHotkey(position){
         $("#buttonForm")
@@ -518,7 +525,7 @@ function equalWidth(){
             %>
                     </ul>
             <input type="button" id="addH" name="addH" class="tpenButton ui-button" value="Add a Button"/>
-            <input type="submit" id="update" name="update" value="Save Changes" class="tpenButton ui-button"/>
+            <input type="submit" id="updateChars" name="update" value="Save Changes" class="tpenButton ui-button"/>
             <input type="button" id="return" name="return" value="Return to Management" onclick="document.location.href='project.jsp?projectID=<%out.print(projectID);%>';" class="tpenButton ui-button"/><br><br>
                 </div>
                 <div id="tabs-2">
@@ -534,7 +541,7 @@ function equalWidth(){
                     %>
                     </ul>
                     <input type="button" id="addT" name="addT" value="Add a Tag" class="tpenButton ui-button" onclick="document.getElementById('selecTab').value = 1;" />
-                    <input type="submit" onclick="document.getElementById('selecTab').value = 1;" id="update" name="update" value="Save Changes" class="tpenButton ui-button"/><br><br>
+                    <input type="submit" onclick="document.getElementById('selecTab').value = 1;" id="updateXML" name="update" value="Save Changes" class="tpenButton ui-button"/><br><br>
                 </div>
                 <div class="right">
                     <a href="buttonProjectImport.jsp?a=1<%out.print(appendProject);%>" class="importButton tpenButton ui-button">Copy Buttons from Another Project</a>

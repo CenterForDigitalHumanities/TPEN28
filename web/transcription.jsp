@@ -77,7 +77,7 @@
                 }    
             }
         %>
-        <title>TPEN Transcription</title>
+        <title>T&#8209;PEN 2.8 Transcription</title>
         <link rel="stylesheet" href="css/tpen.css" type="text/css" media="screen, projection">
         <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
         <!--[if lt IE 8]><link rel="stylesheet" href="css/ie.css" type="text/css" media="screen, projection"><![endif]-->

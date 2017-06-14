@@ -363,7 +363,7 @@ function populateSpecialCharacters(){
     var specialCharacters = tpen.project.specialChars;
     var speCharactersInOrder = new Array(specialCharacters.length);
     if(!specialCharacters || specialCharacters.length === 0 || specialCharacters[0] === "[]"){
-        $("#toggleXML").hide();
+        $("#toggleChars").hide();
     }
     for (var char = 0; char < specialCharacters.length; char++){
         var thisChar = specialCharacters[char];
@@ -398,8 +398,15 @@ function populateXML(){
     for (var tagIndex = 0; tagIndex < xmlTags.length; tagIndex++){
         var newTagBtn = "";
         var tagName = xmlTags[tagIndex].tag;
+        var tagCpy = tagName;
+        var selfClosing = false;
+        if(tagCpy.indexOf("&nbsp;/") > -1 || tagCpy.indexOf(" /") > -1 ){
+            selfClosing = true;
+            tagCpy = tagCpy.replace("&nbsp;/", "");
+            tagCpy = tagCpy.replace(" /", "");
+        }
         if(tagName && tagName!== "" && tagName !== " "){
-            var fullTag = "";
+            var fullTag = "<"+tagCpy;
             var xmlTagObject = xmlTags[tagIndex];
             var parametersArray = xmlTagObject.parameters; //This is a string array of properties, paramater1-parameter5 out of the db.
             if (parametersArray[0] != null) {
@@ -417,11 +424,21 @@ function populateXML(){
             if (parametersArray[4] != null) {
                fullTag += " " + parametersArray[4];
             }
-            if(fullTag !== ""){
-                fullTag = "<"+tagName+" "+fullTag+">";
+            if(selfClosing){
+                if(fullTag !== ""){
+                    fullTag += " />";
+                }
+            }
+            else{
+                if(fullTag !== ""){
+                    fullTag += ">";
+                }
             }
             var description = xmlTagObject.description;
-            newTagBtn = "<div onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "',false);\" class='xmlTag lookLikeButtons' title='" + fullTag + "'>" + description + "</div>"; //onclick=\"insertAtCursor('" + tagName + "', '', '" + fullTag + "');\">
+            var safeTagName = escape(tagName);
+            var safeFullTag = escape(fullTag);
+            var safeDescription = escape(description);
+            newTagBtn = "<div onclick=\"insertAtCursor('" + safeTagName + "', '', '" + safeFullTag + "',false);\" class='xmlTag lookLikeButtons' title='" + safeFullTag + "'>" + safeDescription + "</div>"; //onclick=\"insertAtCursor('" + safeTagName + "', '', '" + safeFullTag + "');\">
             var button = $(newTagBtn);
             $(".xmlTags").append(button);
         }
@@ -1654,7 +1671,7 @@ function updateURL(piece, classic){
             toAddressBar = replaceURLVariable("attempts", currentAttempt);
         }
     }
-    window.history.pushState("", "T&#8209;PEN Transcription", toAddressBar);
+    window.history.pushState("", "T&#8209;PEN 2.8 Transcription", toAddressBar);
 }
 
 /* Go to the transcription.jsp interface, which is the classic version */
@@ -3729,12 +3746,19 @@ function adjustColumn(event){
          //how do I pass the closing tag in?  How do i know if it exists?
         var myField = tpen.screen.focusItem[1].find('.theText')[0];
         var closeTag = (closingTag == undefined) ? "" : unescape(closingTag);
+        myValue = unescape(myValue);
+        fullTag = unescape(fullTag);
+        var tagCpy = myValue;
+        var selfClosing = false;
+        if(tagCpy.indexOf("&nbsp;/") > -1 || tagCpy.indexOf(" /") > -1 ){
+            selfClosing = true;
+        }
         //IE support
         if(specChar){
              if (document.selection) {
                 myField.focus();
                 sel = document.selection.createRange();
-                sel.text = unescape(myValue);
+                sel.text = myValue;
                 //console.log("Need to advance cursor pos by 1..." +sel.selectionStart, sel.selectionStart+1 );
                 sel.setSelectionRange(sel.selectionStart+1, sel.selectionStart+1);
                 updateLine($(myField).parent(), false, true);
@@ -3744,7 +3768,7 @@ function adjustColumn(event){
                 var startPosChar = myField.selectionStart;
                 var endPos = myField.selectionEnd;
                 var currentValue = myField.value;
-                currentValue = currentValue.slice(0, startPosChar) + unescape(myValue) + currentValue.slice(startPosChar);
+                currentValue = currentValue.slice(0, startPosChar) +myValue + currentValue.slice(startPosChar);
                 myField.value = currentValue;
                 myField.focus();
                 //console.log("Need to advance cursor pos by 1..." +startPosChar, startPosChar+1 );
@@ -3762,7 +3786,7 @@ function adjustColumn(event){
                 }
                 myField.focus();
                 sel = document.selection.createRange();
-                sel.text = unescape(fullTag);
+                sel.text = fullTag;
                 //console.log("Need to advance cursor pos by "+fullTag.length+"..."+sel.selectionStart, sel.selectionStart+fullTag.length);
                 sel.setSelectionRange(sel.selectionStart+fullTag.length, sel.selectionStart+fullTag.length);
                 updateLine($(myField).parent(), false, true);
@@ -3775,14 +3799,14 @@ function adjustColumn(event){
                 if(fullTag === ""){
                         fullTag = "<" + myValue +">";
                 }
-                if (startPos !== endPos) {
+                if (startPos !== endPos && !selfClosing) {
 
                     // something is selected, wrap it instead
                     var toWrap = myField.value.substring(startPos,endPos);
                     closeTag = "</" + myValue +">";
                     myField.value =
                           myField.value.substring(0, startPos)
-                        + unescape(fullTag)
+                        + fullTag
                         + toWrap
                         + closeTag
                         + myField.value.substring(endPos, myField.value.length);
@@ -3794,7 +3818,7 @@ function adjustColumn(event){
                 }
                 else {
                     myField.value = myField.value.substring(0, startPos)
-                        + unescape(fullTag)
+                        + fullTag
                         + myField.value.substring(startPos);
                     myField.focus();
                     //console.log("Move caret to startPos + tag length... "+startPos, startPos + fullTag.length);
@@ -3809,7 +3833,7 @@ function adjustColumn(event){
                 if(fullTag === ""){
                     fullTag = "<"+myValue+">";
                 }
-                myField.value += unescape(fullTag);
+                myField.value += fullTag;
                 myField.focus();
                 //console.log("Last case... "+myField.selectionStart, myField.selectionStart+ fullTag.length);
                 myField.setSelectionRange(myField.selectionStart+ fullTag.length, myField.selectionStart+ fullTag.length);
@@ -6812,7 +6836,7 @@ function checkParsingReroute(){
     if(getURLVariable('liveTool') == "parsing"){
         setTimeout(function () {
             var replaceURL = replaceURLVariable("liveTool", "none");
-            window.history.pushState("", "T&#8209;PEN Transcription", replaceURL);
+            window.history.pushState("", "T&#8209;PEN 2.8 Transcription", replaceURL);
             if(tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing){
                 $("#canvasControls").click();
                 $("#parsingBtn").click();

@@ -530,30 +530,45 @@ public class TagButton {
     * return oepning and closing tag including brackets
     */
    public String getFullTag() {
-
-      if (parameters != null && parameters.length == 5) {
-         String toret = "<" + tag;
-         if (parameters[0] != null) {
-            toret += " " + parameters[0];
-         }
-         if (parameters[1] != null) {
-            toret += " " + parameters[1];
-         }
-         if (parameters[2] != null) {
-            toret += " " + parameters[2];
-         }
-         if (parameters[3] != null) {
-            toret += " " + parameters[3];
-         }
-         if (parameters[4] != null) {
-            toret += " " + parameters[4];
-         }
-
-
-         toret += ">";//+ "</" + tag + ">";
-         return toret;
-      } else {
-         return "<" + tag + ">";//+ "</" + tag + ">";
+        String tagCpy = tag;
+        if(tagCpy.contains("&nbsp;/") || tagCpy.contains(" /")){
+            tagCpy = tagCpy.replace("&nbsp;/", "");
+            tagCpy = tagCpy.replace(" /", "");
+        }
+        System.out.println("Now that tag is "+tagCpy);
+        String toret = "<" + tagCpy;
+        if (parameters != null && parameters.length == 5) {
+            if (parameters[0] != null) {
+               toret += " " + parameters[0];
+            }
+            if (parameters[1] != null) {
+               toret += " " + parameters[1];
+            }
+            if (parameters[2] != null) {
+               toret += " " + parameters[2];
+            }
+            if (parameters[3] != null) {
+               toret += " " + parameters[3];
+            }
+            if (parameters[4] != null) {
+               toret += " " + parameters[4];
+            }
+            if(tagCpy.equals(tag)){
+               toret += ">"; 
+            }
+            else{
+               toret += " />"; 
+            }
+            System.out.println("Return "+toret);
+            return toret;
+        } 
+        else {
+            if(tagCpy.equals(tag)){
+                return "<" + tagCpy + ">";
+            }
+            else{
+               return "<" + tagCpy + " />";
+            }
       }
    }
 
@@ -711,6 +726,7 @@ public class TagButton {
     * get all of the buttons for this Project
     */
    public static String getAllProjectButtons(int projectID) throws SQLException {
+       System.out.println("Get all project buttons");
       Date date = new Date(System.currentTimeMillis());
       StackTraceElement[] t = Thread.currentThread().getStackTrace();
       DateFormat formatter = new SimpleDateFormat("yyyy-mm-dd H:M:S");
@@ -737,7 +753,10 @@ public class TagButton {
          blank_case[2] = null;
          blank_case[3] = null;
          blank_case[4] = null;
+         int count=0;
          while (rs.next()) {
+             count++;
+             System.out.println("Button "+count);
             int position = rs.getInt("position");
             try {
                TagButton b = new TagButton(projectID, position, true);
@@ -761,6 +780,7 @@ public class TagButton {
                 else{
                     jo.element("description","");
                 }
+                System.out.println("Get full tag called three times right here...");
                 if(null != b.getFullTag()&& !"".equals(b.getFullTag())){
                     jo.element("fullTag", b.getFullTag());
                 }

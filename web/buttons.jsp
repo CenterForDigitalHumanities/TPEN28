@@ -315,11 +315,14 @@ function equalWidth(){
         var tagVal = $(tag).val();
         var isIllegalChar  = /[^\w:\.\-]/;
         var hasSpace = /\s/;
-        var validStart = /^\w|:/
-        var notDigitStart = /^\D/
+        var validStart = /^\w|:/;
+        var notDigitStart = /^\D/;
         var xmlStart = /^xml/i;
+        var closingTag = /\s\//; // &nbsp;/  = self closing tag for this field.  This holds up logically.
         var msg = '';
-        if (hasSpace.test(tagVal)){
+        if(closingTag.test(tagVal)){
+            msg = ['info','highlight','Using the / will make this a self closing tag (<'+tagVal+' ... />)'];
+        } else if (hasSpace.test(tagVal)){
             msg = ['alert','error','XML does not allow spaces in tag names'];
         } else if (isIllegalChar.test(tagVal)){
             msg = ['alert','error','XML allows only letters, digits, .,-,_, and : in tag names'];

@@ -436,9 +436,9 @@ function populateXML(){
             }
             var description = xmlTagObject.description;
             var safeTagName = escape(tagName);
-            var safeFullTag = escape(fullTag);
+            var safeFullTag = fullTag.replace(/>/g, "&gt;").replace(/</g, "&lt;");;
             var safeDescription = escape(description);
-            newTagBtn = "<div onclick=\"insertAtCursor('" + safeTagName + "', '', '" + safeFullTag + "',false);\" class='xmlTag lookLikeButtons' title='" + safeFullTag + "'>" + safeDescription + "</div>"; //onclick=\"insertAtCursor('" + safeTagName + "', '', '" + safeFullTag + "');\">
+            newTagBtn = "<div onclick=\"insertAtCursor('" + safeTagName + "', '', '" + safeFullTag + "',false);\" class='xmlTag lookLikeButtons' title='" + safeFullTag + "'>" + description + "</div>"; //onclick=\"insertAtCursor('" + safeTagName + "', '', '" + safeFullTag + "');\">
             var button = $(newTagBtn);
             $(".xmlTags").append(button);
         }

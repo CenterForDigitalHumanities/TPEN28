@@ -3845,7 +3845,7 @@ function adjustColumn(event){
                     myField.value = textForField;
                     myField.focus();
                     //console.log("Need to put cursor at end of highlighted spot... "+endPos);
-                    myField.setSelectionRange(startPos + decodedFullTag.length +closeTag.length, startPos+decodedFullTag.length+closeTag.length);
+                    myField.setSelectionRange(endPos + decodedFullTag.length +closeTag.length, endPos+decodedFullTag.length+closeTag.length);
                     updateLine($(myField).parent(), false, true);
 
                 }

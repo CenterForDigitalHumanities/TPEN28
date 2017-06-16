@@ -428,6 +428,7 @@ function populateXML(){
                 if(fullTag !== ""){
                     fullTag += " />";
                 }
+                tagCpy += " /"; //Put the slash back for the button title attribute 
             }
             else{
                 if(fullTag !== ""){
@@ -436,9 +437,9 @@ function populateXML(){
             }
             var description = xmlTagObject.description;
             var safeTagName = escape(tagName);
-            var safeFullTag = fullTag.replace(/>/g, "&gt;").replace(/</g, "&lt;");;
+            var safeFullTag = fullTag.replace(/>/g, "&gt;").replace(/</g, "&lt;");
             var safeDescription = escape(description);
-            newTagBtn = "<div onclick=\"insertAtCursor('" + safeTagName + "', '', '" + safeFullTag + "',false);\" class='xmlTag lookLikeButtons' title='" + safeFullTag + "'>" + description + "</div>"; //onclick=\"insertAtCursor('" + safeTagName + "', '', '" + safeFullTag + "');\">
+            newTagBtn = "<div onclick=\"insertAtCursor('" + safeTagName + "', '', '" + safeFullTag + "',false);\" class='xmlTag lookLikeButtons' title='&lt;" + tagCpy + "&gt;' >" + description + "</div>"; //want tag without params as title? ttitle='<" + tagCpy + ">'
             var button = $(newTagBtn);
             $(".xmlTags").append(button);
         }

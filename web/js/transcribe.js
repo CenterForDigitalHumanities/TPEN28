@@ -3783,7 +3783,7 @@ function adjustColumn(event){
             }
         }
         else{ //its an xml tag
-            if (document.selection && !selfClosing) {
+            if (document.selection) { //Internet Explorer and Safari support
                 if(fullTag === ""){
                     fullTag = "<"+myValue+">";
                 }
@@ -3792,19 +3792,36 @@ function adjustColumn(event){
                 var startPos = sel.selectionStart;
                 var endPos = sel.selectionEnd;
                 var toWrap = myField.value.substring(startPos,endPos);
-                closeTag = "</" + myValue +">";
+                if (startPos !== endPos && !selfClosing) { //Highlighted seom text to wrap and its not a self closing tag
+                    closeTag = "</" + myValue +">";
                     textForField =
                           myField.value.substring(0, startPos)
                         + fullTag
                         + toWrap
                         + closeTag
                         + myField.value.substring(endPos, myField.value.length);
-                textForField = textForField.replace(/>/g, "&gt;").replace(/</g, "&lt;");
-                textForField = $("<div/>").html(textForField).text();
-                sel.text = textForField;
-                //console.log("Need to advance cursor pos by "+fullTag.length+"..."+sel.selectionStart, sel.selectionStart+fullTag.length);
-                sel.setSelectionRange(sel.selectionStart+decodedFullTag.length, sel.selectionStart+decodedFullTag.length);
-                updateLine($(myField).parent(), false, true);
+                    textForField = textForField.replace(/>/g, "&gt;").replace(/</g, "&lt;"); //Stop decoder from making them actual elements
+                    textForField = $("<div/>").html(textForField).text(); //Decode string html elements
+                    sel.text = textForField;
+                    sel.setSelectionRange(startPos+decodedFullTag.length, startPos+decodedFullTag.length);
+                    updateLine($(myField).parent(), false, true);
+                    closeAddedTag(myValue, fullTag);
+                }
+                else{ //It's self closing or there was no hightlighted text.
+                    textForField
+                     = myField.value.substring(0, startPos)
+                        + fullTag
+                        + myField.value.substring(startPos);
+                    textForField = textForField.replace(/>/g, "&gt;").replace(/</g, "&lt;");//Stop decoder from making them actual elements
+                    textForField = $("<div/>").html(textForField).text();//Decode string HTML element
+                    myField.value = textForField;
+                    myField.focus();
+                    myField.setSelectionRange(endPos+ decodedFullTag.length, endPos+ decodedFullTag.length);
+                    updateLine($(myField).parent(), false, true);
+                    if(!selfClosing){
+                        closeAddedTag(myValue, fullTag);
+                    }
+                }
                 //return sel+unescape(fullTag).length;
             }
             //MOZILLA/NETSCAPE support
@@ -3814,9 +3831,7 @@ function adjustColumn(event){
                 if(fullTag === ""){
                         fullTag = "<" + myValue +">";
                 }
-                if (startPos !== endPos && !selfClosing) {
-
-                    // something is selected, wrap it instead
+                if (startPos !== endPos && !selfClosing) { //Text was highlighted and wrap tag is inserted
                     var toWrap = myField.value.substring(startPos,endPos);
                     closeTag = "</" + myValue +">";
                     textForField =
@@ -3825,26 +3840,24 @@ function adjustColumn(event){
                         + toWrap
                         + closeTag
                         + myField.value.substring(endPos, myField.value.length);
-                //now we have to handle the < and >
-                    textForField = textForField.replace(/>/g, "&gt;").replace(/</g, "&lt;");
-                    textForField = $("<div/>").html(textForField).text();
+                    textForField = textForField.replace(/>/g, "&gt;").replace(/</g, "&lt;"); //Stop decoder from making them actual elements
+                    textForField = $("<div/>").html(textForField).text(); //Decode HTML string entities
                     myField.value = textForField;
                     myField.focus();
                     //console.log("Need to put cursor at end of highlighted spot... "+endPos);
-                    myField.setSelectionRange(endPos + decodedFullTag.length +closeTag.length, endPos+decodedFullTag.length+closeTag.length);
+                    myField.setSelectionRange(startPos + decodedFullTag.length +closeTag.length, startPos+decodedFullTag.length+closeTag.length);
                     updateLine($(myField).parent(), false, true);
 
                 }
-                else {
+                else { //self closing
                     textForField
                      = myField.value.substring(0, startPos)
                         + fullTag
                         + myField.value.substring(startPos);
-                    textForField = textForField.replace(/>/g, "&gt;").replace(/</g, "&lt;");
-                    textForField = $("<div/>").html(textForField).text();
+                    textForField = textForField.replace(/>/g, "&gt;").replace(/</g, "&lt;");//Stop decoder from making them actual elements
+                    textForField = $("<div/>").html(textForField).text(); //Decode HTML string entities
                     myField.value = textForField;
                     myField.focus();
-                    //console.log("Move caret to startPos + tag length... "+startPos, startPos + fullTag.length);
                     myField.setSelectionRange(endPos+ decodedFullTag.length, endPos+ decodedFullTag.length);
                     updateLine($(myField).parent(), false, true);
                     if(!selfClosing){
@@ -3854,7 +3867,8 @@ function adjustColumn(event){
                 }
 
             }
-            else {
+            else { //Selection is not supported
+                //alert("Your browser does not support text selection.  This tag will be inserted at the end of your line transcription. ");
                 if(fullTag === ""){
                     fullTag = "<"+myValue+">";
                 }
@@ -3864,13 +3878,10 @@ function adjustColumn(event){
                 textForField = $("<div/>").html(textForField).text();
                 myField.value = textForField;
                 myField.focus();
-                //console.log("Last case... "+myField.selectionStart, myField.selectionStart+ fullTag.length);
-                myField.setSelectionRange(myField.selectionEnd+ textForField.length, myField.selectionEnd+ textForField.length);
                 updateLine($(myField).parent(), false, true);
                 if(!selfClosing){
                         closeAddedTag(myValue, fullTag);
-                    }
-                //return myField.length;
+                }
             }
 
         }

@@ -2462,7 +2462,7 @@ var Interaction = {
     insertTag: function(tagName,fullTag){
         if (tagName.lastIndexOf("/") == (tagName.length-1)) {
             //transform self-closing tags
-            var slashIndex = tagName.length;
+            var slashIndex = fullTag.length - 1; //altering a full tag with parameters here
             //how do I handle the slash here now?
             fullTag = fullTag.slice(0,slashIndex)+fullTag.slice(slashIndex+1,-1)+">";
         }
@@ -2511,7 +2511,7 @@ var Interaction = {
                 myField.focus();
                 Preview.updateLine(myField);
                 var insertLength = startPos + myValue.length +
-                    toWrap.length + 3 + closeTag.length;
+                    toWrap.length  + closeTag.length;
                 return "wrapped" + insertLength;
             } else {
                 myField.value = myField.value.substring(0, startPos)
@@ -2521,7 +2521,7 @@ var Interaction = {
                 Preview.updateLine(myField);
                 return startPos+myValue.length;
             }
-        } else {
+        } else { //selection is not supported
             myField.value += myValue;
             myField.focus();
             Preview.updateLine(myField);

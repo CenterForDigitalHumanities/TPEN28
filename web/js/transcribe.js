@@ -3803,7 +3803,7 @@ function adjustColumn(event){
                     textForField = textForField.replace(/>/g, "&gt;").replace(/</g, "&lt;"); //Stop decoder from making them actual elements
                     textForField = $("<div/>").html(textForField).text(); //Decode string html elements
                     sel.text = textForField;
-                    sel.setSelectionRange(startPos+decodedFullTag.length, startPos+decodedFullTag.length);
+                    sel.setSelectionRange(startPos+decodedFullTag.length + closeTag.length, startPos+decodedFullTag.length+closeTag.length);
                     updateLine($(myField).parent(), false, true);
                     closeAddedTag(myValue, fullTag);
                 }

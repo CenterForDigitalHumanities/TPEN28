@@ -1183,6 +1183,9 @@ p span.label {
     width:16px;
     height:16px;
 }
+#xmlTagPopinList, #charactersPopinList{
+    padding: 1px !important;
+}
 .lookLikeButtons {            /* used for special characters and XML tags */
     padding: 4px 4px 1px 4px !important;
     font-family: "Cambria","Georgia",serif;

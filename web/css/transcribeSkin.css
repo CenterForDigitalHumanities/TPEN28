@@ -1780,9 +1780,7 @@ a.navigation {
     background-color: #bbb;
     color:#333;
 }
-#xmlTagPopinList, #charactersPopinList{
-    padding: 1px !important;
-}
+
 #charactersPopin,#xmlTagPopin {
     background: #ddd;
     margin: -4px;

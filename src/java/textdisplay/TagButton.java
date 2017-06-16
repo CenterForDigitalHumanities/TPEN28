@@ -610,6 +610,7 @@ public class TagButton {
             int position = rs.getInt("position");
             try {
                TagButton b = new TagButton(projectID, position, true);
+               System.out.println("Get all project buttons classic.  What is button "+b.getButton());
                toret += b.getButton();
             } catch (NullPointerException e) {
             }
@@ -663,12 +664,14 @@ public class TagButton {
                 buttonHTML = "";
                 int position = rs.getInt("position");
                 TagButton b = new TagButton(projectID, position, true);
+                System.out.println("Build all project XML.  What is b.getTag()..."+b.getTag());
                 buttonHTML += "<li class=\"ui-state-default xmlPanel\">";
                 buttonHTML += "<span class='ui-icon ui-icon-arrow-4 toggleXML left'></span>";
                 buttonHTML += "<a class=\"ui-icon ui-icon-closethick right\" onclick=\"deleteTag(" + position + ");\">delete</a>";
                 buttonHTML += "<input class=\"description\" onchange=\"unsavedAlert('#tabs-2');\" type=\"text\" placeholder=\"Button Name\" name=description"+(position)+" value=\""+b.getDescription()+"\">";
             //    out.println("<input class=\"colors\" onchange=\"unsavedAlert('#tabs-2');\" type=\"text\" placeholder=\"black\" name=xmlColor"+(position)+" value=\""+"b.getXMLColor"+"\">");
                 buttonHTML += "<div class='xmlParams'>";
+                //THIS may be where the slash is being put in
                 buttonHTML += "<span class=\"firstRow collapseXML\"><span class=\"bold tag\"><input name=\"b"+position+"\" id=\"b"+position+"\" type=\"text\" class='collapseXML' value=\""+b.getTag()+"\"></input></span>";
                 if (b.hasParameters()) {
                     String[] params = b.getparameters();
@@ -756,13 +759,13 @@ public class TagButton {
          int count=0;
          while (rs.next()) {
              count++;
-             System.out.println("Button "+count);
             int position = rs.getInt("position");
             try {
                TagButton b = new TagButton(projectID, position, true);
                 ctr++;
                 JSONObject jo = new JSONObject();
                 if(null != b.getTag() && !"".equals(b.getTag())){
+                    System.out.println("New get all project buttons.  What is tag "+b.getTag());
                     jo.element("tag", b.getTag()); //b.getButton()
                 }
                 else{
@@ -780,7 +783,7 @@ public class TagButton {
                 else{
                     jo.element("description","");
                 }
-                System.out.println("Get full tag called three times right here...");
+                System.out.println("New get project buttons.  What is full tag?   "+b.getFullTag());
                 if(null != b.getFullTag()&& !"".equals(b.getFullTag())){
                     jo.element("fullTag", b.getFullTag());
                 }

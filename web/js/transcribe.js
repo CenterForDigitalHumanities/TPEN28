@@ -3746,8 +3746,11 @@ function adjustColumn(event){
          //how do I pass the closing tag in?  How do i know if it exists?
         var myField = tpen.screen.focusItem[1].find('.theText')[0];
         var closeTag = (closingTag == undefined) ? "" : unescape(closingTag);
+        var textForField = "";
         myValue = unescape(myValue);
         fullTag = unescape(fullTag);
+        var fullTagCpy = fullTag.replace(/>/g, "&gt;").replace(/</g, "&lt;");
+        var decodedFullTag = $("<div/>").html(fullTagCpy).text();
         var tagCpy = myValue;
         var selfClosing = false;
         if(tagCpy.indexOf("&nbsp;/") > -1 || tagCpy.indexOf(" /") > -1 ){
@@ -3780,15 +3783,27 @@ function adjustColumn(event){
             }
         }
         else{ //its an xml tag
-            if (document.selection) {
+            if (document.selection && !selfClosing) {
                 if(fullTag === ""){
                     fullTag = "<"+myValue+">";
                 }
                 myField.focus();
                 sel = document.selection.createRange();
-                sel.text = fullTag;
+                var startPos = sel.selectionStart;
+                var endPos = sel.selectionEnd;
+                var toWrap = myField.value.substring(startPos,endPos);
+                closeTag = "</" + myValue +">";
+                    textForField =
+                          myField.value.substring(0, startPos)
+                        + fullTag
+                        + toWrap
+                        + closeTag
+                        + myField.value.substring(endPos, myField.value.length);
+                textForField = textForField.replace(/>/g, "&gt;").replace(/</g, "&lt;");
+                textForField = $("<div/>").html(textForField).text();
+                sel.text = textForField;
                 //console.log("Need to advance cursor pos by "+fullTag.length+"..."+sel.selectionStart, sel.selectionStart+fullTag.length);
-                sel.setSelectionRange(sel.selectionStart+fullTag.length, sel.selectionStart+fullTag.length);
+                sel.setSelectionRange(sel.selectionStart+decodedFullTag.length, sel.selectionStart+decodedFullTag.length);
                 updateLine($(myField).parent(), false, true);
                 //return sel+unescape(fullTag).length;
             }
@@ -3804,27 +3819,37 @@ function adjustColumn(event){
                     // something is selected, wrap it instead
                     var toWrap = myField.value.substring(startPos,endPos);
                     closeTag = "</" + myValue +">";
-                    myField.value =
+                    textForField =
                           myField.value.substring(0, startPos)
                         + fullTag
                         + toWrap
                         + closeTag
                         + myField.value.substring(endPos, myField.value.length);
+                //now we have to handle the < and >
+                    textForField = textForField.replace(/>/g, "&gt;").replace(/</g, "&lt;");
+                    textForField = $("<div/>").html(textForField).text();
+                    myField.value = textForField;
                     myField.focus();
                     //console.log("Need to put cursor at end of highlighted spot... "+endPos);
-                    myField.setSelectionRange(endPos+fullTag.length+closeTag.length, endPos+fullTag.length+closeTag.length);
+                    myField.setSelectionRange(endPos + decodedFullTag.length +closeTag.length, endPos+decodedFullTag.length+closeTag.length);
                     updateLine($(myField).parent(), false, true);
 
                 }
                 else {
-                    myField.value = myField.value.substring(0, startPos)
+                    textForField
+                     = myField.value.substring(0, startPos)
                         + fullTag
                         + myField.value.substring(startPos);
+                    textForField = textForField.replace(/>/g, "&gt;").replace(/</g, "&lt;");
+                    textForField = $("<div/>").html(textForField).text();
+                    myField.value = textForField;
                     myField.focus();
                     //console.log("Move caret to startPos + tag length... "+startPos, startPos + fullTag.length);
-                    myField.setSelectionRange(startPos+ fullTag.length, startPos+ fullTag.length);
+                    myField.setSelectionRange(endPos+ decodedFullTag.length, endPos+ decodedFullTag.length);
                     updateLine($(myField).parent(), false, true);
-                    closeAddedTag(myValue, fullTag);
+                    if(!selfClosing){
+                        closeAddedTag(myValue, fullTag);
+                    }
                     //return startPos+unescape(fullTag).length;
                 }
 
@@ -3833,12 +3858,18 @@ function adjustColumn(event){
                 if(fullTag === ""){
                     fullTag = "<"+myValue+">";
                 }
-                myField.value += fullTag;
+                textForField = myField.value;
+                textForField += fullTag;
+                textForField = textForField.replace(/>/g, "&gt;").replace(/</g, "&lt;");
+                textForField = $("<div/>").html(textForField).text();
+                myField.value = textForField;
                 myField.focus();
                 //console.log("Last case... "+myField.selectionStart, myField.selectionStart+ fullTag.length);
-                myField.setSelectionRange(myField.selectionStart+ fullTag.length, myField.selectionStart+ fullTag.length);
+                myField.setSelectionRange(myField.selectionEnd+ textForField.length, myField.selectionEnd+ textForField.length);
                 updateLine($(myField).parent(), false, true);
-                closeAddedTag(myValue, fullTag);
+                if(!selfClosing){
+                        closeAddedTag(myValue, fullTag);
+                    }
                 //return myField.length;
             }
 

@@ -139,7 +139,7 @@
                     var position = data;    //tag position from servlet
                     //$("#sortable2").children("li").eq(-1).clone(true).appendTo($("#sortable2"))
                     var buttonHTML = "";
-                     buttonHTML += "<li class=\"ui-state-default xmlPanel\">";
+                    buttonHTML += "<li class=\"ui-state-default xmlPanel\">";
                     buttonHTML += "<span class='ui-icon ui-icon-arrow-4 toggleXML left'></span>";
                     buttonHTML += "<a class=\"ui-icon ui-icon-closethick right\" onclick=\"deleteTag(" + position + ");\">delete</a>";
                     buttonHTML += "<input class=\"description\" onchange=\"unsavedAlert('#tabs-2');\" type=\"text\" placeholder=\"Button Name\" name=description"+(position)+" value=\"description\">";
@@ -340,9 +340,12 @@ function equalWidth(){
             if(msg[1] === "error"){
                 $("#updateXML").attr("disabled", "disabled");
             }
+            else{
+                $("#updateXML").removeAttr("disabled");
+            }
         }
         else{
-            $("#updateXML").removeAttr("disabled", "disabled");
+            $("#updateXML").removeAttr("disabled");
         }
             
     }

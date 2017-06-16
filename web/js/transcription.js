@@ -2463,7 +2463,8 @@ var Interaction = {
         if (tagName.lastIndexOf("/") == (tagName.length-1)) {
             //transform self-closing tags
             var slashIndex = tagName.length;
-            fullTag = fullTag.slice(0,slashIndex)+fullTag.slice(slashIndex+1,-1)+" />";
+            //how do I handle the slash here now?
+            fullTag = fullTag.slice(0,slashIndex)+fullTag.slice(slashIndex+1,-1)+">";
         }
         // Check for wrapped tag
         if (!this.addchar(escape(fullTag),escape(tagName))) {
@@ -2479,42 +2480,49 @@ var Interaction = {
      * @return int end of inserted value position
      */
      insertAtCursor: function(myField, myValue, closingTag) {
-        var closeTag = (closingTag == undefined) ? "" : unescape(closingTag);
+        myValue = unescape(myValue);
+        var tagCpy = myValue.replace(/>/g, "&gt;").replace(/</g, "&lt;");
+        var selfClosing = false;
+        var closeTag = (closingTag == undefined) ? "" : "</"+unescape(closingTag)+">";
+        if(tagCpy.indexOf("&nbsp;/") > -1 || tagCpy.indexOf(" /") > -1 ){
+            selfClosing = true;
+            closeTag = "";
+        }
         //IE support
         if (document.selection) {
             myField.focus();
             sel = document.selection.createRange();
-            sel.text = unescape(myValue);
+            sel.text = myValue;
             Preview.updateLine(myField);
-            return sel+unescape(myValue).length;
+            return sel+myValue.length;
         }
         //MOZILLA/NETSCAPE support
         else if (myField.selectionStart || myField.selectionStart == '0') {
             var startPos = myField.selectionStart;
             var endPos = myField.selectionEnd;
-            if (startPos != endPos) {
+            if (startPos !== endPos) {
                 // something is selected, wrap it instead
                 var toWrap = myField.value.substring(startPos,endPos);
                 myField.value = myField.value.substring(0, startPos)
-                    + unescape(myValue)
+                    + myValue
                     + toWrap
-                    + "</" + closeTag +">"
+                    + closeTag
                     + myField.value.substring(endPos, myField.value.length);
                 myField.focus();
                 Preview.updateLine(myField);
-                var insertLength = startPos + unescape(myValue).length +
+                var insertLength = startPos + myValue.length +
                     toWrap.length + 3 + closeTag.length;
                 return "wrapped" + insertLength;
             } else {
                 myField.value = myField.value.substring(0, startPos)
-                    + unescape(myValue)
+                    + myValue
                     + myField.value.substring(startPos, myField.value.length);
                 myField.focus();
                 Preview.updateLine(myField);
-                return startPos+unescape(myValue).length;
+                return startPos+myValue.length;
             }
         } else {
-            myField.value += unescape(myValue);
+            myField.value += myValue;
             myField.focus();
             Preview.updateLine(myField);
             return myField.length;

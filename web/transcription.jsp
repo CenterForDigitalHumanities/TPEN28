@@ -1108,6 +1108,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
                                 <%
                                 if (isMember || permitModify){
                                     /**Retrieve stored XML Tag information*/
+                                    //XML tags here
                                     out.print(TagButton.getAllProjectButtonsClassic(projectID));
                                 }
                                %>

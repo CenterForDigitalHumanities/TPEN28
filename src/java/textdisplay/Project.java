@@ -1492,7 +1492,7 @@ public class Project {
          return getFolios()[0].getFolioNumber();
       } catch (NullPointerException | ArrayIndexOutOfBoundsException ex) {
          LOG.log(Level.SEVERE, "Error loading first page for project " + projectID, ex);
-         return -1;
+         throw ex;
       }
    }
 

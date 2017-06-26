@@ -233,6 +233,10 @@ public class Manuscript {
     * Check user's projects to see if any of them were made off of this MSID
     */
    public Integer checkExistingProjects(Integer msID, Integer UID) throws SQLException {
+            if(msID<0){
+                // bad MS, no project possible
+                return -1;
+            }
             Manuscript man = new Manuscript(msID, true);
             Integer projectID = -1;
             int [] msIDs=new int[0];

@@ -69,6 +69,25 @@ public class JsonLDExporter {
          manifestData.put("label", proj.getProjectName());
          manifestData.put("metadata", Metadata.getMetadataAsJSON(projID));
 
+           Map<String, Object> service = new LinkedHashMap<>();
+         service.put("@context", "http://iiif.io/api/auth/1/context.json");
+         service.put("@id","http://t-pen.org/TPEN/login.jsp");
+         service.put("profile", "http://iiif.io/api/auth/1/login");
+         service.put("label", "T-PEN Login");
+         service.put("header", "Login for image access");
+         service.put("description", "Agreement requires an open T-PEN session to view images");
+         service.put("confirmLabel", "Login");
+         service.put("failureHeader", "T-PEN Login Failed");
+         service.put("failureDescription", "<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
+        Map<String, Object> logout = new LinkedHashMap<>();
+         logout.put("@id", "http://t-pen.org/TPEN/login.jsp");
+         logout.put("profile", "http://iiif.io/api/auth/1/logout");
+         logout.put("label", "End T-PEN Session");
+        service.put("service",new Object[] { logout });
+
+         manifestData.put("service",new Object[] { service });
+      
+         
          Map<String, Object> pages = new LinkedHashMap<>();
          pages.put("@id", Folio.getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
          pages.put("@type", "sc:Sequence");

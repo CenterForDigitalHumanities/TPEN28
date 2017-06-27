@@ -2303,12 +2303,14 @@
                     else{
                         $("#schedmaintenance").html(dateForUser.format('l, F jS, Y g:00a'));
                         $("#countdown").hide();
+                        attachWindowResize();
                     }
                 }
                 else{
                     $("#maintenance").hide();
+                    attachWindowResize();
                 }
-                attachWindowResize();
+                
             });
     }
                                                                                                 
@@ -2339,9 +2341,30 @@
                     document.getElementById('countdown').innerHTML += hours + 'hrs ';
                     document.getElementById('countdown').innerHTML += minutes + 'mins ';
                     document.getElementById('countdown').innerHTML += seconds + 'secs';
+                    
                 }
-
                 timer = setInterval(showRemaining, 1000);
+                //Wait out timer to perform this.  
+                setTimeout(function(){
+                    var trims = $(".trimSection:visible").length;
+                    var contentWidth = (function(){
+                        var w=0;
+                        $('.trimSection').each(function(){
+                            w+=$(this).width();
+                        });
+                        return w;
+                    })();
+                    if(contentWidth>Page.width()-(trims*20)){ // margin not accounted for otherwise
+                        // content is encroaching and will overlap, so hide the #maintenenance content right off so it is just the icon and responsiveNav() off that.
+                        // Once hidden, it will not reappear, but the tooltip for the icon will contain the necessary information.  
+                        // The purpose of this is to give the user a better header experience and allow the most space possible for the more important lnks.
+                        $("#countdown").hide();
+                        $("#schedmaintenance").hide();
+                    }
+                    attachWindowResize();
+                    tpen.screen.responsiveNavigation();
+                }, 1200);
+                
             }
 
         </script>

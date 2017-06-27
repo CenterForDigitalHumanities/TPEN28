@@ -1337,8 +1337,8 @@
     //Page load event triggers and attached here.
     $(window).on('load',function(){
         dailyTip();
-        attachWindowResize();
-        maintenanceDate();
+        maintenanceDate(); //Now handles attachWindowResize()
+        //attachWindowResize();
         $("#imgTop, #imgBottom").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("width", "auto");
@@ -2308,6 +2308,7 @@
                 else{
                     $("#maintenance").hide();
                 }
+                attachWindowResize();
             });
     }
                                                                                                 

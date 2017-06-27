@@ -6384,6 +6384,22 @@ tpen.screen.peekZoom = function(cancel){
                 $(this).css("line-height", $(this).height()+"px");
             });
             tpen.screen.textSize();
+            
+            var trims = $(".trimSection:visible").length;
+            var contentWidth = (function(){
+                var w=0;
+                $('.trimSection').each(function(){
+                    w+=$(this).width();
+                });
+                return w;
+            })();
+            if(contentWidth>Page.width()-(trims*20)){ // margin not accounted for otherwise
+                // content is encroaching and will overlap, so hide the #maintenenance content right off so it is just the icon and responsiveNav() off that.
+                // Once hidden, it will not reappear, but the tooltip for the icon will contain the necessary information.  
+                // The purpose of this is to give the user a better header experience and allow the most space possible for the more important lnks.
+                $("#countdown").hide();
+                $("#schedmaintenance").hide();
+            }
             tpen.screen.responsiveNavigation();
             clearTimeout(doit);
             var doit = "";
@@ -6403,6 +6419,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         tpen.screen.navMemory = 0;
     }
     var width = Page.width();
+    var trims = $(".trimSection:visible").length;
     var contentWidth = (function(){
         var w=0;
         $('.trimSection').each(function(){
@@ -6410,8 +6427,9 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         });
         return w;
     })();
+
     var addClass = (severeCheck) ? "severe" : "collapsed";
-    var trims = $(".trimSection:visible").length;
+    
     if(contentWidth>width-(trims*20)){ // margin not accounted for otherwise
         // content is encroaching and will overlap
         $('.topTrim.navigation').addClass(addClass);

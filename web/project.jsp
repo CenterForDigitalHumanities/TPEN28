@@ -376,7 +376,7 @@
                     }
                     $(window).load(function(){
                         equalHeights("tall",100);
-                        $("a:contains('Resume Transcribing')").parent().each(function(){
+                        $("a:contains('Transcribe')").parent().each(function(){
                             $(this).removeClass('loadingBook').css("background","url('<%
                 int pageno = 501;
                 try {

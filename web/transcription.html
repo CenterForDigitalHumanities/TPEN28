@@ -91,7 +91,7 @@
             <span class="trimSection" id="currentUser">
                 <i class="fa fa-user"></i>
                 <span id="trimCurrentUser"></span>
-                    
+
             </span>
             <span id="maintenance" class="trimSection">
                 <span class="fa fa-wrench"></span>
@@ -190,7 +190,7 @@
                     <div class="flex-container flex-stretch">
                         <div class="flex-bookend navigation">
                             <button id="prevLine" class="pull-right" title="Prev" onclick="previousTranscriptlet();">
-                                <i class="fa fa-chevron-left"></i> 
+                                <i class="fa fa-chevron-left"></i>
                                 <!--Prev-->
                             </button>
                             <button id="prevPage" title="Previous Page" onclick="previousFolio();">
@@ -205,7 +205,7 @@
 
                         <div class="flex-bookend navigation">
                             <button class="pull-left" id="nextLine" title="Next Line" onclick="nextTranscriptlet();">
-                                <!--Next--> 
+                                <!--Next-->
                                 <i class="fa fa-chevron-right"></i>
                             </button>
                             <button id="nextPage" title="Next Page" onclick="nextFolio();">
@@ -213,7 +213,7 @@
                                 <i class="fa fa-forward fa-2x"></i>
                             </button>
                             <button id="toggleNotes" class="pull-left clear-left" role="button" onclick="$('.notes').fadeToggle('slow')" title="Toggle Notes">
-                                <!--Notes--> 
+                                <!--Notes-->
                                 <i class="fa fa-comment"></i>
                             </button>
                         </div>
@@ -634,7 +634,7 @@
                             <dd>Project management</dd>
                         </dl>
                     </div>
-                </div> 
+                </div>
             </div>
             <div id="linebreakSplit" class="split">
                 <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
@@ -1305,7 +1305,7 @@
             <div id="closeHelpVideo" onclick="closeHelpVideo();"> X </div>
             <h2 class="ui-widget-header ui-corner-all" style="margin: 0; margin-bottom: .75em;">Help Video Player</h2>
             <div style="text-align: center;">
-                <iframe width="800" height="600" id="helpVideo" src="" frameborder="0" allowfullscreen> </iframe>                                                                                               
+                <iframe width="800" height="600" id="helpVideo" src="" frameborder="0" allowfullscreen> </iframe>
             </div>
         </div>
         <script>
@@ -1333,7 +1333,7 @@
             + "&projectID=" + tpen.project.id+"#tabs-2");
         $("#projectsBtn").attr("href", "project.jsp?projectID="+tpen.project.id);
     }
-    
+
     //Page load event triggers and attached here.
     $(window).on('load',function(){
         dailyTip();
@@ -1428,7 +1428,7 @@
 //            //fullPage();
 //            $("#help").css({"left":"100%"}).fadeOut(1000);
 //        });
-        
+
         $("#helpMe").click(function(event){
             if(tpen.screen.liveTool === "none"){
                 Help.revealHelp(event);
@@ -1558,7 +1558,7 @@
             }
             else if (event.which == 112) { //F1 for help
                 event.preventDefault();
-                //DO NOT pull up the help if the user is using another tool that is taking up the screen.  It breaks the interface..  
+                //DO NOT pull up the help if the user is using another tool that is taking up the screen.  It breaks the interface..
                 if(tpen.screen.liveTool === "none"){
                     Help.revealHelp(event);
                 }
@@ -1568,7 +1568,7 @@
                //console.log('ALT KEY');
                var lineForEditing = $(".activeLine");
                lineForEditing.resizable();
-               
+
 //               lineForEditing.resizable({
 //                    create: function (event, ui) {
 //                        $(this).parent().on('resize', function (e) {
@@ -1598,8 +1598,8 @@
                 $(".magnifyBtn").removeClass("selected");
                 $("#moveImage").removeClass("selected");
                 $(".transcriptlet").children("textarea").removeClass("imageMove").removeAttr("disabled");
-                
-                
+
+
                 if(tpen.screen.liveTool && tpen.screen.liveTool !== "none" && tpen.screen.liveTool !== "parsing"){
                     fullPage();
                 }
@@ -1616,10 +1616,10 @@
                     $(document).unbind("mouseup");
                     $(".parsing").unbind();
                 }
-                
+
             }
             else if (event.which === 13 && (tpen.screen.liveTool !=="parsing")){ //enter
-                if (event.shiftKey || event.altKey) return true;
+                if (event.shiftKey || event.altKey || event.target.hasAttribute('data-answer')) return true; // cheap detect in .notes
                 event.preventDefault();
                 Linebreak.moveTextToNextBox();
                 return nextTranscriptlet();
@@ -1754,7 +1754,7 @@
                                             return false;
                                         }
                                     }
-// Why this? It stops it from working when overlapping an existing column 3-9-17                                    
+// Why this? It stops it from working when overlapping an existing column 3-9-17
 //                                    if ((event.target.className.indexOf("transcriptionImage") === -1 )){
 //                                        isCreating = false;
 //                                        return true;
@@ -1808,7 +1808,7 @@
                                         $("#imgBottom").css("cursor", "default");
                                         return true;
                                     }
-                                    
+
                                     $newCol.attr({
                                         "lineserverid"   : "-1",
                                         "newline"       : true,
@@ -1874,7 +1874,7 @@
 //                            mousemove: function(event){
 //                                event.stopImmediatePropagation();
 //                                $(this).parent().trigger('mousemove');
-//                            }, 
+//                            },
 //                            mouseup: function(event){
 //                                event.stopImmediatePropagation();
 //                                $(this).parent().trigger('mouseup');
@@ -1913,7 +1913,7 @@
                                     destroyPage();
                                 }
                             }, 400);
-                            
+
 //                            $(".destroyPage").html('<span class="pull-left fa fa-circle"></span>'+columnText+'')
 //                            .bind('click', function(){destroyPage();})
                     }
@@ -2227,7 +2227,7 @@
             $("#transcriptionCanvas").height("");
             $("#transcriptionCanvas").height($(".transcriptionImage").height());
         });
-        //moved out of setTPENObject function because these events do not get attached properly when fired in there.  
+        //moved out of setTPENObject function because these events do not get attached properly when fired in there.
         tpen.screen.abbrevLabelsAll = $("#abbrevLabels").clone();
         $("#abbrevLabels").change(function(){
             $("#abbrevImg").attr("src","//t-pen.org/images/cappelli/"+$(this).val());
@@ -2241,7 +2241,7 @@
             $("#abbrevLabels option:first").attr("selected",true);
             $("#abbrevLabels").change();
         });
-        
+
     });
 
     //UI effects for when a user decides to edit a line within the preview split tool.
@@ -2284,7 +2284,7 @@
     function toggleIcon(fromBtn){
         toggleSelected($("img[from='"+fromBtn+"']"), true);
     }
-    
+
     function maintenanceDate(){
         var url="upgradeManagement";
         var params = {"getSettings" : "get", "cancelUpgrade":"false"};
@@ -2310,11 +2310,11 @@
                     $("#maintenance").hide();
                     attachWindowResize();
                 }
-                
+
             });
     }
-                                                                                                
-            
+
+
             function setCountdown(endtime){
                 var end = new Date(endtime);
 
@@ -2341,10 +2341,10 @@
                     document.getElementById('countdown').innerHTML += hours + 'hrs ';
                     document.getElementById('countdown').innerHTML += minutes + 'mins ';
                     document.getElementById('countdown').innerHTML += seconds + 'secs';
-                    
+
                 }
                 timer = setInterval(showRemaining, 1000);
-                //Wait out timer to perform this.  
+                //Wait out timer to perform this.
                 setTimeout(function(){
                     var trims = $(".trimSection:visible").length;
                     var contentWidth = (function(){
@@ -2356,7 +2356,7 @@
                     })();
                     if(contentWidth>Page.width()-(trims*20)){ // margin not accounted for otherwise
                         // content is encroaching and will overlap, so hide the #maintenenance content right off so it is just the icon and responsiveNav() off that.
-                        // Once hidden, it will not reappear, but the tooltip for the icon will contain the necessary information.  
+                        // Once hidden, it will not reappear, but the tooltip for the icon will contain the necessary information.
                         // The purpose of this is to give the user a better header experience and allow the most space possible for the more important lnks.
                         $("#countdown").hide();
                         $("#schedmaintenance").hide();
@@ -2364,14 +2364,14 @@
                     attachWindowResize();
                     tpen.screen.responsiveNavigation();
                 }, 1200);
-                
+
             }
 
         </script>
         <noscript>
             <div id="noscript">
-                You are blocking scripts on this page. T-PEN uses 
-                <code>googleapis.com</code> and <code>javascript</code> 
+                You are blocking scripts on this page. T-PEN uses
+                <code>googleapis.com</code> and <code>javascript</code>
                 for necessary functionality.
             </div>
             <div class="trexHead" style="display:block"></div>

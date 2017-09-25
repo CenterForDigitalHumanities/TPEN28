@@ -59,7 +59,7 @@ and open the template in the editor.
     top: 4px;
 }
 .videoBtn{
-    
+
 }
 .videoBtnWrapper{
     text-align: center;
@@ -92,7 +92,7 @@ div[role="tooltip"]{
     border: 1px solid black;
     background-color: #DAE4E8;
     padding: 1px 6px;
-    
+
 }
 a.frameReset{
     color:black !important;
@@ -468,7 +468,7 @@ textarea:focus{
     height:auto;
     width:auto;
     font-size: 14px;
-    color:#e21635; //or #002a5c
+    color:#e21635; /* or #002a5c */
     margin-bottom:10px;
     display: none;
 }
@@ -670,7 +670,7 @@ div#transcriptletArea {
     display: block;
 }
 #controlsSplit {
-    font-size: small; // ticket #283
+    font-size: small; /* ticket #283 */
 }
 #controlsSplit button .fa {
     position: relative;
@@ -831,19 +831,19 @@ div#transcriptletArea {
     color:#fffdd0 !important;
 }
 
-/* 
+/*
       I know you really want this to be position relative and not float.  Then, it would flow perfectly with #transcriptionTemplate and .cetnerInterface functionality and resizing reflow.
-      Don' do it.  It causes the stupid inline-block top alignment issue with #transcriptionTemplate.  I tried tons of ways to make it work, but it broke other parts of the 
+      Don' do it.  It causes the stupid inline-block top alignment issue with #transcriptionTemplate.  I tried tons of ways to make it work, but it broke other parts of the
       functionality.  If you choose not to float it, it must be position absolute to be right up on the parsing split, which will have the same problem as floating it.  You can leave it
       position relative when you don't float it, but then it sticks to the far right of the screen.  However, the .centerInterface and reflow with resizing work exactly as they should.
-      It is up to you which way you want it to work, but you don't get both here.  I tried.  You will waste hours.  
+      It is up to you which way you want it to work, but you don't get both here.  I tried.  You will waste hours.
       http://stackoverflow.com/questions/20024993/why-display-inline-block-adds-uncontrollable-vertical-margins
       -BH
       THIS WILL WORK (KEEPS IT RIGHT NEXT TO #transcriptionTemplate, but wide images cause the parsing controls to float off screen.)
       position: absolute;
       float: none;
 
-      OR THIS WILL WORK (LOCKS THE PARSING CONTROLS TO FAR RIGHT OF SCREEN.  It causes a constant buffer between images that are taller than they are wide and the parsing controls.  
+      OR THIS WILL WORK (LOCKS THE PARSING CONTROLS TO FAR RIGHT OF SCREEN.  It causes a constant buffer between images that are taller than they are wide and the parsing controls.
       However, they should never float over the image.)
       position:relative;
       float: right;
@@ -864,7 +864,7 @@ div#transcriptletArea {
     /*position: absolute;*/
     /*height: 100%;*/
     /*float: none;*/
-    
+
 }
 #overlay{
     display: none;
@@ -919,7 +919,7 @@ div#transcriptletArea {
     background-attachment: scroll;
     background-repeat: repeat;
     position: absolute;
-    border-style: solid; 
+    border-style: solid;
     border-width: 2px;
     border-color: black;
     z-index: 3;
@@ -957,13 +957,6 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
 #parsingLoader img {position: absolute;top:0;left:0;bottom:0;right:0;margin:auto;}
 #tools {float: left;width:0%;position: relative;z-index: 1;}
 #tools > div {width:100%;height:100%;}
-#abbrevSplit {width:30%;}
-#abbrevImg {position:absolute;right:0;left:0;margin:0 auto;height: 100%;width:auto;}
-#abbreviations {position:relative; top:0;left:0;margin:5px 30px;overflow: visible;z-index: 15;display: inline-block;max-width: 200px;width:100%;
-                -moz-box-shadow: 0 0 5px #A64129;
-                -webkit-box-shadow: 0 0 5px #A64129;
-                box-shadow:0 0 5px #A64129;}
-#abbreviations select {width:100%;}
 .iTool {background: url('../images/linen.png') white scroll repeat; position: relative;width: 100%;height:100%;}
 .xmlClosingTags {
         position: absolute;
@@ -1720,7 +1713,7 @@ button.selected{
 }
 
 .splitBlock.selected{
-    //background-color: rgb(189, 35, 49);
+    /*background-color: rgb(189, 35, 49);*/
     /*color:white;*/
 }
 .splitBlock.selected.danger{
@@ -1858,7 +1851,7 @@ a.editButtons {
     right: 0;
     margin: 0 auto;
     position: absolute;
-     max-height: 98%; cubap: what? 
+     max-height: 98%; cubap: what?
 }*/
 
 /* The help area CSS */

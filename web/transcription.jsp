@@ -308,13 +308,6 @@
             [id^='frameSplitDiv']{text-align:right;width:100%;}
             #latinSplit,#vulgateSplit{text-align:right;padding-right: 20px;padding-top:5px;}
             #vulgateDiv {position:absolute;left: 20px} /*shift from under the main window*/
-            #abbrevSplit {width:30%;}
-            #abbrevImg {position:absolute;right:0;left:0;margin:0 auto;height: 100%;width:auto;}
-            #abbreviations {position:relative; top:0;left:0;margin:5px 30px;overflow: visible;z-index: 15;display: inline-block;max-width: 200px;width:100%;
-                            -moz-box-shadow: 0 0 5px #A64129;
-                            -webkit-box-shadow: 0 0 5px #A64129; 
-                            box-shadow:0 0 5px #A64129;}
-            #abbreviations select {width:100%;}      
             /* i-frame control */
             #vulgateDiv {display: block; overflow: hidden;right:-20px;top:30px;width:480px !important;height:100%;}
             #vulgateSplit a,#latinSplit a {left:20px;position: relative; text-decoration: none;}
@@ -1048,10 +1041,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
                             %>
                             <a class="wBtn" id="previewBtn" title="Preview transcription" href="#currentPage">Preview</a>
                             <%}
-                            if(Tool.isToolActive(Tool.tools.abbreviation, UID)){
-                            %>
-                            <a class="wBtn" href="http://www.hist.msu.ru/Departments/Medieval/Cappelli/" target="_blank" id="abbrevBtn" title="Lookup frequently used abbreviations">Abbreviations</a>
-                            <%}
                             if(false && Tool.isToolActive(Tool.tools.sciat, UID)){
                             %>
 <!--                            <a class="wBtn" href="#" target="_blank" id="sciatBtn" title="SharedCanvas annotations viewer and creator">Annotations</a>-->
@@ -1250,32 +1239,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
              //           out.print("/>");
              //       }
                 %>
-                </div>
-            </div>
-<!--            Cappelli Abbreviation Lookup Tool-->
-            <div id="abbrevSplit">
-                <!--                        Image is loaded in Data.postLoader()-->
-                <img id="abbrevImg" alt="abbreviation page" src="//t-pen.org/images/cappelli/Scan0064.jpg" />
-                <div id="abbreviations"> 
-                    <%String[] groups = textdisplay.AbbreviationPage.getGroups("capelli");
-                        StringBuilder selectGroups = new StringBuilder();
-                        StringBuilder selectLabels = new StringBuilder();
-                        for (int i = 0; i < groups.length; i++) {
-                            selectGroups.append("<option value='").append(i).append("'>").append(groups[i]).append("</option>");
-                            textdisplay.AbbreviationPage[] labels = textdisplay.AbbreviationPage.getLabels(groups[i],"capelli");
-                            for (int j = 0; j < labels.length; j++) {
-                                textdisplay.AbbreviationPage abbrev = new textdisplay.AbbreviationPage(labels[j].getId());
-                                selectLabels.append("<option class='").append(i).append("' value='").append(abbrev.getImageName()).append("' id='").append(labels[j].getId()).append("'>").append(labels[j].getLabel()).append("</option>\n");
-                            }
-                        }
-                    %><select id="abbrevGroups">
-                        <option selected>Select One</option>
-                        <%out.print(selectGroups);%>
-                    </select>
-                    <select disabled id="abbrevLabels">
-                        <option selected>Select One</option>
-                        <%out.print(selectLabels);%>
-                    </select>
                 </div>
             </div>
 <!--                    Compare Pages Tool-->

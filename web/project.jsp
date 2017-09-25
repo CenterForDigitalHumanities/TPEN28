@@ -808,6 +808,7 @@
                                     // User Tools
                                         String[] toolCheck = new String[21];
                                         String[] toolName = new String[21];
+                                        toolName[20] = "Capelli's Abbreviation"; // part of the capelli fix.  If its not part of a project, there is a null, so hard ser it here.  
                                         String track = "";
                                         Tool.tools[] TOOLS = 
                                         {Tool.tools.compare, Tool.tools.parsing, Tool.tools.preview, Tool.tools.history, Tool.tools.linebreak, Tool.tools.fullpage, Tool.tools.paleography,
@@ -854,7 +855,7 @@
                                             String toolURL = projectTools[i].getUrl();
                                             if (toolURL.endsWith("capelli/")) {
                                                 toolCheck[20] = "checked=true";
-                                                toolName[20] = toolLabel;
+                                                toolName[20] = "Capelli's Abbreviation"; //This is not in the back end for this project toolLabel, we always want it to be the same so hard code it. 
                                                 continue;
                                             }
                                             if (toolURL.endsWith("vulsearch")) {

@@ -3162,8 +3162,9 @@ function splitPage(event, tool) {
     $("#fullScreenBtn")
         .fadeIn(250);
         $('.split').hide();
-    var splitScreen = $("#" + tool + "Split");
-    if(!splitScreen.size()) splitScreen = $('div[toolname="' + tool + '"]');
+    var splitScreen = document.getElementById(tool);
+    var safetool = $('<div>').text(tool).html();
+    if(splitScreen === null || splitScreen.length < 1) splitScreen = $('div[toolname="' + safetool + '"]');
     splitScreen.css("display", "block");
     if(tool==="controls"){
         if(tpen.screen.liveTool === "controls"){

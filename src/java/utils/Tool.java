@@ -89,10 +89,44 @@ public class Tool {
    }
 
    public static void initializeTools(int uid) throws SQLException {
+        //These are the tools that get initialized when
+      Tool t;
       for (Tool.tools iter : tools.values()) {
-         if (iter != tools.sciat && iter != tools.unknown && iter!= tools.rtl) {
-            Tool t = new Tool(iter, uid);
-         }
+          switch(iter){
+                case preview:
+                  t = new Tool(iter, uid);
+                break;
+                case compare:
+                  t = new Tool(iter, uid);
+                break;
+                case parsing:
+                  t = new Tool(iter, uid);
+                break;
+                case abbreviation:
+                  t = new Tool(iter, uid);
+                break;
+                case history:
+                  t = new Tool(iter, uid);
+                break;
+                case linebreak:
+                  t = new Tool(iter, uid);
+                break;
+                case fullpage:
+                  t = new Tool(iter, uid);
+                break;
+                case xml:
+                  t = new Tool(iter, uid);
+                break;
+                case characters:
+                  t = new Tool(iter, uid);
+                break;
+                case inspector:
+                  t = new Tool(iter, uid);
+                break;
+                default:
+                  //Not a default tool, do nothing.
+                
+          }
       }
    }
 

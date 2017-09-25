@@ -9,6 +9,7 @@ and open the template in the editor.
 */
 .iTool iframe{
     width: 98%;
+    border: none;
 }
 #helpVideoArea{
     top: 5%;

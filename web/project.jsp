@@ -806,8 +806,8 @@
                                     <h4 class="clear-left" title="These options are unique to each user">User Tools</h4>
                                     <%
                                     // User Tools
-                                        String[] toolCheck = new String[20];
-                                        String[] toolName = new String[20];
+                                        String[] toolCheck = new String[21];
+                                        String[] toolName = new String[21];
                                         String track = "";
                                         Tool.tools[] TOOLS = 
                                         {Tool.tools.compare, Tool.tools.parsing, Tool.tools.preview, Tool.tools.history, Tool.tools.linebreak, Tool.tools.fullpage, Tool.tools.paleography,

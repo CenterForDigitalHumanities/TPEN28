@@ -756,9 +756,6 @@
                                         if (userTools != null) {
                                             for (int i = 0; i < userTools.length; i++) {
                                                 Tool.tools newTool = null;
-//                                                if (userTools[i].compareTo("abbreviations") == 0) {
-//                                                    newTool = Tool.tools.abbreviation;
-//                                                } else
                                             if (userTools[i].compareTo("compare") == 0) {
                                                     newTool = Tool.tools.compare;
                                                 } else if (userTools[i].compareTo("parsing") == 0) {
@@ -813,7 +810,7 @@
                                         String[] toolName = new String[20];
                                         String track = "";
                                         Tool.tools[] TOOLS = 
-                                        {Tool.tools.abbreviation, Tool.tools.compare, Tool.tools.parsing, Tool.tools.preview, Tool.tools.history, Tool.tools.linebreak, Tool.tools.fullpage, Tool.tools.paleography,
+                                        {Tool.tools.compare, Tool.tools.parsing, Tool.tools.preview, Tool.tools.history, Tool.tools.linebreak, Tool.tools.fullpage, Tool.tools.paleography,
                                                 Tool.tools.xml, Tool.tools.characters, Tool.tools.page, Tool.tools.inspector, Tool.tools.rtl, Tool.tools.ltr};
                                         for (int i = 0; i < 13; i++) {
                                             toolCheck[i] = (Tool.isToolActive(TOOLS[i], UID)) ? "checked=true" : "";
@@ -827,7 +824,6 @@
                                             }
                                         }
                                     %>
-                                    <!--<label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[0]);%> value="abbreviations"/>Cappelli Abbreviations</label>-->
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[1]);%> value="compare" />Compare Pages</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[2]);%> value="parsing" />Parsing Adjustment</label>
                                     <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[3]);%> value="preview" />Preview Tool</label>

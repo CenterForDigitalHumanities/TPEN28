@@ -84,7 +84,7 @@ function resetImageTools(newPage){
     if(!$("#showTheLabels").hasClass("selected")){
         toggleLineCol();
     }
-    
+
 }
 
 /**
@@ -220,7 +220,7 @@ function createPreviewPages(){
                 currentPage = "currentPage";
             }
             if (currentFolioToUse.otherContent && currentFolioToUse.otherContent.length > 0){
-                // Need to make sure the race condition of the lines being RTL in dereferencedList is beat here, or popluatePreview will be wonky.  
+                // Need to make sure the race condition of the lines being RTL in dereferencedList is beat here, or popluatePreview will be wonky.
                 var listOfAnnos = getList(tpen.manifest.sequences[0].canvases[i], false, false, i);
                 if(tpen.screen.mode === "RTL"){
                     listOfAnnos = reorderLinesForRTL(listOfAnnos, tpen.screen.liveTool, true);
@@ -362,9 +362,10 @@ function highlightTags(workingText){
 function populateSpecialCharacters(){
     var specialCharacters = tpen.project.specialChars;
     var speCharactersInOrder = new Array(specialCharacters.length);
-    if(!specialCharacters || specialCharacters.length === 0 || specialCharacters[0] === "[]"){
-        $("#toggleChars").hide();
-    }
+    //NOT in T-PEN28 version for CDH
+//    if(!specialCharacters || specialCharacters.length === 0 || specialCharacters[0] === "[]"){
+//        $("#toggleChars").hide();
+//    }
     for (var char = 0; char < specialCharacters.length; char++){
         var thisChar = specialCharacters[char];
         if (thisChar == ""){ }
@@ -392,9 +393,9 @@ function populateSpecialCharacters(){
 function populateXML(){
     var xmlTags = tpen.project.xml;
     var tagsInOrder = [];
-    if(!xmlTags || xmlTags.length === 0 || xmlTags[0] === "[]"){
-        $("#toggleXML").hide();
-    }
+//    if(!xmlTags || xmlTags.length === 0 || xmlTags[0] === "[]"){
+//        $("#toggleXML").hide();
+//    }
     for (var tagIndex = 0; tagIndex < xmlTags.length; tagIndex++){
         var newTagBtn = "";
         var tagName = xmlTags[tagIndex].tag;
@@ -428,7 +429,7 @@ function populateXML(){
                 if(fullTag !== ""){
                     fullTag += " />";
                 }
-                tagCpy += " /"; //Put the slash back for the button title attribute 
+                tagCpy += " /"; //Put the slash back for the button title attribute
             }
             else{
                 if(fullTag !== ""){
@@ -466,7 +467,7 @@ function setTPENObjectData(data){
                  $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                  $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                  return false;
-             }          
+             }
         }
         if(data.ls_u){
             try {
@@ -476,7 +477,7 @@ function setTPENObjectData(data){
                  $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                  $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                  return false;
-             }               
+             }
         }
         if(data.ls_leader){
             try {
@@ -486,7 +487,7 @@ function setTPENObjectData(data){
                  $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                  $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                  return false;
-             }              
+             }
         }
         if(data.projectButtons){
             try {
@@ -496,7 +497,7 @@ function setTPENObjectData(data){
                  $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                  $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                  return false;
-             }           
+             }
         }
         if(data.ls_hk){
             try {
@@ -506,7 +507,7 @@ function setTPENObjectData(data){
                  $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                  $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                  return false;
-             }             
+             }
         }
         if(data.xml){
             try {
@@ -516,7 +517,7 @@ function setTPENObjectData(data){
                  $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                  $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                  return false;
-             }                
+             }
         }
         if(data.projper){
             try {
@@ -526,7 +527,7 @@ function setTPENObjectData(data){
                  $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                  $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                  return false;
-             }             
+             }
         }
         if(data.metadata){
             try {
@@ -536,7 +537,7 @@ function setTPENObjectData(data){
                  $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                  $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                  return false;
-             }                 
+             }
         }
         if(data.ls_fs){
             try {
@@ -546,7 +547,7 @@ function setTPENObjectData(data){
                  $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                  $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                  return false;
-             }    
+             }
             for(var i=0; i<tpen.project.folios.length; i++){
                 var preloadObj = {
                     "preloaded" : false,
@@ -559,23 +560,23 @@ function setTPENObjectData(data){
         if(data.projectName){
             tpen.project.projectName = data.projectName;
         }
-        if(data.project.projectID){     
+        if(data.project.projectID){
             tpen.project.id = parseInt(data.project.projectID);
         }
-        if(data.project.groupID){    
+        if(data.project.groupID){
             tpen.project.groupID = parseInt(data.project.groupID);
         }
-        if(data.project.linebreakSymbol){    
+        if(data.project.linebreakSymbol){
             tpen.project.linebreakSymbol = data.project.linebreakSymbol;
         }
-        if(data.project.projectImageBounding){   
+        if(data.project.projectImageBounding){
             tpen.project.projectImageBounding = data.project.projectImageBounding;
         }
-        if(data.project.linebreakCharacterLimit){ 
+        if(data.project.linebreakCharacterLimit){
             tpen.project.linebreakCharacterLimit = parseInt(data.project.linebreakCharacterLimit);
         }
 
-        if(data.remainingText){   
+        if(data.remainingText){
             tpen.project.remainingText = data.remainingText;
         }
         // update the uploadLocation for linebreaking tool
@@ -599,7 +600,7 @@ function setTPENObjectData(data){
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
-        }      
+        }
         tpen.manifest = JSON.parse(data.manifest);
     }
 
@@ -611,7 +612,7 @@ function setTPENObjectData(data){
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
-        }      
+        }
         tpen.user.UID = parseInt(data.cuser);
     }
 
@@ -623,11 +624,11 @@ function setTPENObjectData(data){
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
-        }      
+        }
         tpen.user.authorizedManuscripts = JSON.parse(data.user_mans_auth);
     }
 
-    
+
     $.each(tpen.project.user_list, function(i){
         if (this.UID === parseInt(data.cuser)){
             if(this.fname){
@@ -725,7 +726,7 @@ function loadTranscription(pid, tool){
                 var url = "";
                 //If it is most definitely not an object AND it is a string
                 if(activeProject !== null && typeof activeProject === "string"){
-                    //we can parse it and it may be what we are looking for.  
+                    //we can parse it and it may be what we are looking for.
                     //FIXME Why is the servlet returning a string instead of a json object sometimes?
                     try {
                        activeProject = JSON.parse(activeProject);
@@ -801,8 +802,6 @@ function loadTranscription(pid, tool){
                 $.each(tpen.project.userTools, function(index,tool){
                     var label;
                     switch(tool){
-                        case "abbreviation" : label = "Cappelli Abbreviations";
-                            break;
                         case "compare" : label = "Compare Pages";
                             break;
                         case "parsing" : label = false;
@@ -817,11 +816,11 @@ function loadTranscription(pid, tool){
                             break;
                         case "paleography" : label = false;
                             break;
-                        case "ltr" : 
+                        case "ltr" :
                             tpen.screen.mode = "LTR";
                             break;
                         case "rtl" : tpen.screen.mode = "RTL";
-                            break;    
+                            break;
                     }
                     var splitToolSelector = $('<option splitter="' + tool
                         + '" class="splitTool">' + label + '</option>');
@@ -896,7 +895,7 @@ function loadTranscription(pid, tool){
              $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
              return false;
          }
-        
+
         if (userTranscription.sequences[0] !== undefined
             && userTranscription.sequences[0].canvases !== undefined
             && userTranscription.sequences[0].canvases.length > 0)
@@ -980,7 +979,7 @@ function loadTranscription(pid, tool){
                          $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                          return false;
                      }
-                     
+
                     activateUserTools(tpen.project.userTools, tpen.project.permissions);
                     if (tpen.manifest.sequences[0] !== undefined
                         && tpen.manifest.sequences[0].canvases !== undefined
@@ -1285,7 +1284,7 @@ function checkIPRagreement(id){
 }
 /**
  * Look for the line to start on.
- * 
+ *
  * @returns undefined
  */
 function focusOnLastModified(){
@@ -1302,14 +1301,14 @@ function focusOnLastModified(){
     else if(scribedLines.length !== lines.length){ //There are transcribed lines among non-transcribed lines
         //Go over each line that has a transcription, ignoring lines that do not have transcription
         var i;
-        //Note if we changed scribedLines to lines throughout the rest of this else if statement, 
+        //Note if we changed scribedLines to lines throughout the rest of this else if statement,
         //it will also consider lines that DO NOT have transcription text.  We may want that.
-        for (i=0;i<scribedLines.length;i++){ 
+        for (i=0;i<scribedLines.length;i++){
             //**lines.length intead of scribedLines.length?
             //If this line, which has transcription, was modified at a later date than the one stored as the newest
-            if (scribedLines[i].modified > focusOn.modified) { 
+            if (scribedLines[i].modified > focusOn.modified) {
                //**lines[i].modified intead of scribedLines[i].modified?
-                focusOn = scribedLines[i]; //Update the line considered the newest 
+                focusOn = scribedLines[i]; //Update the line considered the newest
                 // focusOn=lines[i] intead of scribedLines[i]?
             }
             if(i === scribedLines.length -1){ //If we have gone through every line...
@@ -1321,7 +1320,7 @@ function focusOnLastModified(){
     else{ //all the lines have been transcribed.  Load to the first line
         updatePresentation($(".transcriptlet[lineserverid='"+focusOn._tpen_line_id+"']"));
     }
-    
+
 };
 
 /*
@@ -1400,7 +1399,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 preloadTimeout = window.setTimeout(function(){
                     preloadFolioImages();
                 }, 15000);
-                
+
             }
             else{
                 $('#requestAccessContainer').show();
@@ -1427,7 +1426,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 };
                 image2.src = "images/missingImage.png";
             }
-            
+
             scrubNav();
         }; // the extra () ensures this only runs once.
         image.onerror =function(){
@@ -1519,7 +1518,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
     else if((canvasObj.otherContent[0] !== undefined && canvasObj.otherContent[0].resources !== undefined)){ //&& canvasObj.otherContent[0].resources.length > 0
         //This is TPEN 2.8 using the SQL
         //This situation means we got our lines from the SQL and there is no need to query the store.
-        if(canvasObj.otherContent[0].resources.length > 0){ 
+        if(canvasObj.otherContent[0].resources.length > 0){
             tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
             drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
             replaceURLVariable("attempts", "0");
@@ -1531,9 +1530,9 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
             }
             else{
                 // This means somehow a user is trying to load a canvas with no lines, and it didn't happen because of manual parsing.  The auto parser must have failed on this canvas
-                // Don't just reload it, put a count on it to stop it after 3 tries. p= must be the correct folio number, otherwise this will load to a different folio.  
-                // open the parsing interface in this case, force it no matter what because we know it at least attempted to auto parse and if it fails, the user will be in parsing. 
-                // cubap and bhaberbe 3-21-17.  Ramon found this while testing.  projectID=5660&p=13224386 is the one we all tested with to find the issue.  
+                // Don't just reload it, put a count on it to stop it after 3 tries. p= must be the correct folio number, otherwise this will load to a different folio.
+                // open the parsing interface in this case, force it no matter what because we know it at least attempted to auto parse and if it fails, the user will be in parsing.
+                // cubap and bhaberbe 3-21-17.  Ramon found this while testing.  projectID=5660&p=13224386 is the one we all tested with to find the issue.
                 console.warn("Loading canvas without lines, this should be impossible...");
                 var currentURL = document.location.href;
                 var attempts = parseInt(getURLVariable("attempts"));
@@ -1543,9 +1542,9 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
                 else{
                     attempts = 1;
                 }
-                
-                if(currentURL.indexOf("liveTool=parsing") !== -1){ 
-                    
+
+                if(currentURL.indexOf("liveTool=parsing") !== -1){
+
                 }
                 else if(currentURL.indexOf("liveTool=none") !== -1){
                     currentURL = currentURL.replace("liveTool=none", "liveTool=parsing");
@@ -1661,7 +1660,7 @@ function updateURL(piece, classic){
         }
         var relocator = "buttons.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber+"&projectID="+tpen.project.id;
         $(".editButtons").attr("href", relocator);
-    }  
+    }
     else if (piece === "attempts"){
         if(!getURLVariable("attempts")){
             toAddressBar += "&attempts=1";
@@ -1685,8 +1684,8 @@ function switchToClassicTranscription(){
 
 /*
  * Reorder the array of lines into the correct order for an RTL interface.  Return this back
- * to drawLinesDesignateColumns(), with the RTL flag false as to avoid the recursion loop. 
- * 
+ * to drawLinesDesignateColumns(), with the RTL flag false as to avoid the recursion loop.
+ *
  */
 function reorderLinesForRTL(lines, tool, preview){
     var firstBy=function(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}
@@ -1695,7 +1694,7 @@ function reorderLinesForRTL(lines, tool, preview){
             {var i=r,o=e.ignoreCase?t:n;r=function(n,t){return o(i(n))<o(i(t))?-1:o(i(n))>o(i(t))?1:0}}
             return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){return n=r(n,t),n.thenBy=u,n}
         function u(n,t){var u=this;return n=r(n,t),e(function(t,r){return u(t,r)||n(t,r)})}return e}();
-    
+
     lines.sort(
             //First sort by X in Descending order (largestX to smallestX). Then, keeping that ordering principle, order by greatest y.
             firstBy(function (linea, lineb) {
@@ -1732,10 +1731,10 @@ function reorderLinesForRTL(lines, tool, preview){
 
 /*
  * Reorder the array of lines into the correct order for an LTR interface.  Return this back
- * to drawLinesDesignateColumns(), with the RTL flag false as to avoid the recursion loop. 
- * 
+ * to drawLinesDesignateColumns(), with the RTL flag false as to avoid the recursion loop.
+ *
  * *Note the call the returns the lines from the database in getList() returns them already in LTR order.
- * 
+ *
  */
 function reorderLinesForLTR(lines){
     var firstBy=function(){function n(n){return n}function t(n){return"string"==typeof n?n.toLowerCase():n}
@@ -1744,7 +1743,7 @@ function reorderLinesForLTR(lines){
             {var i=r,o=e.ignoreCase?t:n;r=function(n,t){return o(i(n))<o(i(t))?-1:o(i(n))>o(i(t))?1:0}}
             return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){return n=r(n,t),n.thenBy=u,n}
         function u(n,t){var u=this;return n=r(n,t),e(function(t,r){return u(t,r)||n(t,r)})}return e}();
-    
+
     lines.sort(
             //First sort by X in Descending order (largestX to smallestX). Then, keeping that ordering principle, order by greatest y.
             firstBy(function (linea, lineb) {
@@ -1770,7 +1769,7 @@ function reorderLinesForLTR(lines){
     tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = lines;
     tpen.screen.focusItem[0] = null;
     tpen.screen.focusItem[1] = null;
-    drawLinesDesignateColumns(lines, tpen.screen.liveTool, false, "LTR"); 
+    drawLinesDesignateColumns(lines, tpen.screen.liveTool, false, "LTR");
     return lines;
 }
 
@@ -1785,24 +1784,24 @@ function performInterfaceShift(interface){
         $(".notes").each(function(){
             var notes = $(this);
             var textarea = $(this).prev();
-            textarea.before(notes); //This moves notes to the left side.  
+            textarea.before(notes); //This moves notes to the left side.
         });
     }
     else if(interface === "LTR"){
         $("#toggleXML").show();
-        $("#nextPage").after($("#toggleNotes")); //This moves notes button to the right side. 
+        $("#nextPage").after($("#toggleNotes")); //This moves notes button to the right side.
         $("#toggleNotes").removeClass("pull-right").addClass("pull-left").removeClass("clear-right").addClass("clear-left");
         $(".notes").each(function(){
             var notes = $(this);
             var textarea = $(this).next();
-            textarea.after(notes); //This moves notes to the right side.  
+            textarea.after(notes); //This moves notes to the right side.
         });
     }
     tpen.screen.textSize();
 }
 
-/* 
- * Take line data, turn it into HTML elements and put them to the DOM 
+/*
+ * Take line data, turn it into HTML elements and put them to the DOM
  * The lines come from the back end in LTR order.  The function
  * must figure out line#s and column letters.  Only supporting
  * top to bottom && (LTR || RTL)
@@ -1816,7 +1815,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
         return false;
     }
     if(preview){
-        
+
     }
     $("#noLineWarning").hide();
     var letterIndex = 0;
@@ -1871,7 +1870,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
 //            lineID = line['@id'];
 //        }
 
-        if (line._tpen_line_id !== undefined && line._tpen_line_id !== null){      
+        if (line._tpen_line_id !== undefined && line._tpen_line_id !== null){
             //undereferencable line.
             lineID = line._tpen_line_id;
         }
@@ -2032,7 +2031,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
         $("#fullpageSplitCanvas").append(fullPageLineColumnIndicator);
         colCounter++;
     }
-    if(autoParseCheck === 0){ 
+    if(autoParseCheck === 0){
         //if all the line creators were 0, this is auto parsed.  Go straight into the parsing interface.
         var currentURL = document.location.href;
         if(currentURL.indexOf("liveTool=parsing") === -1 && currentURL.indexOf("liveTool=none") === -1){
@@ -2041,17 +2040,17 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
             window.history.pushState("Object", "Title", currentURL);
         }
     }
-    checkParsingReroute(); //If liveTool is fed in from a page refresh, this does not check the pageJump() jumping into parsing.  
+    checkParsingReroute(); //If liveTool is fed in from a page refresh, this does not check the pageJump() jumping into parsing.
     if (update && $(".transcriptlet").eq(0).length > 0){
-//        if(shift === "RTL"){ 
-//            //focusOnLastModified(); 
+//        if(shift === "RTL"){
+//            //focusOnLastModified();
 //            //ultimately this is a little weird when toggling interfaces.  If it were focused on the the first line in LTR
 //            //it ends up focusing on the first line in the last column...need a fix for that.  FIXME
 //            focusOnLastModified
 //            updatePresentation($(".transcriptlet").eq(0));
 //        }
 //        else{
-//            
+//
 //        }
         focusOnLastModified();
         //updatePresentation($(".transcriptlet").eq(0));
@@ -2572,7 +2571,7 @@ function moveImg(){
                 mouseIsDown = true;
                 break;
             case 2: //middle mouse
-                mouseIsDown = false;        
+                mouseIsDown = false;
                 return false;
                 break;
             case 3: // right mouse
@@ -2584,7 +2583,7 @@ function moveImg(){
                 return false;
         }
         $("#imgTop, #imgBottom").css("cursor", "url(images/close_grab.png),auto");
-      
+
     })
     .mouseup(function(){
         mouseIsDown = false;
@@ -2751,7 +2750,7 @@ function mouseZoom($img,container, event){
     var imgURL = $img.find("img:first").attr("src");
     var page = $("#transcriptionTemplate");
     //collect information about the img
-    
+
     var imgTop = $img.find("img").css("top");
     var imgLeft = $img.find("img").css("left");
     if(imgTop === "auto"){
@@ -2818,7 +2817,7 @@ tpen.screen.toggleMoveImage = function (event) {
         moveImg();
 //        $("#imgTop, #imgBottom")
 //        .mousedown() //This will handle the mouse up
-    }   
+    }
     //}
     if(event === false){
         $("#imgTop, #imgBottom").unbind("mousedown");
@@ -2927,13 +2926,13 @@ function hideWorkspaceForParsing(){
     else{ //Just do nothing instead of calling it 900 wide so it defaults to the height math, maybe put a max up there too.
 //                     newCanvasWidth = 900;
 //                     newCanvasHeight = 1/ratio*newCanvasWidth;
-    }    
-    
+    }
+
     if(newCanvasHeight > window.innerHeight -40){ //never let the bottom of the image go off screen.
         newCanvasHeight = window.innerHeight - 40;
         newCanvasWidth = ratio * newCanvasHeight;
     }
-    
+
     $("#transcriptionTemplate").css("width","auto");
     $("#transcriptionCanvas").css("height", newCanvasHeight + "px");
     $("#transcriptionCanvas").css("width", newCanvasWidth + "px");
@@ -3181,7 +3180,7 @@ function splitPage(event, tool) {
         if(tpen.screen.liveTool === "help"){
             return fullPage();
         }
-        
+
         $("#transcriptionCanvas").css("width", Page.width()-520 + "px");
         $("#transcriptionTemplate").css("width", Page.width()-520 + "px");
         newCanvasWidth = Page.width()-520;
@@ -3192,7 +3191,7 @@ function splitPage(event, tool) {
     else if(tool === "parsing"){
         resize=false;
     }
- 
+
     else if(tool === "preview"){
         $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
         $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
@@ -3202,13 +3201,13 @@ function splitPage(event, tool) {
 //            $(".previewText").css("text-align", "right"); //For a more natural right to left reading?
 //        }
     }
-    
+
     else if(tool==="history"){
         $("#historyBookmark").empty();
         var splitSrc = $(".transcriptionImg:first").attr("src");
         $("#historyViewer").find("img").attr("src", splitSrc);
         History.showLine(tpen.screen.focusItem[1].attr("lineserverid"));
-        $(".historyText").attr("dir", "auto"); //These elements don't always get set on page load, so make sure they are auto here.   
+        $(".historyText").attr("dir", "auto"); //These elements don't always get set on page load, so make sure they are auto here.
         $(".split img").css("max-width", splitWidthAdjustment);
         $(".split:visible").css("width", splitWidthAdjustment);
     }
@@ -3217,7 +3216,7 @@ function splitPage(event, tool) {
         $("#fullPageImg").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
         $("#fullpageSplitCanvas").css("max-height", fullPageMaxHeight); //If we want to keep the full image on page, it cant be taller than that.
         $("#fullpageSplitCanvas").css("width", $("#fullPageImg").width()); //If we want to keep the full image on page, it cant be taller than that.
-        
+
         $(".fullP").each(function(i){
             this.title = $("#transcriptlet_"+i+" .theText").text();
         })
@@ -3230,8 +3229,8 @@ function splitPage(event, tool) {
         $(".split:visible").css("width", splitWidthAdjustment);
     }
     else{
-        //a strange way to split, most likely just an added iframe tool.  
-        
+        //a strange way to split, most likely just an added iframe tool.
+
     }
     var newCanvasHeight = 1 / ratio * newCanvasWidth;
     var newImgBtmTop = tpen.screen.imgBottomPositionRatio * newCanvasHeight;
@@ -3252,13 +3251,13 @@ function splitPage(event, tool) {
         detachTemplateResize()
         $("#templateResizeBar").hide();
     }
-    
+
     setTimeout(function(){
         $.each($(".lineColOnLine"), function(){
             $(this).css("line-height", $(this).parent().height() + "px");
         });
     }, 1000);
-    
+
 }
 
 function forceOrderPreview(){
@@ -3481,7 +3480,7 @@ function adjustColumn(event){
             originalPercentX = parseFloat($(this).attr("lineleft"));
         },
         resize      : function(event, ui){
-           
+
         },
         stop        : function(event, ui){
             attachWindowResize();
@@ -3501,8 +3500,8 @@ function adjustColumn(event){
                 //order and condition matters to get this right.
                 if (Math.abs(originalX - newX) > 5) {adjustment = "left";}
                 else if (Math.abs(originalW - newW) > 5) {adjustment = "right";}
-                if (Math.abs(originalY - newY) > 5) {adjustment = "top";} 
-                else if (Math.abs(originalH - newH) > 5){ adjustment = "bottom";}                
+                if (Math.abs(originalY - newY) > 5) {adjustment = "top";}
+                else if (Math.abs(originalH - newH) > 5){ adjustment = "bottom";}
                 offsetForBtm = (offsetForBtm / $("#imgTop img").height()) * 100;
                 actualBottom = newH + offsetForBtm;
                 $("#progress").html("Adjusting " + adjustment + " - unsaved");
@@ -3636,8 +3635,8 @@ function adjustColumn(event){
             });
             updateLinesInColumn(thisColumnID, true);
             $("#progress").html("Column Saved").delay(3000).fadeOut(1000);
-            
-        } 
+
+        }
         else { //if the change was less than 5 units, adjustment will still be "new"...we can change the limits if we want.
             ui.position.left = ui.originalPosition.left;
             ui.position.top = ui.originalPosition.top ;
@@ -3652,7 +3651,7 @@ function adjustColumn(event){
     $(".parsingColumn").on('resize', function (e) {
       e.stopPropagation();
     });
-    
+
 }
 
 /**
@@ -4478,7 +4477,7 @@ function updateLine(line, cleanup, updateList){
                 .stop(true,true).animate({"color":"green"}, 400)
                 .append("<div class='saveLog'>"+columnMark + '&nbsp;saved&nbsp;at&nbsp;'+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+"</div>")//+", "+Data.dateFormat(date.getDate())+" "+month[date.getMonth()]+" "+date.getFullYear())
                 .animate({"color":"#618797"}, 600);
-               
+
             }
             line.attr("data-answer", currentLineText);
             line.find(".notes").attr("data-answer", currentLineNotes);
@@ -4560,7 +4559,7 @@ function updateLine(line, cleanup, updateList){
                         throw err;
                     });
                 }
-            
+
 //        } else {
 //            throw new Error("No good. The ID could not be dereferenced. Maybe this is a new annotation?");
 //        }
@@ -4676,7 +4675,7 @@ function saveNewLine(lineBefore, newLine){
                     else{
                         currentAnnoList[beforeIndex].on = updateLineString;
                     }
-                    
+
                 }
                 currentFolio = parseInt(currentFolio);
                 //Write back to db to update list
@@ -4866,7 +4865,7 @@ function splitLine(e, event){
     var currentLine = $(".transcriptlet[lineserverid='"+$(e).attr('lineserverid')+"']");
     if(currentLine.length === 0){
         //There may be no transcriptlets yet.  if the user cleared their lines and started from scratch, .transcriptlet won't be here until there is a drawLinesDesignateColumns();
-        //This is a little sketchy, we should optimize things so there isn't confusion here.  
+        //This is a little sketchy, we should optimize things so there isn't confusion here.
         currentLine = originalLine; //We have to pass the .parsing line in this case, which is the orignal $(e), that way all the values are correct.
     }
     currentLine.attr("lineheight", oldLineHeight);
@@ -4910,7 +4909,7 @@ function removeLine(e, columnDelete, deleteOnly){
                 }).addClass("newDiv").attr({
                     "lineheight":   convertedNewLineHeight
                 });
-                transcriptletToUpdate.attr("lineheight", convertedNewLineHeight); //Need to put this on the transcriptlet so updateLine() passes the correct value. 
+                transcriptletToUpdate.attr("lineheight", convertedNewLineHeight); //Need to put this on the transcriptlet so updateLine() passes the correct value.
             }
             else{ //User is trying to delete a line that is not the last line, do nothing
                 //removedLine = $(e);
@@ -4921,7 +4920,7 @@ function removeLine(e, columnDelete, deleteOnly){
         }
         else{ //user is deleting a line, could be merge or delete mode
                 if(deleteOnly){ //this would mean it is delete happening in delete mode, so allow it.
-                    
+
                 }
                 else{ //this would mean it is a delete happening in merge mode.
                     alert("To delete a line, deactivate 'Merge Lines' and activate 'Delete Last Line'.");
@@ -4930,7 +4929,7 @@ function removeLine(e, columnDelete, deleteOnly){
                 }
         }
         var params = new Array({name:"remove", value:removedLine.attr("lineserverid")});
-        
+
         if(deleteOnly){ //if we are in delete mode deleting a line
             if($(e).hasClass("deletable")){
                 var cfrm = confirm("Removing this line will remove any data contained as well.\n\nContinue?");
@@ -4972,11 +4971,11 @@ function removeTranscriptlet(lineid, updatedLineID, draw, cover){
     var index = 0;
     var toUpdate = $(".transcriptlet[lineserverid='" + updatedLineID + "']");
     var removedLine2 = $(".transcriptlet[lineserverid='" + lineid + "']");
-    if(toUpdate.length === 0){ 
+    if(toUpdate.length === 0){
         //cleanupTranscriptlets() at the end of this function has removed all trascriptlets.  Check if parsing line exists, there will be no text.
         toUpdate = $(".parsing[lineserverid='" + updatedLineID + "']");
     }
-    if(removedLine2.length === 0){ 
+    if(removedLine2.length === 0){
         //cleanupTranscriptlets() at the end of this function has removed all trascriptlets.  Check if parsing line exists, there will be no text.
         removedLine2 = $(".parsing[lineserverid='" + lineid + "']");
     }
@@ -5181,7 +5180,7 @@ function loadIframes(){
 /*
  * Check to see if we can preload the image before and after the current folio we are on
  * @returns {undefined}
- * 
+ *
  */
 function preloadFolioImages(){
     var currentFolio = tpen.screen.currentFolio;
@@ -5480,7 +5479,7 @@ function bumpLine(direction, activeLine){
                         //other lines get the "can't do it" cursor
                         line.css("cursor", "not-allowed");
                     }
-                    
+
                 }
                 else{ //merge line
                     if (line.attr("lineleft") == line.next("div").attr("lineleft")) {
@@ -5490,7 +5489,7 @@ function bumpLine(direction, activeLine){
                     if($(".deletable").size()>1){
                         $(".deletable").addClass("mergeable");
                         $("#imageTip").html("Merge Line");
-                    } 
+                    }
                     else  {
                         $("#imageTip").html("Delete Line");
                     }
@@ -5513,9 +5512,9 @@ function bumpLine(direction, activeLine){
                 });
                 $('#ruler1').css({
                     left: myLeft,
-                    top: e.pageY, 
+                    top: e.pageY,
                     height:'1px',
-                    width:myWidth 
+                    width:myWidth
                 });
 
             });
@@ -6212,14 +6211,14 @@ tpen.screen.peekZoom = function(cancel){
         window.onresize = function(event, ui){
         };
     }
-    
+
     function detachTemplateResize(){
         if ($("#transcriptionTemplate").hasClass("ui-resizable")){
             $("#transcriptionTemplate").resizable("destroy");
         }
         //$("#transcriptionTemplate").resizable("destroy");
     }
-    
+
     function attachTemplateResize(){
         var originalRatio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
         $("#transcriptionTemplate").resizable({
@@ -6326,7 +6325,7 @@ tpen.screen.peekZoom = function(cancel){
                         $("#parsingSplit").hide();
                     }
                     else{
-                        //The math above will have done everything right for all the areas of an image that is taller than it is wide. 
+                        //The math above will have done everything right for all the areas of an image that is taller than it is wide.
                     }
                 }
 
@@ -6337,7 +6336,7 @@ tpen.screen.peekZoom = function(cancel){
                 $("#imgTop img").css({
                     'height': newCanvasHeight + "px",
                 });
-            } 
+            }
             else if (tpen.screen.liveTool === "preview"){
                 $("#previewSplit").show().height(Page.height()-$("#previewSplit").offset().top).scrollTop(0); // header space
                 $("#previewDiv").height(Page.height()-$("#previewDiv").offset().top);
@@ -6390,7 +6389,7 @@ tpen.screen.peekZoom = function(cancel){
             if(tpen.screen.liveTool !== "parsing"){
                 doit = setTimeout(attachTemplateResize, 100);
             }
-            
+
         };
 //        $(window).on('resize', function (e) {
 //            e.stopPropagation();
@@ -6413,16 +6412,16 @@ tpen.screen.responsiveNavigation = function(severeCheck){
     })();
 
     var addClass = (severeCheck) ? "severe" : "collapsed";
-    
+
     if(contentWidth>width-(trims*20)){ // margin not accounted for otherwise
         // content is encroaching and will overlap
         $('.topTrim.navigation').addClass(addClass);
         tpen.screen.navMemory = contentWidth;
         !severeCheck && tpen.screen.responsiveNavigation(true);
     }
-    var visibleButtons = $(".buttons button:visible").length + 1; //+1 for split screen 
+    var visibleButtons = $(".buttons button:visible").length + 1; //+1 for split screen
     if(window.innerWidth < 700){
-        //We could account for what buttons are visible, but this also controls the buttons to the side of the 
+        //We could account for what buttons are visible, but this also controls the buttons to the side of the
         //textarea in the .transcriptlet, so I think this minimum is good all around
         $('#transWorkspace .navigation').addClass(addClass);
         !severeCheck && tpen.screen.responsiveNavigation(true);
@@ -6463,7 +6462,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
                 //TODO: Should we populate history with something informing failure?
             });
     }
-    
+
     var History = {
     /**
      *  Displays the image of the line in the history tool.
@@ -6472,7 +6471,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
      *  @param y int top position of current .activeLine
      *  @param h height of current .activeLine
      *  @param w width of current .activeLine
-     *  These are in percetange values, based off the height and width of the image being used as the transcription canvas.  
+     *  These are in percetange values, based off the height and width of the image being used as the transcription canvas.
      */
     showImage: function(x, y, w, h){
         var buffer = 30; //even is better
@@ -6482,14 +6481,14 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         $("#historyWrapper").css("height", hImg.height());
         //There is a race condition here because of #
         var historyViewHeightAdjustment = ((h * 2)/100) * $("#transcriptionCanvas").height();
-        historyViewHeightAdjustment += 15; //buffer for when top doesn't quite work with us. 
+        historyViewHeightAdjustment += 15; //buffer for when top doesn't quite work with us.
         if(parseInt(historyViewHeightAdjustment) > 200){
             historyViewHeightAdjustment = 200;
         }
         //($("#imgTop").height() / $("#transcriptionCanvas").height()) * hImg.height();
         //historyViewHeightAdjustment += 3;
         var topAdjustment = (parseFloat($(".lineColIndicatorArea:first").css("top")) / $(".lineColIndicatorArea:first").height())  * hImg.height();
-        
+
         var bookmarkAdjustedHeight = 0;
         var bookmarkAdjustedTop = 0;
 
@@ -6497,7 +6496,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         bookmarkAdjustedHeight = h;
         var percentageChangeForBookmarkTop = (topAdjustment / hImg.height()) * 100; //This is negative...
         bookmarkAdjustedTop = bookmarkAdjustedTop + percentageChangeForBookmarkTop;
-        //TODO FIXME:  For some reason, hBookmark does not seem to have the right top or hImg does not have the right top.  x, h and w of the bookmark seems to be right.  
+        //TODO FIXME:  For some reason, hBookmark does not seem to have the right top or hImg does not have the right top.  x, h and w of the bookmark seems to be right.
         hImg.css({
             "top" :topAdjustment +"px"
         });
@@ -6551,7 +6550,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
     },
     /**
      *  Shows the changes to parsing when hovering over a history entry.
-     *  
+     *
      */
     adjustBookmark: function(archive){
         var buffer = 30; //even is better
@@ -6767,7 +6766,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         var lineText = updated.find(".theText").val();
         var lineNotes = updated.find(".notes").val();
         if(lineText === ""){
-            lineText = "<span style='color:silver;'>&#45; empty &#45;</span>"; 
+            lineText = "<span style='color:silver;'>&#45; empty &#45;</span>";
         }
         if(lineNotes === ""){
             lineNotes = "<span style='color:silver;'>&#45; empty &#45;</span>";
@@ -6778,7 +6777,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         var ratio = tpen.screen.originalCanvasWidth / tpen.screen.originalCanvasHeight;
         //FIXME
         //Haberberger note: History dims is off when new entries are added, so we hide them on new entries.  After page load, the comparison works.
-        //<div class='right loud historyDims'></div>  //<-- taken from next to .historyRevert 3 lines down from here. 
+        //<div class='right loud historyDims'></div>  //<-- taken from next to .historyRevert 3 lines down from here.
         var firstEntryHTML = $("<div id='newEntry' class='historyEntry ui-corner-all' linewidth='' lineheight='' lineleft='' linetop=''>\n\
                 <div class='historyDate'></div><div class='historyCreator'>"+historyMaker+"</div>\n\
                 <div class='right historyRevert'></div>\n\
@@ -6793,10 +6792,10 @@ tpen.screen.responsiveNavigation = function(severeCheck){
             $("#history"+lineidHist).append(firstEntryHTML);
             newEntry = $("#history"+lineidHist).find("#newEntry");
             newEntry.attr("id", "");
-        } 
+        }
         else {
             newEntry = firstEntryHTML;
-            newEntry.insertBefore(firstEntry); //We could add to the bottom with append to the parent if we want. 
+            newEntry.insertBefore(firstEntry); //We could add to the bottom with append to the parent if we want.
         }
         newEntry.attr({
             "linewidth" : parseInt(parseFloat(updated.attr("lineWidth")) * (10*ratio)),
@@ -6808,7 +6807,7 @@ tpen.screen.responsiveNavigation = function(severeCheck){
         .siblings(".historyText").html(lineText)
         .siblings(".historyNote").html(lineNotes)
         .siblings(".historyOptions").find("span").click(function(){History.revert(this)});
-        
+
     },
     /**
      *  Attaches the credit for the most recent edit to the main interface.
@@ -6917,7 +6916,7 @@ function firstBy(){function n(n){return n}function t(n){return"string"==typeof n
 }
 
 
-    
+
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?
 if (!window.console) window.console = {};

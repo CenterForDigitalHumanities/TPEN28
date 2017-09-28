@@ -89,7 +89,7 @@ public class UpdateLine extends HttpServlet {
                         return;
                     }
                 } catch (SQLException ex) {
-                    //Logger.getLogger(UpdateLine.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(UpdateLine.class.getName()).log(Level.SEVERE, null, ex);
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
             }

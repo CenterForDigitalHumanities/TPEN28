@@ -81,7 +81,7 @@ public class CopyProjectAndAnnos extends HttpServlet {
                     {
                         for(int i = 0; i < folios.length; i++)
                         {
-                            System.out.println("Starting copy for canvas");
+                            //System.out.println("Starting copy for canvas");
                             Folio folio = folios[i];
                             //get annotation list for each canvas
                             JSONObject annoLsQuery = new JSONObject();
@@ -133,7 +133,7 @@ public class CopyProjectAndAnnos extends HttpServlet {
                                getAnnoResponse = "[]";
                             }
                             ja_allAnnoLists = JSONArray.fromObject(getAnnoResponse); //This is the list of all AnnotatationLists attached to this folio.
-                            System.out.println("Found "+ja_allAnnoLists.size()+" lists");
+                            //System.out.println("Found "+ja_allAnnoLists.size()+" lists");
                             JSONObject jo_annotationList = new JSONObject();
                             JSONArray new_resources = new JSONArray();
                             JSONArray resources = new JSONArray();
@@ -179,15 +179,15 @@ public class CopyProjectAndAnnos extends HttpServlet {
                                    
                                 }
                                 JSONArray resources_array = JSONArray.fromObject(resources_list);
-                                System.out.println("Bulk save annos from original project "+resources_array.size()+"...");
+                                //System.out.println("Bulk save annos from original project "+resources_array.size()+"...");
                                 resources = Canvas.bulkSaveAnnotations(resources_array);
                                 jo_annotationList =CreateAnnoListUtil.createEmptyAnnoList(projectID, canvasID, resources_array);
-                                System.out.println("save new list for original project...");
+                                //System.out.println("save new list for original project...");
                                 Annotation.saveNewAnnotationList(jo_annotationList); 
                                 //This will have pulled the data over for the original project
                             }
                             //...Now for the new project
-                            System.out.println("Begin checks for new project");
+                            //System.out.println("Begin checks for new project");
                             if(jo_annotationList.size() > 0 || (null != jo_annotationList.get("resources") && !jo_annotationList.get("resources").toString().equals("[]"))){
                                 try{
                                     resources = (JSONArray) jo_annotationList.get("resources");
@@ -196,7 +196,7 @@ public class CopyProjectAndAnnos extends HttpServlet {
                                     System.out.println("Could not parse resources.  Could not get annotations for copy.");
                                     //If this list can't be parsed, the copied list will have errors.  Just define it as empty as the fail.  
                                 }
-                                System.out.println("Bulk save resources from original annotations list "+resources.size()+"...");
+                                //System.out.println("Bulk save resources from original annotations list "+resources.size()+"...");
                                 URL postUrlCopyAnno = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/batchSaveFromCopy.action");
                                 HttpURLConnection ucCopyAnno = (HttpURLConnection) postUrlCopyAnno.openConnection();
                                 ucCopyAnno.setDoInput(true);

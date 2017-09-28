@@ -44,7 +44,7 @@ public class UpgradeManager {
         Connection j = null;
         PreparedStatement stmt = null;
         PreparedStatement stmt2 = null;
-        System.out.println("NEW UPGRADE SETTINGS!");
+        //System.out.println("NEW UPGRADE SETTINGS!");
         try {
            String query = "update upgrademanager set upgradeDate=?, upgradeMessage=?, countdown=?, active=? where managerID=1";
            j = DatabaseWrapper.getConnection();
@@ -53,9 +53,9 @@ public class UpgradeManager {
            stmt.setString(2, m);
            stmt.setInt(3, c);
            stmt.setInt(4, 1);
-           System.out.println("SQL statement...");
+           //System.out.println("SQL statement...");
            stmt.execute();
-           System.out.println("SQL statement executed!");
+          // System.out.println("SQL statement executed!");
            upgradeDate = d;
            //upgradeTime = t;
            upgradeMessage = m;

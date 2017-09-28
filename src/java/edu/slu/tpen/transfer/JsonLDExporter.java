@@ -60,7 +60,7 @@ public class JsonLDExporter {
       Folio[] folios = proj.getFolios();
       int projID = proj.getProjectID();
       try {
-          System.out.println("Export project "+projID);
+          //System.out.println("Export project "+projID);
          String projName = Folio.getRbTok("SERVERURL") + "manifest/"+projID;
          manifestData = new LinkedHashMap<>();
          manifestData.put("@context", "http://www.shared-canvas.org/ns/context.json");
@@ -94,14 +94,14 @@ public class JsonLDExporter {
          pages.put("label", "Current Page Order");
 
          List<Map<String, Object>> pageList = new ArrayList<>();
-         System.out.println("I found "+folios.length+" pages");
+         //System.out.println("I found "+folios.length+" pages");
          int index = 0;
          for (Folio f : folios) {
              index++;
-             System.out.println("Build page "+index);
+             //System.out.println("Build page "+index);
             pageList.add(buildPage(proj.getProjectID(), projName, f, u));
          }
-         System.out.println("Put all canvas together");
+         //System.out.println("Put all canvas together");
          pages.put("canvases", pageList);
          manifestData.put("sequences", new Object[] { pages });
       } 
@@ -126,7 +126,7 @@ public class JsonLDExporter {
    private Map<String, Object> buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
       //Integer msID = f.getMSID();
       //String msID_str = msID.toString();
-       System.out.println("Building page "+f.getFolioNumber());
+       //System.out.println("Building page "+f.getFolioNumber());
       String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
       //JSONObject annotationList = new JSONObject();
       //JSONArray resources_array = new JSONArray();
@@ -147,7 +147,7 @@ public class JsonLDExporter {
       if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
          storedDims = ImageCache.getImageDimension(f.getFolioNumber());
          if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
-             System.out.println("Need to resolve image headers for dimensions");
+            // System.out.println("Need to resolve image headers for dimensions");
             storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
          }
       }
@@ -165,7 +165,7 @@ public class JsonLDExporter {
                     //generate canvas values for foliodim
                     canvasHeight = 1000;
                     canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
-                    System.out.println("Need to make folio dims record");
+                    //System.out.println("Need to make folio dims record");
                     FolioDims.createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
                 }
             }

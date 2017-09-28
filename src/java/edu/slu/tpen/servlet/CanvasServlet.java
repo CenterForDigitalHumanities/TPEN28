@@ -20,10 +20,12 @@ import edu.slu.tpen.entity.Image.Canvas;
 import imageLines.ImageCache;
 import textdisplay.Folio;
 import static edu.slu.util.LangUtils.buildQuickMap;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServlet;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import textdisplay.FolioDims;
+import textdisplay.TagButton;
 
 
 /**
@@ -54,9 +56,11 @@ public class CanvasServlet extends HttpServlet{
                     resp.getWriter().write(export(buildPage(f)));
                     resp.setStatus(HttpServletResponse.SC_OK);
                 } else {
+                    Logger.getLogger(CanvasServlet.class.getName()).log(Level.SEVERE, null, "No ID provided for canvas");
                     resp.sendError(HttpServletResponse.SC_NOT_FOUND);
                 }
             } catch (NumberFormatException | SQLException | IOException ex) {
+                Logger.getLogger(CanvasServlet.class.getName()).log(Level.SEVERE, null, ex);
                 throw new ServletException(ex);
             }
 
@@ -103,9 +107,7 @@ public class CanvasServlet extends HttpServlet{
             storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
          }
       }
-      
-      LOG.log(Level.INFO, "pageDim={0}", pageDim);
-
+      //Logger.getLogger(CanvasServlet.class.getName()).log(Level.INFO, "pageDim={0}", pageDim);
       JSONObject result = new JSONObject();
       result.element("@id", canvasID);
       result.element("@type", "sc:Canvas");

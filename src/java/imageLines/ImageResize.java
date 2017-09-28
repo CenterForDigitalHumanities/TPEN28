@@ -143,7 +143,7 @@ public class ImageResize extends HttpServlet {
                
                //Set CORS response headers for images here. 
                if(!response.containsHeader("Access-Control-Allow-Origin")){
-                   System.out.println("Allow origin header in imageResize");
+                   //System.out.println("Allow origin header in imageResize");
                    response.addHeader("Access-Control-Allow-Origin", "*");
                     response.addHeader("Access-Control-Allow-Headers", "Content-Type");
                     response.addHeader("Access-Control-Allow-Methods", "GET");

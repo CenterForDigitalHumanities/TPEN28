@@ -74,12 +74,13 @@ public class GetProjectTPENServlet extends HttpServlet {
     */
    @Override
    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Logger.getLogger(GetProjectTPENServlet.class.getName()).log(Level.SEVERE, null, "Get Project "+request.getParameter("projectID"));
         int uid = getUID(request, response);
         User user = null;
         try {
             user = new User(uid);
         } catch (SQLException ex) {
-            Logger.getLogger(GetProjectTPENServlet.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GetProjectTPENServlet.class.getName()).log(Level.SEVERE, null, "Get Project "+ex);
         }
         HttpSession session = request.getSession();
         boolean isTPENAdmin = false;
@@ -289,6 +290,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                 }
             } catch (NumberFormatException | SQLException | IOException ex) {
                 System.gc();
+                Logger.getLogger(GetProjectTPENServlet.class.getName()).log(Level.SEVERE, null, ex);
                throw new ServletException(ex);
             }
         } else {

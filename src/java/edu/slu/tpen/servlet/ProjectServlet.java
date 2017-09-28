@@ -64,14 +64,14 @@ public class ProjectServlet extends HttpServlet {
 //        }     
         
         if(!resp.containsHeader("Access-Control-Allow-Origin")){
-            System.out.println("Allow origin header in project servlet");
+            //System.out.println("Allow origin header in project servlet");
             resp.addHeader("Access-Control-Allow-Origin", "*");
             resp.addHeader("Access-Control-Allow-Headers", "Content-Type");
             resp.addHeader("Access-Control-Allow-Methods", "GET");
         }
         if (uid >= 0) {
             try {
-                System.out.println("Project 1");
+                //System.out.println("Project 1");
                 String check = "transcribe";
                 String redirect = req.getPathInfo().substring(1);
                 if (redirect.contains(check)) {
@@ -79,16 +79,16 @@ public class ProjectServlet extends HttpServlet {
                     String redirectURL = req.getContextPath() + "/transcription.html?projectID=" + projID;
                     resp.sendRedirect(redirectURL);
                 } else {
-                    System.out.println("Project 2");
+                    //System.out.println("Project 2");
                     projID = Integer.parseInt(req.getPathInfo().substring(1).replace("/", "").replace("manifest.json",""));
                     Project proj = new Project(projID);
-                    System.out.println("Project 3");
+                    //System.out.println("Project 3");
                     if (proj.getProjectID() > 0) {
-                        System.out.println("Project 4");
+                        //System.out.println("Project 4");
                         if (new Group(proj.getGroupID()).isMember(uid) || skip) {
-                            System.out.println("export");
+                           // System.out.println("export");
                             if (checkModified(req, proj)) {
-                                System.out.println("Project 5");
+                               // System.out.println("Project 5");
                                 resp.setContentType("application/ld+json; charset=UTF-8");
                                 resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
                                 resp.setStatus(HttpServletResponse.SC_OK);

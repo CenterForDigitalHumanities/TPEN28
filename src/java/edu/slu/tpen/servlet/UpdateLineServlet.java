@@ -108,7 +108,7 @@ public class UpdateLineServlet extends HttpServlet {
                         return;
                     }
                 } catch (SQLException ex) {
-                    //Logger.getLogger(UpdateLine.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(UpdateLineServlet.class.getName()).log(Level.SEVERE, null, ex);
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     response.setHeader("Access-Control-Allow-Origin", "*");
                 }

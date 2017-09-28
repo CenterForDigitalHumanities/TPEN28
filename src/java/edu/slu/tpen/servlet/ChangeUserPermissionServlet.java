@@ -60,8 +60,8 @@ public class ChangeUserPermissionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int result = 0;
         if (request.getParameter("projectID") != null && null != request.getSession().getAttribute("UID")) {
-            System.out.println("UID !!!!!!!!!!!!!!!!!!!!");
-            System.out.println(request.getSession().getAttribute("UID"));
+            //System.out.println("UID !!!!!!!!!!!!!!!!!!!!");
+            //System.out.println(request.getSession().getAttribute("UID"));
             int currentUserId = Integer.parseInt(request.getSession().getAttribute("UID") + "");
             int projectId = new Integer(request.getParameter("projectID")).intValue();
             if(null != request.getParameter("uid")){

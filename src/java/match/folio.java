@@ -122,7 +122,7 @@ public class folio {
    public static int userCount(String user) throws SQLException {
 
       String query = "select count(id) from pages where finder=?";
-      System.out.print(query);
+      //System.out.print(query);
       Connection j = textdisplay.DatabaseWrapper.getConnection();
       PreparedStatement p = j.prepareStatement(query);
       p.setString(1, user);
@@ -154,7 +154,7 @@ public class folio {
    public static String leaderBoard() throws SQLException {
       String toret = "<table cellpadding=\"5\" cellspacing=\"5\" border=\"2\"><tr><td>Standing<td >Name<td>Images Evaluated</tr>";
       String query = "select * from leaders order by count desc";
-      System.out.print(query);
+      //System.out.print(query);
       Connection j = textdisplay.DatabaseWrapper.getConnection();
       PreparedStatement p = j.prepareStatement(query);
 
@@ -173,7 +173,7 @@ public class folio {
    public void setFinding(int finding, String user, int id) {
       try {
          String query = "update `pages` set `finding`=?, `finder`=? where `id`=?";
-         System.out.print(query);
+         //System.out.print(query);
          Connection j = textdisplay.DatabaseWrapper.getConnection();
          PreparedStatement p = j.prepareStatement(query);
          p.setInt(1, finding);

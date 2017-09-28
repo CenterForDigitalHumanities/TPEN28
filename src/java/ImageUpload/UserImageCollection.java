@@ -109,7 +109,7 @@ public class UserImageCollection {
       File[] images = getAllJPGsRecursive(dir);
       for (int i = 0; i < images.length; i++) {
          if (!validateImage(images[i])) {
-            System.out.print("bad image, would do something\n");
+            System.out.print("bad image "+images[i].getName()+", would do something\n");
             images = removeItem(images, i);
             i--;
          }
@@ -228,6 +228,7 @@ public class UserImageCollection {
 
    /**
     * Check that the image is actually a valid jpg image by loading it as a BufferedImage
+    * BH TODO strip invalid characters!
     */
    private static Boolean validateImage(File f) {
       try {

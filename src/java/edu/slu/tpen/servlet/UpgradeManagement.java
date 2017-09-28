@@ -44,7 +44,7 @@ public class UpgradeManagement extends HttpServlet {
         HttpSession session = request.getSession();
         UpgradeManager upgrader = null;
         PrintWriter out = response.getWriter();
-        System.out.println("Upgarde serverlet");
+        //System.out.println("Upgarde serverlet");
         int ucountdown = 0;
         if (session.getAttribute("UID") != null) {
             thisUser = new user.User(Integer.parseInt(session.getAttribute("UID").toString()));
@@ -53,50 +53,50 @@ public class UpgradeManagement extends HttpServlet {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
         if (null != thisUser && thisUser.isAdmin()){
-            System.out.println("U1");
+            //System.out.println("U1");
             String uDate = request.getParameter("upgradeDate");
             //String uTime = (String)request.getAttribute("upgradeTime");
             String uMessage = request.getParameter("upgradeMessage");
             String countdown = request.getParameter("countdown");
-            System.out.println("U2");
+            //System.out.println("U2");
             if(request.getParameter("cancelUpgrade").equals("true")){
-                System.out.println("U3");
+                //System.out.println("U3");
                 upgrader = new UpgradeManager();
-                System.out.println("U4");
+               // System.out.println("U4");
                 upgrader.deactivateUpgrade();
-                System.out.println("U5");
+                //System.out.println("U5");
                 out.println("Upgrade settings deactivated");
             }
             else if(request.getParameter("getSettings").equals("get")){
                 upgrader = new UpgradeManager();
-                System.out.println("U6");
+                //System.out.println("U6");
                 JSONObject jo_manager = new JSONObject();
                 jo_manager.element("active", upgrader.checkActive());
-                System.out.println("U7");
+                //System.out.println("U7");
                 jo_manager.element("upgradeMessage", upgrader.getUpgradeMessage());
-                System.out.println("U8");
+               // System.out.println("U8");
                 jo_manager.element("upgradeDate", upgrader.getUpgradeDate());
-                System.out.println("U9");
+                //System.out.println("U9");
                 jo_manager.element("countdown", upgrader.checkCountdown());
-                System.out.println("U10");
+               // System.out.println("U10");
                 out.print(jo_manager);
             }
             else{
-                System.out.println("U11");
+               // System.out.println("U11");
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-                System.out.println("Date to parse...");
-                System.out.println(uDate);
+               // System.out.println("Date to parse...");
+               // System.out.println(uDate);
                 try{
                     Date parsedDate = sdf.parse(uDate);
-                    System.out.println("New date is ");
+                  //  System.out.println("New date is ");
                     //Timestamp upgradeTime = new Timestamp(uTime);
-                    System.out.println("countdown flag is "+countdown);
-                    System.out.println("U13");
+                 //   System.out.println("countdown flag is "+countdown);
+                 //   System.out.println("U13");
                     if(countdown.equals("1")){
                         ucountdown = 1;
                     }
                     upgrader = new UpgradeManager(uDate, uMessage, ucountdown, 1);
-                    System.out.println("U14");
+                  //  System.out.println("U14");
                     out.println("Upgrade settings applied");
                 }
                 catch (Exception e){

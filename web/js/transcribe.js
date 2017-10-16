@@ -19,7 +19,8 @@ var tpen = {
         linebreakSymbol:"",
         remainingText:"",
         projectImageBounding:"",
-        linebreakCharacterLimit:0
+        linebreakCharacterLimit:0,
+        isExiting:false
     },
     manifest: {
 

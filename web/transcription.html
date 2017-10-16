@@ -1177,15 +1177,15 @@
                 if(tpen.screen.isMagnifying){
                     return event;
                 }
-                if(event.which == 18){
-                    $("#imgTop, #imgBottom").css("cursor", "default");
-                    $("#imgTop, #imgBottom").unbind("mousemove");
-                    $("#imgTop, #imgBottom").unbind("mousedown");
-                    $("#imgTop, #imgBottom").unbind("mouseup");
-                    var lineForEditing = $(".transcriptlet[lineserverid='" + $(".activeLine").attr("lineserverid") + "']");
-                    updateLine(lineForEditing, false, true); //update the active line in case it was bumped.
-                }
-                else if(tpen.screen.isPeeking && (!event.shiftKey || !(event.ctrlKey||event.metaKey))){
+//                if(event.which == 18){
+//                    $("#imgTop, #imgBottom").css("cursor", "default");
+//                    $("#imgTop, #imgBottom").unbind("mousemove");
+//                    $("#imgTop, #imgBottom").unbind("mousedown");
+//                    $("#imgTop, #imgBottom").unbind("mouseup");
+//                    var lineForEditing = $(".transcriptlet[lineserverid='" + $(".activeLine").attr("lineserverid") + "']");
+//                    updateLine(lineForEditing, false, true); //update the active line in case it was bumped.
+//                }
+                if(tpen.screen.isPeeking && (!event.shiftKey || !(event.ctrlKey||event.metaKey))){
                     // cancel Peek-Zoom
                     tpen.screen.peekZoom(true);
                 }
@@ -1691,17 +1691,23 @@
           def.css('color','orangered');
       });
 
-        $(".exitPage").click(function(event) {
+        $(".exitPage").one("click",function(event) {
             var thisLink = $(this).attr("href");
             event.preventDefault();
+            if(tpen.project.isExiting){
+                return false;
+            }
+            tpen.project.isExiting = true;
             //If there is any ajax running and you try to leave a page, this will stop you
             $("body").ajaxStart(function() {
               $(this).addClass("ui-state-disabled");
-            }).ajaxStop(function() {
+            })
+            .ajaxStop(function() {
                 //When the ajax finishes, you can leave.
               if (thisLink.indexOf("?") != -1)
                 thisLink += "&tool=" + tpen.screen.liveTool;
                 Data.saveTranscription(thisLink);
+                return false;
             });
             Data.saveTranscription(thisLink);
 //            if (leftovers != undefined)

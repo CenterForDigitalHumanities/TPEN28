@@ -55,7 +55,6 @@ public class UpdateLineServlet extends HttpServlet {
         //System.out.println("The back says we should update a line's content");
         try {
             if (request.getParameter("text") == null) {
-
                 response.sendError(response.SC_BAD_REQUEST);
                 response.setHeader("Access-Control-Allow-Origin", "*");
                 return;
@@ -132,11 +131,12 @@ public class UpdateLineServlet extends HttpServlet {
 
 
             out.print("failure");
-
+            out.close();
 
         } finally {
             out.close();
         }
+        out.close();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

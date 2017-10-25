@@ -1191,12 +1191,14 @@
                             day: "numeric", hour: "2-digit", minute: "2-digit"  
                         };  
                         var dateForUser = new Date(mdate);
-                        console.log
                         if(managerData.active > 0){
                             $("#upgradeMessage").html(message);
                             $("#schedmaintenance").html(dateForUser.toLocaleTimeString("en-us", options)); //.format('l, F jS, Y g:00a')
                             if(countdown > 0){
                                 setCountdown(mdate);
+                            }
+                            else{
+                                $("#countdown").html("");
                             }
                             //return(dateForUser.format('l, F jS, Y g:00a'));
                         }

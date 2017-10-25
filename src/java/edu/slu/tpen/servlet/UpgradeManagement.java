@@ -101,6 +101,7 @@ public class UpgradeManagement extends HttpServlet {
                 }
                 catch (Exception e){
                     out.println("date parse error");
+                    out.println(e);
                 }
                
             }

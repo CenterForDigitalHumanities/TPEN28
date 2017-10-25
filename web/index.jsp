@@ -287,13 +287,16 @@
                     .done(function(data){
                         var managerData = JSON.parse(data);
                         var mdate = managerData.upgradeDate;
-                        var dateForUser = new Date(mdate);
                         var message = managerData.upgradeMessage;
                         var countdown = managerData.countdown;
-                        
+                        var options = {  
+                            weekday: "long", year: "numeric", month: "short",  
+                            day: "numeric", hour: "2-digit", minute: "2-digit"  
+                        };  
+                        var dateForUser = new Date(mdate);
                         if(managerData.active > 0){
                             $("#upgradeMessage").html(message);
-                            $("#schedmaintenance").html(dateForUser.format('l, F jS, Y g:00a'));
+                            $("#schedmaintenance").html(dateForUser.toLocaleTimeString("en-us", options));
                             if(countdown > 0){
                                 setCountdown(mdate);
                             }
@@ -307,7 +310,7 @@
                             // set to 8am Central Time
                             today.setHours(14 - today.getTimezoneOffset()/60);
                             //return(today.format('l, F jS, Y g:00a'));
-                            $("#schedmaintenance").html(today.format('l, F jS, Y g:00a'));
+                            $("#schedmaintenance").html(today.toLocaleTimeString("en-us", options));
                         }
                     });
             }

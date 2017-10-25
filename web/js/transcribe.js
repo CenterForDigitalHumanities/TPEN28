@@ -144,7 +144,7 @@ function scrubNav(){
 }
 
 /* Load the interface to the first page of the manifest. */
-function firstFolio () {
+function firstFolio() {
     //By updating the active line, we have GUARANTEED everything is saved.  No batch update necessary.
     tpen.screen.currentFolio = 0;
     var activeLineID = $(".activeLine:first").attr("lineid");

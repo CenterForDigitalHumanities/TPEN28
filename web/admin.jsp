@@ -30,7 +30,25 @@
         <script type="text/javascript" src="js/manuscriptFilters.js"></script>  
         <style type="text/css">
             #userAccount, #ms, #manageUsers, #options, #about, #reportsTab { margin: 0; padding: 0;}
-            #reportsTab li,#userAccount li, #manageUsers li, #ms li, #options li, #about li { margin: 0 4px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 100%;overflow: hidden; float:left; width:29%; position: relative;}
+            #updateManagement li, #reportsTab li,#userAccount li, #manageUsers li, #ms li, #options li, #about li { margin: 0 4px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 100%;overflow: hidden; float:left; width:29%; position: relative;}
+            #updateManagement li{
+                width: 87%;
+            }
+            #updateManagement input[type="text"]{
+                width: 50%;
+                margin: 3px 0px;
+                padding: 3px;
+            }
+            #updateManagement .tpenButton{
+                padding: 4px;
+                margin-top: 8px;
+            }
+            #schedmaintenance, #countdown{
+                color: green;
+            }
+            #upgradeMessage{
+                color: blue;
+            }
             #manageUsers li {max-height: 350px;overflow: auto;}
             #tabs-3 {padding-bottom: 120px;}
             #ms li {width:98% !important; height:auto !important;}
@@ -796,7 +814,7 @@
                                     <span>Date and time (yyyy-mm-dd hh:mm:ss) : </span><input type="text" name="upgradeDate" placeholder="Date and time upgrade will take place"><br>
                                     <span>Message to display to the user: </span><input type="text" name="upgradeMessage" placeholder="Custom message for the user"><br>
                                     <span>Check to include a countdown: </span><input type="checkbox" name="updateTimer" ><br>
-                                    <input type="button" value="Set Update Settings" onclick="setUpgrade();">
+                                    <input class="tpenButton" type="button" value="Set Update Settings" onclick="setUpgrade();">
                                 </div>
                             </li>
                             <li class="gui-tab-section">
@@ -814,7 +832,7 @@
                                     
                                 </span> 
                                 <br>
-                                <input type="button" value="Remove Update Settings" onclick="removeUpgrade();">
+                                <input class="tpenButton" type="button" value="Remove Update Settings" onclick="removeUpgrade();">
                             </li>
                         </ul>
                     </div>
@@ -1141,7 +1159,7 @@
                 $.post(url, params)
                     .done(function(data){
                         if(data === "date parse error"){
-                            alert("Bad date syntax");
+                            alert("Bad date syntax.");
                         }
                         else{
                              maintenanceDate();  
@@ -1166,13 +1184,17 @@
                     .done(function(data){
                         var managerData = JSON.parse(data);
                         var mdate = managerData.upgradeDate;
-                        var dateForUser = new Date(mdate);
                         var message = managerData.upgradeMessage;
                         var countdown = managerData.countdown;
-                        
+                        var options = {  
+                            weekday: "long", year: "numeric", month: "short",  
+                            day: "numeric", hour: "2-digit", minute: "2-digit"  
+                        };  
+                        var dateForUser = new Date(mdate);
+                        console.log
                         if(managerData.active > 0){
                             $("#upgradeMessage").html(message);
-                            $("#schedmaintenance").html(dateForUser.format('l, F jS, Y g:00a'));
+                            $("#schedmaintenance").html(dateForUser.toLocaleTimeString("en-us", options)); //.format('l, F jS, Y g:00a')
                             if(countdown > 0){
                                 setCountdown(mdate);
                             }

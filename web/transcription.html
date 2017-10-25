@@ -1813,8 +1813,12 @@
             .done(function(data){
                 var managerData = JSON.parse(data);
                 var mdate = managerData.upgradeDate;
-                var dateForUser = new Date(mdate);
                 var countdown = managerData.countdown;
+                var options = {  
+                    weekday: "long", year: "numeric", month: "short",  
+                    day: "numeric", hour: "2-digit", minute: "2-digit"  
+                };  
+                var dateForUser = new Date(mdate);
                 $("#maintenance").attr("title", "Maintenance sheduled on "+dateForUser);
                 if(managerData.active > 0){
                     if(countdown > 0){
@@ -1822,7 +1826,7 @@
                         $("#schedmaintenance").hide();
                     }
                     else{
-                        $("#schedmaintenance").html(dateForUser.format('l, F jS, Y g:00a'));
+                        $("#schedmaintenance").html(dateForUser.toLocaleTimeString("en-us", options));
                         $("#countdown").hide();
                         attachWindowResize();
                     }

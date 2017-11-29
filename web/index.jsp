@@ -634,6 +634,7 @@ $(window).load(function(){gapi.plusone.go();});
                         }
                    } catch (SQLException err) {
                     out.print("<p class=ui-state-error-text>Error retreiving list of projects.</p>");
+                    out.print(err.toString());
                    }%>
                 </div>
                 <div id="publicProjects">

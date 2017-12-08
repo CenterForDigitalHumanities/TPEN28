@@ -3166,6 +3166,7 @@ function splitPage(event, tool) {
     var splitScreen = document.getElementById(tool);
     var safetool = $('<div>').text(tool).html();
     if(splitScreen === null || splitScreen.length < 1) splitScreen = $('div[toolname="' + safetool + '"]');
+    if(splitScreen.size()===0) splitScreen = $("#" + tool + "Split");
     splitScreen.css("display", "block");
     if(tool==="controls"){
         if(tpen.screen.liveTool === "controls"){

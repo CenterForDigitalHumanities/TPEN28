@@ -38,20 +38,30 @@ public class UserInfoServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession();
-        if(null != session && null != session.getAttribute("UID")){
-            int uid = Integer.parseInt(session.getAttribute("UID").toString());
+        String providedUID = "";
+        int uid = -1;
+        if(null!=request.getParameter("uid") && !"".equals(request.getParameter("uid"))){
+            providedUID = request.getParameter("uid");
+            uid = Integer.parseInt(providedUID);
+        }
+        else if(null != session && null != session.getAttribute("UID")){
+            uid = Integer.parseInt(session.getAttribute("UID").toString());
+        }
+        else{
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
+        if(uid >= 0){
             try {
                 User user = new User(uid);
                 JSONObject jo = new JSONObject();
                 jo.element("uid", user.getUID());
                 jo.element("uname", user.getUname());
                 out.print(jo);
-            } catch (SQLException ex) {
+            } 
+            catch (SQLException ex) {
                 Logger.getLogger(UserInfoServlet.class.getName()).log(Level.SEVERE, null, ex);
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-        }else{
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
     }
 

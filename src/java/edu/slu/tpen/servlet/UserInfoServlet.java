@@ -40,8 +40,8 @@ public class UserInfoServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String providedUID = "";
         int uid = -1;
-        if(null!=request.getParameter(providedUID) && !"".equals(request.getParameter(providedUID))){
-            providedUID = request.getParameter(providedUID);
+        if(null!=request.getParameter("uid") && !"".equals(request.getParameter("uid"))){
+            providedUID = request.getParameter("uid");
             uid = Integer.parseInt(providedUID);
         }
         else if(null != session && null != session.getAttribute("UID")){
@@ -50,16 +50,18 @@ public class UserInfoServlet extends HttpServlet {
         else{
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
-        try {
-            User user = new User(uid);
-            JSONObject jo = new JSONObject();
-            jo.element("uid", user.getUID());
-            jo.element("uname", user.getUname());
-            out.print(jo);
-        } 
-        catch (SQLException ex) {
-            Logger.getLogger(UserInfoServlet.class.getName()).log(Level.SEVERE, null, ex);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(uid >= 0){
+            try {
+                User user = new User(uid);
+                JSONObject jo = new JSONObject();
+                jo.element("uid", user.getUID());
+                jo.element("uname", user.getUname());
+                out.print(jo);
+            } 
+            catch (SQLException ex) {
+                Logger.getLogger(UserInfoServlet.class.getName()).log(Level.SEVERE, null, ex);
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
         }
     }
 

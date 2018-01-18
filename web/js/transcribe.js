@@ -1179,32 +1179,7 @@ function activateUserTools(tools, permissions){
     };
     if((tpen.user.isAdmin || permissions.allow_public_modify || permissions.allow_public_modify_line_parsing) && $.inArray("parsing", tools) > -1 ){
         $("#parsingBtn").show();
-        //tpen.user.isAdmin = true; // QUESTION: #169 Why isAdmin if you can parse? ANSWER:  Old code problem.  This has been taken out and tested.
-        var message = $('<span>This canvas has no lines. If you would like to create lines</span>'
-            + '<span style="color: blue;" onclick="hideWorkspaceForParsing()">click here</span>.'
-            + 'Otherwise, you can <span style="color: red;" onclick="$(\'#noLineWarning\').hide()">'
-            + 'dismiss this message</span>.');
-        $("#noLineConfirmation").empty();
-        $("#noLineConfirmation").append(message);
     }
-    // This is all sort of moot, since they are being built regardless at this point.
-    //    if($.inArray("linebreak", tools) > -1){
-    //        $("#linebreakSplit").show();
-    //    }
-    //    if($.inArray("history", tools) > -1){
-    //        // No history tool on page #114
-    //        placeholderSplit('history', "No tool available, ticket #114");
-    //    }
-    //    if($.inArray("preview", tools) > -1){
-    //        $("#previewSplit").show();
-    //    }
-    //    if($.inArray("abbreviation", tools) > -1){
-    //        // No abbreviation tool or endpoint available #170
-    //        placeholderSplit('abbrev', "No tool available, ticket #170");
-    //    }
-    //    if($.inArray("compare", tools) > -1){
-    //        $("#compareSplit").show();
-    //    }
         if($.inArray("page", tools) > -1){
             $("#canvasControls").show();
         }
@@ -1328,7 +1303,7 @@ function focusOnLastModified(){
  * Load a canvas from the manifest to the transcription interface.
  */
 function loadTranscriptionCanvas(canvasObj, parsing, tool){
-    var noLines = true;
+    var noLines = canvasObj.otherContent.resources.length === 0;
     var canvasAnnoList = "";
     var canvasURI = canvasObj["@id"];
     var lastslashindex = canvasURI.lastIndexOf('/');
@@ -1427,7 +1402,6 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 };
                 image2.src = "images/missingImage.png";
             }
-
             scrubNav();
         }; // the extra () ensures this only runs once.
         image.onerror =function(){
@@ -1453,7 +1427,16 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
             };
             image2.src = "images/missingImage.png";
         };
-        image.src = canvasObj.images[0].resource['@id'].replace('amp;', '');
+        if(noLines){
+            var url = "autoParse?projectID="+tpen.project.id+"&folioNumber="+tpen.screen.currentFolio;
+            $.getJSON(url,function(list){
+                canvasObj.otherContent.push(list);
+                image.src = canvasObj.images[0].resource['@id'].replace('amp;', '');
+            });
+        }
+        else {
+            image.src = canvasObj.images[0].resource['@id'].replace('amp;', '');
+        }
     }
     else {
         $('.transcriptionImage').attr('src', "images/missingImage.png");

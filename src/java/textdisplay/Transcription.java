@@ -427,12 +427,12 @@ public class Transcription {
             //add a Transcription object built using the unique id
             orderedTranscriptions.add(new Transcription(transcriptionIDs.getString(1)));
          }
-         Transcription[] toret = new Transcription[orderedTranscriptions.size()];
+         Transcription[] toret = new Transcription[orderedTranscriptions.size()]; //orderedTranscriptions can be empty;
          for (int i = 0; i < orderedTranscriptions.size(); i++) {
             toret[i] = orderedTranscriptions.get(i);
             LOG.log(Level.FINE, "Transcription {0} {1}->{2}", new Object[] { i, toret[i].getY(), toret[i].getY() + toret[i].getHeight() });
          }
-         return toret;
+         return toret; //This can be an empty array
       } finally {
          DatabaseWrapper.closeDBConnection(j);
          DatabaseWrapper.closePreparedStatement(ps);

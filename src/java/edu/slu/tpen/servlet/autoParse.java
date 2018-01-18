@@ -183,7 +183,7 @@ public class autoParse extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Supply a projectID and a folioNumber to fire the auto parser on.  Return the lines created by the process as a strginfifed JSON sc:AnnotationList";
+        return "Supply a projectID and a folioNumber to fire the auto parser on.  Return the lines created by the process as a stringified JSON sc:AnnotationList";
     }
 
 }

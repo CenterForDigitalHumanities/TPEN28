@@ -1428,9 +1428,9 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
             image2.src = "images/missingImage.png";
         };
         if(noLines){
-            var url = "autoParse?projectID="+tpen.project.id+"&folioNumber="+tpen.screen.currentFolio;
+            var url = "autoParse?projectID="+tpen.project.id+"&folioNumber="+tpen.project.folios[tpen.screen.currentFolio].folioNumber;
             $.getJSON(url,function(list){
-                canvasObj.otherContent.push(list);
+                canvasObj.otherContent[0] = list;
                 image.src = canvasObj.images[0].resource['@id'].replace('amp;', '');
             });
         }

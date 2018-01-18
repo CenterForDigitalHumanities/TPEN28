@@ -196,7 +196,7 @@ public class JsonLDExporter {
       //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
       //System.out.println("Get otherContent");
       //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
-      otherContent = Canvas.getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID());
+      otherContent = Canvas.getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
       //System.out.println("Finalize result");
       result.put("otherContent", otherContent);
       result.put("images", images);

@@ -173,7 +173,6 @@ public class Canvas {
      */
     public static JSONArray getLinesForProject(Integer projectID, String canvasID, Integer folioNumber, Integer UID) throws MalformedURLException, IOException, SQLException {
         //System.out.println("Get lines for project");
-        JSONObject parameter = new JSONObject();
         JSONObject annotationList = new JSONObject();
         JSONArray resources_array = new JSONArray();
         String dateString = "";
@@ -186,16 +185,11 @@ public class Canvas {
         annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
         //annotationList.element("testing", "msid_creation");
         Transcription[] lines;
-        parameter.element("@type", "sc:AnnotationList");
-        if(projectID > -1){
-            parameter.element("proj", projectID);
-        }
-        parameter.element("on", canvasID);
-        lines = Transcription.getProjectTranscriptions(projectID, folioNumber);
+        lines = Transcription.getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
         int numberOfLines = lines.length;
         List<Object> resources = new ArrayList<>();
         //System.out.println("How many lines?   "+numberOfLines);
-        for (int i = 0; i < numberOfLines; i++) {
+        for (int i = 0; i < numberOfLines; i++) { //numberOfLines can be 0 now.
             if (lines[i] != null) {   
                 //System.out.println("On line "+i);
                 dateString = "";
@@ -236,7 +230,7 @@ public class Canvas {
                 System.out.println("lines was null");
             }
         }
-        resources_array = JSONArray.fromObject(resources);
+        resources_array = JSONArray.fromObject(resources); //This can be an empty array now.
 //            String newListID = Annotation.saveNewAnnotationList(annotationList);
 //            annotationList.element("@id", newListID);
         annotationList.element("resources", resources_array);

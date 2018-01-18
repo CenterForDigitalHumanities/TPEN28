@@ -47,6 +47,7 @@ public class autoParse extends HttpServlet {
         Stack<Transcription> orderedTranscriptions = new Stack();
         JSONObject annotationList = new JSONObject();
         JSONArray resources_array = new JSONArray();
+        List<Object> resources = new ArrayList<>();
         String dateString = "";
         String annoListID = Folio.getRbTok("SERVERURL")+"project/"+projectID+"/annotations/"+folioNumber;  
         String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+folioNumber;
@@ -63,7 +64,6 @@ public class autoParse extends HttpServlet {
            int width = f.getImageDimension().width;
            Transcription t = new Transcription(projectID, folioNumber, 0, 0, height, width, true);
            orderedTranscriptions.add(t);
-
         }
         else if (preferedBounding == Project.imageBounding.columns) {
            //run the image parsing and make a Transcription for each column
@@ -99,12 +99,10 @@ public class autoParse extends HttpServlet {
               orderedTranscriptions.add(fullPage);
            }
         }
-        Transcription[] toret = new Transcription[orderedTranscriptions.size()];
         for (int i = 0; i < orderedTranscriptions.size(); i++) {
-           List<Object> resources = new ArrayList<>();
-           if (toret[i] != null) {   
+           if (orderedTranscriptions.get(i) != null) {  
                dateString = "";
-               int lineID = toret[i].getLineID();
+               int lineID = orderedTranscriptions.get(i).getLineID();
                Map<String, Object> lineAnnot = new LinkedHashMap<>();
                String lineURI = "line/" + lineID;
                String annoLineID = Folio.getRbTok("SERVERURL")+"line/"+lineID;  
@@ -112,26 +110,25 @@ public class autoParse extends HttpServlet {
                lineAnnot.put("_tpen_line_id", lineURI);
                lineAnnot.put("@type", "oa:Annotation");
                lineAnnot.put("motivation", "oad:transcribing"); 
-               lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(toret[i].getText())));
-               lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, toret[i].getX(), toret[i].getY(), toret[i].getWidth(), toret[i].getHeight())); 
-               if(null != toret[i].getComment() && !"null".equals(toret[i].getComment())){
-                   lineAnnot.put("_tpen_note", toret[i].getComment());
+               lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(orderedTranscriptions.get(i).getText())));
+               lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, orderedTranscriptions.get(i).getX(), orderedTranscriptions.get(i).getY(), orderedTranscriptions.get(i).getWidth(), orderedTranscriptions.get(i).getHeight())); 
+               if(null != orderedTranscriptions.get(i).getComment() && !"null".equals(orderedTranscriptions.get(i).getComment())){
+                   lineAnnot.put("_tpen_note", orderedTranscriptions.get(i).getComment());
                }
                else{
                    lineAnnot.put("_tpen_note", "");
                }
-               lineAnnot.put("_tpen_creator",toret[i].getCreator());             
-               dateString = toret[i].getDate().toString();
+               lineAnnot.put("_tpen_creator",orderedTranscriptions.get(i).getCreator());             
+               dateString = orderedTranscriptions.get(i).getDate().toString();
                lineAnnot.put("modified", dateString);
                resources.add(lineAnnot);
            }
            else{
                Logger.getLogger(Canvas.class.getName()).log(Level.INFO, null, "Lines for list was null");
-               System.out.println("lines was null");
            }
-           resources_array = JSONArray.fromObject(resources);
-           annotationList.element("resources", resources_array);
         }
+        resources_array = JSONArray.fromObject(resources);
+        annotationList.element("resources", resources_array);
         annotationList.element("@id", annoListID);
         response.setContentType("application/json; charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_CREATED);

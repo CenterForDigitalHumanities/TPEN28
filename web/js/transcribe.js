@@ -1303,7 +1303,7 @@ function focusOnLastModified(){
  * Load a canvas from the manifest to the transcription interface.
  */
 function loadTranscriptionCanvas(canvasObj, parsing, tool){
-    var noLines = canvasObj.otherContent.resources.length === 0;
+    var noLines = canvasObj.otherContent[0].resources.length === 0;
     var canvasAnnoList = "";
     var canvasURI = canvasObj["@id"];
     var lastslashindex = canvasURI.lastIndexOf('/');

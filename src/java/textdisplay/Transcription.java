@@ -427,76 +427,12 @@ public class Transcription {
             //add a Transcription object built using the unique id
             orderedTranscriptions.add(new Transcription(transcriptionIDs.getString(1)));
          }
-         if (orderedTranscriptions.size() == 0) {
-             System.out.println("No orderedTranscriptions...prepare for the auto parser.");
-            //create Transcription(s) based on Project settings and Line parsing
-            Project p = new Project(projectID);
-            //System.out.println("Got project");
-            Project.imageBounding preferedBounding = p.getProjectImageBounding();
-            //System.out.println("Got image bounding");
-            if (preferedBounding == Project.imageBounding.none) {
-               //do nothing
-            }
-            if (preferedBounding == Project.imageBounding.fullimage) {
-               //find the image size, add 1 Transcription to cover the entirety, and done
-
-               int height = 1000;
-               Folio f = new Folio(folioNumber, true);
-               int width = f.getImageDimension().width;
-               Transcription t = new Transcription(projectID, folioNumber, 0, 0, height, width, true);
-               orderedTranscriptions.add(t);
-
-            }
-            if (preferedBounding == Project.imageBounding.columns) {
-               //run the image parsing and make a Transcription for each column
-               Folio f = new Folio(folioNumber, true);
-               Line[] lines = f.getlines();
-               int x = 0;
-               int y = 0;
-               int w = 0;
-               for (int i = 0; i < lines.length; i++) {
-                  if (lines[i].getWidth() != w) {
-                     if (w != 0 && i != 0) {
-                        Transcription t = new Transcription(projectID, folioNumber, x, y, lines[i].getBottom(), w, true);
-                        orderedTranscriptions.add(t);
-                     }
-                     w = lines[i].getWidth();
-                     x = lines[i].getLeft();
-                     y = lines[i].getTop();
-                  }
-               }
-            }
-            if (preferedBounding == Project.imageBounding.lines) {
-                //System.out.println("I know image bouding was lines");
-               //make a Transcription for each Line
-               Folio f = new Folio(folioNumber, true);
-               //System.out.println("Got folio");
-               Line[] lines = f.getlines();
-               //System.out.println("got lines");
-               for (int i = 0; i < lines.length; i++) {
-                  Transcription t = new Transcription(projectID, folioNumber, lines[i].left, lines[i].top, lines[i].getHeight(), lines[i].getWidth(), true);
-                  orderedTranscriptions.add(t);
-               }
-               if (orderedTranscriptions.size() == 0) {
-                  //System.out.println("Still, ordered transcription was 0");
-                  int height = 1000;
-                  int width = f.getImageDimension().width;
-                  //System.out.println("Got f width");
-                  Transcription fullPage = new Transcription(projectID, folioNumber, 0, 0, height, width, true);
-                  //System.out.println("Got full page");
-                  orderedTranscriptions.add(fullPage);
-               }
-            }
-         }
-         else{
-             //System.out.println("Already had orderedTranscriptions");
-         }
-         Transcription[] toret = new Transcription[orderedTranscriptions.size()];
+         Transcription[] toret = new Transcription[orderedTranscriptions.size()]; //orderedTranscriptions can be empty;
          for (int i = 0; i < orderedTranscriptions.size(); i++) {
             toret[i] = orderedTranscriptions.get(i);
             LOG.log(Level.FINE, "Transcription {0} {1}->{2}", new Object[] { i, toret[i].getY(), toret[i].getY() + toret[i].getHeight() });
          }
-         return toret;
+         return toret; //This can be an empty array
       } finally {
          DatabaseWrapper.closeDBConnection(j);
          DatabaseWrapper.closePreparedStatement(ps);

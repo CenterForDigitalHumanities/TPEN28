@@ -241,7 +241,7 @@
     </servlet>
     <servlet>
         <servlet-name>autoParse</servlet-name>
-        <servlet-class>edu.slu.tpen.servlet.autoParse</servlet-class>
+        <servlet-class>edu.slu.tpen.servlet.AutoParse</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>imageResize</servlet-name>

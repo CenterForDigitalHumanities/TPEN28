@@ -10,7 +10,6 @@ import static edu.slu.util.LangUtils.buildQuickMap;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +32,15 @@ import textdisplay.Transcription;
  *
  * @author bhaberbe
  */
-public class autoParse extends HttpServlet {
+public class AutoParse extends HttpServlet {
     /**
      * Fire the auto parser on a given folio.  Return a stringified JSON sc:AnnotationList of the lines created.
      *
      * @param request servlet request
      * @param response servlet response
+     * @throws javax.servlet.ServletException
+     * @throws java.io.IOException
+     * @throws java.sql.SQLException
      * @respond with array of Transcription lines created from auto parsing.
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
@@ -46,62 +48,63 @@ public class autoParse extends HttpServlet {
         int folioNumber = Integer.parseInt(request.getParameter("folioNumber"));
         Stack<Transcription> orderedTranscriptions = new Stack();
         JSONObject annotationList = new JSONObject();
-        JSONArray resources_array = new JSONArray();
+        JSONArray resources_array;
         List<Object> resources = new ArrayList<>();
-        String dateString = "";
+        String dateString;
         String annoListID = Folio.getRbTok("SERVERURL")+"project/"+projectID+"/annotations/"+folioNumber;  
         String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+folioNumber;
         //create Transcription(s) based on Project settings and Line parsing
         Project p = new Project(projectID);
         Project.imageBounding preferedBounding = p.getProjectImageBounding();
-        if (preferedBounding == Project.imageBounding.none) {
-           //do nothing
-        }
-        else if (preferedBounding == Project.imageBounding.fullimage) {
-           //find the image size, add 1 Transcription to cover the entirety, and done
-           int height = 1000;
-           Folio f = new Folio(folioNumber, true);
-           int width = f.getImageDimension().width;
-           Transcription t = new Transcription(projectID, folioNumber, 0, 0, height, width, true);
-           orderedTranscriptions.add(t);
-        }
-        else if (preferedBounding == Project.imageBounding.columns) {
-           //run the image parsing and make a Transcription for each column
-           Folio f = new Folio(folioNumber, true);
-           Line[] lines = f.getlines();
-           int x = 0;
-           int y = 0;
-           int w = 0;
-           for (int i = 0; i < lines.length; i++) {
-              if (lines[i].getWidth() != w) {
-                 if (w != 0 && i != 0) {
-                    Transcription t = new Transcription(projectID, folioNumber, x, y, lines[i].getBottom(), w, true);
+        if (null != preferedBounding) switch (preferedBounding) {
+            case fullimage:{
+                //find the image size, add 1 Transcription to cover the entirety, and done
+                int height = 1000;
+                Folio f = new Folio(folioNumber, true);
+                int width = f.getImageDimension().width;
+                Transcription t = new Transcription(projectID, folioNumber, 0, 0, height, width, true);
+                orderedTranscriptions.add(t);
+                    break;
+                }
+            case columns:{
+                //run the image parsing and make a Transcription for each column
+                Folio f = new Folio(folioNumber, true);
+                Line[] lines = f.getlines();
+                int x = 0;
+                int y = 0;
+                int w = 0;
+                for (int i = 0; i < lines.length; i++) {
+                    if (lines[i].getWidth() != w) {
+                        if (w != 0 && i != 0) {
+                            Transcription t = new Transcription(projectID, folioNumber, x, y, lines[i].getBottom(), w, true);
+                            orderedTranscriptions.add(t);
+                        }
+                        w = lines[i].getWidth();
+                        x = lines[i].getLeft();
+                        y = lines[i].getTop();
+                    }
+                }        break;
+                }
+            case lines:{
+                Folio f = new Folio(folioNumber, true);
+                Line[] lines = f.getlines();
+                //make a Transcription for each Line
+                for (int i = 0; i < lines.length; i++) {
+                    Transcription t = new Transcription(projectID, folioNumber, lines[i].getLeft(), lines[i].getTop(), lines[i].getHeight(), lines[i].getWidth(), true);
                     orderedTranscriptions.add(t);
-                 }
-                 w = lines[i].getWidth();
-                 x = lines[i].getLeft();
-                 y = lines[i].getTop();
-              }
-           }
-        }
-        else if (preferedBounding == Project.imageBounding.lines) {
-           Folio f = new Folio(folioNumber, true);
-           Line[] lines = f.getlines();
-           //make a Transcription for each Line
-           for (int i = 0; i < lines.length; i++) {
-              Transcription t = new Transcription(projectID, folioNumber, lines[i].getLeft(), lines[i].getTop(), lines[i].getHeight(), lines[i].getWidth(), true);
-              orderedTranscriptions.add(t);
-           }
-           if (orderedTranscriptions.size() == 0) {
-              int height = 1000;
-              int width = f.getImageDimension().width;
-              Transcription fullPage = new Transcription(projectID, folioNumber, 0, 0, height, width, true);
-              orderedTranscriptions.add(fullPage);
-           }
+                }        if (orderedTranscriptions.isEmpty()) {
+                    int height = 1000;
+                    int width = f.getImageDimension().width;
+                    Transcription fullPage = new Transcription(projectID, folioNumber, 0, 0, height, width, true);
+                    orderedTranscriptions.add(fullPage);
+                }        break;
+                }
+            case none:
+            default:
+                break;
         }
         for (int i = 0; i < orderedTranscriptions.size(); i++) {
            if (orderedTranscriptions.get(i) != null) {  
-               dateString = "";
                int lineID = orderedTranscriptions.get(i).getLineID();
                Map<String, Object> lineAnnot = new LinkedHashMap<>();
                String lineURI = "line/" + lineID;
@@ -124,12 +127,15 @@ public class autoParse extends HttpServlet {
                resources.add(lineAnnot);
            }
            else{
-               Logger.getLogger(Canvas.class.getName()).log(Level.INFO, null, "Lines for list was null");
+               Logger.getLogger(AutoParse.class.getName()).log(Level.WARNING, "Lines for list was null in project {0}, folio {1}", new Object[]{projectID, folioNumber});
            }
         }
         resources_array = JSONArray.fromObject(resources);
         annotationList.element("resources", resources_array);
         annotationList.element("@id", annoListID);
+
+        Logger.getLogger(AutoParse.class.getName()).log(Level.INFO, "Autoparse succeeded for project {0}, folio {1} with {2} lines.", new Object[]{projectID, folioNumber, resources.size()});
+
         response.setContentType("application/json; charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_CREATED);
         response.getWriter().write(annotationList.toString());
@@ -150,7 +156,7 @@ public class autoParse extends HttpServlet {
             processRequest(request, response);
         } 
         catch (SQLException ex) {
-            Logger.getLogger(autoParse.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AutoParse.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -169,7 +175,7 @@ public class autoParse extends HttpServlet {
             processRequest(request, response);
         } 
         catch (SQLException ex) {
-            Logger.getLogger(autoParse.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AutoParse.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

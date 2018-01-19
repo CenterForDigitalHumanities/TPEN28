@@ -55,7 +55,6 @@ import java.io.OutputStreamWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
 
 /**
  * Get tpen project. 
@@ -74,60 +73,48 @@ public class GetProjectTPENServlet extends HttpServlet {
     */
    @Override
    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Logger.getLogger(GetProjectTPENServlet.class.getName()).log(Level.SEVERE, null, "Get Project "+request.getParameter("projectID"));
         int uid = getUID(request, response);
         User user = null;
         try {
             user = new User(uid);
+            Logger.getLogger(GetProjectTPENServlet.class.getName()).log(Level.INFO, "Get project {0} as JSON for {1}", new Object[]{request.getParameter("projectID"), user.getUname()});
         } catch (SQLException ex) {
-            Logger.getLogger(GetProjectTPENServlet.class.getName()).log(Level.SEVERE, null, "Get Project "+ex);
+            Logger.getLogger(GetProjectTPENServlet.class.getName()).log(Level.SEVERE, "Failed to GET project {0} as JSON for user({1}) \n{2}", new Object[]{request.getParameter("projectID"), uid,ex});
         }
         HttpSession session = request.getSession();
         boolean isTPENAdmin = false;
         try {
             isTPENAdmin = user.isAdmin();
         } 
-        catch (SQLException e) {
-                e.printStackTrace();
+        catch (SQLException ex) {
+            Logger.getLogger(GetProjectTPENServlet.class.getName()).log(Level.SEVERE, "Failed to check admin status for user({0}).\n{1}", new Object[]{uid,ex});
         }
-        //System.out.println("++++++ GET PROJECT TPEN SERVLET START ++++++++");
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), "UTF8"), true);
-        String manifest_obj_str = "";
+        String manifest_obj_str;
         Gson gson = new Gson();
         Map<String, String> jsonMap = new HashMap();
         JSONObject jo_error = new JSONObject();
-        JSONObject man_obj = null;
         JSONArray mans_and_restrictions = new JSONArray();
         ArrayList manuscripts_in_project = new ArrayList();
         jo_error.element("error", "No Manifest URL");
         if (uid >= 0) {
-//            System.out.println("UID ================= "+uid);
             try {
-//                System.out.println("project id =============== " + request.getParameter("projectID"));
                 int projID = Integer.parseInt(request.getParameter("projectID"));
                 Project proj = new Project(projID);
                 if (proj.getProjectID() > 0) {
                     Group group = new Group(proj.getGroupID());
                     ProjectPermissions pms = new ProjectPermissions(proj.getProjectID());
                     jsonMap.put("projper", gson.toJson(pms));
-                    
-//                    System.out.println("Parameter test to receive project data / manifest");
-//                    System.out.println("group Id ===== " + proj.getGroupID() + " is member " + group.isMember(uid));
-//                    System.out.println("this is a tpen admin? "+isTPENAdmin);
-//                    System.out.println("this is a public project? "+pms.getAllow_public_read_transcription());
                     if (group.isMember(uid) || isTPENAdmin || pms.getAllow_public_read_transcription()) { //check for public project here
                         if (checkModified(request, proj)) {
-//                            System.out.println("++++++ USER APPROVED FOR GET ++++++++");
+            Logger.getLogger(GetProjectTPENServlet.class.getName()).log(Level.INFO, "Approved for GET. isAdmin:{0}; isPublicProject:{1}", new Object[]{isTPENAdmin, pms.getAllow_public_read_transcription()});
                             jsonMap.put("project", gson.toJson(proj));
-//                            System.out.println("3");
-//                            System.out.println("project json ====== " + gson.toJson(proj));
                             int projectID = proj.getProjectID();
                             Folio[] folios = proj.getFolios();
                             JSONArray folios_array = JSONArray.fromObject(gson.toJson(folios));
-                            JSONObject folio_obj = null;
+                            JSONObject folio_obj;
                             //TODO need to get the ipr agreement status for the archive of this folio for this user 
-//                            System.out.println("++++++ GATHER FOLIO AND MANUSCRIPT PERMISSIONS AND CONNECTIONS ++++++++");
                             for(int x=0; x<folios.length; x++){
                                 Integer folioNum = folios[x].getFolioNumber();
                                 Manuscript forThisFolio = new Manuscript(folioNum);
@@ -136,8 +123,6 @@ public class GetProjectTPENServlet extends HttpServlet {
                                 String controllerName = "public project";
                                 String archive = folios[x].getArchive();
                                 String ipr_agreement = folios[x].getIPRAgreement();
-                                //System.out.println("Do i have a controller");
-                                //System.out.println(controller);
                                 if(null != controller){
                                     controllerName = controller.getUname();
                                 }
@@ -164,63 +149,32 @@ public class GetProjectTPENServlet extends HttpServlet {
                                     if(forThisFolio.isRestricted()){
                                         if(forThisFolio.isAuthorized(currentUser)){
                                             for_the_array.element("auth", "true");
-                                           // System.out.println("the user is authorized for this manuscript");
                                         }
                                         else{
-                                            //System.out.println("the user is not authorized for this manuscript");
+            Logger.getLogger(GetProjectTPENServlet.class.getName()).log(Level.WARNING, "User {0} is not authorized to view folio {1}", new Object[]{currentUser.getUname(),folioNum});
                                         }
                                     }
                                     else{
                                         for_the_array.element("auth", "true");
-                                        //System.out.println("23.3 auth is true because its not this is not a restriced manuscript");
                                     }
                                     mans_and_restrictions.add(for_the_array);
                                 }
                             }
                             jsonMap.put("ls_fs", folios_array.toString());
-                            //System.out.println("4");
                             jsonMap.put("mans_in_project", manuscripts_in_project.toString());
-                           // System.out.println("20");
                             jsonMap.put("user_mans_auth", mans_and_restrictions.toString());
-                            //System.out.println("21");
-//                            System.out.println("folios json ========== " + gson.toJson(folios));
-                            JSONObject manifest = new JSONObject();  
- //                           System.out.println("++++++ GATHER JSON MANIFEST THROUGH JSON EXPORTER ++++++++");
                             manifest_obj_str = new JsonLDExporter(proj, user).export();
-                           // }
-//                            System.out.println("++++++ ATTEMPT TO PARSE JSON MANIFEST FROM EXPORTER ++++++++");
-//                            try{ //Try to parse the manifest string
-//                                man_obj = JSONObject.fromObject(manifest_obj_str);
-//                                manifest = man_obj;
-//                                System.out.println("++++++ PARSE PASS ++++++++");
-//                            }
-//                            catch (JSONException e2){
-//                                jo_error.element("error", "Not a valid JSON manifest");
-//                                manifest = jo_error;
-//                                System.out.println("++++++ PARSE FAIL ++++++++");
-//                            }
                             jsonMap.put("manifest", manifest_obj_str);
-                            //System.out.println("6");
-                            //get project header
- //                           System.out.println("++++++ GATHER PROJECT LEVEL INFO ++++++++");
                             String header = proj.getHeader();
                             jsonMap.put("ph", header);
-                            //System.out.println("7");
-                            
                             String linebreakRemainingText = proj.getLinebreakText();
                             jsonMap.put("remainingText", linebreakRemainingText);
-                            // System.out.println("LB");
-                            //                            System.out.println("header json ======= " + gson.toJson(header));
                             //get group members
                             User[] users = group.getMembers();
                             jsonMap.put("ls_u", gson.toJson(users));
-                            //System.out.println("8");
-//                            System.out.println("users json ========= " + gson.toJson(users));
                             //get group leader
                             User[] leaders = group.getLeader();
-                            //System.out.println("10");
                             // if current user is admin AND not in leaders, add them to leaders array
-//                            System.out.println("++++++ GATHER USERS AND LEADERS ++++++++");
                             boolean isLeader = false;
                             for (User u: leaders) {
                                 if (u.getUID() == uid) {
@@ -232,54 +186,37 @@ public class GetProjectTPENServlet extends HttpServlet {
                             if (!isLeader) {
                                 if (role != null && role.toString().equals("1")) {
                                     User currentUser = user;
-                                    ArrayList<User> leaderList = new ArrayList<User>(Arrays.asList(leaders));
+                                    ArrayList<User> leaderList = new ArrayList<>(Arrays.asList(leaders));
                                     leaderList.add(currentUser);
                                     leaders = leaderList.toArray(new User[leaderList.size()]);
                                 }
                             }
-//                            System.out.println("project leaders json ========= " + gson.toJson(leaders));
                             jsonMap.put("ls_leader", gson.toJson(leaders));
-                            //System.out.println("11");
                             //get project permission
-                            
-//                            System.out.println("project permission json ========= " + gson.toJson(pms));
                             //get project buttons
- //                           System.out.println("++++++ KEYS, BUTTONS, TOOLS, METADATA ++++++++");
                             Hotkey hk = new Hotkey();
                             List<Hotkey> ls_hk = hk.getProjectHotkeyByProjectID(projectID, uid);
                             jsonMap.put("ls_hk", gson.toJson(ls_hk));
-                            //System.out.println("12");
-//                            System.out.println("hotkey json ======= " + gson.toJson(ls_hk));
                             //get project tools
                             UserTool[] projectTools = UserTool.getUserTools(projectID);
                             jsonMap.put("projectTool", gson.toJson(projectTools));
-                           // System.out.println("13");
                             jsonMap.put("cuser", uid + "");
-//                            System.out.println("usertools json ========= " + gson.toJson(projectTools));
                             //get user tools
                             Tool.tools[] userTools = Tool.getTools(uid);
                             jsonMap.put("userTool", gson.toJson(userTools));
-                            //System.out.println("14");
                             //get project metadata
                             Metadata metadata = new Metadata(proj.getProjectID());
                             jsonMap.put("metadata", gson.toJson(metadata));
-                            //System.out.println("15");
-                            
                             String allProjectButtons = TagButton.getAllProjectButtons(projID);
                             jsonMap.put("xml", allProjectButtons);
-                            //System.out.println("16");
                             //get special characters
                             jsonMap.put("projectButtons", hk.javascriptToAddProjectButtonsRawData(projectID));
-                            //System.out.println("17");
                             response.setStatus(HttpServletResponse.SC_OK);
-//                            System.out.println("++++++ PARSE THE WHOLE OBJECT AS JSON AND RETURN IT AS THAT TYPE ++++++++");
                             out.println(JSONObject.fromObject(jsonMap));
-//                            System.out.println("++++++ GARBAGE CLEAN ++++++++");
-                            System.gc(); //Force garbage cleaning to remove null pointers, empty variables, and new Whatevers that were destroyed by return statements.
                         } else {
                            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-                           System.gc();
                         }
+                            System.gc(); //Force garbage cleaning to remove null pointers, empty variables, and new Whatevers that were destroyed by return statements.
                     } else {
                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                        System.gc();

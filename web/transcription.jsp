@@ -995,7 +995,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
                             }
                         }
                     } else {
-                    out.println("<div id=\"t1\" class=\"transcriptlet\"><textarea id='transcription1' class='ui-corner-all theText' placeholder='>No lines have been automatically detected on this page, please use the Parsing&nbsp;Tool to identify them.</textarea></div>");
+                    out.println("<div id=\"t1\" class=\"transcriptlet\"><textarea id='transcription1' class='ui-corner-all theText' placeholder='No lines have been automatically detected on this page, please use the Parsing&nbsp;Tool to identify them.'></textarea></div>");
                         }%>
             </div>
                 <div id="buttonList">

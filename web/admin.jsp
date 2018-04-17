@@ -629,7 +629,7 @@
                                                     }
                                                 }
                                             }
-                                            String[] cities = Manuscript.getAllCities();
+                                            String[] cities = textdisplay.Manuscript.getAllCities();
                                             for (int i = 0; i < cities.length; i++) {
                                                 CityMap thisCity = new CityMap(cities[i]);
                                                 String mapped = thisCity.getValue();
@@ -1097,8 +1097,8 @@
             <div class="callup" id="form"> <!-- add to project -->
                 <span id="closePopup" class="right caps">close<a class="right ui-icon ui-icon-closethick" title="Close this window">cancel</a></span>
                 <%    //Attach arrays of AllCities and AllRepositories represented on T&#8209;PEN
-                    String[] cities = Manuscript.getAllCities();
-                    String[] repositories = Manuscript.getAllRepositories();
+                    String[] cities = textdisplay.Manuscript.getAllCities();
+                    String[] repositories = textdisplay.Manuscript.getAllRepositories();
                 %>
                 <label class="left" for="cities">City: </label>
                 <select class="left" name="cities" onchange="Manuscript.filteredCity();scrubListings();" id="cities">

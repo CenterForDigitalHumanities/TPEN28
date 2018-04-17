@@ -541,8 +541,8 @@ $(window).load(function(){gapi.plusone.go();});
                 </ul>
                 <div id="manuscripts">
                     <%
-                    String [] allCities = Manuscript.getAllCities();
-                    String [] allRepositories = Manuscript.getAllRepositories();
+                    String [] allCities = textdisplay.Manuscript.getAllCities();
+                    String [] allRepositories = textdisplay.Manuscript.getAllRepositories();
                     %>
                     <div id="cityMS">
                         <h3>Available Cities</h3>
@@ -634,6 +634,7 @@ $(window).load(function(){gapi.plusone.go();});
                         }
                    } catch (SQLException err) {
                     out.print("<p class=ui-state-error-text>Error retreiving list of projects.</p>");
+                    out.print(err.toString());
                    }%>
                 </div>
                 <div id="publicProjects">
@@ -1207,8 +1208,8 @@ $(window).load(function(){gapi.plusone.go();});
             <div class="callup" id="browseMSPanel"> <!-- select -->
                 <span id="closePopup" class="tpenButton right" title="Close this window">close<span class="ui-icon ui-icon-closethick right"></span></span>
                 <%    //Attach arrays of AllCities and AllRepositories represented on T&#8209;PEN
-                    String[] cities = Manuscript.getAllCities();
-                    String[] repositories = Manuscript.getAllRepositories();
+                    String[] cities = textdisplay.Manuscript.getAllCities();
+                    String[] repositories = textdisplay.Manuscript.getAllRepositories();
                     if (thisUser == null) {
                 %>
                 <script type="text/javascript">

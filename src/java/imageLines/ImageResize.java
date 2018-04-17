@@ -117,7 +117,6 @@ public class ImageResize extends HttpServlet {
             if (ir == null) {
                ir = new ImageRequest(folioNum, 0);
             }
-
             try {
                toResize = ImageCache.getImage(folioNum);
                if (toResize != null) {
@@ -125,7 +124,7 @@ public class ImageResize extends HttpServlet {
                } else {
                   LOG.log(Level.INFO, "Cache load failed, loading from source.");
                   Folio f = new Folio(folioNum);
-						try (InputStream stream = f.getUncachedImageStream(false)) {
+                try (InputStream stream = f.getUncachedImageStream(false)) { //getting a 500 connection refused here.  firewall problems.  
                      toResize = ImageIO.read(stream);
                      LOG.log(Level.INFO, "Loaded {0}", toResize);
                      Archive a = new Archive(f.getArchive());
@@ -152,7 +151,8 @@ public class ImageResize extends HttpServlet {
                IIOImage image = new IIOImage(toResize, null, null);
                writer.setOutput(ImageIO.createImageOutputStream(os));
                writer.write(null, image, iwp);
-            } catch (SQLException | IOException | IllegalArgumentException ex) {
+            } 
+            catch (SQLException | IOException | IllegalArgumentException ex) {
                ir.completeFail(getMessage(ex));
                reportInternalError(response, ex);
             }

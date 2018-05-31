@@ -275,7 +275,11 @@ function populatePreview(lines, pageLabel, currentPage, order){
     //TODO: specificially find the xml tags and wrap them in a <span class='xmlPreview'> so that the UI can make a button to toggle the highlight on and off.
     for (var j = 0; j < lines.length; j++){
         num++;
-        var col = letters[letterIndex];
+        var col = "";
+        while (letterIndex > -1) {
+            col+= letters[letterIndex%26]
+            letterIndex -= 26
+        }
         var currentLine = lines[j].on;
         var currentLineXYWH = currentLine.slice(currentLine.indexOf("#xywh=") + 6);
         currentLineXYWH = currentLineXYWH.split(",");

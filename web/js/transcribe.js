@@ -265,21 +265,15 @@ function populatePreview(lines, pageLabel, currentPage, order){
         RTL = true;
     }
     var isCurrent =(tpen.screen.currentFolio===order);
-    var letterIndex = 0;
-    var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     var previewPage = $('<div order="' + order + '" class="previewPage" data-pagenumber="' + pageLabel + '"></div>');
     if (lines.length === 0) {
         previewPage.text("No Lines");
     }
     var num = 0;
+    var col = "A";
     //TODO: specificially find the xml tags and wrap them in a <span class='xmlPreview'> so that the UI can make a button to toggle the highlight on and off.
     for (var j = 0; j < lines.length; j++){
         num++;
-        var col = "";
-        while (letterIndex > -1) {
-            col+= letters[letterIndex%26]
-            letterIndex -= 26
-        }
         var currentLine = lines[j].on;
         var currentLineXYWH = currentLine.slice(currentLine.indexOf("#xywh=") + 6);
         currentLineXYWH = currentLineXYWH.split(",");
@@ -298,12 +292,10 @@ function populatePreview(lines, pageLabel, currentPage, order){
             var lastLineX = lastLineXYWH[0];
             var abs = Math.abs(parseInt(lastLineX) - parseInt(currentLineX));
             if (abs > 0){
-                letterIndex++;
+                col = letters.increment(col);
                 num = 1;
-                col = letters[letterIndex];
                 if(RTL){ //we need to reset the counters a bit differently...
                     num = 1;
-                    //col = letters[letterIndex];
                 }
             }
         }
@@ -1806,9 +1798,6 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
 
     }
     $("#noLineWarning").hide();
-    var letterIndex = 0;
-    var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    letters = letters.split("");
     var update = true;
     if ($("#parsingDiv").is(":visible")){
         update = false; // TODO: Is this just a tpen.screen.liveTool check?
@@ -1826,11 +1815,11 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
     var ratio = 0;
     ratio = theWidth / theHeight;
     var autoParseCheck = 0;
+    var col = "A";
     //Why does this run twice when i am going fullPage() from parsing interface?
     for (var i = 0; i < lines.length; i++){
         var line = lines[i];
         var lastLine = false;
-        var col = letters[letterIndex];
         if (i > 0)lastLine = lines[i - 1];
         var lastLineX = 10000;
         var lastLineWidth = - 1;
@@ -1933,8 +1922,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
                             numberArray[0] = x;
                         }
                         else { //we are in a new column, column indicator needs to increase.
-                            if(lastLine || lastLine.length > 0)letterIndex++;
-                            col = letters[letterIndex];
+                            if(lastLine || lastLine.length > 0)col = letters.increment(col);
                             colCounter = 1; //Reset line counter so that when the column changes the line# restarts
                         }
                     }
@@ -6904,6 +6892,88 @@ function firstBy(){function n(n){return n}function t(n){return"string"==typeof n
         return-1===e.direction?function(n,t){return-r(n,t)}:r}function e(n,t){return n=r(n,t),n.thenBy=u,n}
     function u(n,t){var u=this;return n=r(n,t),e(function(t,r){return u(t,r)||n(t,r)})}return e;
 }
+
+/*
+ * An open source letter incrementor of form
+ * Z then AA
+ * ZZ then AAA
+ * You get it.  This is for numbering columns in the preview tool and in the parsing interface, see letters.increment();  
+ */
+//https://codepen.io/rhroyston/pen/LkoYXN
+var letters = (function() {
+    
+    // object to expose as public properties and methods such as clock.now
+    var pub = {};
+    var letterArray = [];
+    
+    pub.increment = function (c) {
+        letterArray = c.split("");
+        
+        if(isLetters(letterArray)){
+            return(next(c));
+        } else {
+            throw new Error('Letters Only');
+        }                
+    };
+    
+    function isLetters(arr) {
+        for (var i = 0; i < arr.length; i++) {
+            if(arr[i].toLowerCase() != arr[i].toUpperCase()){
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }            
+    
+    function next(c) {
+        var u = c.toUpperCase();
+        if (same(u,'Z')){
+            var txt = '';
+            var i = u.length;
+            while (i--) {
+                txt += 'A';
+            }
+            return (txt+'A');
+        } else {
+            var p = "";
+            var q = "";
+            if(u.length > 1){
+                p = u.substring(0, u.length - 1);
+                q = String.fromCharCode(p.slice(-1).charCodeAt(0));
+            }
+            var l = u.slice(-1).charCodeAt(0);
+            var z = nextLetter(l);
+            if(z==='A'){
+                return p.slice(0,-1) + nextLetter(q.slice(-1).charCodeAt(0)) + z;
+            } else {
+                return p + z;
+            }
+        }
+    }
+    
+    function nextLetter(l){
+        if(l<90){
+            return String.fromCharCode(l + 1);
+        }
+        else{
+            return 'A';
+        }
+    }
+    
+    function same(str,char){
+        var i = str.length;
+        while (i--) {
+            if (str[i]!==char){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    //API
+    return pub;
+}());
 
 
 

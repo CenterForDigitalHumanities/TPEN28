@@ -2157,32 +2157,35 @@ function setPositions() {
         var currentLineHeight = parseFloat(tpen.screen.focusItem[1].attr("lineHeight"));
         var currentLineTop = parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
         var previousLineTop = 0.0;
-        var previousLineHeight = 0.0;
+        var percentageFixed = 0;
         var imgTopHeight = 0.0; //value for the height of imgTop
         if(tpen.screen.focusItem[1].prev().is('.transcriptlet') && currentLineTop > parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"))){
             previousLineTop = parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"));
-            previousLineHeight = parseFloat(tpen.screen.focusItem[1].prev().attr("lineHeight"));
         }
         var bufferForImgTop = previousLineTop - 1.5;
-        imgTopHeight = (currentLineHeight) + 2.5;
+        imgTopHeight = (currentLineHeight) + 3.5;
         bufferForImgTop = currentLineTop - 1.5;
         var imgTopSize = (((imgTopHeight/100)*bottomImageHeight) / Page.height())*100;
         if(bufferForImgTop < 0){
             bufferForImgTop = 0;
         }
-        //We may not be able to show the last line + the next line if there were two tall lines, so account for that here
-        if (imgTopSize > 80){
-            bufferForImgTop = currentLineTop - 1.5; //No longer adjust to previous line, adjust to current line.
-            if(bufferForImgTop < 0){
-                bufferForImgTop = 0;
-            }
-            imgTopHeight = (currentLineHeight) + 3.5; //There will be a new height because of it
-            imgTopSize = (((imgTopHeight/100)*bottomImageHeight) / Page.height())*100; //There will be a new size because of it to check later.
-        }
         var topImgPositionPx = ((-(bufferForImgTop) * bottomImageHeight) / 100);
         //var bottomImgPositionPercent = -(currentLineTop + currentLineHeight);
-        
         var bottomImgPositionPx = -((currentLineTop + currentLineHeight) * bottomImageHeight / 100) + 15; //+15x to show more of the active line on the bottom image than just the bottom slice.
+        //We may not be able to show the last line + the next line if there were two tall lines, so account for that here
+        
+        if (imgTopSize > 80){
+            //We want to show as much of the big line we can from the bottom of the line towards the top. Workspace must stay on screen
+            var bottomOfTallLine = currentLineTop + currentLineHeight;
+            var workspaceHeight = 170; //$("#transWorkspace").height();
+            var origHeight = imgTopHeight;
+            imgTopHeight = ((Page.height() - workspaceHeight - 80) / bottomImageHeight) *  100; //this needs to be a percentage
+            percentageFixed = (100-(origHeight - imgTopHeight))/100; //what percentage of the original amount is left
+            topImgPositionPx = -((bottomOfTallLine - imgTopHeight + percentageFixed)/100)*bottomImageHeight;
+            bottomImgPositionPx = -(((bottomOfTallLine-percentageFixed)/100)*bottomImageHeight + 15);
+            //imgTopHeight = (currentLineHeight) + 3.5; //There will be a new height because of it
+        }
+        
         if(topImgPositionPx <= -12){
             topImgPositionPx += 12;
         }
@@ -2190,8 +2193,10 @@ function setPositions() {
             bottomImgPositionPx += 12;
         }
 
-        var percentageFixed = 0;
-        //use this to make sure workspace stays on screen!
+        
+        
+        //All of this adjusting may have pushed the workspace off screen.  use this to make sure workspace stays on screen!
+        /*
         if (imgTopSize > 80){ //if #imgTop is 80% of the screen size then we need to fix that so the workspace stays.
             var workspaceHeight = 170; //$("#transWorkspace").height();
             var origHeight = imgTopHeight;
@@ -2202,6 +2207,8 @@ function setPositions() {
             topImgPositionPx *= percentageFixed; // and this one
 
         }
+        */
+        
 
     }
     var positions = {
@@ -6299,7 +6306,7 @@ tpen.screen.peekZoom = function(cancel){
                 $("#imgTop").css("height", newCanvasHeight + "px");
                 $("#imgTop").css("width", newCanvasWidth + "px");
                 $("#imgTop img").css({
-                    'height': newCanvasHeight + "px",
+                    'height': newCanvasHeight + "px"
                 });
             }
             else if (tpen.screen.liveTool === "preview"){

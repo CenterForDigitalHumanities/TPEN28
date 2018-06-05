@@ -1416,10 +1416,10 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 $("#imgBottom img").css("top", "0px");
                 $("#imgBottom").css("height", "inherit");
                 $("#parsingButton").attr("disabled", "disabled");
-                alert("No image for this canvas or it could not be resolved.  Not drawing lines.");
                 $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
                 $("#parsingBtn").attr("disabled", "disabled");
                 $("#transTemplateLoading").hide();
+                alert("No image for this canvas or it could not be resolved.  Not drawing lines.");
             };
             image2.src = "images/missingImage.png";
         };

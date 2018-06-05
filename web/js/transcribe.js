@@ -1325,7 +1325,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
     if (canvasObj.images[0].resource['@id'] !== undefined && canvasObj.images[0].resource['@id'] !== ""){ //Only one image
         var image = new Image();
         //Check to see if we can use a preloaded image...
-        if(tpen.project.folioImages[tpen.screen.currentFolio].image){
+        if(tpen.project.folioImages.length > 0 && tpen.project.folioImages[tpen.screen.currentFolio].image){
             image = tpen.project.folioImages[tpen.screen.currentFolio].image;
             tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //We know it is preloaded, ensure the flag is correct.
         }
@@ -2158,7 +2158,7 @@ function setPositions() {
         var percentageFixed = 0;
         var imgTopHeight = 0.0; //value for the height of imgTop
         var bufferForImgTop = currentLineTop - 1.5;; // - 1.5 so there is a little space still shown between drawn line and workspace
-        imgTopHeight = (currentLineHeight) + 3.5; //Add in some extra height to account for padding around active line and woskapce
+        imgTopHeight = (currentLineHeight) + 3.5; //Add in some extra height to account for padding around active line and workspace
         
         var imgTopSize = (((imgTopHeight/100)*bottomImageHeight) / Page.height())*100;
         if(bufferForImgTop < 0){

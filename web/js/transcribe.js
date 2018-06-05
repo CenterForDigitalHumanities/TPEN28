@@ -2155,12 +2155,8 @@ function setPositions() {
         var pairForBookmark = pairForBookmarkCol + pairForBookmarkLine;
         var currentLineHeight = parseFloat(tpen.screen.focusItem[1].attr("lineHeight"));
         var currentLineTop = parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
-        var previousLineTop = 0.0;
         var percentageFixed = 0;
         var imgTopHeight = 0.0; //value for the height of imgTop
-        if(tpen.screen.focusItem[1].prev().is('.transcriptlet') && currentLineTop > parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"))){
-            previousLineTop = parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"));
-        }
         var bufferForImgTop = currentLineTop - 1.5;; // - 1.5 so there is a little space still shown between drawn line and workspace
         imgTopHeight = (currentLineHeight) + 3.5; //Add in some extra height to account for padding around active line and woskapce
         

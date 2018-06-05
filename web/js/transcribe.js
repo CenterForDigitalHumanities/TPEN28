@@ -1895,27 +1895,22 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
                     if (lastLineX !== x){
                         //check if the last line's x value is equal to this
                         // line's x value (means same column)
-                        if (Math.abs(x - lastLineX) <= 3){
-                            //allow a 3 pixel  variance and fix this variance when necessary...
-                        //align them, call them the same Column.
-                /*
-                 * This is a consequence of #xywh for a resource needing to be an integer.  When I calculate its integer position off of
-                 * percentages, it is often a float and I have to round to write back.  This can cause a 1 or 2 pixel discrenpency, which I account
-                 * for here.  There may be better ways of handling this, but this is a good solution for now.
-                 */
+                        if (Math.abs(x - lastLineX) <= 3){                       
+                        /*
+                         * Account for and fix slight discrepencies automatically.  This really helps with a line-by-line interface.
+                         * This is may be a consequence of #xywh needing to be integers.  When I calculate its integer position off of
+                         * percentages, it is often a float and I have to round to write back.  This may be causing slight discrepencies. 
+                         * 
+                         * This is causing different column designations between the .html and .jsp interfaces.  The older interface doesn't show this problem,
+                         * but the new interface's is able to see all lines at once and really pulls it out. These discrepency allowances
+                         * eliminate all of those interface issues.  
+                         * 
+                         */
                             if (lastLineWidth !== w){ //within "same" column (based on 3px variance).  Check the width
                                 if (Math.abs(w - lastLineWidth) <= 5){
-                                    // If the width of the line is within five pixels,
-                                    // automatically make the width equal to the last line's width.
-
-                                    //align them, call them the same Column.
-                            /*
-                             * This is a consequence of #xywh for a resource needing to be an integer.  When I calculate its intger position off of
-                             * percentages, it is often a float and I have to round to write back.  This can cause a 1 or 2 pixel discrenpency, which I account
-                             * for here.  There may be better ways of handling this, but this is a good solution for now.
-                             */
+                                    // If the width of the line is within five pixels,  make them equal so the line up better for the interface.
                                     w = lastLineWidth;
-                                        numberArray[2] = w;
+                                    numberArray[2] = w;
                                 }
                             }
                             x = lastLineX;
@@ -1927,15 +1922,10 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
                         }
                     }
                     else {
-                        // X value matches, we are in the same column and don't
-                        // have to account for any variance or update the array.
-                        // Still check for slight width variance..
+                        // X value matches, we are in the same column
                         if (lastLineWidth !== w){
-                            if (Math.abs(w - lastLineWidth) <= 5){ //within 5 pixels...
-                                //align them, call them the same Column.
-                                /* This is a consequence of #xywh for a resource needing to be an integer.  When I calculate its intger position off of
-* percentages, it is often a float and I have to round to write back.  This can cause a 1 or 2 pixel discrenpency, which I account
-* for here.  There may be better ways of handling this, but this is a good solution for now. */
+                            if (Math.abs(w - lastLineWidth) <= 5){ 
+                                //within 5 pixels...
                                 w = lastLineWidth;
                                 numberArray[2] = w;
                             }
@@ -2174,14 +2164,8 @@ function setPositions() {
             previousLineHeight = parseFloat(tpen.screen.focusItem[1].prev().attr("lineHeight"));
         }
         var bufferForImgTop = previousLineTop - 1.5;
-        if(previousLineHeight > 0.0){
-            imgTopHeight = (previousLineHeight + currentLineHeight) + 3.5;
-        }
-        else{ //there may not be a prev line so use the value of the current line...
-            imgTopHeight = (currentLineHeight) + 3.5;
-            bufferForImgTop = currentLineTop - 1.5;
-        }
-        //var topImgPositionPercent = ((previousLineTop - currentLineTop) * 100) / imgTopHeight;
+        imgTopHeight = (currentLineHeight) + 2.5;
+        bufferForImgTop = currentLineTop - 1.5;
         var imgTopSize = (((imgTopHeight/100)*bottomImageHeight) / Page.height())*100;
         if(bufferForImgTop < 0){
             bufferForImgTop = 0;
@@ -2196,11 +2180,12 @@ function setPositions() {
             imgTopSize = (((imgTopHeight/100)*bottomImageHeight) / Page.height())*100; //There will be a new size because of it to check later.
         }
         var topImgPositionPx = ((-(bufferForImgTop) * bottomImageHeight) / 100);
+        //var bottomImgPositionPercent = -(currentLineTop + currentLineHeight);
+        
+        var bottomImgPositionPx = -((currentLineTop + currentLineHeight) * bottomImageHeight / 100) + 15; //+15x to show more of the active line on the bottom image than just the bottom slice.
         if(topImgPositionPx <= -12){
             topImgPositionPx += 12;
         }
-        //var bottomImgPositionPercent = -(currentLineTop + currentLineHeight);
-        var bottomImgPositionPx = -((currentLineTop + currentLineHeight) * bottomImageHeight / 100);
         if(bottomImgPositionPx <= -12){
             bottomImgPositionPx += 12;
         }
@@ -2322,6 +2307,7 @@ function adjustImgs(positions) {
     //move background images above and below the workspace
     var linesToMakeActive = $(".lineColIndicator[pair='" + positions.activeLine + "']"); //:first
     var topImageHeight = $("#imgTop img").height();
+    
     $("#imgTop")
         .css({
             "height": positions.imgTopHeight + "%"
@@ -2335,6 +2321,7 @@ function adjustImgs(positions) {
             top: positions.topImgPositionPx + "px",
             left: "0px"
         });
+        
     $("#imgBottom img")
         .css({
             top: positions.bottomImgPositionPx + "px",

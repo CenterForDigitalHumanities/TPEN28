@@ -2148,7 +2148,6 @@ function updatePresentation(transcriptlet) {
 
 /* Helper for position focus onto a specific transcriptlet.  Makes sure workspace stays on screen. */
 function setPositions() {
-    // Determine size of section above workspace
     var bottomImageHeight = $("#imgBottom img").height();
     if (tpen.screen.focusItem[1].attr("lineHeight") !== null) {
         var pairForBookmarkCol = tpen.screen.focusItem[1].attr('col');
@@ -2162,55 +2161,48 @@ function setPositions() {
         if(tpen.screen.focusItem[1].prev().is('.transcriptlet') && currentLineTop > parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"))){
             previousLineTop = parseFloat(tpen.screen.focusItem[1].prev().attr("lineTop"));
         }
-        var bufferForImgTop = previousLineTop - 1.5;
-        imgTopHeight = (currentLineHeight) + 3.5;
-        bufferForImgTop = currentLineTop - 1.5;
+        var bufferForImgTop = currentLineTop - 1.5;; // - 1.5 so there is a little space still shown between drawn line and workspace
+        imgTopHeight = (currentLineHeight) + 3.5; //Add in some extra height to account for padding around active line and woskapce
+        
         var imgTopSize = (((imgTopHeight/100)*bottomImageHeight) / Page.height())*100;
         if(bufferForImgTop < 0){
+            //in case the line was at the very tippy top and -1.5 brought it under 0.
             bufferForImgTop = 0;
         }
         var topImgPositionPx = ((-(bufferForImgTop) * bottomImageHeight) / 100);
         //var bottomImgPositionPercent = -(currentLineTop + currentLineHeight);
         var bottomImgPositionPx = -((currentLineTop + currentLineHeight) * bottomImageHeight / 100) + 15; //+15x to show more of the active line on the bottom image than just the bottom slice.
-        //We may not be able to show the last line + the next line if there were two tall lines, so account for that here
         
+        /*
+         * We may not be able to show the last line + the next line if there were two tall lines.
+         * If there is a very tall line, it will want to push the transcription workspace off the screen.
+         * The priority should be to show as much of the very tall line STARTING FROM THE BOTTOM of the line going towards the top
+         * as possible while also adjusting to keep the workspace on screen. 
+         * 
+         */
         if (imgTopSize > 80){
             //We want to show as much of the big line we can from the bottom of the line towards the top. Workspace must stay on screen
             var bottomOfTallLine = currentLineTop + currentLineHeight;
             var workspaceHeight = 170; //$("#transWorkspace").height();
             var origHeight = imgTopHeight;
+            //As tall as image top can be to leave room for the workspace and a little bit of image bottom
             imgTopHeight = ((Page.height() - workspaceHeight - 80) / bottomImageHeight) *  100; //this needs to be a percentage
+            //The height percentage the workspace was bumped up for the imgTopHeight adjustment
             percentageFixed = (100-(origHeight - imgTopHeight))/100; //what percentage of the original amount is left
+            //We must also bump the topImgPositionPx and bottomImgPositionPx by the same amount we fixed the workspace
             topImgPositionPx = -((bottomOfTallLine - imgTopHeight + percentageFixed)/100)*bottomImageHeight;
             bottomImgPositionPx = -(((bottomOfTallLine-percentageFixed)/100)*bottomImageHeight + 15);
-            //imgTopHeight = (currentLineHeight) + 3.5; //There will be a new height because of it
         }
         
+        /* This helps to account for lines at the very tippy top */
         if(topImgPositionPx <= -12){
             topImgPositionPx += 12;
         }
         if(bottomImgPositionPx <= -12){
             bottomImgPositionPx += 12;
         }
-
-        
-        
-        //All of this adjusting may have pushed the workspace off screen.  use this to make sure workspace stays on screen!
-        /*
-        if (imgTopSize > 80){ //if #imgTop is 80% of the screen size then we need to fix that so the workspace stays.
-            var workspaceHeight = 170; //$("#transWorkspace").height();
-            var origHeight = imgTopHeight;
-            imgTopHeight = ((Page.height() - workspaceHeight - 80) / bottomImageHeight) *  100; //this needs to be a percentage
-            percentageFixed = (100-(origHeight - imgTopHeight))/100; //what percentage of the original amount is left
-            //bottomImgPositionPercent *= percentageFixed; //do the same percentage change to this value
-            bottomImgPositionPx *= percentageFixed; //and this one
-            topImgPositionPx *= percentageFixed; // and this one
-
-        }
-        */
-        
-
     }
+    //Return all line positions including the necessary adjustments for desired padding and positioning.  
     var positions = {
         imgTopHeight: imgTopHeight,
         //topImgPositionPercent: topImgPositionPercent,

@@ -52,7 +52,17 @@ var tpen = {
         imgBottomPositionRatio:1,
         originalCanvasHeight : 1000, //The canvas height when initially loaded into the transcription interface.
         originalCanvasWidth: 1, //The canvas width when initially loaded into the transcrtiption interface.
-        mode: "LTR"
+        mode: "LTR",
+        controlsMemory : {
+            minLines : false,
+            zenLine  : false,
+            showLines: true,
+            showLabels: true,
+            grayscale:  false,
+            invert   :  false,
+            bright   :  false,
+            contrast :  false
+        }
     },
     user: {
         isAdmin: false,
@@ -70,23 +80,146 @@ var preloadTimeout;
 /**
  * Make sure all image tools reset to their default values.
 */
-function resetImageTools(newPage){
+//function resetImageTools(newPage){
+//    $("#brightnessSlider").slider("value", "100");
+//    $("#contrastSlider").slider("value", "100");
+//    if($("button[which='grayscale']").hasClass("selected")){
+//            toggleFilter("grayscale");
+//        }
+//    if($("button[which='invert']").hasClass("selected")){
+//        toggleFilter("invert");
+//    }
+//    if($("#showTheLines").hasClass("selected")){
+//        toggleLineMarkers();
+//    }
+//    if(!$("#showTheLabels").hasClass("selected")){
+//        toggleLineCol();
+//    }
+//
+//}
+
+/**
+ * Make sure all image tools reset to their default values.
+*/
+function resetImageTools(){
     $("#brightnessSlider").slider("value", "100");
     $("#contrastSlider").slider("value", "100");
     if($("button[which='grayscale']").hasClass("selected")){
-            toggleFilter("grayscale");
-        }
+        toggleFilter("grayscale");
+    }
     if($("button[which='invert']").hasClass("selected")){
         toggleFilter("invert");
+    }
+    if($("#zenLine").hasClass("selected")){
+        $("#zenLine").remove("selected");
+    }
+    //We need to check the column controls
+    if(!$("#minimalLines").hasClass("selected")){
+        //toggleMinimalLines();
     }
     if($("#showTheLines").hasClass("selected")){
         toggleLineMarkers();
     }
     if(!$("#showTheLabels").hasClass("selected")){
         toggleLineCol();
+    } 
+}
+
+/**
+ * Make sure all image tools reset to their previously selected values.
+*/
+function restoreImageTools(){
+    $("#brightnessSlider").slider("value", tpen.screen.controlsMemory.bright);
+    $("#contrastSlider").slider("value", tpen.screen.controlsMemory.contrast);
+    if(tpen.screen.controlsMemory.grayscale && !$("button[which='grayscale']").hasClass("selected")){
+        toggleFilter("grayscale");
+    }
+    if(tpen.screen.controlsMemory.invert && !$("button[which='invert']").hasClass("selected")){
+        toggleFilter("invert");
+    }
+    if(tpen.screen.controlsMemory.zenLine){
+        //toggleZenLine();
+    }
+    else{
+        if(tpen.screen.controlsMemory.minLines){
+            //toggleMinimalLines();
+        }
+        if(!tpen.screen.controlsMemory.showLines){
+            toggleLineMarkers();
+        }
+        if(!tpen.screen.controlsMemory.showLabels){
+            toggleLineCol();
+        } 
     }
 
 }
+
+function restoreImageToolsFromZen(){
+    $("#brightnessSlider").slider("value", tpen.screen.controlsMemory.bright);
+    $("#contrastSlider").slider("value", tpen.screen.controlsMemory.contrast);
+    if(tpen.screen.controlsMemory.grayscale && !$("button[which='grayscale']").hasClass("selected")){
+        toggleFilter("grayscale");
+    }
+    if(tpen.screen.controlsMemory.invert && !$("button[which='invert']").hasClass("selected")){
+        toggleFilter("invert");
+    }
+    if(tpen.screen.controlsMemory.minLines&& !$("#minimalLines").hasClass("selected")){
+        //toggleMinimalLines();
+    }
+    if(tpen.screen.controlsMemory.showLines){
+        toggleLineMarkers();
+    }
+    if(tpen.screen.controlsMemory.showLabels){
+        toggleLineCol();
+    } 
+}
+
+    /*
+     * Change the interface to restore the canvas controls set by the user
+     * @param {type} str
+     * @returns {Boolean}
+     */
+    function rememberControls(){
+        tpen.screen.controlsMemory = {
+            minLines : $("#minimalLines").hasClass("selected"),
+            zenLine  : $("#zenLine").hasClass("selected"),
+            showLines: $("#showTheLines").hasClass("selected"),
+            showLabels: $("#showTheLabels").hasClass("selected"),
+            grayscale : $("button[which='grayscale']").hasClass("selected"),
+            invert    : $("button[which='invert']").hasClass("selected"),
+            bright    : $("#brightnessSlider").slider("option", "value"),
+            contrast  : $("#contrastSlider").slider("option", "value")
+        };
+        //turn all of these off so they can be reapplied after the new draw.
+        $("#minimalLines").removeClass("selected");
+        $("#zenLine").removeClass("selected");
+        $("#showTheLines").addClass("selected");
+        $("#showTheLabels").addClass("selected");
+        if($("button[which='grayscale']").hasClass("selected")){
+            toggleFilter("grayscale");
+        }
+        if($("button[which='invert']").hasClass("selected")){
+            toggleFilter("invert");
+        }
+    }
+    
+    /*
+     * Change the interface to restore the canvas controls set by the user
+     * @param {type} str
+     * @returns {Boolean}
+     */
+    function rememberControlsForZen(){
+        tpen.screen.controlsMemory = {
+            minLines : $("#minimalLines").hasClass("selected"),
+            zenLine  : $("#zenLine").hasClass("selected"),
+            showLines: $("#showTheLines").hasClass("selected"),
+            showLabels: $("#showTheLabels").hasClass("selected"),
+            grayscale : $("button[which='grayscale']").hasClass("selected"),
+            invert    : $("button[which='invert']").hasClass("selected"),
+            bright    : $("#brightnessSlider").slider("option", "value"),
+            contrast  : $("#contrastSlider").slider("option", "value")
+        };
+    }
 
 /**
  * Redraw the screen for use after updating the current line, folio, or
@@ -94,7 +227,7 @@ function resetImageTools(newPage){
  *
  * @return {undefined}
 */
-function redraw(parsing) {
+function redraw(parsing, restore) {
     tpen.screen.focusItem = [null, null];
     var canvas = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio];
     if (tpen.screen.currentFolio > - 1) {
@@ -105,7 +238,7 @@ function redraw(parsing) {
                 canvas = tpen.manifest.sequences[0].canvases[0];
                 console.warn("Folio was not found in Manifest. Loading first page...");
             }
-            loadTranscriptionCanvas(canvas, "parsing");
+            loadTranscriptionCanvas(canvas, "parsing", "", restore);
             setTimeout(function () {
             hideWorkspaceForParsing();
                 $(".pageTurnCover").fadeOut(1500);
@@ -116,12 +249,13 @@ function redraw(parsing) {
                 canvas = tpen.manifest.sequences[0].canvases[0];
                 console.warn("Folio was not found in Manifest. Loading first page...");
             }
-            loadTranscriptionCanvas(canvas, parsing);
+            loadTranscriptionCanvas(canvas, parsing, "", restore);
         }
     } else {
     // failed to draw, no Canvas selected
     }
     scrubNav();
+    
 }
 
 function scrubNav(){
@@ -149,8 +283,9 @@ function firstFolio() {
     tpen.screen.currentFolio = 0;
     var activeLineID = $(".activeLine:first").attr("lineid");
     var transcriptlet = $("#transcriptlet_"+activeLineID);
+    rememberControls();
     updateLine(transcriptlet, false, false);
-    redraw("");
+    redraw("", true);
 }
 
 /* Load the interface to the last page of the manifest. */
@@ -159,8 +294,9 @@ function lastFolio(){
     tpen.screen.currentFolio = tpen.manifest.sequences[0].canvases.length - 1;
     var activeLineID = $(".activeLine:first").attr("lineid");
     var transcriptlet = $("#transcriptlet_"+activeLineID);
+    rememberControls();
     updateLine(transcriptlet, false, false);
-    redraw("");
+    redraw("", true);
 }
 /* Load the interface to the previous page from the one you are on. */
 function previousFolio (parsing) {
@@ -170,9 +306,10 @@ function previousFolio (parsing) {
     //By updating the active line, we have GUARANTEED everything is saved.  No batch update necessary.
     var activeLineID = $(".activeLine:first").attr("lineid");
     var transcriptlet = $("#transcriptlet_"+activeLineID);
+    rememberControls();
     updateLine(transcriptlet, false, false);
     tpen.screen.currentFolio--;
-    redraw(parsing);
+    redraw(parsing, true);
 }
 
 /* Load the interface to the next page from the one you are on. */
@@ -183,9 +320,10 @@ function nextFolio(parsing) {
     }
     var activeLineID = $(".activeLine:first").attr("lineid");
     var transcriptlet = $("#transcriptlet_"+activeLineID);
+    rememberControls();
     updateLine(transcriptlet, false, false);
     tpen.screen.currentFolio++;
-    redraw(parsing);
+    redraw(parsing, true);
 }
 
 /** Test if a given string can be parsed into a valid JSON object.
@@ -782,7 +920,7 @@ function loadTranscription(pid, tool){
                             this.otherContent = [];
                         }
                     });
-                    loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool);
+                    loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool, false);
                     var projectTitle = tpen.manifest.label;
                     $("#trimTitle").text(projectTitle);
                     $("#trimTitle").attr("title", projectTitle);
@@ -923,7 +1061,7 @@ function loadTranscription(pid, tool){
                     this.otherContent=[];
                 }
             });
-            loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool);
+            loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool, false);
             var projectTitle = userTranscription.label;
             $("#trimTitle").html(projectTitle);
             $("#trimTitle").attr("title", projectTitle);
@@ -1016,7 +1154,7 @@ function loadTranscription(pid, tool){
                                 this.otherContent = [];
                             }
                         });
-                        loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool);
+                        loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool, false);
                         var projectTitle = tpen.manifest.label;
                         $("#trimTitle").text(projectTitle);
                         $("#trimTitle").attr("title", projectTitle);
@@ -1117,7 +1255,7 @@ function loadTranscription(pid, tool){
                             console.warn("`otherContent` does not exist in this Manifest.");
                         }
                     });
-                    loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool);
+                    loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool, false);
                     var projectTitle = projectData.label;
                     $("#trimTitle").html(projectTitle);
                     $("#trimTitle").attr("title", projectTitle); $('#transcriptionTemplate').css("display", "inline-block");
@@ -1298,7 +1436,7 @@ function focusOnLastModified(){
 /*
  * Load a canvas from the manifest to the transcription interface.
  */
-function loadTranscriptionCanvas(canvasObj, parsing, tool){
+function loadTranscriptionCanvas(canvasObj, parsing, tool, restore){
     var noLines = canvasObj.otherContent[0].resources.length === 0;
     var canvasAnnoList = "";
     var canvasURI = canvasObj["@id"];
@@ -1350,7 +1488,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 originalCanvasWidth2 = $("#imgTop img").width();
                 tpen.screen.originalCanvasHeight = $("#imgTop img").height();
                 tpen.screen.originalCanvasWidth =  $("#imgTop img").width();
-                drawLinesToCanvas(canvasObj, parsing, tool);
+                drawLinesToCanvas(canvasObj, parsing, tool, restore);
                 getHistory(); //Do we need to call this later down the stack?  It could be moved into drawLinesToCanvas()
                 $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
                 $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
@@ -1395,6 +1533,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                     $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
                     $("#parsingBtn").attr("disabled", "disabled");
                     $("#transTemplateLoading").hide();
+                    resetImageTools();
                 };
                 image2.src = "images/missingImage.png";
             }
@@ -1419,6 +1558,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
                 $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
                 $("#parsingBtn").attr("disabled", "disabled");
                 $("#transTemplateLoading").hide();
+                resetImageTools();
                 alert("No image for this canvas or it could not be resolved.  Not drawing lines.");
             };
             image2.src = "images/missingImage.png";
@@ -1438,7 +1578,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool){
         $('.transcriptionImage').attr('src', "images/missingImage.png");
         throw Error("The canvas is malformed.  No 'images' field in canvas object or images:[0]['@id'] does not exist.  Cannot draw lines.");
     }
-    resetImageTools(true);
+    //resetImageTools(true);
     //createPreviewPages(); //each time you load a canvas to the screen with all of its updates, remake the preview pages.
 }
 
@@ -1466,7 +1606,7 @@ function updatePageLabels(pageTitle){
  * Here, we are planning to draw the lines to the transcription canvas.  We must checking which version of the project this is for.
  * Some versions check an SQL DB, some hit the annotation store.  We know which version it is by where the lines are with the canvas.
  */
-function drawLinesToCanvas(canvasObj, parsing, tool) {
+function drawLinesToCanvas(canvasObj, parsing, tool, restore) {
     var lines = [];
 //    var currentFolio = parseInt(tpen.screen.currentFolio);
     if ((canvasObj.resources !== undefined && canvasObj.resources.length > 0)) {
@@ -1494,13 +1634,14 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
             .css("top", "0px");
         $("#imgBottom")
             .css("height", "inherit");
+        resetImageTools();
     }
     else if((canvasObj.otherContent[0] !== undefined && canvasObj.otherContent[0].resources !== undefined)){ //&& canvasObj.otherContent[0].resources.length > 0
         //This is TPEN 2.8 using the SQL
         //This situation means we got our lines from the SQL and there is no need to query the store.
         if(canvasObj.otherContent[0].resources.length > 0){
             tpen.screen.dereferencedLists[tpen.screen.currentFolio] = canvasObj.otherContent[0];
-            drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
+            drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool, restore);
             replaceURLVariable("attempts", "0");
         }
         else{
@@ -1563,6 +1704,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
             .css("top", "0px");
         $("#imgBottom")
             .css("height", "inherit");
+        resetImageTools();
         // we have the anno list for this canvas (potentially), so query for it.
         // This is TPEN 2.8, using the annotation store.
 //        var annosURL = "getAnno";
@@ -1618,7 +1760,7 @@ function drawLinesToCanvas(canvasObj, parsing, tool) {
 //            });
 //        } else if (canvasObj.otherContent && canvasObj.otherContent[0] && canvasObj.otherContent[0].resources) {
 //            tpen.screen.dereferencedLists[tpen.screen.currentFolio] = tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0];
-//            drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool);
+//            drawLinesOnCanvas(canvasObj.otherContent[0].resources, parsing, tool, restore);
 //        }
     }
     tpen.screen.textSize();
@@ -1704,7 +1846,7 @@ function reorderLinesForRTL(lines, tool, preview){
         tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = lines;
         tpen.screen.focusItem[0] = null;
         tpen.screen.focusItem[1] = null;
-        drawLinesDesignateColumns(lines, tool, false, "RTL");
+        drawLinesDesignateColumns(lines, tool, false, "RTL", false, false);
     }
     return lines;
 }
@@ -1749,7 +1891,7 @@ function reorderLinesForLTR(lines){
     tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = lines;
     tpen.screen.focusItem[0] = null;
     tpen.screen.focusItem[1] = null;
-    drawLinesDesignateColumns(lines, tpen.screen.liveTool, false, "LTR");
+    drawLinesDesignateColumns(lines, tpen.screen.liveTool, false, "LTR", false, false);
     return lines;
 }
 
@@ -1786,7 +1928,7 @@ function performInterfaceShift(interface){
  * must figure out line#s and column letters.  Only supporting
  * top to bottom && (LTR || RTL)
  * */
-function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
+function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore){
     $(".lineColIndicatorArea").empty(); //Clear the lines that are drawn off the screen.  This is in case of an interface toggle.
     $(".transcriptlet").remove(); //Clear out the transcriptlets, they are being redrawn.
     if(RTL){
@@ -2066,6 +2208,12 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview){
 //    }
     if(tpen.screen.mode === "RTL"){
         performInterfaceShift("RTL");
+    }
+    if(restore){
+        restoreImageTools();
+    }
+    else{
+        resetImageTools();
     }
     $("#transTemplateLoading").hide(); //if we drew the lines, this can disappear.;
     createPreviewPages(); //Every time we load a canvas to the screen with its new updates, we want to update previewPages as well.
@@ -2838,6 +2986,7 @@ function restoreTransition(){
 * for the selected tool.
 */
 function hideWorkspaceForParsing(){
+    rememberControls();
     tpen.screen.liveTool = "parsing";
     $("#parsingBtn").css("box-shadow: none;");
     //    tpen.screen.originalCanvasHeight = $("#transcriptionCanvas").height(); //make sure these are set correctly
@@ -3091,7 +3240,7 @@ function fullPage(){
         $("#transTemplateLoading").show();
         $(".transcriptlet").remove(); //we are about to redraw these, if we dont remove them, then the transcriptlets repeat.
         setTimeout(function(){
-            redraw("fromParse");
+            redraw("fromParse", true);
         }, 750);
     }
     $("#imgTop img,#imgBottom img,#imgTop .lineColIndicatorArea, #imgBottom .lineColIndicatorArea, #bookmark, #imgTop, #imgBottom").removeClass('noTransition');
@@ -4001,14 +4150,16 @@ function togglePageJump(){
 /* Change the page to the specified page from the drop down selection. */
 function pageJump(page, parsing){
     var canvasToJumpTo = parseInt(page);; //0,1,2...
+    rememberControls();
     if (tpen.screen.currentFolio !== canvasToJumpTo && canvasToJumpTo >= 0){ //make sure the default option was not selected and that we are not jumping to the current folio
         //Data.saveTranscription("");
         tpen.screen.currentFolio = canvasToJumpTo;
         if (parsing === "parsing" || tpen.screen.liveTool === "parsing"){
+            
             $(".pageTurnCover").show();
             fullPage();
             tpen.screen.focusItem = [null, null];
-            redraw(parsing);
+            redraw(parsing, true);
             //loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[canvasToJumpTo], parsing);
             setTimeout(function(){
                 if(tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing){
@@ -4021,7 +4172,7 @@ function pageJump(page, parsing){
         else {
             tpen.screen.currentFolio = canvasToJumpTo;
             tpen.screen.focusItem = [null, null];
-            redraw("");
+            redraw("", true);
             //loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[canvasToJumpTo], "");
         }
     }
@@ -4076,6 +4227,7 @@ function toggleLineMarkers(){
         $("#showTheLines").addClass("selected");
         $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
     }
+    tpen.screen.controlsMemory.showTheLines = $("#showTheLines").hasClass("selected");
 }
 
 /* Toggle the drawn lines in the transcription interface. */
@@ -4089,6 +4241,7 @@ function toggleLineCol(){
         $("#showTheLabels").addClass("selected");
         $.each($(".lineColOnLine"), function(){$(this).css("line-height", $(this).height() + "px"); });
     }
+    tpen.screen.controlsMemory.showTheLabels = $("#showTheLabels").hasClass("selected");
 }
 
 function updateLinesInColumn(column, clean){
@@ -4208,7 +4361,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
 
 }
 
-    function drawLinesOnCanvas(lines, parsing, tool){
+    function drawLinesOnCanvas(lines, parsing, tool, restore){
         var RTL = false;
         if (lines.length > 0){
             $("#transTemplateLoading").hide();
@@ -4216,7 +4369,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
             if(tpen.screen.mode==="RTL"){
                 RTL = true;
             }
-            drawLinesDesignateColumns(lines, tool, RTL, "");
+            drawLinesDesignateColumns(lines, tool, RTL, "", false, restore);
         }
         else { //list has no lines
             if (parsing !== "parsing") {
@@ -4230,6 +4383,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
             $("#imgTop img").css("top", "0px");
             $("#imgBottom").css("height", "inherit");
             $("#parsingBtn").css("box-shadow", "0px 0px 6px 5px yellow");
+            resetImageTools();
         }
         updateURL("p");
     }
@@ -4252,7 +4406,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
             annos = tpen.screen.dereferencedLists[canvasIndex].resources;
             //tpen.screen.currentAnnoListID = tpen.screen.dereferencedLists[tpen.screen.currentFolio]["@id"];
             if(drawFlag){
-                drawLinesOnCanvas(annos, parsing, tpen.screen.liveTool);
+                drawLinesOnCanvas(annos, parsing, tpen.screen.liveTool, restore);
             }
             return annos;
         }
@@ -4284,7 +4438,7 @@ function batchLineUpdate(linesInColumn, relocate, parsing){
 //                            }
                         }
                         if(drawFlag){
-                            drawLinesOnCanvas(annos, parsing, tpen.screen.liveTool);
+                            drawLinesOnCanvas(annos, parsing, tpen.screen.liveTool, restore);
                         }
                         return annos;
                     }

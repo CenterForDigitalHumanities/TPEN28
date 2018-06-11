@@ -1617,7 +1617,7 @@ button.active {
     color:white;
     transition: box-shadow .5s;
     opacity: .36;
-    display: none;
+    /*display: none;*/
     box-sizing: border-box;
     box-shadow: none;
 }

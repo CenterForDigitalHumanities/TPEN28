@@ -841,6 +841,9 @@ function loadTranscription(pid, tool){
     //Object validation here.
     var projectID = 0;
     var userTranscription = $('#transcriptionText').val();
+    if(userTranscription === false){
+        userTranscription = "";
+    }
     var pageToLoad = getURLVariable("p");
     var canvasIndex = 0;
     $("#projectsBtn").attr("href", "project.jsp?projectID="+pid);

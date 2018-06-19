@@ -6282,7 +6282,18 @@ tpen.screen.peekZoom = function(cancel){
                 // Parsing tool is open
                 return false;
             }
+            $("#canvasControls").attr("disabled", "disabled").addClass("peekZoomLockout");
+            $("#pageJump").attr("disabled", "disabled").addClass("peekZoomLockout");
+            $("#nextCanvas").attr("onclick", "").addClass("peekZoomLockout");
+            $("#prevCanvas").attr("onclick", "").addClass("peekZoomLockout");
+            $("#prevPage").attr("disabled", "disabled").addClass("peekZoomLockout");
+            $("#nextPage").attr("disabled", "disabled").addClass("peekZoomLockout");
+            $("#parsingBtn").attr("disabled", "disabled").addClass("peekZoomLockout");
+            $("#magnify1").attr("disabled", "disabled").addClass("peekZoomLockout");
+            $("#splitScreenTools").attr("disabled", "disabled").addClass("peekZoomLockout");
+            $("#zoomLock").css("background-color", "#8198AA");
             $(".lineColIndicatorArea").fadeOut();
+            
             tpen.screen.peekMemory = [parseFloat(topImg.css("top")),parseFloat(btmImg.css("top")),$("#imgTop").css("height")];
             //For some reason, doing $("#imgTop").height() and getting the integer value causes the interface to be broken when restored in the else below, even though it is the same value.
             $("#imgTop").css({
@@ -6318,6 +6329,16 @@ tpen.screen.peekZoom = function(cancel){
             $("#imgTop").css({
                 "height"    : tpen.screen.peekMemory[2]
             });
+            $("#canvasControls").removeAttr("disabled").removeClass("peekZoomLockout");
+            $("#pageJump").removeAttr("disabled").removeClass("peekZoomLockout");
+            $("#prevCanvas").attr("onclick", "previousFolio();").removeClass("peekZoomLockout");
+            $("#nextCanvas").attr("onclick", "nextFolio();").removeClass("peekZoomLockout");
+            $("#prevPage").removeAttr("disabled").removeClass("peekZoomLockout");
+            $("#nextPage").removeAttr("disabled").removeClass("peekZoomLockout");
+            $("#parsingBtn").removeAttr("disabled").removeClass("peekZoomLockout");
+            $("#splitScreenTools").removeAttr("disabled").removeClass("peekZoomLockout");
+            $("#magnify1").removeAttr("disabled").removeClass("peekZoomLockout");
+            $("#zoomLock").css("background-color", "#272727");
             $(".lineColIndicatorArea").fadeIn();
             tpen.screen.isPeeking = false;
         }

@@ -2047,3 +2047,7 @@ button,.navigation, #contribution,
     user-select: none;
 }
 
+.peekZoomLockout{
+    background-color: red !important;
+}
+

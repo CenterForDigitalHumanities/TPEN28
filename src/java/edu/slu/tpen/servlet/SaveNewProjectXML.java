@@ -56,6 +56,7 @@ public class SaveNewProjectXML extends HttpServlet {
             TagButton newButton = new TagButton(projectID, position, tag, true, description);
             buttonToSendOut = "<li class='projectTag' position='"+position+"' onclick=\"editxmlcnfrm("+position+", event);\">"+tag+"<span class='removechar' onclick=\"removetagcnfrm("+position+");\">X</span></li>";
             out.println(buttonToSendOut);
+            out.close();
         } catch (SQLException ex) {
             Logger.getLogger(UpdateProjectTag.class.getName()).log(Level.SEVERE, null, ex);
         }

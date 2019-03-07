@@ -6282,6 +6282,7 @@ tpen.screen.peekZoom = function(cancel){
                 // Parsing tool is open
                 return false;
             }
+            tpen.screen.focusItem[1].find(".theText").attr("disabled", "disabled");
             $("#canvasControls").attr("disabled", "disabled").addClass("peekZoomLockout");
             $("#pageJump").attr("disabled", "disabled").addClass("peekZoomLockout");
             $("#nextCanvas").attr("onclick", "").addClass("peekZoomLockout");
@@ -6329,6 +6330,7 @@ tpen.screen.peekZoom = function(cancel){
             $("#imgTop").css({
                 "height"    : tpen.screen.peekMemory[2]
             });
+            tpen.screen.focusItem[1].find(".theText").removeAttr("disabled");
             $("#canvasControls").removeAttr("disabled").removeClass("peekZoomLockout");
             $("#pageJump").removeAttr("disabled").removeClass("peekZoomLockout");
             $("#prevCanvas").attr("onclick", "previousFolio();").removeClass("peekZoomLockout");

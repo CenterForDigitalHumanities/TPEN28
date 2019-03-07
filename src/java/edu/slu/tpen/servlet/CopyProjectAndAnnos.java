@@ -9,7 +9,6 @@ import edu.slu.tpen.entity.Image.Canvas;
 import edu.slu.tpen.servlet.util.CreateAnnoListUtil;
 import static edu.slu.util.LangUtils.buildQuickMap;
 import edu.slu.util.ServletUtils;
-import static edu.slu.util.ServletUtils.getDBConnection;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -29,7 +28,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.*;
-import org.apache.commons.lang.StringUtils;
 import org.owasp.esapi.ESAPI;
 import textdisplay.Annotation;
 import textdisplay.Folio;
@@ -225,6 +223,7 @@ public class CopyProjectAndAnnos extends HttpServlet {
                                     sbAnnoLines.append(lines);
                                 }
                                 returnedAnnoList.close();
+                                ucCopyAnno.disconnect();
                                 String parseThis = sbAnnoLines.toString();
                                 JSONObject batchSaveResponse = JSONObject.fromObject(parseThis);
 

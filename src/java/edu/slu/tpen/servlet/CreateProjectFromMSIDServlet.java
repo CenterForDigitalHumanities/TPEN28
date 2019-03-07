@@ -45,6 +45,7 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter writer = response.getWriter();
         writer.print(creatManuscriptFolioProject(request, response)); //To change body of generated methods, choose Tools | Templates.
+        writer.close();
     }
     
     @Override

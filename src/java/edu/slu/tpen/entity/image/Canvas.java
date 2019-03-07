@@ -6,8 +6,7 @@
 
 package edu.slu.tpen.entity.Image;
 
-import static com.hp.hpl.jena.assembler.Assembler.connection;
-import static com.hp.hpl.jena.vocabulary.TestManifest.result;
+
 import edu.slu.tpen.servlet.Constant;
 import static edu.slu.util.LangUtils.buildQuickMap;
 import java.io.BufferedReader;
@@ -20,7 +19,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +28,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.owasp.esapi.ESAPI;
-import textdisplay.Annotation;
 import textdisplay.Folio;
-import textdisplay.TagButton;
 import textdisplay.Transcription;
 
 /**

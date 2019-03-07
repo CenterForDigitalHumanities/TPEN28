@@ -49,6 +49,7 @@ public class GetAllManuscriptServlet extends HttpServlet {
             jo.element("repositories", allRepositories);
             PrintWriter out = response.getWriter();
             out.print(jo);
+            out.close();
         } catch (SQLException ex) {
             Logger.getLogger(GetAllManuscriptServlet.class.getName()).log(Level.SEVERE, null, ex);
         }

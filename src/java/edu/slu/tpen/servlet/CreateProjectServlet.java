@@ -20,11 +20,15 @@ import edu.slu.util.ServletUtils;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -57,12 +61,36 @@ public class CreateProjectServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter writer = response.getWriter();
         writer.print(creatManuscriptFolioProject(request, response)); //To change body of generated methods, choose Tools | Templates.
+        writer.close();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 //        super.doGet(request, response); //To change body of generated methods, choose Tools | Templates.
         this.doPost(request, response);
+    }
+    
+     private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+          sb.append((char) cp);
+        }
+        return sb.toString();
+    }
+
+    
+    private JSONObject resolveManifestURL(String url) throws MalformedURLException, IOException {
+        System.out.println("Resolve URL "+url);
+        InputStream is = new URL(url).openStream();
+        try {
+          BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+          String jsonText = readAll(rd);
+          JSONObject json = JSONObject.fromObject(jsonText);   
+          return json;
+        } finally {
+          is.close();
+        }
     }
 
     /**
@@ -103,7 +131,7 @@ public class CreateProjectServlet extends HttpServlet {
             String str_manifest = request.getParameter("scmanifest");
             List<Integer> ls_folios_keys = new ArrayList();
             if (null != str_manifest) {
-                JSONObject jo = JSONObject.fromObject(str_manifest);
+                JSONObject jo = resolveManifestURL(str_manifest);
                 if(jo.has("@id")){
                     archive = jo.getString("@id");
                 }

@@ -78,6 +78,7 @@ public class GetManuscriptsByCityAndRepository extends HttpServlet {
         }
         PrintWriter out = response.getWriter();
         out.print(jo);
+        out.close();
     }
 
     @Override

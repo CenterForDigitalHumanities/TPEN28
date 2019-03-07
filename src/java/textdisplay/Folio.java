@@ -872,6 +872,7 @@ public class Folio {
    private line[] detect(Line col) throws SQLException, IOException {
       try (InputStream stream = getImageStream(false)) {
          BufferedImage img = ImageIO.read(stream);
+         stream.close();
          int height = 1000;
          int width = (int) ((height / (double) img.getHeight()) * img.getWidth());
          img = ImageHelpers.scale(img, height, width);
@@ -938,6 +939,7 @@ public class Folio {
          //System.out.println("I am in detect() in FOlio.java  What is stream?");
         // System.out.println(stream);
          BufferedImage img = ImageIO.read(stream);
+         stream.close();
         // System.out.println("DID I GET BUFFERED IMG +++++++++++");
         // System.out.println(img);
 //         writeDebugImage(img, "uncached");
@@ -947,7 +949,6 @@ public class Folio {
          int height = 1000;
          //System.out.println("going into imageProcessor.  Did i get height: "+height);
          imageProcessor proc = new imageProcessor(img, height);
-
          List<line> detectedLines;
          // There is an aggressive Line detection method that attempts to extract characters from the binarized image
          // and use those pasted on a fresh canvas to detect lines. It is only used for a few specific image hosts

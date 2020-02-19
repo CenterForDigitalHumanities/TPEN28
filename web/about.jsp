@@ -38,78 +38,7 @@
                             <p>T&#8209;PEN is released under <a href="http://www.opensource.org/licenses/ecl2.php" title="Educational Community License" target="_blank">ECL v.2.0</a> as free and open-source software (<a href="https://github.com/jginther/T-PEN/tree/master/trunk" target="_blank">git</a>), the primary instance of which is maintained by SLU at <a href="www.T&#8209;PEN.org" target="_blank">T&#8209;PEN.org</a>.
                             </p>
                         </li>
-                        <li id="contactForm" class="gui-tab-section">
-                            <h3>More T&#8209;PEN</h3>
-                                                                <div id='sharing'>
-                    <a id="shareFacebook" class="share" 
-                       href="http://www.facebook.com/pages/The-T-Pen-project/155508371151230"
-                       sharehref="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.t-pen.org"
-                       target="_blank">
-                        <img alt="facebook"
-                             src="images/sharing/facebook.png"/>
-                    </a>
-                    <a id="shareYoutube" class="share" 
-                       href="http://www.youtube.com/user/tpentool"
-                       target="_blank">
-                        <img alt="youtube"
-                             src="images/sharing/youtube-128.png"/>
-                    </a>
-                </div>
-                            <dl>
-                                <dt>E-mail</dt>
-                                <dd>
-                                    <%
-                                        if (request.getParameter("contactTPEN") != null) {
-                                            String msg = "Message was not successfully received.";
-                                            if (request.getParameter("contact") != null) {
-                                                msg = request.getParameter("contact");
-                                            }
-                                            User thisUser = new User("ginthej@slu.edu");
-                                            int msgSent = thisUser.contactTeam(msg);
-                                            switch (msgSent) {
-                                                case 0:
-                                                    out.print("<span class='loud'><span class='ui-icon ui-icon-check left'></span>Message sent</span>");
-                                                    break;
-                                                case 1:
-                                                    out.print("<span class='ui-state-error-text'><span class='ui-icon ui-icon-alert left'></span>You must log in to send a message</span>");
-                                                    break;
-                                                case 2:
-                                                    out.print("<span class='ui-state-error-text'><span class='ui-icon ui-icon-close left'></span>Server failed to send your message</span>");
-                                                    break;
-                                            }
-                                        }
-                                    %>
-                                    <form action="about.jsp" method="POST" onsubmit="return Message.isValid();">
-                                        <script>
-                                            var Message = {
-                                                isValid:    function(){
-                                                    var contact = $("#contact");
-                                                    var msgLength = contact.val().length
-                                                    var maxLength = 10000;
-                                                    if (msgLength > maxLength) {
-                                                        contact.addClass("ui-state-error-text")
-                                                        .change(function(){
-                                                            var maxLength = 10000;
-                                                            var msgLength = $("#contact").val().length
-                                                            if (msgLength < maxLength) contact.removeClass("ui-state-error-text");
-                                                        });
-                                                        alert ("Please limit your message to "+maxLength+" characters.");
-                                                        return false;
-                                                    }
-                                                    if (msgLength === 0) {
-                                                        alert ("No message to send");
-                                                        return false;
-                                                    }
-                                                    return true;
-                                                }
-                                            };
-                                        </script>
-                                        <input type="hidden" value="3" name="selecTab" />
-                                        <textarea id="contact" name="contact" placeholder="Include contact information in your message for a response."></textarea>
-                                        <input type="submit" name="contactTPEN" value="Send Message" />
-                                    </form> </dd>
-                            </dl>
-
+                        <li class="gui-tab-section" style="background-image:url(./images/trexhead.png);">
                         </li>
                         <li class="gui-tab-section">
                             <h3>User Agreement</h3>

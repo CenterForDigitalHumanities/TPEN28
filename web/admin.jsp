@@ -845,22 +845,7 @@
                                 </p>
                             </li>
                             <li id="contactForm" class="gui-tab-section">
-                                <h3>More T&#8209;PEN</h3>
-                                    <div id='sharing'>
-                    <a id="shareFacebook" class="share" 
-                       href="http://www.facebook.com/pages/The-T-Pen-project/155508371151230"
-                       sharehref="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.t-pen.org"
-                       target="_blank">
-                        <img alt="facebook"
-                             src="images/sharing/facebook.png"/>
-                    </a>
-                    <a id="shareYoutube" class="share" 
-                       href="http://www.youtube.com/user/tpentool"
-                       target="_blank">
-                        <img alt="youtube"
-                             src="images/sharing/youtube-128.png"/>
-                    </a>
-                </div>
+                                <h3>Contact Us</h3>
                                 <div>
 <!--                                    <div class="tpenButton contact">Directed Communication</div>
                                     <div class="contactDiv" style="display:block;">
@@ -886,7 +871,6 @@
                                             <input type="submit" value="Submit" />
                                         </form>
                                     </div>-->
-                                    <h4>Contact Us</h4>
                                     <div>
                                         <%
                                             if (request.getParameter("contactTPEN") != null) {

@@ -506,7 +506,7 @@ $(window).load(function(){gapi.plusone.go();});
                     <%}%>    
                 <div id='sharing'>
                     <a id="videoBtn" class="share" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/0S5ilvLM9fw');"><img class="videoShare" src="../TPEN/images/helpinvert.png"/></a>                    
-                    <a id="shareFacebook" class="share" 
+                    <!-- <a id="shareFacebook" class="share" 
                        href="http://www.facebook.com/pages/The-T-Pen-project/155508371151230"
                        sharehref="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.t-pen.org"
                        target="_blank">
@@ -518,7 +518,7 @@ $(window).load(function(){gapi.plusone.go();});
                        target="_blank">
                         <img alt="youtube"
                              src="images/sharing/youtube-128.png"/>
-                    </a>
+                    </a> -->
                 </div>
             </div>
             <div id="tabs" style="padding-bottom: 3em;">

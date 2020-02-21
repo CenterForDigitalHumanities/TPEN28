@@ -126,7 +126,7 @@ public class Project {
     * Add a tool by url which can be displayed in an iframe
     */
    private void addUserTool(Connection conn, String name, String url) throws SQLException {
-      UserTool ignored = new UserTool(conn, name, url, projectID);
+      new UserTool(conn, name, url, projectID);
    }
 
    /**
@@ -388,7 +388,7 @@ public class Project {
          ResultSet rs = stmt.getGeneratedKeys();
          if (rs.next()) {
             projectID = rs.getInt(1);
-            Metadata ignored = new Metadata(conn, projectID, name);
+            new Metadata(conn, projectID, name);
             initializeTools(conn);
             groupID = group;
          }
@@ -518,39 +518,6 @@ public class Project {
          }
       }
       return result != null ? result : new Date(0);
-   }
-
-   /**
-    * take any existing public image parsings and save them as Project specific
-    */
-   private void storeImagePositions(int folio) throws SQLException {
-      Connection j = null;
-      PreparedStatement qry = null;
-      PreparedStatement insertStatement = null;
-      try {
-         String query = "select * from imagepositions where folio=?";
-         j = DatabaseWrapper.getConnection();
-         qry = j.prepareStatement(query);
-         qry.setInt(1, folio);
-         ResultSet rs = qry.executeQuery();
-         String insertQuery = "insert into projectimagepositions(folio, project, line, top, bottom, colstart, width) values(?,?,?,?,?,?,?)";
-         insertStatement = j.prepareStatement(insertQuery);
-         while (rs.next()) {
-            insertStatement.setInt(1, rs.getInt("folio"));
-            insertStatement.setInt(3, rs.getInt("line"));
-            insertStatement.setInt(4, rs.getInt("top"));
-            insertStatement.setInt(5, rs.getInt("bottom"));
-            insertStatement.setInt(6, rs.getInt("colstart"));
-            insertStatement.setInt(7, rs.getInt("width"));
-            insertStatement.setInt(2, rs.getInt("projectID"));
-            insertStatement.execute();
-         }
-      } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(qry);
-         DatabaseWrapper.closePreparedStatement(insertStatement);
-
-      }
    }
 
    /**

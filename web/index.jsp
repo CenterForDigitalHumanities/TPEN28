@@ -63,7 +63,6 @@
         <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
         <!--[if lt IE 8]><link rel="stylesheet" href="css/ie.css" type="text/css" media="screen, projection"><![endif]-->
         <link type="text/css" href="css/custom-theme/jQuery.css" rel="stylesheet" />
-        <link href='http://fonts.googleapis.com/css?family=Stardos+Stencil:700' rel='stylesheet' type='text/css'>
         <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
         <script src="js/manuscriptFilters.js" type="text/javascript"></script>
@@ -356,56 +355,13 @@
                 timer = setInterval(showRemaining, 1000);
             }
             
-            var blogTags = new Array();
-            function blogPostsJson(data) {
-                        var posts = data.feed;
-                        recentArticleDate = Date.parse(posts.entry[0].published.$t);
-                        var addResult = new Array();
-                        var blogContents = new Array();
-                        for (var i=0;i<posts.entry.length;i++){
-                            var tagsLength = posts.entry[i].category.length;
-                            var theseTags = new Array();
-                            for (var j=0;j<tagsLength;j++){
-                                var thisTag = posts.entry[i].category[j].term;
-                                theseTags.push(thisTag);
-                                if ($.inArray(thisTag,blogTags) === -1){
-                                    blogTags.push(thisTag);
-                                }
-                            }
-                            addResult.push(
-                                "<li class='blogTitle ui-state-default ",theseTags.join(" "),"'><a href='",posts.entry[i].link.pop().href,"' target='_blank'>",
-                                posts.entry[i].title.$t.replace("T-PEN","T&#8209;PEN"),
-                                "</a></li>");
-                            blogContents.push(
-                                "<li class='blogEntry'><div class='byline'><div class='blogDate small'>",
-                                posts.entry[i].published.$t.substr(0, 16),
-                                "</div><div class='blogAuthor small'>Written by ",
-                                posts.entry[i].author[0].name.$t,
-                                "</div></div><div class='blogSnippet'>",
-                                posts.entry[i].content.$t,
-                                "</div></li>");
-                        }
-                        $(function(){
-                          $("#blogTitles")
-                            .append(addResult.join(""));
-                        $("#blogContent")
-                            .append(blogContents.join(""));
-                      $("#blogTags").append(buildBlogTags());
-                      $("#blogLoad").remove();
-                        });
-            };
             function tabSize(){
-            if(!!$("#tabs").length && !!$("#projects").length && !!$("#blogTitles").length && !!$("#recentProject").length) {
+            if(!!$("#tabs").length && !!$("#projects").length && !!$("#recentProject").length) {
                 var tabsHeight = $("#tabs").height();
                     var maxHeight = tabsHeight-$("#projects").position().top;
                         $("#projects")
                             .css("max-height",maxHeight);
-                    maxHeight = tabsHeight-$("#blogTitles").position().top;
-                        $("#blogTitles")
-                            .css("max-height",maxHeight).attr('class','');
-                        $("#blogContent")
-                            .css("max-height",maxHeight);
-                        $(".blogTitle").eq(0).trigger("mouseover"); //default to first
+                    maxHeight = tabsHeight;
                     $(".lists").filter(":visible").each(function(){
                         maxHeight = tabsHeight-$(this).position().top;
                             $(this)
@@ -418,34 +374,7 @@
                     }
             }
             }
-            function buildBlogTags(){
-                var tagOptions = new Array();
-                var tagsLength = blogTags.length;
-                for (var i=0;i<tagsLength;i++){
-                    if (blogTags[i] == 'T-PEN') continue;
-                    tagOptions.push(blogTags[i]);
-                }
-                return "<option>"+tagOptions.join("</option><option>")+"</option>";
-            }
-//            Google and Facebook Buttons
-//            (function() {
-//                var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-//                po.src = 'https://apis.google.com/js/plusone.js';
-//                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-//            })();
-//            (function(d, s, id) {
-//  var js, fjs = d.getElementsByTagName(s)[0];
-//  if (d.getElementById(id)) return;
-//  js = d.createElement(s); js.id = id;
-//  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-//  fjs.parentNode.insertBefore(js, fjs);
-//}(document, 'script', 'facebook-jssdk'));
-$(window).load(function(){gapi.plusone.go();});
         </script>
-        <script src="http://digital-editor.blogspot.com/feeds/posts/default?alt=json-in-script&callback=blogPostsJson"></script>
-<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
-  {parsetags: 'explicit'}
-</script>
     </head>
     <body id="landing2">
         <div id="wrapper2">

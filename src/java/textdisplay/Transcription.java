@@ -19,15 +19,15 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import com.hp.hpl.jena.rdf.model.*;
-import java.sql.Timestamp;
 import org.owasp.esapi.ESAPI;
 
 
@@ -57,99 +57,6 @@ public class Transcription {
    private int lineID;
 
    /**
-    * @deprecated in favor of one including creator id Create a new Transcription bounding. The text will be
-    * added later. After using this, running getLineID on the resultant object will get you the Line
-    * identifier that can be used for setting text.
-    * @param projectID
-    * @param Folio
-    * @param x
-    * @param y
-    * @param height
-    * @param width
-    */
-   public Transcription(int projectID, int folio, int x, int y, int height, int width, Boolean isProject) throws SQLException, IOException {
-      if (isProject) {
-         String insertQuery = "insert into transcription(projectID,folio,x,y,height,width,comment,text,line,creator, date) values(?,?,?,?,?,?,'','',-1,0,?)";
-         Connection j = null;
-         PreparedStatement ps = null;
-         
-         try {
-            Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-            this.projectID = projectID;
-            this.folio = folio;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.text = "";
-            this.comment = "";
-            this.date = now;
-            j = DatabaseWrapper.getConnection();
-            ps = j.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, projectID);
-            ps.setInt(2, folio);
-            ps.setInt(3, x);
-            ps.setInt(4, y);
-            ps.setInt(5, height);
-            ps.setInt(6, width);
-            ps.setTimestamp(7, now);
-            ps.execute();
-            ResultSet rs = ps.getGeneratedKeys();
-            //the Line id is an auto increment field, so get that and store it here.
-            if (rs.next()) {
-               this.lineID = rs.getInt(1);
-            }
-            this.projectID = projectID;
-            this.folio = folio;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-//            TranscriptionIndexer.add(this);
-         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
-         }
-      } else {
-         //in this case projectID is actually a UID
-         String insertQuery = "insert into transcription(creator,folio,x,y,height,width,comment,text,line, date) values(?,?,?,?,?,?,'','',-1,?)";
-         Connection j = null;
-         PreparedStatement ps = null;
-         try {
-            Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-            j = DatabaseWrapper.getConnection();
-            ps = j.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, projectID);
-            ps.setInt(2, folio);
-            ps.setInt(3, x);
-            ps.setInt(4, y);
-            ps.setInt(5, height);
-            ps.setInt(6, width);
-            ps.setTimestamp(7, now);
-            ps.execute();
-            ResultSet rs = ps.getGeneratedKeys();
-            //the Line id is an auto increment field, so get that and store it here.
-            if (rs.next()) {
-               this.lineID = rs.getInt(1);
-            }
-            this.date = now;
-            this.text = "";
-            this.comment = "";
-            this.projectID = projectID;
-            this.folio = folio;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-
-         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
-         }
-      }
-   }
-
-   /**
     * Create a new Transcription specifying creator and projectid(if applicable)
     *
     * @param uid user responsible for creating this transcriptions
@@ -160,7 +67,7 @@ public class Transcription {
     * @param r bounding box for transcription
     * @throws SQLException
     */
-   public Transcription(int uid, int projID, int folioID, String t, String c, Rectangle r) throws SQLException, IOException {
+   public Transcription(final int uid, final int projID, final int folioID, final String t, final String c, final Rectangle r) throws SQLException, IOException {
       try (Connection j = DatabaseWrapper.getConnection()) {
          try (PreparedStatement ps = j.prepareStatement("INSERT INTO transcription (creator, projectID, folio, x, y, width, height, comment, text, line, date) " +
                  "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, -1, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -185,7 +92,7 @@ public class Transcription {
             ps.setString(9, comment);
             ps.setTimestamp(10, date);
             ps.execute();
-            ResultSet rs = ps.getGeneratedKeys();
+            final ResultSet rs = ps.getGeneratedKeys();
             //the Line id is an auto increment field, so get that and store it here.
             if (rs.next()) {
                lineID = rs.getInt(1);
@@ -198,7 +105,7 @@ public class Transcription {
    /**
     * Update a transcription based on values extracted from a JSON import.
     */
-   public void update(String cont, Rectangle bounds) throws SQLException {
+   public void update(final String cont, final Rectangle bounds) throws SQLException {
       if (!cont.equals(text) || bounds.x != x || bounds.y != y || bounds.width != width || bounds.height != height) {
          text = cont;
          x = bounds.x;
@@ -209,32 +116,32 @@ public class Transcription {
       }
    }
 
-   public void setComment(String comm) throws SQLException {
+   public void setComment(final String comm) throws SQLException {
       comment = comm;
       commit();
    }
 
-   public void setText(String tt) throws SQLException {
+   public void setText(final String tt) throws SQLException {
       text = tt;
       commit();
    }
 
-   public void setHeight(int h) throws SQLException {
+   public void setHeight(final int h) throws SQLException {
       height = h;
       commit();
    }
 
-   public void setWidth(int w) throws SQLException {
+   public void setWidth(final int w) throws SQLException {
       width = w;
       commit();
    }
 
-   public void setX(int val) throws SQLException {
+   public void setX(final int val) throws SQLException {
       x = val;
       commit();
    }
 
-   public void setY(int val) throws SQLException {
+   public void setY(final int val) throws SQLException {
       y = val;
       commit();
    }
@@ -279,11 +186,11 @@ public class Transcription {
       return UID;
    }
 
-   public void setCreator(int uid) {
+   public void setCreator(final int uid) {
       this.UID = uid;
       try {
          this.commit();
-      } catch (SQLException ex) {
+      } catch (final SQLException ex) {
          Logger.getLogger(Transcription.class.getName()).log(Level.SEVERE, null, ex);
       }
    }
@@ -301,13 +208,13 @@ public class Transcription {
     */
    public static int getNumberOfTranscribedLines() throws SQLException {
       int toret = 0;
-      String query = "select count(id) from transcription where text!=''";
+      final String query = "select count(id) from transcription where text!=''";
       Connection j = null;
       PreparedStatement ps = null;
       try {
          j = DatabaseWrapper.getConnection();
          ps = j.prepareStatement(query);
-         ResultSet rs = ps.executeQuery();
+         final ResultSet rs = ps.executeQuery();
          rs.next();
          toret += rs.getInt(1);
       } finally {
@@ -323,7 +230,7 @@ public class Transcription {
     * @throws SQLException
     */
    public void remove() throws SQLException {
-      String query = "delete from transcription where id=?";
+      final String query = "delete from transcription where id=?";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -368,7 +275,7 @@ public class Transcription {
     * @param Line number of the Line within this page
     * @throws SQLException
     */
-   public Transcription(String uniqueID) throws SQLException {
+   public Transcription(final String uniqueID) throws SQLException {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
@@ -405,8 +312,8 @@ public class Transcription {
     * @return
     * @throws SQLException
     */
-   public static Transcription[] getProjectTranscriptions(int projectID, int folioNumber) throws SQLException, IOException {
-      String query = "select id from transcription where projectID=? and folio=? order by x, y"; 
+   public static Transcription[] getProjectTranscriptions(final int projectID, final int folioNumber) throws SQLException, IOException {
+      final String query = "select id from transcription where projectID=? and folio=? order by x, y"; 
       /* 
          For different interfaces with a mixture of left to right, right to left, top to bottom, bottom to top, we cannot really rely on the order returned here.
          When IIIF, the annotationList holds the older we can rely on.  For LTR, this query returns the lines in the order I want, but makes it a strange order for RTL.
@@ -415,19 +322,19 @@ public class Transcription {
       */
       Connection j = null;
       PreparedStatement ps = null;
-      Stack<Transcription> orderedTranscriptions = new Stack();
+      final Stack<Transcription> orderedTranscriptions = new Stack();
       try {
          j = DatabaseWrapper.getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, projectID);
          ps.setInt(2, folioNumber);
          //System.out.println("Get transcription line ids");
-         ResultSet transcriptionIDs = ps.executeQuery();
+         final ResultSet transcriptionIDs = ps.executeQuery();
          while (transcriptionIDs.next()){
             //add a Transcription object built using the unique id
             orderedTranscriptions.add(new Transcription(transcriptionIDs.getString(1)));
          }
-         Transcription[] toret = new Transcription[orderedTranscriptions.size()]; //orderedTranscriptions can be empty;
+         final Transcription[] toret = new Transcription[orderedTranscriptions.size()]; //orderedTranscriptions can be empty;
          for (int i = 0; i < orderedTranscriptions.size(); i++) {
             toret[i] = orderedTranscriptions.get(i);
             LOG.log(Level.FINE, "Transcription {0} {1}->{2}", new Object[] { i, toret[i].getY(), toret[i].getY() + toret[i].getHeight() });
@@ -446,11 +353,11 @@ public class Transcription {
     * @param args
     * @throws SQLException
     */
-   private static void main(String[] args) throws SQLException {
-      String transcriptionSelect = "select * from transcription";
-      String projectImageQuery = "select * from projectimagepositions where folio=? and project=? and line=?";
-      String imageQuery = "select * from imagepositions where folio=? and line=?";
-      String updateQuery = "update transcription set x=?, y=?, height=?, width=? where id=?";
+   private static void main(final String[] args) throws SQLException {
+      final String transcriptionSelect = "select * from transcription";
+      final String projectImageQuery = "select * from projectimagepositions where folio=? and project=? and line=?";
+      final String imageQuery = "select * from imagepositions where folio=? and line=?";
+      final String updateQuery = "update transcription set x=?, y=?, height=?, width=? where id=?";
       Connection j = null;
       PreparedStatement ps = null;
       PreparedStatement ps2 = null;
@@ -462,18 +369,18 @@ public class Transcription {
          ps2 = j.prepareStatement(imageQuery);
          ps3 = j.prepareStatement(projectImageQuery);
          ps4 = j.prepareStatement(updateQuery);
-         ResultSet rs = ps.executeQuery();
+         final ResultSet rs = ps.executeQuery();
          while (rs.next()) {
             if (rs.getInt("width") >= 0) {
-               int id = rs.getInt("id");
-               int folio = rs.getInt("folio");
-               int projectID = rs.getInt("projectID");
-               int line = rs.getInt("line");
+               final int id = rs.getInt("id");
+               final int folio = rs.getInt("folio");
+               final int projectID = rs.getInt("projectID");
+               final int line = rs.getInt("line");
                if (projectID > 0) {
                   ps3.setInt(1, folio);
                   ps3.setInt(2, projectID);
                   ps3.setInt(3, line);
-                  ResultSet rs2 = ps3.executeQuery();
+                  final ResultSet rs2 = ps3.executeQuery();
                   if (rs2.next()) {
                      //Folio 	Line 	bottom 	top 	id 	colstart 	width 	dummy
                      ps4.setInt(2, rs2.getInt("top"));
@@ -487,7 +394,7 @@ public class Transcription {
                   ps2.setInt(1, folio);
 
                   ps2.setInt(2, line);
-                  ResultSet rs2 = ps2.executeQuery();
+                  final ResultSet rs2 = ps2.executeQuery();
                   if (rs2.next()) {
                      //Folio 	Line 	bottom 	top 	id 	colstart 	width 	dummy
                      ps4.setInt(2, rs2.getInt("top"));
@@ -517,30 +424,30 @@ public class Transcription {
     * @return all the relevant transcriptions
     * @throws SQLException
     */
-   public static Transcription[] getPersonalTranscriptions(int UID, int folioNumber) throws SQLException, IOException {
-      String query = "select id from transcription where creator=? and folio=? and projectID=0 order by x, y";
+   public static Transcription[] getPersonalTranscriptions(final int UID, final int folioNumber) throws SQLException, IOException {
+      final String query = "select id from transcription where creator=? and folio=? and projectID=0 order by x, y";
       Connection j = null;
       PreparedStatement ps = null;
-      Stack<Transcription> orderedTranscriptions = new Stack();
+      final Stack<Transcription> orderedTranscriptions = new Stack();
       try {
          j = DatabaseWrapper.getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, UID);
          ps.setInt(2, folioNumber);
-         ResultSet transcriptionIDs = ps.executeQuery();
+         final ResultSet transcriptionIDs = ps.executeQuery();
          while (transcriptionIDs.next()) {
             //add a Transcription object built using the unique id
             orderedTranscriptions.add(new Transcription(transcriptionIDs.getString(1)));
          }
          if (orderedTranscriptions.size() == 0) {
-            Folio f = new Folio(folioNumber, true);
-            Line[] lines = f.getlines();
+            final Folio f = new Folio(folioNumber, true);
+            final Line[] lines = f.getlines();
             for (int i = 0; i < lines.length; i++) {
-               Transcription t = new Transcription(UID, folioNumber, lines[i].left, lines[i].top, lines[i].getHeight(), lines[i].getWidth(), false);
+               final Transcription t = new Transcription(UID, folioNumber, lines[i].left, lines[i].top, lines[i].getHeight(), lines[i].getWidth(), false);
                orderedTranscriptions.add(t);
             }
          }
-         Transcription[] toret = new Transcription[orderedTranscriptions.size()];
+         final Transcription[] toret = new Transcription[orderedTranscriptions.size()];
          for (int i = 0; i < orderedTranscriptions.size(); i++) {
             toret[i] = orderedTranscriptions.get(i);
          }
@@ -558,7 +465,7 @@ public class Transcription {
     */
    public String getOAC() throws SQLException {
       String toret = "";
-      Folio f = new Folio(this.getFolio());
+      final Folio f = new Folio(this.getFolio());
       toret += "        ex:Anno   a oac:Annotation ,<br>";
       toret += "                  oac:hasTarget ex:" + f.getImageName() + " ,<br>";
       toret += "                  oac:hasBody ex:uuid .<br>";
@@ -570,8 +477,8 @@ public class Transcription {
       return toret;
    }
 
-   public static boolean projectHasTranscriptions(int projectID, int folioNumber) throws SQLException {
-      String query = "select id from transcription where projectID=? and folio=?";
+   public static boolean projectHasTranscriptions(final int projectID, final int folioNumber) throws SQLException {
+      final String query = "select id from transcription where projectID=? and folio=?";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -579,7 +486,7 @@ public class Transcription {
          ps = j.prepareStatement(query);
          ps.setInt(1, projectID);
          ps.setInt(2, folioNumber);
-         ResultSet transcriptionIDs = ps.executeQuery();
+         final ResultSet transcriptionIDs = ps.executeQuery();
          if (transcriptionIDs.next()) {
             return true;
 
@@ -595,7 +502,7 @@ public class Transcription {
     * Archive the current Transcription. This is done before saving changes.
     */
    public void archive() throws SQLException {
-      String query = "insert into archivedtranscription (folio,line,comment,text,date,creator,projectID,id,x,y,width,height)  (SELECT * FROM `transcription` WHERE id=?)";
+      final String query = "insert into archivedtranscription (folio,line,comment,text,date,creator,projectID,id,x,y,width,height)  (SELECT * FROM `transcription` WHERE id=?)";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -620,7 +527,7 @@ public class Transcription {
       Connection j = null;
       PreparedStatement stmt = null;
       if (this.text == null) {
-         StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+         final StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
          String stackLog = "";
          for (int i = 0; i < stacktrace.length; i++) {
             stackLog += stacktrace[i].toString();
@@ -632,8 +539,8 @@ public class Transcription {
          j = DatabaseWrapper.getConnection();
          //if this is a group Transcription, update the current one if it exists and set the uid to this user to indicate who modified it most recently
          if (projectID > 0) {
-            Project p = new Project(projectID);
-            Manuscript m = new Manuscript(folio);
+            final Project p = new Project(projectID);
+            final Manuscript m = new Manuscript(folio);
             //modified to now be a link
             p.addLogEntry(j, "<span class='log_transcription'></span>Saved <a href=\"transcription.jsp?projectID=" + projectID + "&folio=" + folio + "\">" + m.getShelfMark() + "</a> " + new Folio(folio).getPageName(), this.UID);// ,"Transcription"
             stmt = j.prepareStatement("Select text,comment from transcription where id=?");
@@ -649,7 +556,7 @@ public class Transcription {
                    * encoding issue
                    */
                   text = new String(text.getBytes("UTF8"), "UTF8");
-               } catch (UnsupportedEncodingException ex) {
+               } catch (final UnsupportedEncodingException ex) {
                   LOG.log(Level.SEVERE, null, ex);
                }
                stmt.setString(1, text);
@@ -702,7 +609,7 @@ public class Transcription {
 
             try {
                text = new String(text.getBytes("UTF8"), "UTF8");
-            } catch (UnsupportedEncodingException ex) {
+            } catch (final UnsupportedEncodingException ex) {
                Logger.getLogger(Transcription.class.getName()).log(Level.SEVERE, null, ex);
             }
             stmt.setString(1, text);
@@ -738,8 +645,8 @@ public class Transcription {
     * @param Project Project id
     * @throws SQLException
     */
-   public void makeCopy(int uid, int project) throws SQLException {
-      String query = "insert into transcription (text,comment,folio,line,creator,projectID) values(?,?,?,?,?,?)";
+   public void makeCopy(final int uid, final int project) throws SQLException {
+      final String query = "insert into transcription (text,comment,folio,line,creator,projectID) values(?,?,?,?,?,?)";
       Connection j = null;
       PreparedStatement ps = null;
       try {
@@ -765,9 +672,9 @@ public class Transcription {
     * @return
     * @throws SQLException
     */
-   public boolean updateColumnWidth(int newWidth) throws SQLException, IOException {
+   public boolean updateColumnWidth(final int newWidth) throws SQLException, IOException {
       if (projectID > 0) {
-         Transcription[] theseTranscriptions = getProjectTranscriptions(projectID, folio);
+         final Transcription[] theseTranscriptions = getProjectTranscriptions(projectID, folio);
          for (int i = 0; i < theseTranscriptions.length; i++) {
             if (theseTranscriptions[i].x == this.x) {
                theseTranscriptions[i].setWidth(newWidth);
@@ -775,7 +682,7 @@ public class Transcription {
          }
          return true;
       } else {
-         Transcription[] theseTranscriptions = Transcription.getPersonalTranscriptions(UID, folio);
+         final Transcription[] theseTranscriptions = Transcription.getPersonalTranscriptions(UID, folio);
          for (int i = 0; i < theseTranscriptions.length; i++) {
             if (theseTranscriptions[i].x == this.x) {
                theseTranscriptions[i].setWidth(newWidth);
@@ -793,9 +700,9 @@ public class Transcription {
     * @return
     * @throws SQLException
     */
-   public boolean updateColumnLeft(int newLeft) throws SQLException, IOException {
+   public boolean updateColumnLeft(final int newLeft) throws SQLException, IOException {
       if (projectID > 0) {
-         Transcription[] theseTranscriptions = getProjectTranscriptions(projectID, folio);
+         final Transcription[] theseTranscriptions = getProjectTranscriptions(projectID, folio);
          for (int i = 0; i < theseTranscriptions.length; i++) {
             if (theseTranscriptions[i].x == this.x) {
                theseTranscriptions[i].setX(newLeft);
@@ -803,7 +710,7 @@ public class Transcription {
          }
          return true;
       } else {
-         Transcription[] theseTranscriptions = Transcription.getPersonalTranscriptions(UID, folio);
+         final Transcription[] theseTranscriptions = Transcription.getPersonalTranscriptions(UID, folio);
          for (int i = 0; i < theseTranscriptions.length; i++) {
             if (theseTranscriptions[i].x == this.x) {
                theseTranscriptions[i].setX(newLeft);
@@ -817,7 +724,7 @@ public class Transcription {
     * Build this line of transcription as an OAC annotation and return the N3 serialization
     */
    public String getAsOAC() throws SQLException {
-      Model model = ModelFactory.createDefaultModel();
+      final Model model = ModelFactory.createDefaultModel();
       //model.setNsPrefix("dms", "http://dms.stanford.edu/ns/");
       model.setNsPrefix("oac", "http://www.openannotation.org/ns/");
       model.setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -827,29 +734,29 @@ public class Transcription {
       model.setNsPrefix("sc", "http://www.shared-canvas.org/ns/");
       //model.setNsPrefix("dcterms", "http://purl.org/dc/terms/");
 
-      Property oacTarget = model.createProperty("http://www.openannotation.org/ns/", "hasTarget");
-      Property oacBody = model.createProperty("http://www.openannotation.org/ns/", "hasBody");
+      final Property oacTarget = model.createProperty("http://www.openannotation.org/ns/", "hasTarget");
+      final Property oacBody = model.createProperty("http://www.openannotation.org/ns/", "hasBody");
       // Property scContentAnnotation=model.createProperty("http://www.openannotation.org/ns/","Annotation");
-      Property scContentAnnotation = model.createProperty("http://www.shared-canvas.org/ns/", "ContentAnnotation");
-      Property contentChars = model.createProperty("http://www.w3.org/2008/content#", "rest");
-      Property encoding = model.createProperty("http://www.w3.org/2008/content#", "characterEncoding");
+      final Property scContentAnnotation = model.createProperty("http://www.shared-canvas.org/ns/", "ContentAnnotation");
+      final Property contentChars = model.createProperty("http://www.w3.org/2008/content#", "rest");
+      final Property encoding = model.createProperty("http://www.w3.org/2008/content#", "characterEncoding");
       Resource item;
       item = model.createResource("http://t-pen.org/transcriptions/" + this.lineID);
-      Property rdfType = model.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
-      Resource thisLine = model.createResource("urn:uuid:" + java.util.UUID.randomUUID().toString());
-      Property stringContent = model.createProperty("http://www.w3.org/2008/content#ContentAsText");
-      Property parseType = model.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
-      int folioNumber = this.folio;
-      Folio f = new Folio(folioNumber);
-      String xyhw = "#xywh=" + this.getX() + "," + this.getY() + "," + this.getWidth() + "," + this.getHeight();
+      final Property rdfType = model.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
+      final Resource thisLine = model.createResource("urn:uuid:" + java.util.UUID.randomUUID().toString());
+      final Property stringContent = model.createProperty("http://www.w3.org/2008/content#ContentAsText");
+      final Property parseType = model.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
+      final int folioNumber = this.folio;
+      final Folio f = new Folio(folioNumber);
+      final String xyhw = "#xywh=" + this.getX() + "," + this.getY() + "," + this.getWidth() + "," + this.getHeight();
       String image_canvas = f.getCanvas();
       if (image_canvas == null || image_canvas.length() < 10) {
          image_canvas = f.getImageURL();
       }
-      Resource target = model.createResource(image_canvas + xyhw);
-      Literal textLiteral = model.createLiteral(this.getText());
-      Literal literal = model.createLiteral("Literal");
-      Literal encodingType = model.createLiteral("utf-8");
+      final Resource target = model.createResource(image_canvas + xyhw);
+      final Literal textLiteral = model.createLiteral(this.getText());
+      final Literal literal = model.createLiteral("Literal");
+      final Literal encodingType = model.createLiteral("utf-8");
 
 
 
@@ -862,7 +769,7 @@ public class Transcription {
       //thisLine.addProperty(parseType, literal);
       thisLine.addProperty(encoding, encodingType);
       thisLine.addProperty(rdfType, stringContent);
-      StringWriter tmp = new StringWriter();
+      final StringWriter tmp = new StringWriter();
       model.write(tmp, "");
       return tmp.toString();
    }
@@ -875,8 +782,13 @@ public class Transcription {
     */
    public String getImageURL() {
       try {
-         Folio f = new Folio(folio);
-         Manuscript m = new Manuscript(folio);
+         final Folio f = new Folio(folio);
+         final Manuscript m = new Manuscript(folio);
+         if (!m.isRestricted()) {
+            return f.getImageURLResize();
+         }
+         return "restricted";
+      } catch (final ript m = new Manuscript(folio);
          if (!m.isRestricted()) {
             return f.getImageURLResize();
          }

@@ -28,7 +28,6 @@ import textdisplay.Folio;
 import textdisplay.Manuscript;
 import textdisplay.Project;
 import textdisplay.ProjectPriority;
-import textdisplay.Transcription;
 import textdisplay.WelcomeMessage;
 import utils.RandomString;
 
@@ -430,9 +429,9 @@ public class User {
                 // m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org",
                 // Folio.getRbTok("NOTIFICATIONEMAIL"), "new user request", body);
             } catch (Exception e) {
-                System.err.println("Created User, "+uname+", but activation issue occured during signup:"+e.getMessage());
-                // return 2; // created user, but email issue occured
-                return 3; // created user, but activation issue occured
+                System.err.println("Created User, "+uname+", but activation issue occurred during signup:"+e.getMessage());
+                // return 2; // created user, but email issue occurred
+                return 3; // created user, but activation issue occurred
             }
             return 0; // total success
         } else {
@@ -722,7 +721,8 @@ public class User {
         return newPass;
     }
 
-    /** Send the welcome message and set the user's password. */
+    /** Send the welcome message and set the user's password.
+     * @return pass String generated password */
     public String activateUser() throws SQLException, NoSuchAlgorithmException, MessagingException, Exception {
         String pass = resetPassword(false);
         textdisplay.mailer m = new textdisplay.mailer();
@@ -776,7 +776,7 @@ public class User {
     }
 
     /**
-     * Is there already a record for this Uname or ID?
+     * Is there already a record for this UID?
      * 
      * @return
      * @throws SQLException
@@ -806,7 +806,6 @@ public class User {
     public Group[] getUserGroups() {
         Connection j = null;
         PreparedStatement qry = null;
-        qry = null;
         try {
             j = DatabaseWrapper.getConnection();
 
@@ -838,7 +837,6 @@ public class User {
     /**
      * Return an int of lines of transcription for which this creator
      * 
-     * @param uid int User ID
      * @return int count of lines
      * @throws SQLException
      */
@@ -907,7 +905,6 @@ public class User {
     public String getAllUsersDropdown() throws SQLException {
         Connection j = null;
         PreparedStatement qry = null;
-        qry = null;
         try {
             String toret = "";
             j = DatabaseWrapper.getConnection();
@@ -929,20 +926,14 @@ public class User {
     }
 
     /**
-     * Inivte a new user to join TPEN. Returns 0 on successful user creation, 1 on
+     * Invite a new user to join TPEN. Returns 0 on successful user creation, 1 on
      * user creation failure, and 2 if user creation succeeded but email failed,
      * which is common on test systems and should produce a warning
      */
     public int invite(String uname, String fname, String lname) throws SQLException {
         Boolean emailFailure = false;
         User newUser = new User(uname, lname, fname, "");
-        // System.out.println("Defined user to continue on. Can we?");
         if (newUser.getUID() > 0) {
-            // System.out.println("Yes. We made a new user.");
-            // System.out.println(this.getFname() + " " + this.getLname() + " (" +
-            // this.getUname() + ") has invited " + newUser.getFname() + " " +
-            // newUser.getLname() + " (" + newUser.getUname() + ") to join TPEN.");
-
             textdisplay.mailer m = new textdisplay.mailer();
             String body = this.getFname() + " " + this.getLname() + " (" + this.getUname() + ") has invited  "
                     + newUser.getFname() + " " + newUser.getLname() + " (" + newUser.getUname()
@@ -955,7 +946,7 @@ public class User {
             }
             // send a notification email to the invitee
             body = this.getFname() + " " + this.getLname() + " (" + this.getUname()
-                    + ") has invited you to join their transcription project on TPEN.  Your initial password is blank, please log in and set a password.  \nThe TPEN team";
+                    + ") has invited you to join their transcription project on TPEN. Enter this email as a user name and \"Reset Password\" to accept.  \nThe TPEN team";
             try {
                 m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org", newUser.getUname(),
                         "An invitation to transcribe on TPEN", body);
@@ -986,7 +977,6 @@ public class User {
         String query = "select * from admins where uid=?";
         Connection j = null;
         PreparedStatement qry = null;
-        qry = null;
         try {
             j = DatabaseWrapper.getConnection();
             qry = j.prepareStatement(query);
@@ -1081,7 +1071,6 @@ public class User {
     public Boolean hasAcceptedIPR(int folioNum) throws SQLException {
         Connection j = null;
         PreparedStatement qry = null;
-        qry = null;
         try {
 
             Folio fol = new Folio(folioNum);
@@ -1148,7 +1137,7 @@ public class User {
         String query = "select * from admins";
         Connection j = null;
         PreparedStatement ps = null;
-        ArrayList<User> toret = new ArrayList<User>();
+        ArrayList<User> toret = new ArrayList<>();
         try {
             j = DatabaseWrapper.getConnection();
             ps = j.prepareStatement(query);

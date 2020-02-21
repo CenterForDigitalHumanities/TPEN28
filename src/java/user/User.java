@@ -479,7 +479,7 @@ DatabaseWrapper.closePreparedStatement(ps);
             textdisplay.mailer m = new textdisplay.mailer();
             String body = newUser.getFname() + " " + newUser.getLname() + " (" + newUser.getUname() + ") has created a new account, which needs your approval.\n";
             body += "Proceed to http://t-pen.org/TPEN/admin.jsp to approve their account";
-            newUser.activateUser()
+            newUser.activateUser();
             // try
             //     {
             //     m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org", Folio.getRbTok("NOTIFICATIONEMAIL"), "new user request", body);

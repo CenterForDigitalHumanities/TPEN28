@@ -3879,7 +3879,7 @@ div.manifest-info a.mirador-btn.mirador-icon-toc {
   font-size: 1.2em;
 }
 
-// Animations for use elsewhere.
+/* Animations for use elsewhere. */
 .flash {
   -webkit-animation: flash 5s infinite; /* Safari 4+ */
   -moz-animation:    flash 5s infinite; /* Fx 5+ */

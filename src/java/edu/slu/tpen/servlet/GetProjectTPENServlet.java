@@ -213,6 +213,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                             jsonMap.put("projectButtons", hk.javascriptToAddProjectButtonsRawData(projectID));
                             response.setStatus(HttpServletResponse.SC_OK);
                             out.println(JSONObject.fromObject(jsonMap));
+                            out.close();
                         } else {
                            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
                         }

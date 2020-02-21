@@ -55,6 +55,7 @@ public class SaveNewProjectCharacter extends HttpServlet {
             Hotkey newButton = new Hotkey(code, projectID, position, true, true);
             sendOut = "<li position='"+position+"' onclick=\"editcharcnfrm('"+position+"', event);\"  class='character'>&#"+code+"; <span class='removechar' onclick=\"removecharcnfrm("+position+");\">X</span></li>";
             out.println(sendOut);
+            out.close();
         } catch (SQLException ex) {
             Logger.getLogger(UpdateProjectTag.class.getName()).log(Level.SEVERE, null, ex);
         }

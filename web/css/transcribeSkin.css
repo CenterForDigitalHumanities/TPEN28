@@ -1617,7 +1617,7 @@ button.active {
     color:white;
     transition: box-shadow .5s;
     opacity: .36;
-    display: none;
+    /*display: none;*/
     box-sizing: border-box;
     box-shadow: none;
 }
@@ -2045,5 +2045,9 @@ button,.navigation, #contribution,
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.peekZoomLockout{
+    background-color: red !important;
 }
 

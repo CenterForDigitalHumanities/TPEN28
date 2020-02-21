@@ -37,6 +37,7 @@ public class CreateProjectClassic extends HttpServlet {
         PrintWriter writer = response.getWriter();
         try {
             writer.print(createProject(request, response));
+            writer.close();
         } catch (SQLException ex) {
             Logger.getLogger(CreateProjectClassic.class.getName()).log(Level.SEVERE, null, ex);
         }

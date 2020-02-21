@@ -456,11 +456,13 @@ public class User {
                 // m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org",
                 // Folio.getRbTok("NOTIFICATIONEMAIL"), "new user request", body);
             } catch (Exception e) {
+                System.err.println("Created User, "+uname+", but activation issue occured during signup:"+e.getMessage());
                 // return 2; // created user, but email issue occured
                 return 3; // created user, but activation issue occured
             }
             return 0; // total success
         } else {
+            System.err.println("Did not create User at signup: "+uname);
             return 1; // failed to create
         }
     }
@@ -713,6 +715,10 @@ public class User {
      * @throws MessagingException
      */
     public String resetPassword() throws SQLException, NoSuchAlgorithmException, MessagingException {
+        return resetPassword(true);
+    }
+
+    public String resetPassword(Boolean sendEmail) throws SQLException, NoSuchAlgorithmException, MessagingException {
         String newPass = "";
         RandomString r = new RandomString(10);
         newPass = r.nextString();
@@ -733,49 +739,22 @@ public class User {
             DatabaseWrapper.closeDBConnection(j);
             DatabaseWrapper.closePreparedStatement(ps);
         }
-        textdisplay.mailer m = new textdisplay.mailer();
-        String body = "Your TPEN password has been set to " + newPass + "\n"
-                + "You should head to http://t-pen.org and change it.";
-        // System.out.print("new pass is "+pass+"\n");
-        m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org", this.Uname, "TPEN Password Reset", body);
-        return newPass;
-    }
-
-    public String resetPassword(Boolean email) throws SQLException, NoSuchAlgorithmException, MessagingException {
-        if (email)
-            return (resetPassword());
-
-        String newPass = "";
-        RandomString r = new RandomString(10);
-        newPass = r.nextString();
-
-        // store the hashed version in pass, that goes to the DB and the unhased version
-        // is returned
-        String pass = newPass;
-        String query = "update users set pass=SHA1(?) where UID=?";
-        Connection j = null;
-        PreparedStatement ps = null;
-        try {
-            j = DatabaseWrapper.getConnection();
-            ps = j.prepareStatement(query);
-            ps.setString(1, pass);
-            ps.setInt(2, UID);
-            ps.execute();
-        } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+        if (sendEmail) {
+            textdisplay.mailer m = new textdisplay.mailer();
+            String body = "Your TPEN password has been reset to " + newPass + "\n"
+                    + "You may head to http://t-pen.org and change it.";
+            m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org", this.Uname, "TPEN Password Reset", body);
         }
         return newPass;
     }
 
     /** Send the welcome message and set the user's password. */
     public String activateUser() throws SQLException, NoSuchAlgorithmException, MessagingException, Exception {
-        textdisplay.mailer m = new textdisplay.mailer();
-        // System.out.print("new pass is "+pass+"\n");
         String pass = resetPassword(false);
+        textdisplay.mailer m = new textdisplay.mailer();
         m.sendMail(Folio.getRbTok("EMAILSERVER"), Folio.getRbTok("NOTIFICATIONEMAIL"), this.Uname, "Welcome to TPEN",
                 new WelcomeMessage().getMessage(this.fname + " " + this.lname, pass));
-        return this.resetPassword();
+        return pass;
     }
 
     /**

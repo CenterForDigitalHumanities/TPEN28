@@ -421,19 +421,18 @@ public class User {
     public static int signup(String uname, String lname, String fname) throws SQLException {
         User newUser = new User(uname, lname, fname, "");
         if (newUser.getUID() > 0) {
-            textdisplay.mailer m = new textdisplay.mailer();
-            String body = newUser.getFname() + " " + newUser.getLname() + " (" + newUser.getUname()
-                    + ") has created a new account, which needs your approval.\n";
-            body += "Proceed to http://t-pen.org/TPEN/admin.jsp to approve their account";
-            newUser.activateUser();
-            // try
-            // {
-            // m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org",
-            // Folio.getRbTok("NOTIFICATIONEMAIL"), "new user request", body);
-            // } catch (Exception e)
-            // {
-            // return 2; //created user, but email issue occured
-            // }
+            // textdisplay.mailer m = new textdisplay.mailer();
+            // String body = newUser.getFname() + " " + newUser.getLname() + " (" + newUser.getUname()
+            //         + ") has created a new account, which needs your approval.\n";
+            // body += "Proceed to http://t-pen.org/TPEN/admin.jsp to approve their account";
+            try {
+                newUser.activateUser();
+                // m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org",
+                // Folio.getRbTok("NOTIFICATIONEMAIL"), "new user request", body);
+            } catch (Exception e) {
+                // return 2; // created user, but email issue occured
+                return 3; // created user, but activation issue occured
+            }
             return 0; // total success
         } else {
             return 1; // failed to create

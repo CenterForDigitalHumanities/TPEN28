@@ -293,8 +293,7 @@
     // saving changes
     if(request.getParameter("submit")!=null) {
         int projID=Integer.parseInt(request.getParameter("projectID"));
-        proj.setProjectNumber(projID);
-        proj.fetch();
+        proj = new Project(projID);
         // collect new order and convert to folio[]
         if (request.getParameter("folio[]")!=null){
             String[] folioList = request.getParameterValues("folio[]");
@@ -372,8 +371,7 @@
                 </div>
                 <ul id="manuscriptViewer">
                     <%
-                    proj.setProjectNumber(projID);
-                    proj.fetch();
+                    proj = new Project(projID);
                     Folio[] folios=proj.getFolios();
                     for(int i=0;i<folios.length;i++) {
                         out.print("<li class='folios' title='"+folios[i].getCollectionName()+" "+folios[i].getPageName()+"'><span class=\"clicked ui-icon ui-icon-arrowthick-1-e right\" title='Move a single image into the holding area'></span><span class=\"discard ui-icon ui-icon-trash right\" title='Discard a single folio'></span><span class=\"imagePreview ui-icon left\" data-imgUrl="+folios[i].getImageURL() +"></span><input type=\"hidden\" name=\"folio[]\" id=\""+folios[i].getFolioNumber()+"\" value=\""+folios[i].getFolioNumber()+"\"/><span class='collection'>"+folios[i].getCollectionName()+"</span> <span class='pageName'>"+folios[i].getPageName()+"</span></li>\n");

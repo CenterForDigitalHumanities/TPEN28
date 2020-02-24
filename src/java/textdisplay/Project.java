@@ -35,6 +35,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import org.owasp.esapi.ESAPI;
 import static edu.slu.util.ServletUtils.getDBConnection;
+import java.awt.Rectangle;
 import user.Group;
 import user.User;
 import utils.UserTool;
@@ -749,9 +750,9 @@ public class Project {
          stmt.setInt(1, folioNumber);
          stmt.execute();
          Transcription[] oldTranscriptions = Transcription.getProjectTranscriptions(projectID, folioNumber);
-         for (int i = 0; i < oldTranscriptions.length; i++) {
-            oldTranscriptions[i].remove();
-         }
+         for (Transcription oldTranscription : oldTranscriptions) {
+            oldTranscription.remove();
+          }
          stmt = j.prepareStatement("Insert into projectimagepositions (folio,line,top,bottom,colstart,width,project) values (?,?,?,?,?,?,?)");
          if (linePositions.length == 0) {
             linePositions = t;
@@ -765,7 +766,10 @@ public class Project {
             stmt.setInt(6, linePositions[i].right);
             stmt.setInt(7, projectID);
             stmt.execute();
-            Transcription tr = new Transcription(projectID, folioNumber, linePositions[i].left, linePositions[i].top, linePositions[i].getHeight(), linePositions[i].right, true);
+            Rectangle r = new Rectangle(linePositions[i].left, linePositions[i].top, linePositions[i].getHeight(), linePositions[i].right);
+            // TODO: create an agent for the application here, loaded from version.properties.
+            Transcription tr;
+             tr = new Transcription(0, projectID, folioNumber, "", "", r);
          }
       } finally {
          if (j != null) {

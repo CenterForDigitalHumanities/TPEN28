@@ -7,6 +7,7 @@ package edu.slu.tpen.servlet;
 
 import edu.slu.tpen.entity.Image.Canvas;
 import static edu.slu.util.LangUtils.buildQuickMap;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,8 +34,10 @@ import textdisplay.Transcription;
  * @author bhaberbe
  */
 public class AutoParse extends HttpServlet {
+
     /**
-     * Fire the auto parser on a given folio.  Return a stringified JSON sc:AnnotationList of the lines created.
+     * Fire the auto parser on a given folio. Return a stringified JSON
+     * sc:AnnotationList of the lines created.
      *
      * @param request servlet request
      * @param response servlet response
@@ -51,84 +54,95 @@ public class AutoParse extends HttpServlet {
         JSONArray resources_array;
         List<Object> resources = new ArrayList<>();
         String dateString;
-        String annoListID = Folio.getRbTok("SERVERURL")+"project/"+projectID+"/annotations/"+folioNumber;  
-        String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+folioNumber;
+        String annoListID = Folio.getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
+        String canvasID = Folio.getRbTok("SERVERURL") + "canvas/" + folioNumber;
         //create Transcription(s) based on Project settings and Line parsing
         Project p = new Project(projectID);
         Project.imageBounding preferedBounding = p.getProjectImageBounding();
-        if (null != preferedBounding) switch (preferedBounding) {
-            case fullimage:{
-                //find the image size, add 1 Transcription to cover the entirety, and done
-                int height = 1000;
-                Folio f = new Folio(folioNumber, true);
-                int width = f.getImageDimension().width;
-                Transcription t = new Transcription(projectID, folioNumber, 0, 0, height, width, true);
-                orderedTranscriptions.add(t);
+        if (null != preferedBounding) {
+            switch (preferedBounding) {
+                case fullimage: {
+                    //find the image size, add 1 Transcription to cover the entirety, and done
+                    int height = 1000;
+                    Folio f = new Folio(folioNumber, true);
+                    int width = f.getImageDimension().width;
+                    Rectangle r = new Rectangle(0, 0, height, width);
+                    // TODO: create an agent for the application here, loaded from version.properties.
+                    Transcription t = new Transcription(0, projectID, folioNumber, "", "", r);
+                    orderedTranscriptions.add(t);
                     break;
                 }
-            case columns:{
-                //run the image parsing and make a Transcription for each column
-                Folio f = new Folio(folioNumber, true);
-                Line[] lines = f.getlines();
-                int x = 0;
-                int y = 0;
-                int w = 0;
-                for (int i = 0; i < lines.length; i++) {
-                    if (lines[i].getWidth() != w) {
-                        if (w != 0 && i != 0) {
-                            Transcription t = new Transcription(projectID, folioNumber, x, y, lines[i].getBottom(), w, true);
-                            orderedTranscriptions.add(t);
+                case columns: {
+                    //run the image parsing and make a Transcription for each column
+                    Folio f = new Folio(folioNumber, true);
+                    Line[] lines = f.getlines();
+                    int x = 0;
+                    int y = 0;
+                    int w = 0;
+                    for (int i = 0; i < lines.length; i++) {
+                        if (lines[i].getWidth() != w) {
+                            if (w != 0 && i != 0) {
+                                Rectangle r = new Rectangle(x, y, lines[i].getBottom(), w);
+                                // TODO: create an agent for the application here, loaded from version.properties.
+                                Transcription t = new Transcription(0, projectID, folioNumber, "", "", r);
+                                orderedTranscriptions.add(t);
+                            }
+                            w = lines[i].getWidth();
+                            x = lines[i].getLeft();
+                            y = lines[i].getTop();
                         }
-                        w = lines[i].getWidth();
-                        x = lines[i].getLeft();
-                        y = lines[i].getTop();
                     }
-                }        break;
+                    break;
                 }
-            case lines:{
-                Folio f = new Folio(folioNumber, true);
-                Line[] lines = f.getlines();
-                //make a Transcription for each Line
-                for (int i = 0; i < lines.length; i++) {
-                    Transcription t = new Transcription(projectID, folioNumber, lines[i].getLeft(), lines[i].getTop(), lines[i].getHeight(), lines[i].getWidth(), true);
-                    orderedTranscriptions.add(t);
-                }        if (orderedTranscriptions.isEmpty()) {
-                    int height = 1000;
-                    int width = f.getImageDimension().width;
-                    Transcription fullPage = new Transcription(projectID, folioNumber, 0, 0, height, width, true);
-                    orderedTranscriptions.add(fullPage);
-                }        break;
+                case lines: {
+                    Folio f = new Folio(folioNumber, true);
+                    Line[] lines = f.getlines();
+                    //make a Transcription for each Line
+                    for (Line line : lines) {
+                        Rectangle r = new Rectangle(line.getLeft(), line.getTop(), line.getHeight(), line.getWidth());
+                        // TODO: create an agent for the application here, loaded from version.properties.
+                        Transcription t = new Transcription(0, projectID, folioNumber, "", "", r);
+                        orderedTranscriptions.add(t);
+                    }
+                    if (orderedTranscriptions.isEmpty()) {
+                        int height = 1000;
+                        int width = f.getImageDimension().width;
+                        Rectangle r = new Rectangle(0, 0, height, width);
+                        // TODO: create an agent for the application here, loaded from version.properties.
+                        Transcription fullPage = new Transcription(0, projectID, folioNumber, "", "", r);
+                        orderedTranscriptions.add(fullPage);
+                    }
+                    break;
                 }
-            case none:
-            default:
-                break;
+                case none:
+                default:
+                    break;
+            }
         }
         for (int i = 0; i < orderedTranscriptions.size(); i++) {
-           if (orderedTranscriptions.get(i) != null) {  
-               int lineID = orderedTranscriptions.get(i).getLineID();
-               Map<String, Object> lineAnnot = new LinkedHashMap<>();
-               String lineURI = "line/" + lineID;
-               String annoLineID = Folio.getRbTok("SERVERURL")+"line/"+lineID;  
-               lineAnnot.put("@id", annoLineID);
-               lineAnnot.put("_tpen_line_id", lineURI);
-               lineAnnot.put("@type", "oa:Annotation");
-               lineAnnot.put("motivation", "oad:transcribing"); 
-               lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(orderedTranscriptions.get(i).getText())));
-               lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, orderedTranscriptions.get(i).getX(), orderedTranscriptions.get(i).getY(), orderedTranscriptions.get(i).getWidth(), orderedTranscriptions.get(i).getHeight())); 
-               if(null != orderedTranscriptions.get(i).getComment() && !"null".equals(orderedTranscriptions.get(i).getComment())){
-                   lineAnnot.put("_tpen_note", orderedTranscriptions.get(i).getComment());
-               }
-               else{
-                   lineAnnot.put("_tpen_note", "");
-               }
-               lineAnnot.put("_tpen_creator",orderedTranscriptions.get(i).getCreator());             
-               dateString = orderedTranscriptions.get(i).getDate().toString();
-               lineAnnot.put("modified", dateString);
-               resources.add(lineAnnot);
-           }
-           else{
-               Logger.getLogger(AutoParse.class.getName()).log(Level.WARNING, "Lines for list was null in project {0}, folio {1}", new Object[]{projectID, folioNumber});
-           }
+            if (orderedTranscriptions.get(i) != null) {
+                int lineID = orderedTranscriptions.get(i).getLineID();
+                Map<String, Object> lineAnnot = new LinkedHashMap<>();
+                String lineURI = "line/" + lineID;
+                String annoLineID = Folio.getRbTok("SERVERURL") + "line/" + lineID;
+                lineAnnot.put("@id", annoLineID);
+                lineAnnot.put("_tpen_line_id", lineURI);
+                lineAnnot.put("@type", "oa:Annotation");
+                lineAnnot.put("motivation", "oad:transcribing");
+                lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(orderedTranscriptions.get(i).getText())));
+                lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, orderedTranscriptions.get(i).getX(), orderedTranscriptions.get(i).getY(), orderedTranscriptions.get(i).getWidth(), orderedTranscriptions.get(i).getHeight()));
+                if (null != orderedTranscriptions.get(i).getComment() && !"null".equals(orderedTranscriptions.get(i).getComment())) {
+                    lineAnnot.put("_tpen_note", orderedTranscriptions.get(i).getComment());
+                } else {
+                    lineAnnot.put("_tpen_note", "");
+                }
+                lineAnnot.put("_tpen_creator", orderedTranscriptions.get(i).getCreator());
+                dateString = orderedTranscriptions.get(i).getDate().toString();
+                lineAnnot.put("modified", dateString);
+                resources.add(lineAnnot);
+            } else {
+                Logger.getLogger(AutoParse.class.getName()).log(Level.WARNING, "Lines for list was null in project {0}, folio {1}", new Object[]{projectID, folioNumber});
+            }
         }
         resources_array = JSONArray.fromObject(resources);
         annotationList.element("resources", resources_array);
@@ -154,8 +168,7 @@ public class AutoParse extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             processRequest(request, response);
-        } 
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(AutoParse.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -173,8 +186,7 @@ public class AutoParse extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-        } 
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(AutoParse.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

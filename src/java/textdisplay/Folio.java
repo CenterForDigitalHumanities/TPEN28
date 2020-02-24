@@ -1178,7 +1178,7 @@ public class Folio {
       model.setNsPrefix("cnt", "http://www.w3.org/2008/content#");
       model.setNsPrefix("dc", "http://purl.org/dc/elements/1.1/");
       model.setNsPrefix("dcterms", "http://purl.org/dc/terms/");
-      Transcription[] transcriptions = Transcription.getPersonalTranscriptions(uid, folioNumber);
+      //Transcription[] transcriptions = Transcription.getPersonalTranscriptions(uid, folioNumber);
       Folio f = new Folio(this.folioNumber);
       //Resource image=model.createResource(f.getArchiveLink());
       Resource transc = model.createResource("http://dms.stanford.edu/ns/TranscriptionAnnotation");
@@ -1191,38 +1191,38 @@ public class Folio {
       Property isPartOf = model.createProperty("http://purl.org/dc/terms/", "isPartOf");
       Resource fullImage = model.createResource("http://t-pen.org/views/" + this.folioNumber);
 
-      String[] uuids = new String[transcriptions.length];
+      // String[] uuids = new String[transcriptions.length];
       Resource thisPage = model.createResource("http://t-pen.org/transcription/" + this.folioNumber);
-      Resource[] items = new Resource[uuids.length];
+      // Resource[] items = new Resource[uuids.length];
       Property aggregates = model.createProperty("http://www.openarchives.org/ore/terms/", "aggregates");
-      for (int i = 0; i < transcriptions.length; i++) {
-         uuids[i] = java.util.UUID.randomUUID().toString();
-         Resource item = model.createResource("urn:uuid:" + uuids[i]);
-         items[i] = item;
-         //  StringWriter tmp=new StringWriter();
-         //  model.write(tmp);
-         // toret+=uuids[i]+" should be last\n"+tmp.toString()+"\n";
-      }
+//      for (int i = 0; i < transcriptions.length; i++) {
+//         uuids[i] = java.util.UUID.randomUUID().toString();
+//         Resource item = model.createResource("urn:uuid:" + uuids[i]);
+//         items[i] = item;
+//         //  StringWriter tmp=new StringWriter();
+//         //  model.write(tmp);
+//         // toret+=uuids[i]+" should be last\n"+tmp.toString()+"\n";
+//      }
       toret += "list:\n";
-      RDFList l = model.createList(items);
+      // RDFList l = model.createList(items);
 
-      for (int i = 0; i < transcriptions.length; i++) {
-         String uuid = uuids[i];
-         Resource item = model.createResource("urn:uuid:" + uuid);
-         /**
-          * @TODO change to use Transcription.getProjectTranscriptions
-          */
-         Resource thisLine = model.createResource("http://t-pen.org/transcription/" + this.folioNumber + "/" + i);
-         String xyhw = "#xywh=" + transcriptions[i].getX() + ", " + transcriptions[i].getY() + ", " + transcriptions[i].getHeight() + ", " + transcriptions[i].getWidth();
-         Resource image = model.createResource(f.getArchiveLink());//+"#xyhw="+xyhw);
-         Literal text = model.createLiteral(transcriptions[i].getText());
-         item.addProperty(oacBody, thisLine);
-         item.addProperty(oacTarget, image + xyhw);
-         item.addProperty(rdfType, transc);
-         image.addProperty(rdfType, viewFrag);
-         image.addProperty(oacTarget, fullImage);
-         thisLine.addProperty(contentChars, text);
-      }
+//      for (int i = 0; i < transcriptions.length; i++) {
+//         String uuid = uuids[i];
+//         Resource item = model.createResource("urn:uuid:" + uuid);
+//         /**
+//          * @TODO change to use Transcription.getProjectTranscriptions
+//          */
+//         Resource thisLine = model.createResource("http://t-pen.org/transcription/" + this.folioNumber + "/" + i);
+//         String xyhw = "#xywh=" + transcriptions[i].getX() + ", " + transcriptions[i].getY() + ", " + transcriptions[i].getHeight() + ", " + transcriptions[i].getWidth();
+//         Resource image = model.createResource(f.getArchiveLink());//+"#xyhw="+xyhw);
+//         Literal text = model.createLiteral(transcriptions[i].getText());
+//         item.addProperty(oacBody, thisLine);
+//         item.addProperty(oacTarget, image + xyhw);
+//         item.addProperty(rdfType, transc);
+//         image.addProperty(rdfType, viewFrag);
+//         image.addProperty(oacTarget, fullImage);
+//         thisLine.addProperty(contentChars, text);
+//      }
       StringWriter tmp = new StringWriter();
       model.write(tmp, "N3");
       toret += tmp.getBuffer().toString();

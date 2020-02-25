@@ -13,20 +13,22 @@
 
 package detectimages;
 
+import static java.lang.System.err;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import static java.util.ResourceBundle.getBundle;
 
 
 public class Config {
     public static String getParam(String param)
     {
 
-        ResourceBundle rb = ResourceBundle.getBundle("config");
+        ResourceBundle rb = getBundle("config");
         String msg = "";
         try {
             msg = rb.getString(param);
         } catch (MissingResourceException e) {
-            System.err.println("Token ".concat(param).concat(" not in Propertyfile!"));
+            err.println("Token ".concat(param).concat(" not in Propertyfile!"));
         }
         return msg;
     }

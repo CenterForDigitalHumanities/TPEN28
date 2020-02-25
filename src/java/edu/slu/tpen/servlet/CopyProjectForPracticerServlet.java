@@ -14,26 +14,28 @@
  */
 package edu.slu.tpen.servlet;
 
-import edu.slu.tpen.servlet.util.CreateAnnoListUtil;
-import edu.slu.util.ServletUtils;
-
+import static edu.slu.tpen.servlet.Constant.ANNOTATION_SERVER_ADDR;
+import static edu.slu.tpen.servlet.util.CreateAnnoListUtil.createEmptyAnnoList;
+import static edu.slu.util.ServletUtils.getDBConnection;
+import static edu.slu.util.ServletUtils.getUID;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import static java.lang.Integer.parseInt;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
+import static java.net.URLEncoder.encode;
 import java.sql.Connection;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import textdisplay.Folio;
+import static textdisplay.Folio.getRbTok;
 import textdisplay.PartnerProject;
 import textdisplay.Project;
 
@@ -53,14 +55,14 @@ public class CopyProjectForPracticerServlet extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String result = "";
-        int uID = ServletUtils.getUID(request, response);
+        int uID = getUID(request, response);
         if(null != request.getParameter("projectID") && uID != -1){
-            Integer projectID = Integer.parseInt(request.getParameter("projectID"));
+            Integer projectID = parseInt(request.getParameter("projectID"));
 
             try {
                 //find original project and copy to a new project. 
                 Project templateProject = new Project(projectID);
-                Connection conn = ServletUtils.getDBConnection();
+                Connection conn = getDBConnection();
                 conn.setAutoCommit(false);
                 //in this method, it copies everything about the project.
                 if(null != templateProject.getProjectName())
@@ -75,15 +77,13 @@ public class CopyProjectForPracticerServlet extends HttpServlet {
                     Folio[] folios = thisProject.getFolios();
                     if(null != folios && folios.length > 0)
                     {
-                        for(int i = 0; i < folios.length; i++)
-                        {
-                            Folio folio = folios[i];
+                        for (Folio folio : folios) {
                             Integer msID = folio.getMSID();
                             String msID_str = msID.toString();
                             //This needs to be the same one the JSON Exporter creates and needs to be unique and unchangeable.
                             String canvasID_check = folio.getCanvas();
                             String canvasID = "";
-                            String str_folioNum = Folio.getRbTok("SERVERURL")+"canvas/"+folio.getFolioNumber();
+                            String str_folioNum = getRbTok("SERVERURL") + "canvas/" + folio.getFolioNumber();
                             if(canvasID_check == ""){
                                 canvasID = str_folioNum;
                             }
@@ -92,8 +92,8 @@ public class CopyProjectForPracticerServlet extends HttpServlet {
                             }
                             //String canvasID = Folio.getRbTok("SERVERURL") + templateProject.getProjectName() + "/canvas/" + URLEncoder.encode(folio.getPageName(), "UTF-8"); // for slu testing
                             //create canvas list for original canvas
-                            JSONObject annoList = CreateAnnoListUtil.createEmptyAnnoList(thisProject.getProjectID(), canvasID, new JSONArray());
-                            URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/getAnnotationByProperties.action");
+                            JSONObject annoList = createEmptyAnnoList(thisProject.getProjectID(), canvasID, new JSONArray());
+                            URL postUrl = new URL(ANNOTATION_SERVER_ADDR + "/anno/getAnnotationByProperties.action");
                             HttpURLConnection uc = (HttpURLConnection) postUrl.openConnection();
                             uc.setDoInput(true);
                             uc.setDoOutput(true);
@@ -103,35 +103,34 @@ public class CopyProjectForPracticerServlet extends HttpServlet {
                             uc.addRequestProperty("content-type", "application/x-www-form-urlencoded");
                             uc.connect();
                             DataOutputStream dataOut = new DataOutputStream(uc.getOutputStream());
-                            dataOut.writeBytes("content=" + URLEncoder.encode(annoList.toString(), "utf-8"));
+                            dataOut.writeBytes("content=" + encode(annoList.toString(), "utf-8"));
                             dataOut.flush();
                             dataOut.close();
                             BufferedReader reader = new BufferedReader(new InputStreamReader(uc.getInputStream(),"utf-8"));
-//                                String line="";
+                            //                                String line="";
 //                                StringBuilder sb = new StringBuilder();
-//                                System.out.println("=============================");  
-//                                System.out.println("Contents of post request");  
-//                                System.out.println("=============================");  
-//                                while ((line = reader.readLine()) != null){  
+//                                System.out.println("=============================");
+//                                System.out.println("Contents of post request");
+//                                System.out.println("=============================");
+//                                while ((line = reader.readLine()) != null){
 //                                    //line = new String(line.getBytes(), "utf-8");  
 //                                    System.out.println(line);
 //                                    sb.append(line);
 //                                }
-//                                System.out.println("=============================");  
-//                                System.out.println("Contents of post request ends");  
-//                                System.out.println("=============================");  
-                            reader.close();
-                            uc.disconnect();
+//                                System.out.println("=============================");
+//                                System.out.println("Contents of post request ends");
+//                                System.out.println("=============================");
+reader.close();
+uc.disconnect();
                         }
                     }
                     //String propVal = textdisplay.Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN"); 
                     result = "/project/" + thisProject.getProjectID();
                 }
             } catch(Exception e){
-                e.printStackTrace();
             }
         }else{
-            result = "" + response.SC_FORBIDDEN;
+            result = "" + SC_FORBIDDEN;
         }
         response.getWriter().print(result);
     }

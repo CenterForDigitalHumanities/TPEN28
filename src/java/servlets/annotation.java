@@ -13,9 +13,10 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -34,24 +35,23 @@ public class annotation extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
             if(request.getParameter("create")!=null)
             {
                 //a create should have xyhw folio text and projectID
                 try{
-                    int x=Integer.parseInt(request.getParameter("x"));
-                    int y=Integer.parseInt(request.getParameter("y"));
-                    int h=Integer.parseInt(request.getParameter("h"));
-                    int w=Integer.parseInt(request.getParameter("w"));
-                    int folio=Integer.parseInt(request.getParameter("folio"));
-                    int projectID=Integer.parseInt(request.getParameter("projectID"));
+                    int x=parseInt(request.getParameter("x"));
+                    int y=parseInt(request.getParameter("y"));
+                    int h=parseInt(request.getParameter("h"));
+                    int w=parseInt(request.getParameter("w"));
+                    int folio=parseInt(request.getParameter("folio"));
+                    int projectID=parseInt(request.getParameter("projectID"));
                     String text=request.getParameter("text");
                     try {
                         Annotation a=new Annotation(folio,projectID,text,x,y,h,w);
                         out.print(a.getId());
                     } catch (SQLException ex) {
-                        Logger.getLogger(annotation.class.getName()).log(Level.SEVERE, null, ex);
+                        getLogger(annotation.class.getName()).log(SEVERE, null, ex);
                         response.sendError(500);
                     }
                 }
@@ -63,11 +63,11 @@ public class annotation extends HttpServlet {
             }
             if(request.getParameter("update")!=null)
             {
-                int id=Integer.parseInt(request.getParameter("id"));
+                int id=parseInt(request.getParameter("id"));
                 Annotation a=new Annotation(id);
                 if(request.getParameter("folio")!=null)
                 {
-                    a.updateAnnotationFolio(Integer.parseInt(request.getParameter("folio")));
+                    a.updateAnnotationFolio(parseInt(request.getParameter("folio")));
                 }
                 if(request.getParameter("text")!=null)
                 {
@@ -75,21 +75,19 @@ public class annotation extends HttpServlet {
                 }
                 if(request.getParameter("x")!=null)
                 {
-                    a.updateAnnoationPosition(Integer.parseInt(request.getParameter("x")), Integer.parseInt(request.getParameter("y")), Integer.parseInt(request.getParameter("h")),Integer.parseInt(request.getParameter("w")));
+                    a.updateAnnoationPosition(parseInt(request.getParameter("x")), parseInt(request.getParameter("y")), parseInt(request.getParameter("h")),parseInt(request.getParameter("w")));
                 }
                 return;
             }
             if(request.getParameter("delete")!=null)
             {
-                int id=Integer.parseInt(request.getParameter("id"));
+                int id=parseInt(request.getParameter("id"));
                 Annotation a=new Annotation(id);
                 a.delete();
                 return;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(annotation.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {            
-            out.close();
+            getLogger(annotation.class.getName()).log(SEVERE, null, ex);
         }
     }
 

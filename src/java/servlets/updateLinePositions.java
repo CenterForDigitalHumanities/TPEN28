@@ -19,13 +19,15 @@ package servlets;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import javax.servlet.http.HttpSession;
 import textdisplay.Transcription;
 
@@ -55,15 +57,15 @@ public class updateLinePositions extends HttpServlet {
       try {
          int UID = 0;
          if (session.getAttribute("UID") == null) {
-            response.sendError(response.SC_FORBIDDEN);
+            response.sendError(SC_FORBIDDEN);
             return;
          } else {
-            UID = Integer.parseInt(session.getAttribute("UID").toString());
+            UID = parseInt(session.getAttribute("UID").toString());
             user.User thisUser = new user.User(UID);
             int projectID = 0;
             textdisplay.Project thisProject = null;
             if (request.getParameter("projectID") != null) {
-               projectID = Integer.parseInt(request.getParameter("projectID"));
+               projectID = parseInt(request.getParameter("projectID"));
                thisProject = new textdisplay.Project(projectID);
             }
             String folioNum;
@@ -93,24 +95,24 @@ public class updateLinePositions extends HttpServlet {
                   if (xStr.contains(".")) {
                      xStr = xStr.substring(0, xStr.indexOf('.'));
                   }
-                  int x = Integer.parseInt(xStr);
+                  int x = parseInt(xStr);
                   String yStr = request.getParameter("newy");
                   if (yStr.contains(".")) {
                      yStr = yStr.substring(0, yStr.indexOf('.'));
                   }
-                  int y = Integer.parseInt(yStr);
+                  int y = parseInt(yStr);
                   String hStr = request.getParameter("newheight");
                   if (hStr.contains(".")) {
                      hStr = hStr.substring(0, hStr.indexOf('.'));
                   }
-                  int height = Integer.parseInt(hStr);
+                  int height = parseInt(hStr);
                   String wStr = request.getParameter("newwidth");
                   if (wStr.contains(".")) {
                      wStr = wStr.substring(0, wStr.indexOf('.'));
                   }
-                  int width = Integer.parseInt(wStr);
+                  int width = parseInt(wStr);
 
-                  Transcription t = new Transcription(thisUser.getUID(), projectID, Integer.parseInt(folioNum), "", "", new Rectangle(x, y, width, height));
+                  Transcription t = new Transcription(thisUser.getUID(), projectID, parseInt(folioNum), "", "", new Rectangle(x, y, width, height));
                   out.print(t.getLineID());
                }
                if (request.getParameter("update") != null) {
@@ -123,22 +125,22 @@ public class updateLinePositions extends HttpServlet {
                      xStr = xStr.substring(0, xStr.indexOf('.'));
                   }
                   t.archive();
-                  t.setX(Integer.parseInt(xStr));
+                  t.setX(parseInt(xStr));
                   String yStr = request.getParameter("updatey");
                   if (yStr.contains(".")) {
                      yStr = yStr.substring(0, yStr.indexOf('.'));
                   }
-                  t.setY(Integer.parseInt(yStr));
+                  t.setY(parseInt(yStr));
                   String hStr = request.getParameter("updateheight");
                   if (hStr.contains(".")) {
                      hStr = hStr.substring(0, hStr.indexOf('.'));
                   }
-                  t.setHeight(Integer.parseInt(hStr));
+                  t.setHeight(parseInt(hStr));
                   String wStr = request.getParameter("updatewidth");
                   if (wStr.contains(".")) {
                      wStr = wStr.substring(0, wStr.indexOf('.'));
                   }
-                  t.setWidth(Integer.parseInt(wStr));
+                  t.setWidth(parseInt(wStr));
                }
 
                if (request.getParameter("new") == null) {
@@ -167,7 +169,7 @@ public class updateLinePositions extends HttpServlet {
       try {
          processRequest(request, response);
       } catch (SQLException ex) {
-         Logger.getLogger(updateLinePositions.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(updateLinePositions.class.getName()).log(SEVERE, null, ex);
       }
    }
 
@@ -185,7 +187,7 @@ public class updateLinePositions extends HttpServlet {
       try {
          processRequest(request, response);
       } catch (SQLException ex) {
-         Logger.getLogger(updateLinePositions.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(updateLinePositions.class.getName()).log(SEVERE, null, ex);
       }
    }
 

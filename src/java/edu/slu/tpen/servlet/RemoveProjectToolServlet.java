@@ -14,17 +14,18 @@
  */
 package edu.slu.tpen.servlet;
 
-import edu.slu.util.ServletUtils;
+import static edu.slu.util.ServletUtils.getDBConnection;
 import java.io.IOException;
+import static java.lang.Integer.parseInt;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import utils.UserTool;
+import static utils.UserTool.removeUserTool;
 
 /**
  * Remove project relatd tools by project id. 
@@ -35,11 +36,11 @@ public class RemoveProjectToolServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            Connection conn = ServletUtils.getDBConnection();
-            UserTool.removeUserTool(request.getParameter("url"), Integer.parseInt(request.getParameter("projectID")));
+            Connection conn = getDBConnection();
+            removeUserTool(request.getParameter("url"), parseInt(request.getParameter("projectID")));
             response.getWriter().print("1");
         } catch (SQLException ex) {
-            Logger.getLogger(AddProjectToolServlet.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(AddProjectToolServlet.class.getName()).log(SEVERE, null, ex);
         } 
     }
 

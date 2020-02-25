@@ -21,7 +21,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import org.owasp.esapi.ESAPI;
+import static org.owasp.esapi.ESAPI.encoder;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**
  * This class is for handling archived (older) versions of a transcription.
@@ -75,7 +78,7 @@ public class ArchivedTranscription {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, uniqueID);
          ResultSet rs = ps.executeQuery();
@@ -93,8 +96,8 @@ public class ArchivedTranscription {
             date = rs.getDate("date");
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -106,7 +109,7 @@ public class ArchivedTranscription {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, transcriptionID);
          ResultSet rs = ps.executeQuery();
@@ -120,8 +123,8 @@ public class ArchivedTranscription {
          }
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -133,7 +136,7 @@ public class ArchivedTranscription {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, transcriptionID);
          ResultSet rs = ps.executeQuery();
@@ -147,8 +150,8 @@ public class ArchivedTranscription {
          }
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -163,7 +166,7 @@ public class ArchivedTranscription {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
 
          java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -177,8 +180,8 @@ public class ArchivedTranscription {
          return null;
 
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -186,7 +189,7 @@ public class ArchivedTranscription {
     * Get all older versions of transcriptions for the given project.
     */
    public static Map<Integer, List<ArchivedTranscription>> getAllVersionsForPage(int projID, int folioID) throws SQLException {
-      try (Connection j = DatabaseWrapper.getConnection()) {
+      try (Connection j = getConnection()) {
          try (PreparedStatement ps = j.prepareStatement("SELECT * FROM archivedtranscription "
                  + "WHERE projectID = ? AND folio = ? "
                  + "ORDER BY x, y")) {
@@ -257,7 +260,7 @@ public class ArchivedTranscription {
 
    public String getText() {
       if (text != null) {
-         return ESAPI.encoder().encodeForHTML(ESAPI.encoder().decodeForHTML(text));
+         return encoder().encodeForHTML(encoder().decodeForHTML(text));
       } else {
          return "";
       }

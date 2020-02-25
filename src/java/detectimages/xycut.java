@@ -16,12 +16,16 @@
  */
 package detectimages;
 
+import static detectimages.xycut.cut_type.HORIZONTAL_CUT;
+import static detectimages.xycut.cut_type.VERTICAL_CUT;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.Arrays;
-import java.util.Vector;
 import java.io.IOException;
-import javax.imageio.ImageIO;
+import static java.lang.System.currentTimeMillis;
+import static java.lang.System.out;
+import static java.util.Arrays.fill;
+import java.util.Vector;
+import static javax.imageio.ImageIO.write;
 
 /**
  * This class attempts to implement the xycut line segmentation algorithm. It is currently not used.
@@ -108,8 +112,8 @@ public class xycut {
 
    public void get_projection_profiles(int[] proj_on_yaxis, int[] proj_on_xaxis, rectangle r, int[][] hor, int[][] ver) {
 
-      Arrays.fill(proj_on_yaxis, 0);
-      Arrays.fill(proj_on_xaxis, 0);
+        fill(proj_on_yaxis, 0);
+        fill(proj_on_xaxis, 0);
 
 
       for (int y = (int) r.y; y < (int) r.y1; y++) {
@@ -119,12 +123,10 @@ public class xycut {
                m = hor[(int) r.x - 1][y];
             }
          } catch (Exception e) {
-            e.printStackTrace();
          }
          try {
             proj_on_yaxis[y - (int) r.y] = hor[(int) r.x1 - 1][y] - m;
          } catch (Exception e) {
-            e.printStackTrace();
          }
       }
       for (int x = (int) r.x; x < (int) r.x1; x++) {
@@ -135,7 +137,6 @@ public class xycut {
          try {
             proj_on_xaxis[x - r.x] = ver[x][(int) r.y1 - 1] - m;
          } catch (Exception e) {
-            e.printStackTrace();
          }
       }
 
@@ -239,7 +240,7 @@ public class xycut {
    };
 
    void split_rect(rectangle r1, rectangle r2, rectangle r, cut_type dir, int pos) {
-      if (dir == xycut.cut_type.HORIZONTAL_CUT) { // horizontal cut
+      if (dir == HORIZONTAL_CUT) { // horizontal cut
          r1.x = r.x;
          r1.y = r.y;
          r1.x1 = r.x1;
@@ -249,7 +250,7 @@ public class xycut {
          r2.x1 = r.x1;
          r2.y1 = r.y1; // upper rectangle
       }
-      if (dir == xycut.cut_type.VERTICAL_CUT) { // vertical cut
+      if (dir == VERTICAL_CUT) { // vertical cut
          r1.x = r.x;
          r1.y = r.y;
          r1.x1 = pos;
@@ -353,7 +354,7 @@ public class xycut {
                   //System.out.print("meth1\n");
                   rectangle rBottom = new rectangle();
                   rectangle rTop = new rectangle();
-                  this.split_rect(rBottom, rTop, r, cut_type.HORIZONTAL_CUT, old_y + cut_pos_y);
+                  this.split_rect(rBottom, rTop, r, HORIZONTAL_CUT, old_y + cut_pos_y);
                   //this.insertRectangleIntoTree(i, tree, rBottom, rTop);
                   tree.add(rBottom);
                   tree.add(rTop);
@@ -362,7 +363,7 @@ public class xycut {
                      // System.out.print("meth2\n");
                      rectangle rLeft = new rectangle();
                      rectangle rRight = new rectangle();
-                     this.split_rect(rLeft, rRight, r, cut_type.VERTICAL_CUT, old_x + cut_pos_x);
+                     this.split_rect(rLeft, rRight, r, VERTICAL_CUT, old_x + cut_pos_x);
                      //this.insertRectangleIntoTree(i, tree, rLeft, rRight);
                      tree.add(rLeft);
                      tree.add(rRight);
@@ -371,7 +372,7 @@ public class xycut {
                         //   System.out.print("meth3\n");
                         rectangle rLeft = new rectangle();
                         rectangle rRight = new rectangle();
-                        this.split_rect(rLeft, rRight, r, cut_type.VERTICAL_CUT, old_x + cut_pos_x);
+                        this.split_rect(rLeft, rRight, r, VERTICAL_CUT, old_x + cut_pos_x);
                         tree.add(rLeft);
                         tree.add(rRight);
                      } else {
@@ -379,7 +380,7 @@ public class xycut {
                            // System.out.print("meth4\n");
                            rectangle rBottom = new rectangle();
                            rectangle rTop = new rectangle();
-                           this.split_rect(rBottom, rTop, r, cut_type.HORIZONTAL_CUT, old_y + cut_pos_y);
+                           this.split_rect(rBottom, rTop, r, HORIZONTAL_CUT, old_y + cut_pos_y);
                            //this.insertRectangleIntoTree(i, tree, rBottom, rTop);
                            tree.add(rBottom);
                            tree.add(rTop);
@@ -409,7 +410,6 @@ public class xycut {
          }
 
       } catch (Exception e) {
-         e.printStackTrace();
       }
 
    }
@@ -425,13 +425,13 @@ public class xycut {
       xycut(blocks, tree, imageMap, tnx, tny, tcx, tcy, hor, ver);
       if (tree.size() >= 5) {
          toret = true;
-         System.out.print("" + blocks.size() + " blocks and " + tree.size() + " items in tree\n");
+            out.print("" + blocks.size() + " blocks and " + tree.size() + " items in tree\n");
          int cflen = blocks.size();
          for (int i = 0; i < cflen; i++) {
 
             int color = 0xff0000;
             rectangle r = blocks.get(i);
-            System.out.print("rectangle x=" + r.x + " y=" + r.y + " x1=" + r.x1 + " y1=" + r.y1 + "\n");
+                out.print("rectangle x=" + r.x + " y=" + r.y + " x1=" + r.x1 + " y1=" + r.y1 + "\n");
             for (int x = r.x; x < (r.x1); x++) {
                img.setRGB(x, r.y, color);
                img.setRGB(x, r.y1, color);
@@ -471,7 +471,7 @@ public class xycut {
          }
       }
 
-      ImageIO.write(binarizedImage, "jpg", new File("/usr/debugImages/inner" + System.currentTimeMillis() + ".jpg"));
+        write(binarizedImage, "jpg", new File("/usr/debugImages/inner" + currentTimeMillis() + ".jpg"));
       xycut x = new xycut(imageMap);
       return (x.segment(imageMap, binarizedImage, "prod"));
    }

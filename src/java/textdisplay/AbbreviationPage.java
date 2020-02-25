@@ -15,7 +15,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.owasp.esapi.ESAPI;
+import static org.owasp.esapi.ESAPI.encoder;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**
  *
@@ -25,7 +28,7 @@ import org.owasp.esapi.ESAPI;
 public class AbbreviationPage {
 
     public String getGroup() {
-        return ESAPI.encoder().encodeForHTML(group);
+        return encoder().encodeForHTML(group);
     }
 
     public int getId() {
@@ -37,7 +40,7 @@ public class AbbreviationPage {
     }
 
     public String getLabel() {
-        return ESAPI.encoder().encodeForHTML(label);
+        return encoder().encodeForHTML(label);
     }
     private String imageName;
     private int id;
@@ -54,7 +57,7 @@ public class AbbreviationPage {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -65,8 +68,8 @@ public class AbbreviationPage {
                 this.group = rs.getString("group");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -77,7 +80,7 @@ public class AbbreviationPage {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setString(1, collection);
             ResultSet rs = ps.executeQuery();
@@ -91,8 +94,8 @@ public class AbbreviationPage {
                 toret[toret.length - 1] = rs.getString("group");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         //create an array for sorting with any leading zeros removed
         String[] removedZeroPadding = new String[toret.length];
@@ -113,7 +116,7 @@ public class AbbreviationPage {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(3, id);
             ps.setString(1, label);
@@ -121,8 +124,8 @@ public class AbbreviationPage {
             ps.execute();
 
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
 
         }
     }
@@ -133,13 +136,13 @@ public class AbbreviationPage {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, id);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -150,7 +153,7 @@ public class AbbreviationPage {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setString(1, collection);
             ResultSet rs = ps.executeQuery();
@@ -159,8 +162,8 @@ public class AbbreviationPage {
             }
             return -1;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -171,7 +174,7 @@ public class AbbreviationPage {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setString(1, group);
             ps.setString(2, collection);
@@ -186,8 +189,8 @@ public class AbbreviationPage {
                 toret[toret.length - 1] = a;
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         return toret;
 

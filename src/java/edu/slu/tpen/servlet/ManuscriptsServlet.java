@@ -14,21 +14,22 @@
  */
 package edu.slu.tpen.servlet;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static edu.slu.util.LangUtils.buildQuickMap;
 import static edu.slu.util.ServletUtils.getUID;
 import static edu.slu.util.ServletUtils.reportInternalError;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import textdisplay.Folio;
 import textdisplay.Manuscript;
 import textdisplay.Project;
@@ -76,7 +77,7 @@ public class ManuscriptsServlet extends HttpServlet {
             reportInternalError(resp, ex);
          }
       } else {
-			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+			resp.sendError(SC_UNAUTHORIZED);
 		}
    }
 

@@ -14,28 +14,43 @@
  */
 package textdisplay;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import static com.hp.hpl.jena.rdf.model.ModelFactory.createDefaultModel;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFList;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import static edu.slu.util.ServletUtils.getDBConnection;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.err;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Level;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFList;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import org.owasp.esapi.ESAPI;
-import static edu.slu.util.ServletUtils.getDBConnection;
-import java.awt.Rectangle;
+import static java.util.logging.Logger.getLogger;
+import static org.owasp.esapi.ESAPI.encoder;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
+import static textdisplay.Project.imageBounding.columns;
+import static textdisplay.Project.imageBounding.fullimage;
+import static textdisplay.Project.imageBounding.lines;
+import static textdisplay.Project.imageBounding.none;
+import static textdisplay.TagButton.getTagsFromSchema;
+import static textdisplay.Transcription.getProjectTranscriptions;
 import user.Group;
 import user.User;
 import utils.UserTool;
@@ -80,14 +95,14 @@ public class Project {
         PreparedStatement ps = null;
         String query = "insert into tools(name,url) values(?,?)";
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setString(1, name);
             ps.setString(2, url);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -104,14 +119,14 @@ public class Project {
         PreparedStatement ps = null;
         String query = "delete from tools where name=? and url=?";
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setString(1, name);
             ps.setString(2, url);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -127,12 +142,12 @@ public class Project {
         PreparedStatement ps = null;
         String query = "select * from tools";
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         return toret;
     }
@@ -168,14 +183,14 @@ public class Project {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(updateQuery);
             ps.setString(1, projectImageBounding.name());
             ps.setInt(2, projectID);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -204,14 +219,14 @@ public class Project {
         Connection j = null;
         PreparedStatement updateQuery = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             updateQuery = j.prepareStatement(query);
             updateQuery.setInt(1, newLimit);
             updateQuery.setInt(1, projectID);
             updateQuery.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(updateQuery);
+            closeDBConnection(j);
+            closePreparedStatement(updateQuery);
         }
     }
 
@@ -227,14 +242,14 @@ public class Project {
         Connection j = null;
         PreparedStatement updateQuery = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             updateQuery = j.prepareStatement(query);
             updateQuery.setInt(1, priority);
             updateQuery.setInt(2, projectID);
             updateQuery.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(updateQuery);
+            closeDBConnection(j);
+            closePreparedStatement(updateQuery);
         }
     }
 
@@ -261,7 +276,7 @@ public class Project {
         PreparedStatement qry = null;
         try {
             String query = "update projectfolios set position=? where project=? and folio=?";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             qry = j.prepareStatement(query);
             //qry.execute("delete from projectsequence where Project="+this.projectID);
             for (int i = 0; i < orderedFolios.length; i++) {
@@ -273,8 +288,8 @@ public class Project {
             }
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(qry);
+                closeDBConnection(j);
+                closePreparedStatement(qry);
             }
         }
 
@@ -294,7 +309,7 @@ public class Project {
         PreparedStatement ps = null;
 
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
 
             ps.setInt(1, this.projectID);
@@ -305,8 +320,8 @@ public class Project {
             return toret;
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
             }
         }
     }
@@ -400,7 +415,7 @@ public class Project {
         PreparedStatement ps = null;
         String query = "update transcription set projectID=? where creator=? and folio=? and projectID=0";
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             Folio[] theseFolios = this.getFolios();
             for (Folio theseFolio : theseFolios) {
@@ -410,8 +425,8 @@ public class Project {
                 ps.execute();
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
 
     }
@@ -428,7 +443,7 @@ public class Project {
         if (name == null || name.length() == 0) {
             name = "new project";
         }
-        try (PreparedStatement stmt = conn.prepareStatement("insert into project (name, grp, schemaURL,linebreakCharacterLimit ) values(?,?,'',5000)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = conn.prepareStatement("insert into project (name, grp, schemaURL,linebreakCharacterLimit ) values(?,?,'',5000)", RETURN_GENERATED_KEYS)) {
             stmt.setString(1, name);
             stmt.setInt(2, group);
             stmt.execute();
@@ -452,7 +467,7 @@ public class Project {
         Connection j = null;
         PreparedStatement qry = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             qry = j.prepareStatement("select * from project where id=?");
             qry.setInt(1, projectID);
             ResultSet rs = qry.executeQuery();
@@ -463,25 +478,25 @@ public class Project {
                 this.linebreakCharacterLimit = rs.getInt("linebreakCharacterLimit");
                 String imageBoundingStr = rs.getString("imageBounding");
                 if (imageBoundingStr.compareTo("columns") == 0) {
-                    this.projectImageBounding = imageBounding.columns;
+                    this.projectImageBounding = columns;
                 }
                 if (imageBoundingStr.compareTo("fullimage") == 0) {
-                    this.projectImageBounding = imageBounding.fullimage;
+                    this.projectImageBounding = fullimage;
                 }
                 if (imageBoundingStr.compareTo("none") == 0) {
-                    this.projectImageBounding = imageBounding.none;
+                    this.projectImageBounding = none;
                 }
                 if (imageBoundingStr.compareTo("lines") == 0) {
-                    this.projectImageBounding = imageBounding.lines;
+                    this.projectImageBounding = lines;
                 }
 
             }
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(qry);
+                closeDBConnection(j);
+                closePreparedStatement(qry);
             } else {
-                System.err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
+                err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
             }
         }
     }
@@ -498,7 +513,7 @@ public class Project {
         Connection j = null;
         PreparedStatement qry = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             qry = j.prepareStatement(query);
             qry.setInt(1, projectID);
             ResultSet rs = qry.executeQuery();
@@ -508,10 +523,10 @@ public class Project {
             return toret;
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(qry);
+                closeDBConnection(j);
+                closePreparedStatement(qry);
             } else {
-                System.err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
+                err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
             }
         }
     }
@@ -575,7 +590,7 @@ public class Project {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
 
             ResultSet rs = ps.executeQuery();
@@ -591,8 +606,8 @@ public class Project {
             }
             return toret;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -607,7 +622,7 @@ public class Project {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
 
             ResultSet rs = ps.executeQuery();
@@ -623,8 +638,8 @@ public class Project {
             }
             return toret;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -639,14 +654,14 @@ public class Project {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, projectID);
             ResultSet rs = ps.executeQuery();
             return rs.next();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -762,9 +777,9 @@ public class Project {
     public void detectInColumns(int folioNumber) throws SQLException, IOException {
         Folio f = new Folio(folioNumber);
         Line[] t = getLines(folioNumber);
-        LOG.log(Level.INFO, "User specified column count {0}", t.length);
+        LOG.log(INFO, "User specified column count {0}", t.length);
         for (Line t1 : t) {
-            LOG.log(Level.INFO, "Column {0},{1},{2},{3}", new Object[]{t1.left, t1.right, t1.top, t1.bottom});
+            LOG.log(INFO, "Column {0},{1},{2},{3}", new Object[]{t1.left, t1.right, t1.top, t1.bottom});
         }
 
         Line[] linePositions = f.detectInColumns(t);
@@ -772,11 +787,11 @@ public class Project {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement("Delete from projectimagepositions where folio=?");
             stmt.setInt(1, folioNumber);
             stmt.execute();
-            Transcription[] oldTranscriptions = Transcription.getProjectTranscriptions(projectID, folioNumber);
+            Transcription[] oldTranscriptions = getProjectTranscriptions(projectID, folioNumber);
             for (Transcription oldTranscription : oldTranscriptions) {
                 oldTranscription.remove();
             }
@@ -799,10 +814,10 @@ public class Project {
             }
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(stmt);
+                closeDBConnection(j);
+                closePreparedStatement(stmt);
             } else {
-                System.err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
+                err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
             }
         }
     }
@@ -821,7 +836,7 @@ public class Project {
         PreparedStatement ps = null;
         PreparedStatement del = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             del = j.prepareStatement(deleteQuery);
             del.setInt(1, projectID);
             del.execute();
@@ -830,9 +845,9 @@ public class Project {
             ps.setString(2, txt);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
-            DatabaseWrapper.closePreparedStatement(del);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+            closePreparedStatement(del);
 
         }
     }
@@ -851,7 +866,7 @@ public class Project {
         PreparedStatement ps = null;
         PreparedStatement del = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             del = j.prepareStatement(deleteQuery);
             del.setInt(1, projectID);
             del.execute();
@@ -860,9 +875,9 @@ public class Project {
             ps.setString(2, txt);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
-            DatabaseWrapper.closePreparedStatement(del);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+            closePreparedStatement(del);
 
         }
     }
@@ -882,7 +897,7 @@ public class Project {
         PreparedStatement selectStatement = null;
         try {
 
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             selectStatement = j.prepareStatement(selectQuery);
             selectStatement.setInt(1, projectID);
@@ -899,9 +914,9 @@ public class Project {
                 ps.execute();
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
-            DatabaseWrapper.closePreparedStatement(selectStatement);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+            closePreparedStatement(selectStatement);
 
         }
     }
@@ -918,14 +933,14 @@ public class Project {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, projectID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 String toret = rs.getString(1);
                 if (toret.length() > this.linebreakCharacterLimit) {
-                    return ESAPI.encoder().encodeForHTML(toret.substring(0, this.linebreakCharacterLimit));
+                    return encoder().encodeForHTML(toret.substring(0, this.linebreakCharacterLimit));
                 }
                 return toret;
             } else {
@@ -933,8 +948,8 @@ public class Project {
             }
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
             }
         }
     }
@@ -950,19 +965,19 @@ public class Project {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, projectID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 String toret = rs.getString(1);
-                return ESAPI.encoder().encodeForHTML(toret);
+                return encoder().encodeForHTML(toret);
             } else {
                 return "";
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -978,7 +993,7 @@ public class Project {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, projectID);
             ResultSet rs = ps.executeQuery();
@@ -989,8 +1004,8 @@ public class Project {
             }
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
             }
         }
     }
@@ -1008,7 +1023,7 @@ public class Project {
         PreparedStatement qry = null;
         try {
             String query = "Select * from projectimagepositions where folio=? and project=? and width>0 order by colstart,top ";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             qry = j.prepareStatement(query);
             qry.setInt(1, folio);
             qry.setInt(2, this.projectID);
@@ -1033,10 +1048,10 @@ public class Project {
             return toret;
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(qry);
+                closeDBConnection(j);
+                closePreparedStatement(qry);
             } else {
-                System.err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
+                err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
             }
         }
     }
@@ -1069,7 +1084,7 @@ public class Project {
         try {
             Stack<Folio> t = new Stack();
             String query = "select * from projectfolios where project=? order by position";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             qry = j.prepareStatement(query);
             qry.setInt(1, this.projectID);
             ResultSet rs = qry.executeQuery();
@@ -1083,10 +1098,10 @@ public class Project {
             return toret;
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(qry);
+                closeDBConnection(j);
+                closePreparedStatement(qry);
             } else {
-                System.err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
+                err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
             }
         }
     }
@@ -1113,7 +1128,7 @@ public class Project {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement("Delete from projectimagepositions where folio=? and project=?");
             stmt.setInt(1, pagenumber);
             stmt.setInt(2, projectID);
@@ -1131,10 +1146,10 @@ public class Project {
                 stmt.execute();
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Project.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(Project.class.getName()).log(SEVERE, null, ex);
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
 
@@ -1157,7 +1172,7 @@ public class Project {
         Stack<Folio> allFolios = new Stack();
         for (int i = 0; i < m.size(); i++) {
             try {
-                Folio f = new Folio(Integer.parseInt(names[i]));
+                Folio f = new Folio(parseInt(names[i]));
                 allFolios.add(f);
             } catch (NumberFormatException er) {
             }
@@ -1218,16 +1233,16 @@ public class Project {
         PreparedStatement qry = null;
         try {
             String query = "select count(folio) from projectfolios where project=?";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             qry = j.prepareStatement(query);
 
             return 0;
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(qry);
+                closeDBConnection(j);
+                closePreparedStatement(qry);
             } else {
-                System.err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
+                err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
             }
         }
     }
@@ -1246,7 +1261,7 @@ public class Project {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             for (User user : users) {
                 ps.setInt(1, projectID);
@@ -1257,8 +1272,8 @@ public class Project {
                 }
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
 
         return toret;
@@ -1276,7 +1291,7 @@ public class Project {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, projectID);
             ResultSet rs = ps.executeQuery();
@@ -1284,8 +1299,8 @@ public class Project {
                 toret++;
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         return toret;
     }
@@ -1310,8 +1325,8 @@ public class Project {
      */
     public String[] hasTagsOutsideSchema() throws SQLException, MalformedURLException, IOException {
         Stack<String> badTags = new Stack();
-        String[][] res = TagButton.getTagsFromSchema(this, new ArrayList());
-        String[] usedTags = new TagFilter(Manuscript.getFullDocument(this, Boolean.FALSE)).getTags();
+        String[][] res = getTagsFromSchema(this, new ArrayList());
+        String[] usedTags = new TagFilter(Manuscript.getFullDocument(this, FALSE)).getTags();
         for (String usedTag : usedTags) {
             Boolean found = false;
             for (String[] re : res) {
@@ -1341,7 +1356,7 @@ public class Project {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, projectID);
             ResultSet rs = ps.executeQuery();
@@ -1350,8 +1365,8 @@ public class Project {
             }
             return null;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -1367,14 +1382,14 @@ public class Project {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, id);
             ps.setInt(2, projectID);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -1392,7 +1407,7 @@ public class Project {
         PreparedStatement ps = null;
         Stack<Project> tmp = new Stack();
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -1400,8 +1415,8 @@ public class Project {
                 tmp.push(new Project(rs.getInt(1)));
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         all = new Project[tmp.size()];
         //odd looking way of doing this copy, I know, but it was convenient
@@ -1424,15 +1439,15 @@ public class Project {
         PreparedStatement ps = null;
         Stack<Project> tmp = new Stack();
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 tmp.push(new Project(rs.getInt(1)));
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         active = new Project[tmp.size()];
         //odd looking way of doing this copy, I know, but it was convenient
@@ -1471,7 +1486,7 @@ public class Project {
             Connection j = null;
             PreparedStatement qry = null;
             try {
-                j = DatabaseWrapper.getConnection();
+                j = getConnection();
                 qry = j.prepareStatement(query);
                 qry.setInt(1, projectID);
 
@@ -1479,9 +1494,9 @@ public class Project {
                 return true;
             } finally {
                 if (j != null) {
-                    DatabaseWrapper.closeDBConnection(j);
+                    closeDBConnection(j);
                 }
-                DatabaseWrapper.closePreparedStatement(qry);
+                closePreparedStatement(qry);
             }
         }
         return false;
@@ -1499,7 +1514,7 @@ public class Project {
         try {
             return getFolios()[0].getFolioNumber();
         } catch (NullPointerException | ArrayIndexOutOfBoundsException ex) {
-            LOG.log(Level.SEVERE, "Error loading first page for project " + projectID, ex);
+            LOG.log(SEVERE, "Error loading first page for project " + projectID, ex);
             throw ex;
         }
     }
@@ -1549,8 +1564,8 @@ public class Project {
      * @throws java.io.IOException
      */
     public String getOAC(int folioNumber) throws SQLException, IOException {
-        Model model = ModelFactory.createDefaultModel();
-        Transcription[] transcriptions = Transcription.getProjectTranscriptions(projectID, folioNumber);
+        Model model = createDefaultModel();
+        Transcription[] transcriptions = getProjectTranscriptions(projectID, folioNumber);
         for (Transcription transcription : transcriptions) {
             StringReader r = new StringReader(transcription.getAsOAC());
             model.read(r, "");
@@ -1567,7 +1582,7 @@ public class Project {
      * changes to OAC
      */
     public String getOACSequence() throws SQLException {
-        Model model = ModelFactory.createDefaultModel();
+        Model model = createDefaultModel();
         model.setNsPrefix("dms", "http://dms.stanford.edu/ns/");
         model.setNsPrefix("oac", "http://www.openannotation.org/ns/");
         model.setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -1628,7 +1643,7 @@ public class Project {
         Connection j = null;
         PreparedStatement qry = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             qry = j.prepareStatement(query);
             qry.setInt(1, projectID);
             ResultSet rs = qry.executeQuery();
@@ -1636,13 +1651,13 @@ public class Project {
                 User u = new User(rs.getInt("uid"));
                 SimpleDateFormat d = new SimpleDateFormat();
                 toret.append("<div class=\"logEntry\"><div class=\"logDate\">").append(d.format(rs.getTimestamp("creationDate"))).append("</div>");
-                toret.append("<div class=\"logAuthor\">").append(ESAPI.encoder().encodeForHTML(u.getFname() + " " + u.getLname())).append("</div>");
+                toret.append("<div class=\"logAuthor\">").append(encoder().encodeForHTML(u.getFname() + " " + u.getLname())).append("</div>");
                 //removed esapi encoding 
                 toret.append("<div class=\"logContent\">").append(rs.getString("content")).append("</div></div>");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
         }
         return toret.toString();
     }
@@ -1662,7 +1677,7 @@ public class Project {
         Connection j = null;
         PreparedStatement qry = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             qry = j.prepareStatement(query);
             qry.setInt(1, projectID);
             qry.setInt(2, firstRecord);
@@ -1672,15 +1687,15 @@ public class Project {
                 User u = new User(rs.getInt("uid"));
                 SimpleDateFormat d = new SimpleDateFormat();
                 toret.append("<div class=\"logEntry\"><div class=\"logDate\">").append(d.format(rs.getTimestamp("creationDate"))).append("</div>");
-                toret.append("<div class=\"logAuthor\">").append(ESAPI.encoder().encodeForHTML(u.getFname() + " " + u.getLname())).append("</div>");
+                toret.append("<div class=\"logAuthor\">").append(encoder().encodeForHTML(u.getFname() + " " + u.getLname())).append("</div>");
                 //removed esapi encoding to allow links in entries
                 toret.append("<div class=\"logContent\">").append(rs.getString("content")).append("</div></div>");
             }
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
+                closeDBConnection(j);
             }
-            DatabaseWrapper.closePreparedStatement(qry);
+            closePreparedStatement(qry);
         }
         return toret.toString();
     }
@@ -1701,7 +1716,7 @@ public class Project {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement("select schemaURL from project where id=?");
             ps.setInt(1, this.projectID);
             ResultSet rs = ps.executeQuery();
@@ -1709,8 +1724,8 @@ public class Project {
                 return rs.getString("schemaURL");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         return toret;
     }
@@ -1735,5 +1750,5 @@ public class Project {
         }
     }
 
-    private static final Logger LOG = Logger.getLogger(Project.class.getName());
+    private static final Logger LOG = getLogger(Project.class.getName());
 }

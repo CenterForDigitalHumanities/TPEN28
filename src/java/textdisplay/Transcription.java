@@ -14,21 +14,31 @@
  */
 package textdisplay;
 
+import com.hp.hpl.jena.rdf.model.*;
+import static com.hp.hpl.jena.rdf.model.ModelFactory.createDefaultModel;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import static java.lang.System.currentTimeMillis;
+import static java.lang.Thread.currentThread;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import java.sql.Timestamp;
 import java.util.Stack;
-import java.util.logging.Level;
+import static java.util.UUID.randomUUID;
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
-
-import com.hp.hpl.jena.rdf.model.*;
-import org.owasp.esapi.ESAPI;
+import static java.util.logging.Logger.getLogger;
+import static org.owasp.esapi.ESAPI.encoder;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**
  * This class handles saving and retrieving portions of a single Line of a
@@ -69,9 +79,9 @@ public class Transcription {
      * @throws java.io.IOException
      */
     public Transcription(final int uid, final int projID, final int folioID, final String t, final String c, final Rectangle r) throws SQLException, IOException {
-        try (Connection j = DatabaseWrapper.getConnection()) {
+        try (Connection j = getConnection()) {
             try (PreparedStatement ps = j.prepareStatement("INSERT INTO transcription (creator, projectID, folio, x, y, width, height, comment, text, line, date) "
-                    + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, -1, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+                    + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, -1, ?)", RETURN_GENERATED_KEYS)) {
                 UID = uid;
                 projectID = projID;
                 folio = folioID;
@@ -81,7 +91,7 @@ public class Transcription {
                 height = r.height;
                 text = t;
                 comment = c;
-                date = new java.sql.Timestamp(System.currentTimeMillis());
+                date = new java.sql.Timestamp(currentTimeMillis());
                 ps.setInt(1, UID);
                 ps.setInt(2, projectID);
                 ps.setInt(3, folio);
@@ -196,7 +206,7 @@ public class Transcription {
         try {
             this.commit();
         } catch (final SQLException ex) {
-            Logger.getLogger(Transcription.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(Transcription.class.getName()).log(SEVERE, null, ex);
         }
     }
 
@@ -220,14 +230,14 @@ public class Transcription {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             final ResultSet rs = ps.executeQuery();
             rs.next();
             toret += rs.getInt(1);
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         return toret;
     }
@@ -243,13 +253,13 @@ public class Transcription {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, this.lineID);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -275,7 +285,7 @@ public class Transcription {
      * @return text without special encoding
      */
     public String getTextUnencoded() {
-        return ESAPI.encoder().decodeForHTML(text);
+        return encoder().decodeForHTML(text);
     }
 
     /**
@@ -289,7 +299,7 @@ public class Transcription {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
 
             stmt = j.prepareStatement("Select * from transcription where id=?");
             stmt.setString(1, uniqueID);
@@ -309,8 +319,8 @@ public class Transcription {
                 date = rs.getTimestamp("date");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
 
@@ -336,7 +346,7 @@ public class Transcription {
         PreparedStatement ps = null;
         final Stack<Transcription> orderedTranscriptions = new Stack();
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, projectID);
             ps.setInt(2, folioNumber);
@@ -349,12 +359,12 @@ public class Transcription {
             final Transcription[] toret = new Transcription[orderedTranscriptions.size()]; //orderedTranscriptions can be empty;
             for (int i = 0; i < orderedTranscriptions.size(); i++) {
                 toret[i] = orderedTranscriptions.get(i);
-                LOG.log(Level.FINE, "Transcription {0} {1}->{2}", new Object[]{i, toret[i].getY(), toret[i].getY() + toret[i].getHeight()});
+                LOG.log(FINE, "Transcription {0} {1}->{2}", new Object[]{i, toret[i].getY(), toret[i].getY() + toret[i].getHeight()});
             }
             return toret; //This can be an empty array
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
 
     }
@@ -376,7 +386,7 @@ public class Transcription {
         PreparedStatement ps3 = null;
         PreparedStatement ps4 = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(transcriptionSelect);
             ps2 = j.prepareStatement(imageQuery);
             ps3 = j.prepareStatement(projectImageQuery);
@@ -420,11 +430,11 @@ public class Transcription {
                 }
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
-            DatabaseWrapper.closePreparedStatement(ps2);
-            DatabaseWrapper.closePreparedStatement(ps3);
-            DatabaseWrapper.closePreparedStatement(ps4);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+            closePreparedStatement(ps2);
+            closePreparedStatement(ps3);
+            closePreparedStatement(ps4);
         }
     }
 
@@ -454,15 +464,15 @@ public class Transcription {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, projectID);
             ps.setInt(2, folioNumber);
             final ResultSet transcriptionIDs = ps.executeQuery();
             return transcriptionIDs.next();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -476,13 +486,13 @@ public class Transcription {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, this.lineID);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -498,16 +508,16 @@ public class Transcription {
         Connection j = null;
         PreparedStatement stmt = null;
         if (this.text == null) {
-            final StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+            final StackTraceElement[] stacktrace = currentThread().getStackTrace();
             String stackLog = "";
             for (StackTraceElement stacktrace1 : stacktrace) {
                 stackLog += stacktrace1.toString();
             }
-            LOG.log(Level.WARNING, "Transcription text was null {0}", stackLog);
+            LOG.log(WARNING, "Transcription text was null {0}", stackLog);
             text = "";
         }
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             //if this is a group Transcription, update the current one if it exists and set the uid to this user to indicate who modified it most recently
             if (projectID > 0) {
                 final Project p = new Project(projectID);
@@ -528,7 +538,7 @@ public class Transcription {
                          */
                         text = new String(text.getBytes("UTF8"), "UTF8");
                     } catch (final UnsupportedEncodingException ex) {
-                        LOG.log(Level.SEVERE, null, ex);
+                        LOG.log(SEVERE, null, ex);
                     }
                     stmt.setString(1, text);
                     stmt.setString(2, comment);
@@ -577,7 +587,7 @@ public class Transcription {
                 try {
                     text = new String(text.getBytes("UTF8"), "UTF8");
                 } catch (final UnsupportedEncodingException ex) {
-                    Logger.getLogger(Transcription.class.getName()).log(Level.SEVERE, null, ex);
+                    getLogger(Transcription.class.getName()).log(SEVERE, null, ex);
                 }
                 stmt.setString(1, text);
                 stmt.setString(2, comment);
@@ -597,8 +607,8 @@ public class Transcription {
 
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
 
         }
     }
@@ -616,7 +626,7 @@ public class Transcription {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setString(1, text);
             ps.setString(2, comment);
@@ -626,8 +636,8 @@ public class Transcription {
             ps.setInt(6, project);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -698,7 +708,7 @@ public class Transcription {
      * @throws java.sql.SQLException
      */
     public String getAsOAC() throws SQLException {
-        final Model model = ModelFactory.createDefaultModel();
+        final Model model = createDefaultModel();
         //model.setNsPrefix("dms", "http://dms.stanford.edu/ns/");
         model.setNsPrefix("oac", "http://www.openannotation.org/ns/");
         model.setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -717,7 +727,7 @@ public class Transcription {
         Resource item;
         item = model.createResource("http://t-pen.org/transcriptions/" + this.lineID);
         final Property rdfType = model.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
-        final Resource thisLine = model.createResource("urn:uuid:" + java.util.UUID.randomUUID().toString());
+        final Resource thisLine = model.createResource("urn:uuid:" + randomUUID().toString());
         final Property stringContent = model.createProperty("http://www.w3.org/2008/content#ContentAsText");
 //        final Property parseType = model.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
         final int folioNumber = this.folio;
@@ -762,10 +772,10 @@ public class Transcription {
                 return f.getImageURLResize();
             }
         } catch (SQLException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(SEVERE, null, ex);
         }
         return "";
     }
 
-    public static final Logger LOG = Logger.getLogger(Transcription.class.getName());
+    public static final Logger LOG = getLogger(Transcription.class.getName());
 }

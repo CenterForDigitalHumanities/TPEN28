@@ -15,9 +15,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import textdisplay.DatabaseWrapper;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 import textdisplay.Manuscript;
 import textdisplay.Project;
 
@@ -31,9 +33,9 @@ public class DatastoreValidator {
         try {
             DatastoreValidator dv = new DatastoreValidator();
             //System.out.print(dv.delete());
-            Logger.getLogger(DatastoreValidator.class.getName()).log(Level.SEVERE, dv.results);
+            getLogger(DatastoreValidator.class.getName()).log(SEVERE, dv.results);
         } catch (SQLException ex) {
-            Logger.getLogger(DatastoreValidator.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(DatastoreValidator.class.getName()).log(SEVERE, null, ex);
         }
     }
     public String results;
@@ -44,12 +46,12 @@ public class DatastoreValidator {
 
     private String delete() throws SQLException {
         String delresults = "";
-        delresults += DatastoreValidator.deleteEmptyManuscripts();
-        delresults += DatastoreValidator.deleteEmptyProjects();
-        delresults += DatastoreValidator.deleteOrphanedImages();
-        delresults += DatastoreValidator.deleteOrphanedProjectImages();
-        delresults += DatastoreValidator.deleteTranscriptionsOnOrphanedProjects();
-        delresults += DatastoreValidator.deleteTranscriptionsOnOrphanedImages();
+        delresults += deleteEmptyManuscripts();
+        delresults += deleteEmptyProjects();
+        delresults += deleteOrphanedImages();
+        delresults += deleteOrphanedProjectImages();
+        delresults += deleteTranscriptionsOnOrphanedProjects();
+        delresults += deleteTranscriptionsOnOrphanedImages();
         return delresults;
 
     }
@@ -61,7 +63,7 @@ public class DatastoreValidator {
         PreparedStatement stmt = null;
         try {
             String query = "select * from manuscript where not exists(select * from folios where msID=manuscript.id)";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -75,8 +77,8 @@ public class DatastoreValidator {
                 results += "No problems\n";
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return results;
 
@@ -91,7 +93,7 @@ public class DatastoreValidator {
         try {
             String query = "select * from manuscript where not exists(select * from folios where msID=manuscript.id)";
             String deleteQuery = "delete from manuscript where id=?";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             deleteStmt = j.prepareStatement(deleteQuery);
             ResultSet rs = stmt.executeQuery();
@@ -110,8 +112,8 @@ public class DatastoreValidator {
                 results += "Nothing to delete\n";
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return results;
 
@@ -124,7 +126,7 @@ public class DatastoreValidator {
         PreparedStatement stmt = null;
         try {
             String query = "select * from folios where not exists(select * from manuscript where id=folios.msID)";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -136,8 +138,8 @@ public class DatastoreValidator {
                 results.append("No problems\n");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return results.toString();
     }
@@ -150,7 +152,7 @@ public class DatastoreValidator {
         try {
             String query = "select * from folios where not exists(select * from manuscript where id=folios.msID)";
             String deleteQuery = "delete from folios where pageNumber=?";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             deleteStmt = j.prepareStatement(deleteQuery);
             ResultSet rs = stmt.executeQuery();
@@ -167,8 +169,8 @@ public class DatastoreValidator {
                 results.append("Nothing to delete\n");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return results.toString();
     }
@@ -180,7 +182,7 @@ public class DatastoreValidator {
         PreparedStatement stmt = null;
         try {
             String query = "select * from projectfolios where not exists(select * from folios where pageNumber=projectfolios.folio)";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -192,8 +194,8 @@ public class DatastoreValidator {
                 results.append("No problems\n");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return results.toString();
     }
@@ -206,7 +208,7 @@ public class DatastoreValidator {
         try {
             String query = "select * from projectfolios where not exists(select * from folios where pageNumber=projectfolios.folio)";
             String deleteQuery = "delete from projectfolios where project=? and folio=?";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             deleteStmt = j.prepareStatement(deleteQuery);
             ResultSet rs = stmt.executeQuery();
@@ -225,8 +227,8 @@ public class DatastoreValidator {
                 results.append("Nothing to delete\n");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return results.toString();
     }
@@ -237,7 +239,7 @@ public class DatastoreValidator {
         PreparedStatement stmt = null;
         try {
             String query = "select * from project where not exists(select * from projectfolios where project=project.id)";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -251,8 +253,8 @@ public class DatastoreValidator {
                 results += "No problems\n";
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return results;
 
@@ -266,7 +268,7 @@ public class DatastoreValidator {
         try {
             String query = "select * from project where not exists(select * from projectfolios where project=project.id)";
             String deleteQuery = "delete from project where id=?";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             deleteStmt = j.prepareStatement(deleteQuery);
             ResultSet rs = stmt.executeQuery();
@@ -285,8 +287,8 @@ public class DatastoreValidator {
                 results += "Nothing to delete\n";
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return results;
 
@@ -299,7 +301,7 @@ public class DatastoreValidator {
         PreparedStatement stmt = null;
         try {
             String query = "select * from transcription where not exists(select * from folios where pageNumber=transcription.folio)";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -311,8 +313,8 @@ public class DatastoreValidator {
                 results.append("No problems\n");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return results.toString();
     }
@@ -325,7 +327,7 @@ public class DatastoreValidator {
         try {
             String query = "select * from transcription where not exists(select * from folios where pageNumber=transcription.folio)";
             String deleteQuery = "delete from transcription where id=?";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             deleteStmt = j.prepareStatement(deleteQuery);
             ResultSet rs = stmt.executeQuery();
@@ -342,8 +344,8 @@ public class DatastoreValidator {
                 results.append("Nothing to delete\n");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return results.toString();
     }
@@ -354,7 +356,7 @@ public class DatastoreValidator {
         PreparedStatement stmt = null;
         try {
             String query = "select * from transcription where not exists(select * from project where id=transcription.projectID)";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -366,8 +368,8 @@ public class DatastoreValidator {
                 results.append("No problems\n");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return results.toString();
     }
@@ -380,7 +382,7 @@ public class DatastoreValidator {
         try {
             String query = "select * from transcription where not exists(select * from project where id=transcription.projectID)";
             String deleteQuery = "delete from transcription where id=?";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             deleteStmt = j.prepareStatement(deleteQuery);
             ResultSet rs = stmt.executeQuery();
@@ -397,8 +399,8 @@ public class DatastoreValidator {
                 results.append("Nothing to delete\n");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return results.toString();
     }

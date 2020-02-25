@@ -16,13 +16,16 @@ package edu.slu.tpen.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import javax.servlet.http.HttpSession;
 import net.sf.json.JSONObject;
 import user.User;
@@ -42,13 +45,13 @@ public class UserInfoServlet extends HttpServlet {
         int uid = -1;
         if(null!=request.getParameter("uid") && !"".equals(request.getParameter("uid"))){
             providedUID = request.getParameter("uid");
-            uid = Integer.parseInt(providedUID);
+            uid = parseInt(providedUID);
         }
         else if(null != session && null != session.getAttribute("UID")){
-            uid = Integer.parseInt(session.getAttribute("UID").toString());
+            uid = parseInt(session.getAttribute("UID").toString());
         }
         else{
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setStatus(SC_FORBIDDEN);
         }
         if(uid >= 0){
             try {
@@ -59,8 +62,8 @@ public class UserInfoServlet extends HttpServlet {
                 out.print(jo);
             } 
             catch (SQLException ex) {
-                Logger.getLogger(UserInfoServlet.class.getName()).log(Level.SEVERE, null, ex);
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                getLogger(UserInfoServlet.class.getName()).log(SEVERE, null, ex);
+                response.setStatus(SC_INTERNAL_SERVER_ERROR);
             }
         }
     }

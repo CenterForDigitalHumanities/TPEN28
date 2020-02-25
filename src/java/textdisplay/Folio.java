@@ -14,37 +14,56 @@
  */
 package textdisplay;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import static com.hp.hpl.jena.rdf.model.ModelFactory.createDefaultModel;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+import detectimages.Detector;
+import detectimages.imageProcessor;
+import detectimages.line;
+import static edu.slu.util.ImageUtils.*;
+import static edu.slu.util.NetUtils.loadCookie;
+import static edu.slu.util.NetUtils.openBasicAuthStream;
+import static edu.slu.util.NetUtils.openCookiedStream;
+import imageLines.ImageCache;
+import static imageLines.ImageHelpers.binaryThreshold;
+import static imageLines.ImageHelpers.readAsBufferedImage;
+import static imageLines.ImageHelpers.scale;
 import java.awt.Dimension;
-import java.net.HttpURLConnection;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import static java.lang.Character.isDigit;
+import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
+import static java.lang.System.err;
+import static java.lang.System.out;
+import java.net.HttpURLConnection;
+import static java.net.HttpURLConnection.HTTP_OK;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFList;
-import com.hp.hpl.jena.rdf.model.Resource;
-import detectimages.Detector;
-import detectimages.imageProcessor;
-import detectimages.line;
-import static edu.slu.util.ImageUtils.*;
-import edu.slu.util.NetUtils;
-import imageLines.ImageCache;
-import imageLines.ImageHelpers;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import java.text.DecimalFormat;
+import java.util.*;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.sort;
+import static java.util.ResourceBundle.getBundle;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+import java.util.logging.Logger;
+import static java.util.logging.Logger.getLogger;
+import static javax.imageio.ImageIO.read;
+import static textdisplay.Archive.getShelfMark;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**
  * This class represents a single image. The image can have Line parsing associated with it, and is
@@ -65,12 +84,12 @@ public class Folio {
    public static String getRbTok(String propToken) {
       // @TODO Move this function into a more-appropriate place...
       // e.g., a general class 'TPEN'.
-      ResourceBundle rb = ResourceBundle.getBundle("version");
+      ResourceBundle rb = getBundle("version");
       String msg = "";
       try {
          msg = rb.getString(propToken);
       } catch (MissingResourceException e) {
-         System.err.println("Token ".concat(propToken).concat(" not in Propertyfile!"));
+            err.println("Token ".concat(propToken).concat(" not in Propertyfile!"));
       }
       return msg;
    }
@@ -95,7 +114,7 @@ public class Folio {
     * @throws SQLException
     */
    public Folio(int folNum) throws SQLException {
-      try (Connection j = DatabaseWrapper.getConnection()) {
+      try (Connection j = getConnection()) {
          folioNumber = folNum;
          
          try (PreparedStatement stmt = j.prepareStatement("Select * from imagepositions where folio=? and top<bottom order by colstart, top")) {
@@ -118,7 +137,7 @@ public class Folio {
     * the Line that the search result points to
     */
    public Folio(int folNum, boolean ignored) throws SQLException, IOException {
-      try (Connection j = DatabaseWrapper.getConnection()) {
+      try (Connection j = getConnection()) {
          folioNumber = folNum;
          //*Note imagepositions must be made in the auto parser, because any normal user parsing interaction writes to the transcription table.
          try (PreparedStatement stmt3 = j.prepareStatement("Select * from imagepositions where folio=? and width>0 order by colstart,top")) {
@@ -160,8 +179,8 @@ public class Folio {
       PreparedStatement stmt = null;
       try {
          String query = "insert into folios (collection,pageName,imageName,archive,msID, uri) values(?,?,?,?,?,?)";
-         j = DatabaseWrapper.getConnection();
-         stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+         j = getConnection();
+         stmt = j.prepareStatement(query, RETURN_GENERATED_KEYS);
          stmt.setString(1, collection);
          stmt.setString(2, pageName);
          stmt.setString(3, imageName);
@@ -177,8 +196,8 @@ public class Folio {
             return 0;
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
    
@@ -199,8 +218,8 @@ public class Folio {
 
         try {
             String query = "insert into folios (collection,pageName,imageName,archive,msID, uri) values (?,?,?,?,?,?)";
-            j = DatabaseWrapper.getConnection();
-            stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            j = getConnection();
+            stmt = j.prepareStatement(query, RETURN_GENERATED_KEYS);
             stmt.setString(1, collection);
             stmt.setString(2, pageName);
             stmt.setString(3, imageName);
@@ -216,8 +235,8 @@ public class Folio {
                return 0;
             }
         } finally {
-           DatabaseWrapper.closeDBConnection(j);
-           DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
     
@@ -238,8 +257,8 @@ public class Folio {
 
         try {
             String query = "insert into folios (collection,pageName,imageName,archive,msID, uri, sequence) values (?,?,?,?,?,?,?)";
-            j = DatabaseWrapper.getConnection();
-            stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            j = getConnection();
+            stmt = j.prepareStatement(query, RETURN_GENERATED_KEYS);
             stmt.setString(1, collection);
             stmt.setString(2, pageName);
             stmt.setString(3, imageName);
@@ -256,8 +275,8 @@ public class Folio {
                return 0;
             }
         } finally {
-           DatabaseWrapper.closeDBConnection(j);
-           DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
 
@@ -335,7 +354,7 @@ public class Folio {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, canvas);
          ResultSet rs = ps.executeQuery();
@@ -343,8 +362,8 @@ public class Folio {
             return rs.getInt(1);
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
       return 0;
    }
@@ -366,14 +385,14 @@ public class Folio {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, name);
          ps.setInt(2, folioNumber);
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -407,7 +426,7 @@ public class Folio {
       PreparedStatement stmt = null;
       try {
          String toret = "";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          String qry = "select * from folios where archive=? and collection=? ";
          stmt = j.prepareStatement(qry);
          stmt.setString(1, this.archive);
@@ -430,19 +449,19 @@ public class Folio {
             pageNumbersArray[i] = pageNumbers.get(i);
          }
 
-         for (int i = 0; i < paddedPageNameArray.length; i++) {
-            for (int k = 0; k < paddedPageNameArray.length - 1; k++) {
-               if (paddedPageNameArray[k].compareTo(paddedPageNameArray[k + 1]) > 0) {
-                  String tmpStr = paddedPageNameArray[k];
-                  paddedPageNameArray[k] = paddedPageNameArray[k + 1];
-                  paddedPageNameArray[k + 1] = tmpStr;
-                  int tmpInt = pageNumbersArray[k];
-                  pageNumbersArray[k] = pageNumbersArray[k + 1];
-                  pageNumbersArray[k + 1] = tmpInt;
-
-               }
+            for (String paddedPageNameArray1 : paddedPageNameArray) {
+                for (int k = 0; k < paddedPageNameArray.length - 1; k++) {
+                    if (paddedPageNameArray[k].compareTo(paddedPageNameArray[k + 1]) > 0) {
+                        String tmpStr = paddedPageNameArray[k];
+                        paddedPageNameArray[k] = paddedPageNameArray[k + 1];
+                        paddedPageNameArray[k + 1] = tmpStr;
+                        int tmpInt = pageNumbersArray[k];
+                        pageNumbersArray[k] = pageNumbersArray[k + 1];
+                        pageNumbersArray[k + 1] = tmpInt;
+                        
+                    }
+                }
             }
-         }
          qry = "select * from folios where pageNumber=?";
          stmt = j.prepareStatement(qry);
          for (int i = 0; i < pageNumbersArray.length; i++) {
@@ -455,8 +474,8 @@ public class Folio {
 
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -466,11 +485,11 @@ public class Folio {
     */
    public static String zeroPadLastNumberFourPlaces(String name) {
       for (int i = name.length() - 1; i >= 0; i--) {
-         if (Character.isDigit(name.charAt(i))) {
+         if (isDigit(name.charAt(i))) {
             //count the number of digits that preceed this one, if it is less than 3, padd with zeros
             int count = 0;
             for (int j = i; j >= 0; j--) {
-               if (Character.isDigit(name.charAt(j))) {
+               if ( isDigit(name.charAt(j))) {
                   count++;
                   if (j == 0) {
                      //padd
@@ -518,7 +537,7 @@ public class Folio {
       try {
          String query = "select distinct(creator),collection,archive,pageName from transcription join folios on transcription.folio=folios.pageNumber where folio=? order by archive,collection,pageName";
          String toret = "";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setInt(1, folioNum);
          ResultSet rs = stmt.executeQuery();
@@ -528,8 +547,8 @@ public class Folio {
          }
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -542,7 +561,7 @@ public class Folio {
       try {
          String toret = "";
          String qry = "select Distinct(folio),pageNumber,archive,collection,pageName from transcription join folios on transcription.folio=pageNumber order by folios.collection";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(qry);
          ResultSet rs = stmt.executeQuery();
 
@@ -552,8 +571,8 @@ public class Folio {
          }
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -566,7 +585,7 @@ public class Folio {
       try {
          String toret = "";
          String qry = "select * from folios where pageNumber=?";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(qry);
          stmt.setInt(1, folioNumber);
          ResultSet rs = stmt.executeQuery();
@@ -578,8 +597,8 @@ public class Folio {
          }
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -592,7 +611,7 @@ public class Folio {
       try {
          String toret = "";
          String qry = "select * from folios where pageName=? order by pageNumber desc limit 1";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(qry);
          stmt.setString(1, pageName);
          ResultSet rs = stmt.executeQuery();
@@ -604,8 +623,8 @@ public class Folio {
          }
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -618,7 +637,7 @@ public class Folio {
       if (getArchive().equals("CEEC") || getArchive().equals("ecodices")) {
          query = "select imageName from folios where pageNumber=?";
       }
-      try (Connection j = DatabaseWrapper.getConnection()) {
+      try (Connection j = getConnection()) {
          try (PreparedStatement ps = j.prepareStatement(query)) {
             ps.setInt(1, folioNumber);
             ResultSet rs = ps.executeQuery();
@@ -656,7 +675,7 @@ public class Folio {
     * @throws SQLException
     */
    public String getImageURLResize(int size) throws SQLException {
-      return String.format("imageResize?folioNum=%d&height=%d", folioNumber, size);
+      return format("imageResize?folioNum=%d&height=%d", folioNumber, size);
    }
 
    /**
@@ -670,7 +689,7 @@ public class Folio {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          String query = "select pageNumber from folios where imageName=?";
          stmt = j.prepareStatement(query);
          stmt.setString(1, imageName);
@@ -682,8 +701,8 @@ public class Folio {
             return null;
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -700,7 +719,7 @@ public class Folio {
       try {
          String toret = "";
          String qry = "select * from folios where pageNumber=?";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(qry);
          stmt.setInt(1, folioNumber);
          ResultSet rs = stmt.executeQuery();
@@ -709,8 +728,8 @@ public class Folio {
          }
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
    
@@ -720,7 +739,7 @@ public class Folio {
       try {
          Integer toret = -1;
          String qry = "select * from folios where pageNumber=?";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(qry);
          stmt.setInt(1, folioNumber);
          ResultSet rs = stmt.executeQuery();
@@ -729,8 +748,8 @@ public class Folio {
          }
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -740,7 +759,7 @@ public class Folio {
       try {
          String toret = "";
          String qry = "select * from folios where pageNumber=?";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(qry);
          stmt.setInt(1, folioNumber);
          ResultSet rs = stmt.executeQuery();
@@ -750,8 +769,8 @@ public class Folio {
 
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -767,7 +786,7 @@ public class Folio {
       try {
          String toret = "";
          String qry = "select * from folios where pageNumber=?";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(qry);
          stmt.setInt(1, folioNumber);
          ResultSet rs = stmt.executeQuery();
@@ -777,8 +796,8 @@ public class Folio {
 
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -787,7 +806,7 @@ public class Folio {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, folioNumber);
          ResultSet rs = ps.executeQuery();
@@ -798,8 +817,8 @@ public class Folio {
             }
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
       return false;
    }
@@ -813,7 +832,7 @@ public class Folio {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, folioNumber);
          ResultSet rs = ps.executeQuery();
@@ -823,8 +842,8 @@ public class Folio {
             return false;
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -845,16 +864,16 @@ public class Folio {
     */
    public Line[] detectInColumns(Line[] lines) throws SQLException, IOException {
       List<line> newLines = new ArrayList<>();
-      LOG.log(Level.INFO, "Received {0} lines in folio on line 937", lines.length);
+      LOG.log(INFO, "Received {0} lines in folio on line 937", lines.length);
 
-      for (int i = 0; i < lines.length; i++) {
-         if (lines[i].right != 0) {
-            line[] tmp = detect(lines[i]);
-            if (tmp != null) {
-               newLines.addAll(Arrays.asList(tmp));
+        for (Line line : lines) {
+            if (line.right != 0) {
+                line[] tmp = detect(line);
+                if (tmp != null) {
+                    newLines.addAll(asList(tmp));
+                }
             }
-         }
-      }
+        }
       Line[] newLineArray = new Line[newLines.size()];
       for (int i = 0; i < newLineArray.length; i++) {
          newLineArray[i] = new Line(newLines.get(i));
@@ -871,11 +890,11 @@ public class Folio {
     */
    private line[] detect(Line col) throws SQLException, IOException {
       try (InputStream stream = getImageStream(false)) {
-         BufferedImage img = ImageIO.read(stream);
+         BufferedImage img = read(stream);
          stream.close();
          int height = 1000;
          int width = (int) ((height / (double) img.getHeight()) * img.getWidth());
-         img = ImageHelpers.scale(img, height, width);
+         img = scale(img, height, width);
          int x = col.left;
          int y = col.top;
          int w = col.right - col.left;
@@ -886,11 +905,11 @@ public class Folio {
 //       BufferedImage tmp = img.getSubimage(x, y, w, h);
          BufferedImage tmp = getSubImage(img, x, y, w, h);
 
-         BufferedImage bin = ImageHelpers.binaryThreshold(tmp, 0);
+         BufferedImage bin = binaryThreshold(tmp, 0);
          img = tmp;
          Detector myDetector = new Detector(img, bin);
-         if (Folio.getRbTok("debug").equals("true")) {
-            myDetector.debugLabel = "fol_" + this.getFolioNumber() + "_" + System.currentTimeMillis();
+         if (getRbTok("debug").equals("true")) {
+            myDetector.debugLabel = "fol_" + this.getFolioNumber() + "_" + currentTimeMillis();
          }
          myDetector.smeared = bin; // Remove huge sections of black from the binarized image, they only cause trouble
          myDetector.graphical = true; // This is a known column, it wont have any columns within it so do not let the detector search for mltiple columns
@@ -904,14 +923,14 @@ public class Folio {
             // anything, the following code works fine in that event.
          }
          line[] flipped = myDetector.lines.toArray(new line[0]);
-         LOG.log(Level.INFO, "Detected {0} lines", flipped.length);
+         LOG.log(INFO, "Detected {0} lines", flipped.length);
 
-         // Because the Line detection ran on a cropped column, add the column start
-         // x and y to the coordinates returned by the detector
-         for (int i = 0; i < flipped.length; i++) {
-            flipped[i].setStartHorizontal(flipped[i].getStartHorizontal() + x);
-            flipped[i].setStartVertical(flipped[i].getStartVertical() + y - flipped[i].getDistance());
-         }
+            // Because the Line detection ran on a cropped column, add the column start
+            // x and y to the coordinates returned by the detector
+            for (line flipped1 : flipped) {
+                flipped1.setStartHorizontal(flipped1.getStartHorizontal() + x);
+                flipped1.setStartVertical(flipped1.getStartVertical() + y - flipped1.getDistance());
+            }
          // Force the top Line to begin at the top of the user defined column, so no portion of the original column is truncated in this process.
          if (flipped.length == 0) {
             return null;
@@ -938,7 +957,7 @@ public class Folio {
           //TODO: FIXME: cubap bhaberbe  This image is broken or Null in some way and breaks when we pass it in to stuff down the line.  
          //System.out.println("I am in detect() in FOlio.java  What is stream?");
         // System.out.println(stream);
-         BufferedImage img = ImageIO.read(stream);
+         BufferedImage img = read(stream);
          stream.close();
         // System.out.println("DID I GET BUFFERED IMG +++++++++++");
         // System.out.println(img);
@@ -959,7 +978,7 @@ public class Folio {
                detectedLines = proc.detectLines(true);
             } catch (Exception e) {
                // If the agressive method fails, log the error and run regular
-               LOG.log(Level.WARNING, "Failed using aggressive parsing method; trying regular method.", e);
+               LOG.log(WARNING, "Failed using aggressive parsing method; trying regular method.", e);
                detectedLines = proc.detectLines(false);
             }
          } else {
@@ -997,25 +1016,25 @@ public class Folio {
       Stack<Line> toret = new Stack();
       Map<Integer, Line> h = new HashMap<>();
       if(null != linePositions){
-          for (int i = 0; i < linePositions.length; i++) {
-            h.put(linePositions[i].left, linePositions[i]);
-         }
+            for (Line linePosition : linePositions) {
+                h.put(linePosition.left, linePosition);
+            }
       }
       
       for (Line thisLine : h.values()) {
          // We know the left and width of the column, now find the top and bottom.
          int top = 99999;
          int bottom = 0;
-         for (int i = 0; i < linePositions.length; i++) {
-            if (linePositions[i].left == thisLine.left) {
-               if (linePositions[i].top < top) {
-                  top = linePositions[i].top;
-               }
-               if (linePositions[i].top > bottom) {
-                  bottom = linePositions[i].top;
-               }
+            for (Line linePosition : linePositions) {
+                if (linePosition.left == thisLine.left) {
+                    if (linePosition.top < top) {
+                        top = linePosition.top;
+                    }
+                    if (linePosition.top > bottom) {
+                        bottom = linePosition.top;
+                    }
+                }
             }
-         }
          toret.add(new Line(thisLine.left, thisLine.right, top, bottom));
       }
       Line[] linesToRet = new Line[toret.size()];
@@ -1032,7 +1051,7 @@ public class Folio {
     * @param width
     */
    public void update(int[] linePositions, int width) {
-      Arrays.sort(linePositions);
+        sort(linePositions);
       Line[] newLines = new Line[linePositions.length];
       for (int i = 0; i < linePositions.length; i++) {
          Line tmp = new Line(0, 0, 0, 0);
@@ -1079,7 +1098,7 @@ public class Folio {
       try {
          commit();
       } catch (SQLException ex) {
-         Logger.getLogger(Folio.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(Folio.class.getName()).log(SEVERE, null, ex);
       }
    }
 
@@ -1092,7 +1111,7 @@ public class Folio {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement("Delete from imagepositions where folio=?");
          stmt.setInt(1, folioNumber);
          stmt.execute();
@@ -1107,8 +1126,8 @@ public class Folio {
             stmt.execute();
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -1130,13 +1149,13 @@ public class Folio {
     */
    public int getMeanHeight() {
       int mean = 0;
-      for (int i = 0; i < linePositions.length; i++) {
-         if (linePositions[i] != null) {
-            if (linePositions[i].bottom > linePositions[i].top) {
-               mean += linePositions[i].bottom - linePositions[i].top;
+        for (Line linePosition : linePositions) {
+            if (linePosition != null) {
+                if (linePosition.bottom > linePosition.top) {
+                    mean += linePosition.bottom - linePosition.top;
+                }
             }
-         }
-      }
+        }
       if (linePositions.length == 0) {
          return 25;
       }
@@ -1157,7 +1176,7 @@ public class Folio {
     * Create a proper shelfmark for this ms page
     */
    public String getArchiveShelfMark() {
-      return textdisplay.Archive.getShelfMark(archive);
+      return getShelfMark(archive);
    }
 
    /**
@@ -1170,7 +1189,7 @@ public class Folio {
    public String getOAC(int uid) throws SQLException, IOException {
       String toret = "";
       Manuscript ms = new Manuscript(this.folioNumber);
-      Model model = ModelFactory.createDefaultModel();
+      Model model = createDefaultModel();
       model.setNsPrefix("dms", "http://dms.stanford.edu/ns/");
       model.setNsPrefix("oac", "http://www.openannotation.org/ns/");
       model.setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -1241,7 +1260,7 @@ public class Folio {
     * improves or someone puts bad parsings in the public set
     */
    public void reset() throws SQLException, IOException {
-      try (Connection j = DatabaseWrapper.getConnection()) {
+      try (Connection j = getConnection()) {
          try (PreparedStatement stmt = j.prepareStatement("Delete from imagepositions where folio=?")) {
             stmt.setInt(1, folioNumber);
             stmt.execute();
@@ -1302,7 +1321,7 @@ public class Folio {
          return a.getIPRAgreement();
          /**/
       } catch (SQLException ex) {
-         Logger.getLogger(Folio.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(Folio.class.getName()).log(SEVERE, null, ex);
       }
       String toret = "An error occured fetching the IPR agreement.";
       return toret;
@@ -1315,11 +1334,11 @@ public class Folio {
          case "TPEN":
 			default:
             imageName = getPageName();
-			   LOG.log(Level.INFO, "Loading T-PEN {2} image {0}{1}.jpg", new Object[]{imageDir, imageName, archive});
+			   LOG.log(INFO, "Loading T-PEN {2} image {0}{1}.jpg", new Object[]{imageDir, imageName, archive});
             return imageDir + imageName + ".jpg";
          case "CCL":
             imageName = getImageName();
-            LOG.log(Level.INFO, "Loading CCL image {0}{1}.jpg", new Object[]{imageDir, imageName});
+            LOG.log(INFO, "Loading CCL image {0}{1}.jpg", new Object[]{imageDir, imageName});
             return imageDir + imageName + ".jpg";
          case "private":
             // For reasons unknown, for private images, the uploadLocation is already stored as
@@ -1331,7 +1350,7 @@ public class Folio {
             if(!imageName.startsWith(imageDir)){
                 imageName = imageDir+imageName;
             }
-            LOG.log(Level.INFO, "Loading private image {0}.jpg", imageName);
+            LOG.log(INFO, "Loading private image {0}.jpg", imageName);
             return imageName + ".jpg";
       }
    }
@@ -1344,14 +1363,14 @@ public class Folio {
    public BufferedImage loadLocalImage() throws SQLException, IOException {
       BufferedImage img = null;
       String arch = getArchive();
-		LOG.log(Level.INFO, "Archive for folio %d was %s", new Object[] { folioNumber, arch });
+		LOG.log(INFO, "Archive for folio %d was %s", new Object[] { folioNumber, arch });
       if (arch != null) {
-         img = ImageHelpers.readAsBufferedImage(getImagePath(arch));
+         img = readAsBufferedImage(getImagePath(arch));
          if ("TPEN".equals(arch)) {
             // TPEN images get scaled to 2000 pixels high.  Not sure why they get this
             // special treatment.
             int width = (int) (img.getWidth() * (2000.0 / img.getHeight()));
-            img = ImageHelpers.scale(img, 2000, width);
+            img = scale(img, 2000, width);
          }
       }
       return img;
@@ -1371,24 +1390,24 @@ public class Folio {
       String archName = getArchive();
       Archive a = new Archive(archName);
       String path;
-		LOG.log(Level.INFO, "Connection method for {0} was {1}", new Object[] { archName, a.getConnectionMethod() });
+		LOG.log(INFO, "Connection method for {0} was {1}", new Object[] { archName, a.getConnectionMethod() });
 
       switch (a.getConnectionMethod()) {
          case local:
             // Note: local doesn't actually appear to be used.
             path = getRbTok("LOCALIMAGESTORE") + getPageName() + ".jpg";
-            LOG.log(Level.INFO, "Using local method to load {0}", path);
+            LOG.log(INFO, "Using local method to load {0}", path);
             return new FileInputStream(path);
          case cookie:
             if (!onlyLocal) {
-               LOG.log(Level.INFO, "Using cookie method with cookie url {0}", a.getCookieURL());
-               return NetUtils.openCookiedStream(imageURL, NetUtils.loadCookie(a.getCookieURL()));
+               LOG.log(INFO, "Using cookie method with cookie url {0}", a.getCookieURL());
+               return openCookiedStream(imageURL, loadCookie(a.getCookieURL()));
             }
             break;
          case httpAuth:
             if (!onlyLocal) {
-               LOG.log(Level.INFO, "Using basic auth method with url {0}", imageURL);
-               return NetUtils.openBasicAuthStream(imageURL, a.getUname(), a.getPass());
+               LOG.log(INFO, "Using basic auth method with url {0}", imageURL);
+               return openBasicAuthStream(imageURL, a.getUname(), a.getPass());
             }
             break;
          case none:
@@ -1404,11 +1423,11 @@ public class Folio {
                if (!path.endsWith(".jpg") && !path.endsWith(".JPG")) {
                   path += ".jpg";
                }
-                LOG.log(Level.INFO, "Loading private image from {0}", path);
+                LOG.log(INFO, "Loading private image from {0}", path);
                return new FileInputStream(path);
             } 
             else if (!onlyLocal) {
-                LOG.log(Level.INFO, "Loading image with URL {0}", imageURL);
+                LOG.log(INFO, "Loading image with URL {0}", imageURL);
                HttpURLConnection conn = (HttpURLConnection)imageURL.openConnection();
                conn.connect();
                return conn.getInputStream();
@@ -1468,7 +1487,7 @@ public class Folio {
        String newline = "\n";
        DecimalFormat df = new DecimalFormat("#.#");
         
-       try (Connection j = DatabaseWrapper.getConnection()) {
+       try (Connection j = getConnection()) {
            try (PreparedStatement stmt2 = j.prepareStatement("select pageNumber, uri from folios")) { //LIMIT 100
             ResultSet rs = stmt2.executeQuery();
             //System.out.println("Generating report...");
@@ -1484,10 +1503,10 @@ public class Folio {
                 float percentage = (float)count*100/rowcount;
                 String percent = df.format(percentage) + "%";
                 if(count % 10 == 0){
-                    System.out.println("Folio Report is "+percent+" complete. "+count+"/"+rowcount +" folios checked.");
+                        out.println("Folio Report is "+percent+" complete. "+count+"/"+rowcount +" folios checked.");
                 }
                 if(count == rowcount){
-                    System.out.println("Folio Report is 100% complete");
+                        out.println("Folio Report is 100% complete");
                 }
                 strUrl = rs.getString("uri");
                 folioID = rs.getInt("pageNumber");
@@ -1495,7 +1514,7 @@ public class Folio {
                     URL url = new URL(strUrl);
                     HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
                     urlConn.connect();
-                    if(urlConn.getResponseCode() == HttpURLConnection.HTTP_OK){
+                    if(urlConn.getResponseCode() == HTTP_OK){
                         //responseString += "Folio "+folioID+" is OK.  URI:  "+strUrl+newline;
                     }
                     else{
@@ -1510,10 +1529,10 @@ public class Folio {
             }
          }
        }
-       System.out.println("Report Generated!");
+        out.println("Report Generated!");
        return responseString;       
    }
 
-   private static final Logger LOG = Logger.getLogger(Folio.class.getName());
+   private static final Logger LOG = getLogger(Folio.class.getName());
 
 }

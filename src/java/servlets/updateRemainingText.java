@@ -13,14 +13,15 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
+import java.sql.SQLException;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import textdisplay.Project;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -39,9 +40,8 @@ public class updateRemainingText extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
-            int projectID=Integer.parseInt(request.getParameter("projectID"));
+        try (PrintWriter out = response.getWriter()) {
+            int projectID=parseInt(request.getParameter("projectID"));
             Project thisProject=new textdisplay.Project(projectID);
             if(request.getParameter("transcriptionleftovers")!=null){
                 thisProject.setLinebreakTextWithReturnedText(request.getParameter("transcriptionleftovers"));                                
@@ -49,9 +49,7 @@ public class updateRemainingText extends HttpServlet {
                 return;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(updateRemainingText.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {            
-            out.close();
+            getLogger(updateRemainingText.class.getName()).log(SEVERE, null, ex);
         }
     }
 

@@ -8,11 +8,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import static org.apache.commons.fileupload.servlet.ServletFileUpload.isMultipartContent;
 import org.apache.commons.io.output.DeferredFileOutputStream;
 
 /**
@@ -39,18 +41,17 @@ public class UploadTextfile extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException, SQLException, FileUploadException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
            int projectID=0;
 
         textdisplay.Project thisProject=null;
         if(request.getParameter("projectID")!=null)
             {
             String location = "";
-            projectID=Integer.parseInt(request.getParameter("projectID"));
-            location = (Integer.parseInt(request.getParameter("p"))>0) ? "?projectID="+projectID+"&p="+request.getParameter("p") : "?projectID="+projectID;
+            projectID=parseInt(request.getParameter("projectID"));
+            location = (parseInt(request.getParameter("p"))>0) ? "?projectID="+projectID+"&p="+request.getParameter("p") : "?projectID="+projectID;
             thisProject=new textdisplay.Project(projectID);
-            if (ServletFileUpload.isMultipartContent(request)){
+            if (isMultipartContent(request)){
   ServletFileUpload servletFileUpload = new ServletFileUpload(new DiskFileItemFactory());
   List fileItemsList = servletFileUpload.parseRequest(request);
 
@@ -82,8 +83,6 @@ public class UploadTextfile extends HttpServlet {
   }
 }
         }
-        } finally { 
-            out.close();
         }
     } 
 
@@ -101,12 +100,9 @@ public class UploadTextfile extends HttpServlet {
         try
             {
             processRequest(request, response);
-            } catch (SQLException ex)
+            } catch (SQLException | FileUploadException ex)
             {
-            Logger.getLogger(UploadTextfile.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (FileUploadException ex)
-            {
-            Logger.getLogger(UploadTextfile.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(UploadTextfile.class.getName()).log(SEVERE, null, ex);
             }
     } 
 
@@ -123,12 +119,9 @@ public class UploadTextfile extends HttpServlet {
         try
             {
             processRequest(request, response);
-            } catch (SQLException ex)
+            } catch (SQLException | FileUploadException ex)
             {
-            Logger.getLogger(UploadTextfile.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (FileUploadException ex)
-            {
-            Logger.getLogger(UploadTextfile.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(UploadTextfile.class.getName()).log(SEVERE, null, ex);
             }
     }
 

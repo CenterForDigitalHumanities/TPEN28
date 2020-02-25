@@ -21,8 +21,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Stack;
-import textdisplay.DatabaseWrapper;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 import user.User;
+import static utils.Tool.tools.characters;
+import static utils.Tool.tools.compare;
+import static utils.Tool.tools.fullpage;
+import static utils.Tool.tools.history;
+import static utils.Tool.tools.inspector;
+import static utils.Tool.tools.linebreak;
+import static utils.Tool.tools.ltr;
+import static utils.Tool.tools.page;
+import static utils.Tool.tools.parsing;
+import static utils.Tool.tools.preview;
+import static utils.Tool.tools.rtl;
+import static utils.Tool.tools.unknown;
+import static utils.Tool.tools.values;
+import static utils.Tool.tools.xml;
 
 
 /**
@@ -42,14 +58,14 @@ public class Tool {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, UID);
          ps.setString(2, toolName.toString());
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
    
@@ -61,14 +77,14 @@ public class Tool {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, UID);
          ps.setString(2, toolName);
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -77,21 +93,21 @@ public class Tool {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, UID);
          ps.setString(2, toolName.name());
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
    public static void initializeTools(int uid) throws SQLException {
         //These are the tools that get initialized when
       Tool t;
-      for (Tool.tools iter : tools.values()) {
+      for (Tool.tools iter : values()) {
           switch(iter){
                 case preview:
                   t = new Tool(iter, uid);
@@ -136,7 +152,7 @@ public class Tool {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, uid);
          ps.setString(2, t.toString());
@@ -145,8 +161,8 @@ public class Tool {
             return true;
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
       return false;
    }
@@ -158,7 +174,7 @@ public class Tool {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, UID);
          ResultSet rs = ps.executeQuery();
@@ -172,49 +188,49 @@ public class Tool {
             //We do not want to return an array with null in it, so we added an unknown enum and made this switch.
             switch(tmp){
                 case "preview":
-                    toret[ctr] = tools.preview;
+                    toret[ctr] = preview;
                 break;
                 case "compare":
-                    toret[ctr] = tools.compare;        
+                    toret[ctr] = compare;        
                 break;
                 case "parsing":
-                    toret[ctr] = tools.parsing;        
+                    toret[ctr] = parsing;        
                 break;
                 case "history":
-                    toret[ctr] = tools.history;        
+                    toret[ctr] = history;        
                 break;
                 case "linebreak":
-                    toret[ctr] = tools.linebreak;        
+                    toret[ctr] = linebreak;        
                 break;
                 case "fullpage":
-                    toret[ctr] = tools.fullpage;        
+                    toret[ctr] = fullpage;        
                 break;
                 case "xml":
-                    toret[ctr] = tools.xml;
+                    toret[ctr] = xml;
                 break;
                 case "characters":
-                    toret[ctr] = tools.characters;
+                    toret[ctr] = characters;
                 break;
                 case "page":
-                    toret[ctr] = tools.page;
+                    toret[ctr] = page;
                 break;
                 case "inspector":
-                    toret[ctr] = tools.inspector;
+                    toret[ctr] = inspector;
                 break;
                 case "rtl":
-                    toret[ctr] = tools.rtl;
+                    toret[ctr] = rtl;
                 break;
                 case "ltr":
-                    toret[ctr] = tools.ltr;
+                    toret[ctr] = ltr;
                 break;
                 default:
-                    toret[ctr] = tools.unknown;
+                    toret[ctr] = unknown;
             }
             ctr++;
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
       return toret;
    }
@@ -224,13 +240,13 @@ public class Tool {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, uid);
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 }

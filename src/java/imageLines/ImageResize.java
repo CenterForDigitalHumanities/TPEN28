@@ -14,29 +14,41 @@
  */
 package imageLines;
 
+import static edu.slu.util.LangUtils.getMessage;
+import static edu.slu.util.ServletUtils.getUID;
+import static edu.slu.util.ServletUtils.reportInternalError;
+import static imageLines.ImageCache.getImage;
+import static imageLines.ImageCache.setImage;
+import static imageLines.ImageHelpers.scale;
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.currentTimeMillis;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.logging.Level;
+import static java.util.logging.Level.INFO;
 import java.util.logging.Logger;
+import static java.util.logging.Logger.getLogger;
 import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
+import static javax.imageio.ImageIO.createImageOutputStream;
+import static javax.imageio.ImageIO.getImageWritersByFormatName;
+import static javax.imageio.ImageIO.read;
 import javax.imageio.ImageWriteParam;
+import static javax.imageio.ImageWriteParam.MODE_EXPLICIT;
 import javax.imageio.ImageWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import static edu.slu.util.LangUtils.getMessage;
-import static edu.slu.util.ServletUtils.reportInternalError;
-import textdisplay.Folio;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import textdisplay.Archive;
-import edu.slu.util.ServletUtils;
+import static textdisplay.Archive.connectionType.local;
+import textdisplay.Folio;
+import static textdisplay.Folio.getRbTok;
 
 
 /**
@@ -73,39 +85,39 @@ public class ImageResize extends HttpServlet {
    protected void doGet(HttpServletRequest request, HttpServletResponse response)
            throws ServletException, IOException {
       try {
-         int uID = ServletUtils.getUID(request, response);
+         int uID = getUID(request, response);
          if (uID < 0) {
             if (request.getParameter("code") == null) {
                response.sendError(403);
                return;
             }
-            if (request.getParameter("code").compareTo(Folio.getRbTok("imageCode")) != 0) {
+            if (request.getParameter("code").compareTo(getRbTok("imageCode")) != 0) {
                response.sendError(403);
                return;
             }
          }
          response.addHeader("Cache-Control", "max-age=3600");
-         long relExpiresInMillis = System.currentTimeMillis() + (1000 * 2600);
+         long relExpiresInMillis = currentTimeMillis() + (1000 * 2600);
          response.addHeader("Expires", getGMTTimeString(relExpiresInMillis));
          response.setContentType("image/jpeg");
 
          if (request.getParameter("folioNum") != null) {
             BufferedImage toResize;
-            Iterator iter = ImageIO.getImageWritersByFormatName("jpeg");
+            Iterator iter = getImageWritersByFormatName("jpeg");
             ImageWriter writer = (ImageWriter) iter.next();
    // instantiate an ImageWriteParam object with default compression options
             ImageWriteParam iwp = writer.getDefaultWriteParam();
-            iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            iwp.setCompressionMode(MODE_EXPLICIT);
             float quality = 0.5f;
             if (request.getParameter("quality") != null) {
                try {
-                  int qual = Integer.parseInt(request.getParameter("quality"));
+                  int qual = parseInt(request.getParameter("quality"));
                   quality = qual / 100.0f;
                } catch (NumberFormatException e) {
                }
             }
             iwp.setCompressionQuality(quality);   // an integer between 0 and 1
-            int folioNum = Integer.parseInt(request.getParameter("folioNum"));
+            int folioNum = parseInt(request.getParameter("folioNum"));
 
             ImageRequest ir = null;
             if (uID > 0) {
@@ -118,27 +130,27 @@ public class ImageResize extends HttpServlet {
                ir = new ImageRequest(folioNum, 0);
             }
             try {
-               toResize = ImageCache.getImage(folioNum);
+               toResize = getImage(folioNum);
                if (toResize != null) {
-                  LOG.log(Level.INFO, "Loaded image {0} from cache", folioNum);
+                  LOG.log(INFO, "Loaded image {0} from cache", folioNum);
                } else {
-                  LOG.log(Level.INFO, "Cache load failed, loading from source.");
+                  LOG.log(INFO, "Cache load failed, loading from source.");
                   Folio f = new Folio(folioNum);
                 try (InputStream stream = f.getUncachedImageStream(false)) { //getting a 500 connection refused here.  firewall problems.  
-                     toResize = ImageIO.read(stream);
-                     LOG.log(Level.INFO, "Loaded {0}", toResize);
+                     toResize = read(stream);
+                     LOG.log(INFO, "Loaded {0}", toResize);
                      Archive a = new Archive(f.getArchive());
-                     if (!a.getName().equals("private") && a.getConnectionMethod() != Archive.connectionType.local) {
-                        LOG.log(Level.INFO, "Adding image {0} to cache", folioNum);
-                        ImageCache.setImage(folioNum, toResize);
+                     if (!a.getName().equals("private") && a.getConnectionMethod() != local) {
+                        LOG.log(INFO, "Adding image {0} to cache", folioNum);
+                                setImage(folioNum, toResize);
                      }
                      ir.completeSuccess();
 						}
                }
 
-               int height = Integer.parseInt(request.getParameter("height"));
+               int height = parseInt(request.getParameter("height"));
                int width = (int) ((height / (double)toResize.getHeight()) * toResize.getWidth());
-               toResize = ImageHelpers.scale(toResize, height, width);
+               toResize = scale(toResize, height, width);
                
                //Set CORS response headers for images here. 
                if(!response.containsHeader("Access-Control-Allow-Origin")){
@@ -149,7 +161,7 @@ public class ImageResize extends HttpServlet {
                }
                OutputStream os = response.getOutputStream();
                IIOImage image = new IIOImage(toResize, null, null);
-               writer.setOutput(ImageIO.createImageOutputStream(os));
+               writer.setOutput(createImageOutputStream(os));
                writer.write(null, image, iwp);
             } 
             catch (SQLException | IOException | IllegalArgumentException ex) {
@@ -158,7 +170,7 @@ public class ImageResize extends HttpServlet {
             }
          } else {
             // Folio not provided in URL, throw a 400.
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            response.sendError(SC_BAD_REQUEST);
          }
       } catch (SQLException | IllegalArgumentException ex) {
          reportInternalError(response, ex);
@@ -175,5 +187,5 @@ public class ImageResize extends HttpServlet {
       return "T-PEN Image Resize servlet";
    }
    
-   private static final Logger LOG = Logger.getLogger(ImageResize.class.getName());
+   private static final Logger LOG = getLogger(ImageResize.class.getName());
 }

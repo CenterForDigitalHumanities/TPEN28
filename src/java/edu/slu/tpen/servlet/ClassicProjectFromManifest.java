@@ -5,11 +5,13 @@
  */
 package edu.slu.tpen.servlet;
 
-import edu.slu.util.ServletUtils;
+import static edu.slu.util.ServletUtils.getDBConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.out;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -18,14 +20,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import static net.sf.json.JSONObject.fromObject;
+import static textdisplay.Folio.createFolioRecordFromManifest;
 import textdisplay.Project;
 import user.Group;
 import user.User;
@@ -51,7 +55,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
         try {
             writer.print(createProject(request, response));
         } catch (SQLException ex) {
-            Logger.getLogger(ClassicProjectFromManifest.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(ClassicProjectFromManifest.class.getName()).log(SEVERE, null, ex);
         }
     }
 
@@ -65,7 +69,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
     
        public String createProject(HttpServletRequest request, HttpServletResponse response)
            throws ServletException, IOException, SQLException {
-            int UID = Integer.parseInt(request.getSession().getAttribute("UID").toString());
+            int UID = parseInt(request.getSession().getAttribute("UID").toString());
             int projectID = 0;
             textdisplay.Project thisProject = null;
             if(request.getParameter("manifest")==null){
@@ -91,17 +95,17 @@ public class ClassicProjectFromManifest extends HttpServlet {
                 else{
                     label = "New T-PEN Manifest";
                 }
-                System.out.println("Make new manuscript");
+                out.println("Make new manuscript");
                 textdisplay.Manuscript mss=new textdisplay.Manuscript("TPEN 2.8", archive, city, city, -999);
                // int [] msIDs=new int[0];
                 User u = new User(UID);
                 JSONArray sequences = (JSONArray) theManifest.get("sequences");
                 List<String> ls_pageNames = new LinkedList();
-                System.out.println("Go over sequences");
+                out.println("Go over sequences");
                 for (int i = 0; i < sequences.size(); i++) {
                     JSONObject inSequences = (JSONObject) sequences.get(i);
                     JSONArray canvases = inSequences.getJSONArray("canvases");
-                    System.out.println("Go over canvases");
+                    out.println("Go over canvases");
                     if (null != canvases && canvases.size() > 0) {
                         for (int j = 0; j < canvases.size(); j++) {
                             JSONObject canvas = canvases.getJSONObject(j);
@@ -112,7 +116,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
                                     JSONObject image = images.getJSONObject(n);
                                     JSONObject resource = image.getJSONObject("resource");
                                     String imageName = resource.getString("@id");
-                                    int folioKey = textdisplay.Folio.createFolioRecordFromManifest(city, canvas.getString("label"), imageName.replace('_', '&'), archive, mss.getID(), 0);
+                                    int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName.replace('_', '&'), archive, mss.getID(), 0);
                                     ls_folios_keys.add(folioKey);
                                 }
                             }
@@ -136,14 +140,14 @@ public class ClassicProjectFromManifest extends HttpServlet {
 //                        thisProject=p[l];
 //                    }
 //                }
-                System.out.println("Create project");
+                out.println("Create project");
                 if(projectID<1 && theManifest.size() > 0) {
                     //create a project for them
                     String tmpProjName = mss.getShelfMark()+" project";
                     if (request.getParameter("title") != null) {
                         tmpProjName = request.getParameter("title");
                     }
-                    try (Connection conn = ServletUtils.getDBConnection()) {
+                    try (Connection conn = getDBConnection()) {
                        conn.setAutoCommit(false);
                        Group newgroup = new Group(conn, tmpProjName, UID);
                        Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
@@ -166,7 +170,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
         }
 
         public JSONObject resolveID(String manifestID) throws MalformedURLException, IOException{
-            System.out.println("Resolving ID "+manifestID);
+            out.println("Resolving ID "+manifestID);
             JSONObject manifest = new JSONObject();
             URL id = new URL(manifestID);
             BufferedReader reader = null;
@@ -184,9 +188,9 @@ public class ClassicProjectFromManifest extends HttpServlet {
             {
               stringBuilder.append(line + "\n");
             }
-            manifest = JSONObject.fromObject(stringBuilder.toString());
-            System.out.println("resolved");
-            System.out.println(manifest);
+            manifest = fromObject(stringBuilder.toString());
+            out.println("resolved");
+            out.println(manifest);
             return manifest;
         }
     /**

@@ -18,14 +18,17 @@ package edu.slu.tpen.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 import textdisplay.Manuscript;
+import static textdisplay.Manuscript.getManuscriptsByCity;
+import static textdisplay.Manuscript.getManuscriptsByCityAndRepository;
+import static textdisplay.Manuscript.getManuscriptsByRepository;
 
 /**
  * Get manuscript by city and repository.
@@ -49,36 +52,36 @@ public class GetManuscriptsByCityAndRepository extends HttpServlet {
                 try {
                     String city = request.getParameter("city");
                     String repo = request.getParameter("repository");
-                    Manuscript[] mss = Manuscript.getManuscriptsByCityAndRepository(city, repo);
+                    Manuscript[] mss = getManuscriptsByCityAndRepository(city, repo);
                     jo.element("ls_manu", mss);
                 } catch (SQLException ex) {
-                    Logger.getLogger(GetManuscriptsByCityAndRepository.class.getName()).log(Level.SEVERE, null, ex);
+                    getLogger(GetManuscriptsByCityAndRepository.class.getName()).log(SEVERE, null, ex);
                 }
             }else{
                 try {
                     String city = request.getParameter("city");
-                    Manuscript[] mss = Manuscript.getManuscriptsByCity(city);
+                    Manuscript[] mss = getManuscriptsByCity(city);
                     jo.element("ls_manu", mss);
                 } catch (SQLException ex) {
-                    Logger.getLogger(GetManuscriptsByCityAndRepository.class.getName()).log(Level.SEVERE, null, ex);
+                    getLogger(GetManuscriptsByCityAndRepository.class.getName()).log(SEVERE, null, ex);
                 }
             }
         }else{
             if (request.getParameter("repository") != null) {
                 try {
                     String repo = request.getParameter("repository");
-                    Manuscript[] mss = Manuscript.getManuscriptsByRepository(repo);
+                    Manuscript[] mss = getManuscriptsByRepository(repo);
                     jo.element("ls_manu", mss);
                 } catch (SQLException ex) {
-                    Logger.getLogger(GetManuscriptsByCityAndRepository.class.getName()).log(Level.SEVERE, null, ex);
+                    getLogger(GetManuscriptsByCityAndRepository.class.getName()).log(SEVERE, null, ex);
                 }
             }else{
                 jo.element("error", "no city or repository specified");
             }
         }
-        PrintWriter out = response.getWriter();
-        out.print(jo);
-        out.close();
+        try (PrintWriter out = response.getWriter()) {
+            out.print(jo);
+        }
     }
 
     @Override

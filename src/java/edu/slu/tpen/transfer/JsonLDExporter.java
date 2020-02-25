@@ -14,28 +14,32 @@
  */
 package edu.slu.tpen.transfer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import static edu.slu.tpen.entity.Image.Canvas.getLinesForProject;
+import static edu.slu.util.LangUtils.buildQuickMap;
+import static imageLines.ImageCache.getImageDimension;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import static java.lang.String.format;
+import static java.lang.System.out;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
+import static java.util.logging.Level.INFO;
 import java.util.logging.Logger;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.slu.tpen.entity.Image.Canvas;
-import imageLines.ImageCache;
+import static java.util.logging.Logger.getLogger;
+import net.sf.json.JSONArray;
 import textdisplay.Folio;
+import static textdisplay.Folio.getRbTok;
+import textdisplay.FolioDims;
+import static textdisplay.FolioDims.createFolioDimsRecord;
+import static textdisplay.Metadata.getMetadataAsJSON;
 import textdisplay.Project;
 import user.User;
-import static edu.slu.util.LangUtils.buildQuickMap;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import textdisplay.FolioDims;
-import textdisplay.Metadata;
 
 /**
  * Class which manages serialisation to JSON-LD. Builds a Map containing the
@@ -61,13 +65,13 @@ public class JsonLDExporter {
       int projID = proj.getProjectID();
       try {
           //System.out.println("Export project "+projID);
-         String projName = Folio.getRbTok("SERVERURL") + "manifest/"+projID;
+         String projName = getRbTok("SERVERURL") + "manifest/"+projID;
          manifestData = new LinkedHashMap<>();
          manifestData.put("@context", "http://www.shared-canvas.org/ns/context.json");
          manifestData.put("@id", projName + "/manifest.json");
          manifestData.put("@type", "sc:Manifest");
          manifestData.put("label", proj.getProjectName());
-         manifestData.put("metadata", Metadata.getMetadataAsJSON(projID));
+         manifestData.put("metadata", getMetadataAsJSON(projID));
 
            Map<String, Object> service = new LinkedHashMap<>();
          service.put("@context", "http://iiif.io/api/auth/1/context.json");
@@ -89,7 +93,7 @@ public class JsonLDExporter {
       
          
          Map<String, Object> pages = new LinkedHashMap<>();
-         pages.put("@id", Folio.getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
+         pages.put("@id", getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
          pages.put("@type", "sc:Sequence");
          pages.put("label", "Current Page Order");
 
@@ -110,7 +114,7 @@ public class JsonLDExporter {
    }
 
    public String export() throws JsonProcessingException {
-       System.out.println("Send out manifest");
+        out.println("Send out manifest");
       ObjectMapper mapper = new ObjectMapper();
       return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(manifestData);
    }
@@ -127,7 +131,7 @@ public class JsonLDExporter {
       //Integer msID = f.getMSID();
       //String msID_str = msID.toString();
        //System.out.println("Building page "+f.getFolioNumber());
-      String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
+      String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
       //JSONObject annotationList = new JSONObject();
       //JSONArray resources_array = new JSONArray();
  //     String annoListID = Folio.getRbTok("SERVERURL")+"project/"+projID+"/annotations/"+f.getFolioNumber();  
@@ -145,14 +149,14 @@ public class JsonLDExporter {
       
       JSONArray otherContent;
       if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-         storedDims = ImageCache.getImageDimension(f.getFolioNumber());
+         storedDims = getImageDimension(f.getFolioNumber());
          if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
             // System.out.println("Need to resolve image headers for dimensions");
             storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
          }
       }
 
-      LOG.log(Level.INFO, "pageDim={0}", pageDim);
+      LOG.log(INFO, "pageDim={0}", pageDim);
       Map<String, Object> result = new LinkedHashMap<>();
       result.put("@id", canvasID);
       result.put("@type", "sc:Canvas");
@@ -166,7 +170,7 @@ public class JsonLDExporter {
                     canvasHeight = 1000;
                     canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
                     //System.out.println("Need to make folio dims record");
-                    FolioDims.createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                    createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
                 }
             }
             else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
@@ -183,7 +187,7 @@ public class JsonLDExporter {
       Map<String, Object> imageAnnot = new LinkedHashMap<>();
       imageAnnot.put("@type", "oa:Annotation");
       imageAnnot.put("motivation", "sc:painting");
-      Map<String, Object> imageResource = buildQuickMap("@id", String.format("%s%s&user=%s", Folio.getRbTok("SERVERURL"), f.getImageURLResize(), u.getUname()), "@type", "dctypes:Image", "format", "image/jpeg");
+      Map<String, Object> imageResource = buildQuickMap("@id", format("%s%s&user=%s", getRbTok("SERVERURL"), f.getImageURLResize(), u.getUname()), "@type", "dctypes:Image", "format", "image/jpeg");
       
       if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
           //doing this check will return invalid images because we will not include height and width of 0.
@@ -196,12 +200,12 @@ public class JsonLDExporter {
       //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
       //System.out.println("Get otherContent");
       //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
-      otherContent = Canvas.getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
+      otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
       //System.out.println("Finalize result");
       result.put("otherContent", otherContent);
       result.put("images", images);
       //System.out.println("Return");
       return result;
    }
-   private static final Logger LOG = Logger.getLogger(JsonLDExporter.class.getName());
+   private static final Logger LOG = getLogger(JsonLDExporter.class.getName());
 }

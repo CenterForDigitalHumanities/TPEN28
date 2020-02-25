@@ -12,10 +12,14 @@ and limitations under the License.
  */
 package textdisplay;
 
+import static java.lang.System.out;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**
  * This class handles the storage, retrieval, and rendering of the welcome
@@ -32,13 +36,13 @@ public class WelcomeMessage {
         String query = "update welcomemessage set msg=?";
 
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setString(1, newMessage);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -49,7 +53,7 @@ public class WelcomeMessage {
         String query = "select msg from welcomemessage";
 
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -58,8 +62,8 @@ public class WelcomeMessage {
             throw new Exception("no welcome message found!");
 
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -70,7 +74,7 @@ public class WelcomeMessage {
         String query = "select msg from welcomemessage";
         {
             try {
-                j = DatabaseWrapper.getConnection();
+                j = getConnection();
                 ps = j.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
@@ -85,8 +89,8 @@ public class WelcomeMessage {
                 throw new Exception("no welcome message found!");
 
             } finally {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
             }
         }
     }
@@ -94,7 +98,7 @@ public class WelcomeMessage {
     public static void main(String[] args) throws SQLException, Exception {
         WelcomeMessage w = new WelcomeMessage();
         String msg = w.getMessage("digitalhumanities@slu.edu", "newpass");
-        System.out.println(msg);
+        out.println(msg);
 
     }
 }

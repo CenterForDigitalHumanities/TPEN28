@@ -13,9 +13,10 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,11 +39,10 @@ public class addTag extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
             if (request.getParameter("UID") != null) {
                         int ctr = 1;
-                        int UID=Integer.parseInt(request.getParameter("UID"));
+                        int UID=parseInt(request.getParameter("UID"));
                         while (new TagButton(UID, ctr).exists()) {
                             ctr++;
                         }
@@ -51,7 +51,7 @@ public class addTag extends HttpServlet {
                         return;
                     }
             if (request.getParameter("projectID") != null) {
-                    int projectID=Integer.parseInt(request.getParameter("projectID"));
+                    int projectID=parseInt(request.getParameter("projectID"));
                         int ctr = 1;
                         while (new TagButton(projectID, ctr, true).exists()) {
                             ctr++;
@@ -62,9 +62,7 @@ public class addTag extends HttpServlet {
 
                     }
         } catch (SQLException ex) {
-            Logger.getLogger(addTag.class.getName()).log(Level.SEVERE, null, ex);
-        } finally { 
-            out.close();
+            getLogger(addTag.class.getName()).log(SEVERE, null, ex);
         }
     } 
 

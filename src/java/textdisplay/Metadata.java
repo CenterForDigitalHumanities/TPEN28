@@ -16,12 +16,16 @@
  */
 package textdisplay;
 
+import static java.lang.System.out;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 import user.Group;
 import user.User;
 
@@ -195,7 +199,7 @@ public class Metadata {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, projectID);
          ResultSet rs = ps.executeQuery();
@@ -219,8 +223,8 @@ public class Metadata {
          }
       } finally {
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
    }
@@ -246,7 +250,7 @@ public class Metadata {
       Connection j = null;
       PreparedStatement updater = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          updater = j.prepareStatement(query);
          //what if we did an ecode here for the specified fields and decoded them on the way out?  Or leave them encoded and let the front end decode?
          //System.out.println("commit new title "+this.title);
@@ -266,10 +270,9 @@ public class Metadata {
          updater.setInt(14, projectID);
          updater.execute();
       } catch (Exception e) {
-         e.printStackTrace();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(updater);
+            closeDBConnection(j);
+            closePreparedStatement(updater);
       }
 
    }
@@ -278,7 +281,7 @@ public class Metadata {
         String query = "select * from metadata where projectID=?";
         Connection j = null;
         PreparedStatement ps = null;
-        j = DatabaseWrapper.getConnection();
+        j = getConnection();
         ps = j.prepareStatement(query);
         ps.setInt(1, projectID);
         ResultSet rs = ps.executeQuery();
@@ -351,8 +354,8 @@ public class Metadata {
            metadata.add(metadata_entry);
 
         }
-        DatabaseWrapper.closeDBConnection(j);
-        DatabaseWrapper.closePreparedStatement(ps);
+        closeDBConnection(j);
+        closePreparedStatement(ps);
         return metadata;
   }
    
@@ -369,9 +372,9 @@ public class Metadata {
       User[] members = g.getMembers();
 
       toret += "<respStmt><resp>Contributor</resp>\n";
-      for (int i = 0; i < members.length; i++) {
-         toret += "<name>" + members[i].getFname() + " " + members[i].getLname() + "</name>\n";
-      }
+        for (User member : members) {
+            toret += "<name>" + member.getFname() + " " + member.getLname() + "</name>\n";
+        }
       toret += "\n</respStmt>\n";
 
       toret += "</titleStmt>\n";
@@ -403,7 +406,7 @@ public class Metadata {
    }
 
    public static void main(String[] args) throws SQLException {
-      System.out.print(new Metadata(611).getTEI());
+        out.print(new Metadata(611).getTEI());
    }
 
    public String getDublinCore() throws SQLException {

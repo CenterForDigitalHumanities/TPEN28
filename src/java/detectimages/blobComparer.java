@@ -12,6 +12,7 @@
  */
 package detectimages;
 
+import static java.lang.System.out;
 import java.util.concurrent.Callable;
 
 
@@ -33,7 +34,7 @@ public class blobComparer implements Callable
     {
         Double [] results=new Double[blobArray.length*blobArray.length/2];
         int ctr=0;
-        System.out.print("starting \n");
+        out.print("starting \n");
         for(int i=0;i<blobArray.length;i+=2)
             {
                 //if this is the last work set it may not contain a full compliment of work to be done

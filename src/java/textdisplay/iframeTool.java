@@ -17,7 +17,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import java.util.Vector;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**
  * This class represents a tool like  a dictionary, abbreviation list, or common source (vulgate) that can be embedded in an iframe in TPEN
@@ -48,8 +52,8 @@ public class iframeTool {
         Connection j=null;
 PreparedStatement ps=null;
         try{
-            j=DatabaseWrapper.getConnection();
-            ps=j.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+            j=getConnection();
+            ps=j.prepareStatement(insertQuery, RETURN_GENERATED_KEYS);
             ps.setString(1, url);
             ps.setString(2, name);
             ps.setInt(3, p.projectID);
@@ -61,8 +65,8 @@ PreparedStatement ps=null;
         this.projectID=p.projectID;
         }
     finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
     }
 }
     /**
@@ -77,7 +81,7 @@ DatabaseWrapper.closePreparedStatement(ps);
         Connection j=null;
 PreparedStatement ps=null;
         try{
-            j=DatabaseWrapper.getConnection();
+            j=getConnection();
             ps=j.prepareStatement(selectQuery);
             ps.setInt(1, id);
         ResultSet rs=ps.executeQuery();
@@ -90,8 +94,8 @@ PreparedStatement ps=null;
         }
         }
         finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
     /**
@@ -106,7 +110,7 @@ DatabaseWrapper.closePreparedStatement(ps);
         Connection j=null;
 PreparedStatement ps=null;
         try{
-            j=DatabaseWrapper.getConnection();
+            j=getConnection();
             ps=j.prepareStatement(query);
             ps.setInt(1,projectID);
             ResultSet rs=ps.executeQuery();
@@ -121,8 +125,8 @@ PreparedStatement ps=null;
             return toret;
         }
         finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
     /**
@@ -137,15 +141,15 @@ DatabaseWrapper.closePreparedStatement(ps);
             Connection j=null;
 PreparedStatement ps=null;
             try{
-                j=DatabaseWrapper.getConnection();
+                j=getConnection();
                 ps=j.prepareStatement(delQuery);
                 ps.setInt(1, id);
                 ps.execute();
             }
             finally
             {
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
             }
         }
     }

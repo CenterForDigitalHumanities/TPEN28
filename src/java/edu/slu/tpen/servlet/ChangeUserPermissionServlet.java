@@ -17,16 +17,25 @@ package edu.slu.tpen.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
 import net.sf.json.JSONObject;
 import textdisplay.ProjectPermissions;
 import user.Group.roles;
+import static user.Group.roles.Contributor;
+import static user.Group.roles.Editor;
+import static user.Group.roles.Leader;
+import static user.Group.roles.None;
+import static user.Group.roles.Suspended;
 
 /**
  * Change user permission in a project (group). This is a transformation of tpen function to web service. 
@@ -62,44 +71,48 @@ public class ChangeUserPermissionServlet extends HttpServlet {
         if (request.getParameter("projectID") != null && null != request.getSession().getAttribute("UID")) {
             //System.out.println("UID !!!!!!!!!!!!!!!!!!!!");
             //System.out.println(request.getSession().getAttribute("UID"));
-            int currentUserId = Integer.parseInt(request.getSession().getAttribute("UID") + "");
-            int projectId = new Integer(request.getParameter("projectID")).intValue();
+            int currentUserId = parseInt(request.getSession().getAttribute("UID") + "");
+            int projectId = new Integer(request.getParameter("projectID"));
             if(null != request.getParameter("uid")){
                 //change user permission for other user
-                int uid = new Integer(request.getParameter("uid")).intValue();
-                if("add".equals(request.getParameter("act"))){
-                    
-                    result = addUserToProject(projectId, uid);
-                    
-                }else if("rm".equals(request.getParameter("act"))){
-                    
-                    result = removeUserFromProject(projectId, uid, currentUserId);
-                    
-                }else if("changerole".equals(request.getParameter("act"))){
-                    if("leader".equals(request.getParameter("role"))){
-                    
-                        result = changeUserRole(projectId, uid, currentUserId, roles.Leader);
-
-                    }else if("editor".equals(request.getParameter("role"))){
-
-                        result = changeUserRole(projectId, uid, currentUserId, roles.Editor);
-
-                    }else if("contributor".equals(request.getParameter("role"))){
-
-                        result = changeUserRole(projectId, uid, currentUserId, roles.Contributor);
-
-                    }else if("suspended".equals(request.getParameter("role"))){
-
-                        result = changeUserRole(projectId, uid, currentUserId, roles.Suspended);
-
-                    }else if("none".equals(request.getParameter("role"))){
-
-                        result = changeUserRole(projectId, uid, currentUserId, roles.None);
-
-                    }else{
-                        //if non of above, send back not accepttable. The role name is not acceptable. 
-                        result = response.SC_NOT_ACCEPTABLE;
-                    }
+                int uid = new Integer(request.getParameter("uid"));
+                if(null != request.getParameter("act"))switch (request.getParameter("act")) {
+                    case "add":
+                        result = addUserToProject(projectId, uid);
+                        break;
+                    case "rm":
+                        result = removeUserFromProject(projectId, uid, currentUserId);
+                        break;
+                    case "changerole":
+                        if (null == request.getParameter("role")) {
+                            //if non of above, send back not accepttable. The role name is not acceptable.
+                            result = SC_NOT_ACCEPTABLE;
+                        } else {
+                            switch (request.getParameter("role")) {
+                                case "leader":
+                                    result = changeUserRole(projectId, uid, currentUserId, Leader);
+                                    break;
+                                case "editor":
+                                    result = changeUserRole(projectId, uid, currentUserId, Editor);
+                                    break;
+                                case "contributor":
+                                    result = changeUserRole(projectId, uid, currentUserId, Contributor);
+                                    break;
+                                case "suspended":
+                                    result = changeUserRole(projectId, uid, currentUserId, Suspended);
+                                    break;
+                                case "none":
+                                    result = changeUserRole(projectId, uid, currentUserId, None);
+                                    break;
+                                default:
+                                    //if non of above, send back not accepttable. The role name is not acceptable.
+                                    result = response.SC_NOT_ACCEPTABLE;
+                                    break;
+                            }
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
             if(null != request.getParameter("act") && "cpm".equals(request.getParameter("act"))){
@@ -153,17 +166,17 @@ public class ChangeUserPermissionServlet extends HttpServlet {
                         result = 1;
                     }else{
                         //if non of above, send back not accepttable. The permission is not acceptable. 
-                        result = response.SC_NOT_ACCEPTABLE;
+                        result = SC_NOT_ACCEPTABLE;
                     }
                 } catch (SQLException ex) {
-                    Logger.getLogger(ChangeUserPermissionServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    getLogger(ChangeUserPermissionServlet.class.getName()).log(SEVERE, null, ex);
                 } catch (ClassCastException cce){
-                    System.out.println("Type error of project user permission. ");
-                    Logger.getLogger(ChangeUserPermissionServlet.class.getName()).log(Level.INFO, null, cce);
+                    out.println("Type error of project user permission. ");
+                    getLogger(ChangeUserPermissionServlet.class.getName()).log(INFO, null, cce);
                 }
             }
         }else{
-            result = response.SC_FORBIDDEN;
+            result = SC_FORBIDDEN;
         }
         out = response.getWriter();
         out.print(result);
@@ -198,7 +211,7 @@ public class ChangeUserPermissionServlet extends HttpServlet {
                 result = 11;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ChangeUserPermissionServlet.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(ChangeUserPermissionServlet.class.getName()).log(SEVERE, null, ex);
         }
         return result;
     }
@@ -231,7 +244,7 @@ public class ChangeUserPermissionServlet extends HttpServlet {
                 result = 1;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ChangeUserPermissionServlet.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(ChangeUserPermissionServlet.class.getName()).log(SEVERE, null, ex);
         }
         return result;
     }
@@ -265,7 +278,7 @@ public class ChangeUserPermissionServlet extends HttpServlet {
                 result = 1;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ChangeUserPermissionServlet.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(ChangeUserPermissionServlet.class.getName()).log(SEVERE, null, ex);
         }
         return result;
     }

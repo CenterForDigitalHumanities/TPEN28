@@ -14,26 +14,40 @@
  * 
  * @author Jon Deering
  */
+import com.lowagie.text.DocumentException;
+import static edu.slu.util.ServletUtils.reportInternalError;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Level;
+import static java.util.logging.Level.INFO;
 import java.util.logging.Logger;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.lowagie.text.DocumentException;
-import edu.slu.util.ServletUtils;
-import java.util.Arrays;
-import textdisplay.Manuscript;
+import static textdisplay.Manuscript.getFullDocument;
+import static textdisplay.Manuscript.getPartialDocument;
 import textdisplay.Metadata;
 import textdisplay.Project;
 import textdisplay.TagFilter;
+import static textdisplay.TagFilter.noteStyles.endnote;
+import static textdisplay.TagFilter.noteStyles.footnote;
+import static textdisplay.TagFilter.noteStyles.inline;
+import static textdisplay.TagFilter.noteStyles.remove;
+import static textdisplay.TagFilter.noteStyles.sidebyside;
+import static textdisplay.TagFilter.styles.bold;
+import static textdisplay.TagFilter.styles.italic;
+import static textdisplay.TagFilter.styles.none;
+import static textdisplay.TagFilter.styles.paragraph;
+import static textdisplay.TagFilter.styles.superscript;
+import static textdisplay.TagFilter.styles.underlined;
+import static textdisplay.TagFilter.styles.remove;
 
 /**
  *
@@ -58,12 +72,12 @@ public class export extends HttpServlet {
          String name = (String) paramNames.nextElement();
          paramString += name + "=" + req.getParameter(name) + "&";
       }
-      LOG.log(Level.INFO, "Export request params: {0}", paramString);
+      LOG.log(INFO, "Export request params: {0}", paramString);
 
       try {
          int projectID = 0;
          if (req.getParameter("projectID") != null) {
-            projectID = Integer.parseInt(req.getParameter("projectID"));
+            projectID = parseInt(req.getParameter("projectID"));
          }
          Project p = new Project(projectID);
 
@@ -79,7 +93,7 @@ public class export extends HttpServlet {
                break;
          }
       } catch (SQLException | DocumentException ex) {
-         ServletUtils.reportInternalError(resp, ex);
+            reportInternalError(resp, ex);
       }
    }
 
@@ -105,11 +119,11 @@ public class export extends HttpServlet {
       String text = getMetadataString(req, p);
       TagFilter.noteStyles noteStyle = getNoteStyle(req);
       if (req.getParameter("beginFolio") != null && req.getParameter("endFolio") != null) {
-         int endFolio = Integer.parseInt(req.getParameter("endFolio"));
-         int beginFolio = Integer.parseInt(req.getParameter("beginFolio"));
-         text += Manuscript.getPartialDocument(p, noteStyle, hasLineBreak(req), hasPageLabels(req), beginFolio, endFolio);
+         int endFolio = parseInt(req.getParameter("endFolio"));
+         int beginFolio = parseInt(req.getParameter("beginFolio"));
+         text += getPartialDocument(p, noteStyle, hasLineBreak(req), hasPageLabels(req), beginFolio, endFolio);
       } else {
-         text += Manuscript.getFullDocument(p, noteStyle, hasLineBreak(req), hasPageLabels(req), false);
+         text += getFullDocument(p, noteStyle, hasLineBreak(req), hasPageLabels(req), false);
       }
       String[] tagArray = getTags(req);
       TagFilter.styles[] styleArray = getStyles(req, tagArray);
@@ -128,15 +142,15 @@ public class export extends HttpServlet {
          if (req.getParameter("imageWrap") != null) {
             imageWrap = true;
          }
-         int endFolio = Integer.parseInt(req.getParameter("endFolio"));
-         int beginFolio = Integer.parseInt(req.getParameter("beginFolio"));
-         text += Manuscript.getPartialDocument(p, getNoteStyle(req), hasLineBreak(req), hasPageLabels(req), beginFolio, endFolio, imageWrap);
+         int endFolio = parseInt(req.getParameter("endFolio"));
+         int beginFolio = parseInt(req.getParameter("beginFolio"));
+         text += getPartialDocument(p, getNoteStyle(req), hasLineBreak(req), hasPageLabels(req), beginFolio, endFolio, imageWrap);
       } else {
          Boolean imageWrap = false;
          if (req.getParameter("imageWrap") != null) {
             imageWrap = true;
          }
-         text += Manuscript.getFullDocument(p, getNoteStyle(req), hasLineBreak(req), hasPageLabels(req), imageWrap);
+         text += getFullDocument(p, getNoteStyle(req), hasLineBreak(req), hasPageLabels(req), imageWrap);
       }
       if (req.getParameter("tei") != null) {
          // Stick the header after the <TEI> tag if it exists.
@@ -194,13 +208,13 @@ public class export extends HttpServlet {
       if (param != null) {
          switch (param) {
             case "sideBySide":
-               return TagFilter.noteStyles.sidebyside;
+               return sidebyside;
             case "line":
-               return TagFilter.noteStyles.inline;
+               return inline;
             case "endnote":
-               return TagFilter.noteStyles.endnote;
+               return endnote;
             case "footnote":
-               return TagFilter.noteStyles.footnote;
+               return footnote;
             case "remove":
             default:
                break;
@@ -233,11 +247,11 @@ public class export extends HttpServlet {
    private String getDocumentText(HttpServletRequest req, Project p, boolean imageWrap) throws SQLException {
       TagFilter.noteStyles noteStyle = getNoteStyle(req);
       if (req.getParameter("beginFolio") != null && req.getParameter("endFolio") != null) {
-         int endFolio = Integer.parseInt(req.getParameter("endFolio"));
-         int beginFolio = Integer.parseInt(req.getParameter("beginFolio"));
-         return Manuscript.getPartialDocument(p, noteStyle, hasLineBreak(req), hasPageLabels(req), beginFolio, endFolio, imageWrap);
+         int endFolio = parseInt(req.getParameter("endFolio"));
+         int beginFolio = parseInt(req.getParameter("beginFolio"));
+         return getPartialDocument(p, noteStyle, hasLineBreak(req), hasPageLabels(req), beginFolio, endFolio, imageWrap);
       } else {
-         return Manuscript.getFullDocument(p, noteStyle, hasLineBreak(req), hasPageLabels(req), imageWrap);
+         return getFullDocument(p, noteStyle, hasLineBreak(req), hasPageLabels(req), imageWrap);
       }      
    }
 
@@ -262,33 +276,33 @@ public class export extends HttpServlet {
       TagFilter.styles[] styleArray = new TagFilter.styles[tagArray.length];
       TagFilter.noteStyles noteStyle = getNoteStyle(req);
       for (int i = 0; i < tagArray.length; i++) {
-         if (tagArray[i].equals("tpen_note") && noteStyle == TagFilter.noteStyles.endnote) {
-            styleArray[i] = TagFilter.styles.superscript;
+         if (tagArray[i].equals("tpen_note") && noteStyle == endnote) {
+            styleArray[i] = superscript;
          }
          switch (req.getParameter(STYLE_PARAM_PREFIX + (i + 1))) {
             case "italic":
-               styleArray[i] = TagFilter.styles.italic;
+               styleArray[i] = italic;
                break;
             case "bold":
-               styleArray[i] = TagFilter.styles.bold;
+               styleArray[i] = bold;
                break;
             case "underlined":
-               styleArray[i] = TagFilter.styles.underlined;
+               styleArray[i] = underlined;
                break;
             case "none":
-               styleArray[i] = TagFilter.styles.none;
+               styleArray[i] = none;
                break;
             case "paragraph":
-               styleArray[i] = TagFilter.styles.paragraph;
+               styleArray[i] = paragraph;
                break;
             default:
                styleArray[i] = TagFilter.styles.remove;
                break;
          }
-         if (tagArray[i].equals("tpen_note") && noteStyle == TagFilter.noteStyles.endnote) {
-            styleArray[i] = TagFilter.styles.superscript;
+         if (tagArray[i].equals("tpen_note") && noteStyle == endnote) {
+            styleArray[i] = superscript;
          }
-         LOG.log(Level.INFO, "Tag {0}: {1} {2}", new Object[] { i + 1, tagArray[i], styleArray[i] });
+         LOG.log(INFO, "Tag {0}: {1} {2}", new Object[] { i + 1, tagArray[i], styleArray[i] });
       }
       return styleArray;
    }
@@ -307,5 +321,5 @@ public class export extends HttpServlet {
    private static final String STYLE_PARAM_PREFIX = "style";
    private static final String REMOVE_PARAM_PREFIX = "removeTag";
    
-   private static final Logger LOG = Logger.getLogger(export.class.getName());
+   private static final Logger LOG = getLogger(export.class.getName());
 }

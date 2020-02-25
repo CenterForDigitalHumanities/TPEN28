@@ -21,9 +21,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
+import static java.util.logging.Level.INFO;
 import java.util.logging.Logger;
-import javax.xml.bind.DatatypeConverter;
+import static java.util.logging.Logger.getLogger;
+import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 
 
 /**
@@ -43,15 +44,15 @@ public class NetUtils {
    public static InputStream openBasicAuthStream(URL url, String user, String pass) throws IOException {
       HttpURLConnection conn = (HttpURLConnection)url.openConnection();
       String userPassword = user + ":" + pass;
-      String base64 = DatatypeConverter.printBase64Binary(userPassword.getBytes("ISO-8859-1"));
+      String base64 = printBase64Binary(userPassword.getBytes("ISO-8859-1"));
       conn.setRequestProperty("Authorization", "Basic " + base64);
       
       InputStream result = conn.getInputStream();
 		int sc = conn.getResponseCode();
-      LOG.log(Level.INFO, "Basic auth {0} returned {1} as stream, {2} as response", new Object[] { base64, result, sc });
+      LOG.log(INFO, "Basic auth {0} returned {1} as stream, {2} as response", new Object[] { base64, result, sc });
       if (sc == 302) {
          url = new URL(conn.getHeaderField("Location"));
-         LOG.log(Level.INFO, "Moved.  Retrying basic auth at {0}", url);
+         LOG.log(INFO, "Moved.  Retrying basic auth at {0}", url);
          return openBasicAuthStream(url, user, pass);
       }
 
@@ -75,5 +76,5 @@ public class NetUtils {
       return "";
    }
    
-   private static final Logger LOG = Logger.getLogger(NetUtils.class.getName());
+   private static final Logger LOG = getLogger(NetUtils.class.getName());
 }

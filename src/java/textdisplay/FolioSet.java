@@ -14,12 +14,16 @@
  */
 package textdisplay;
 
+import static java.lang.Character.isDigit;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Stack;
 import java.util.Vector;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**
  * @author Jon Deering
@@ -50,7 +54,7 @@ public class FolioSet {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
 
          stmt = j.prepareStatement(query);
          stmt.setString(1, collection);
@@ -63,8 +67,8 @@ public class FolioSet {
             }
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -97,18 +101,18 @@ public class FolioSet {
             pageNumbersArray[i] = pageNumbers.get(i);
          }
 
-         for (int i = 0; i < paddedPageNameArray.length; i++) {
-            for (int k = 0; k < paddedPageNameArray.length - 1; k++) {
-               if (paddedPageNameArray[k].compareTo(paddedPageNameArray[k + 1]) > 0) {
-                  String tmpStr = paddedPageNameArray[k];
-                  paddedPageNameArray[k] = paddedPageNameArray[k + 1];
-                  paddedPageNameArray[k + 1] = tmpStr;
-                  int tmpInt = pageNumbersArray[k];
-                  pageNumbersArray[k] = pageNumbersArray[k + 1];
-                  pageNumbersArray[k + 1] = tmpInt;
-               }
+            for (String paddedPageNameArray1 : paddedPageNameArray) {
+                for (int k = 0; k < paddedPageNameArray.length - 1; k++) {
+                    if (paddedPageNameArray[k].compareTo(paddedPageNameArray[k + 1]) > 0) {
+                        String tmpStr = paddedPageNameArray[k];
+                        paddedPageNameArray[k] = paddedPageNameArray[k + 1];
+                        paddedPageNameArray[k + 1] = tmpStr;
+                        int tmpInt = pageNumbersArray[k];
+                        pageNumbersArray[k] = pageNumbersArray[k + 1];
+                        pageNumbersArray[k + 1] = tmpInt;
+                    }
+                }
             }
-         }
          for (int i = 0; i < pageNumbersArray.length; i++) {
             folios.add(pageNumbersArray[i]);
          }
@@ -124,11 +128,11 @@ public class FolioSet {
     */
    public static String zeroPadLastNumberFourPlaces(String name) {
       for (int i = name.length() - 1; i >= 0; i--) {
-         if (Character.isDigit(name.charAt(i))) {
+         if (isDigit(name.charAt(i))) {
             //count the number of digits that preceed this one, if it is less than 3, padd with zeros
             int count = 0;
             for (int j = i; j >= 0; j--) {
-               if (Character.isDigit(name.charAt(j))) {
+               if ( isDigit(name.charAt(j))) {
                   count++;
                   if (j == 0) {
                      //padd

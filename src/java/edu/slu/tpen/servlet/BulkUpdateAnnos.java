@@ -5,15 +5,17 @@
  */
 package edu.slu.tpen.servlet;
 
-import edu.slu.tpen.entity.Image.Canvas;
+import static edu.slu.tpen.entity.Image.Canvas.bulkUpdateTranscriptlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import static net.sf.json.JSONObject.fromObject;
 
 /**
  *
@@ -35,14 +37,14 @@ public class BulkUpdateAnnos extends HttpServlet {
         throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String content = request.getParameter("content");
-        JSONObject content_obj = JSONObject.fromObject(content);
+        JSONObject content_obj = fromObject(content);
         JSONArray annotations = content_obj.getJSONArray("annos");
         if (annotations.isEmpty()) {
-            response.sendError(response.SC_NO_CONTENT);
+            response.sendError(SC_NO_CONTENT);
             response.setHeader("Access-Control-Allow-Origin", "*");
             return;
         }
-        JSONArray updatedAnnos = Canvas.bulkUpdateTranscriptlets(annotations);
+        JSONArray updatedAnnos = bulkUpdateTranscriptlets(annotations);
         try (PrintWriter out = response.getWriter()) {
             out.println(updatedAnnos);
         }

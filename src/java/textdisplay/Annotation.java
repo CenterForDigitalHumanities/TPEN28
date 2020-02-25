@@ -11,7 +11,7 @@ and limitations under the License.
  */
 package textdisplay;
 
-import edu.slu.tpen.servlet.Constant;
+import static edu.slu.tpen.servlet.Constant.ANNOTATION_SERVER_ADDR;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -19,17 +19,20 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
+import static java.net.URLEncoder.encode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
-import org.owasp.esapi.ESAPI;
+import static net.sf.json.JSONObject.fromObject;
+import static org.owasp.esapi.ESAPI.encoder;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**
  *
@@ -65,7 +68,7 @@ public class Annotation
     }
 
     public String getText() {
-        return ESAPI.encoder().encodeForHTML(text);
+        return encoder().encodeForHTML(text);
     }
 
     public int getW() {
@@ -97,8 +100,8 @@ public class Annotation
        Connection j=null;
 PreparedStatement ps=null;
        try{
-           j=DatabaseWrapper.getConnection();
-           ps=j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+           j=getConnection();
+           ps=j.prepareStatement(query, RETURN_GENERATED_KEYS);
            ps.setInt(1, folio);
            ps.setInt(2, projectID);
            ps.setString(3, text);
@@ -119,8 +122,8 @@ PreparedStatement ps=null;
            this.folio=folio;
        }
        finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
        }
    }
    /**
@@ -134,7 +137,7 @@ DatabaseWrapper.closePreparedStatement(ps);
        Connection j=null;
 PreparedStatement ps=null;
        try{
-           j=DatabaseWrapper.getConnection();
+           j=getConnection();
            ps=j.prepareStatement(query);
            ps.setInt(1, id);
            ResultSet rs=ps.executeQuery();
@@ -152,8 +155,8 @@ PreparedStatement ps=null;
        }
        finally
        {
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
        }
    }
    /**
@@ -168,7 +171,7 @@ DatabaseWrapper.closePreparedStatement(ps);
        Connection j=null;
 PreparedStatement ps=null;
        try{
-           j=DatabaseWrapper.getConnection();
+           j=getConnection();
            ps=j.prepareStatement(query);
            ps.setString(1, text);
            ps.setInt(2, this.id);
@@ -176,8 +179,8 @@ PreparedStatement ps=null;
            this.text=text;
        }
        finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
        }
    }
    /**
@@ -195,7 +198,7 @@ DatabaseWrapper.closePreparedStatement(ps);
        Connection j=null;
 PreparedStatement ps=null;
        try{
-           j=DatabaseWrapper.getConnection();
+           j=getConnection();
            ps=j.prepareStatement(query);
            ps.setInt(1, x);
            ps.setInt(2, y);
@@ -209,8 +212,8 @@ PreparedStatement ps=null;
            this.w=w;
        }
        finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
        }
    }
    /**
@@ -226,7 +229,7 @@ DatabaseWrapper.closePreparedStatement(ps);
 PreparedStatement ps=null;
        
        try{ 
-           j=DatabaseWrapper.getConnection();
+           j=getConnection();
            ps=j.prepareStatement(query);
            ps.setInt(1, folio);
            ps.setInt(2, this.id);
@@ -234,8 +237,8 @@ PreparedStatement ps=null;
            this.folio=folio;
        }
        finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
        }
    }
    /**
@@ -248,15 +251,15 @@ DatabaseWrapper.closePreparedStatement(ps);
        PreparedStatement ps=null;
        Connection j=null;
        try{
-           j=DatabaseWrapper.getConnection();
+           j=getConnection();
            ps=j.prepareStatement(query);
            ps.setInt(1, this.id);
            ps.execute();
        }
        finally
        {
-           DatabaseWrapper.closeDBConnection(j);
-           DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
        }
    }
    /**Duplicate this annotation, creating something with the same x,y,h,w, folio, projectID and text, but a new id.
@@ -273,15 +276,15 @@ DatabaseWrapper.closePreparedStatement(ps);
        Connection j=null;
 PreparedStatement ps=null;
        try{
-           j=DatabaseWrapper.getConnection();
+           j=getConnection();
            ps=j.prepareStatement(query);
            ps.setInt(1,this.id);
            ps.execute();
        }
        finally
        {
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
        }
        
    }
@@ -300,7 +303,7 @@ DatabaseWrapper.closePreparedStatement(ps);
     Connection j=null;
 PreparedStatement ps=null;
     try{
-        j=DatabaseWrapper.getConnection();
+        j=  getConnection();
         ps=j.prepareStatement(query);
         ps.setInt(1, projectID);
         ps.setInt(2, folio);
@@ -316,8 +319,8 @@ PreparedStatement ps=null;
             toret[i]=tmp.pop();
     }
     finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
     }
     return toret;
 }
@@ -331,7 +334,7 @@ DatabaseWrapper.closePreparedStatement(ps);
    */
    public static String saveNewAnnotationList(JSONObject annotationListObject) throws MalformedURLException, IOException{
         String newListID = "";
-        URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/saveNewAnnotation.action");
+        URL postUrl = new URL(ANNOTATION_SERVER_ADDR + "/anno/saveNewAnnotation.action");
         HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
         connection.setDoOutput(true);
         connection.setDoInput(true);
@@ -340,10 +343,11 @@ DatabaseWrapper.closePreparedStatement(ps);
         connection.setInstanceFollowRedirects(true);
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         connection.connect();
-        DataOutputStream out = new DataOutputStream(connection.getOutputStream()); 
-        out.writeBytes("content=" + URLEncoder.encode(annotationListObject.toString(), "utf-8"));
-        out.flush();
-        out.close(); // flush and close
+        try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
+            out.writeBytes("content=" + encode(annotationListObject.toString(), "utf-8"));
+            out.flush();
+            // flush and close
+        }
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
         String line="";
         StringBuilder sb = new StringBuilder();
@@ -352,7 +356,7 @@ DatabaseWrapper.closePreparedStatement(ps);
         } 
         reader.close();
         connection.disconnect();
-        JSONObject server_response = JSONObject.fromObject(sb.toString());
+        JSONObject server_response = fromObject(sb.toString());
         try{
            newListID = server_response.getString("@id");
         }

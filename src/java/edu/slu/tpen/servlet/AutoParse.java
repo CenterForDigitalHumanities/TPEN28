@@ -5,26 +5,32 @@
  */
 package edu.slu.tpen.servlet;
 
-import edu.slu.tpen.entity.Image.Canvas;
 import static edu.slu.util.LangUtils.buildQuickMap;
 import java.awt.Rectangle;
 import java.io.IOException;
+import static java.lang.Integer.parseInt;
+import static java.lang.String.format;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import net.sf.json.JSONArray;
+import static net.sf.json.JSONArray.fromObject;
 import net.sf.json.JSONObject;
-import org.owasp.esapi.ESAPI;
+import static org.owasp.esapi.ESAPI.encoder;
 import textdisplay.Folio;
+import static textdisplay.Folio.getRbTok;
 import textdisplay.Line;
 import textdisplay.Project;
 import textdisplay.Transcription;
@@ -47,15 +53,15 @@ public class AutoParse extends HttpServlet {
      * @respond with array of Transcription lines created from auto parsing.
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-        int projectID = Integer.parseInt(request.getParameter("projectID"));
-        int folioNumber = Integer.parseInt(request.getParameter("folioNumber"));
+        int projectID = parseInt(request.getParameter("projectID"));
+        int folioNumber = parseInt(request.getParameter("folioNumber"));
         Stack<Transcription> orderedTranscriptions = new Stack();
         JSONObject annotationList = new JSONObject();
         JSONArray resources_array;
         List<Object> resources = new ArrayList<>();
         String dateString;
-        String annoListID = Folio.getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
-        String canvasID = Folio.getRbTok("SERVERURL") + "canvas/" + folioNumber;
+        String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
+        String canvasID = getRbTok("SERVERURL") + "canvas/" + folioNumber;
         //create Transcription(s) based on Project settings and Line parsing
         Project p = new Project(projectID);
         Project.imageBounding preferedBounding = p.getProjectImageBounding();
@@ -124,13 +130,13 @@ public class AutoParse extends HttpServlet {
                 int lineID = orderedTranscriptions.get(i).getLineID();
                 Map<String, Object> lineAnnot = new LinkedHashMap<>();
                 String lineURI = "line/" + lineID;
-                String annoLineID = Folio.getRbTok("SERVERURL") + "line/" + lineID;
+                String annoLineID = getRbTok("SERVERURL") + "line/" + lineID;
                 lineAnnot.put("@id", annoLineID);
                 lineAnnot.put("_tpen_line_id", lineURI);
                 lineAnnot.put("@type", "oa:Annotation");
                 lineAnnot.put("motivation", "oad:transcribing");
-                lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", ESAPI.encoder().decodeForHTML(orderedTranscriptions.get(i).getText())));
-                lineAnnot.put("on", String.format("%s#xywh=%d,%d,%d,%d", canvasID, orderedTranscriptions.get(i).getX(), orderedTranscriptions.get(i).getY(), orderedTranscriptions.get(i).getWidth(), orderedTranscriptions.get(i).getHeight()));
+                lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", encoder().decodeForHTML(orderedTranscriptions.get(i).getText())));
+                lineAnnot.put("on", format("%s#xywh=%d,%d,%d,%d", canvasID, orderedTranscriptions.get(i).getX(), orderedTranscriptions.get(i).getY(), orderedTranscriptions.get(i).getWidth(), orderedTranscriptions.get(i).getHeight()));
                 if (null != orderedTranscriptions.get(i).getComment() && !"null".equals(orderedTranscriptions.get(i).getComment())) {
                     lineAnnot.put("_tpen_note", orderedTranscriptions.get(i).getComment());
                 } else {
@@ -141,17 +147,17 @@ public class AutoParse extends HttpServlet {
                 lineAnnot.put("modified", dateString);
                 resources.add(lineAnnot);
             } else {
-                Logger.getLogger(AutoParse.class.getName()).log(Level.WARNING, "Lines for list was null in project {0}, folio {1}", new Object[]{projectID, folioNumber});
+                getLogger(AutoParse.class.getName()).log(WARNING, "Lines for list was null in project {0}, folio {1}", new Object[]{projectID, folioNumber});
             }
         }
-        resources_array = JSONArray.fromObject(resources);
+        resources_array = fromObject(resources);
         annotationList.element("resources", resources_array);
         annotationList.element("@id", annoListID);
 
-        Logger.getLogger(AutoParse.class.getName()).log(Level.INFO, "Autoparse succeeded for project {0}, folio {1} with {2} lines.", new Object[]{projectID, folioNumber, resources.size()});
+        getLogger(AutoParse.class.getName()).log(INFO, "Autoparse succeeded for project {0}, folio {1} with {2} lines.", new Object[]{projectID, folioNumber, resources.size()});
 
         response.setContentType("application/json; charset=UTF-8");
-        response.setStatus(HttpServletResponse.SC_CREATED);
+        response.setStatus(SC_CREATED);
         response.getWriter().write(annotationList.toString());
     }
 
@@ -169,7 +175,7 @@ public class AutoParse extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (SQLException ex) {
-            Logger.getLogger(AutoParse.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(AutoParse.class.getName()).log(SEVERE, null, ex);
         }
     }
 
@@ -187,7 +193,7 @@ public class AutoParse extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (SQLException ex) {
-            Logger.getLogger(AutoParse.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(AutoParse.class.getName()).log(SEVERE, null, ex);
         }
     }
 

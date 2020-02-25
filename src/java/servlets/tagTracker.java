@@ -13,10 +13,11 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -40,15 +41,14 @@ public class tagTracker extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
         //System.out.println("TAG TRACKA!");
-        try {
+        try (PrintWriter out = response.getWriter()) {
             int projectID=0;
 
         if(request.getParameter("projectID")!=null)
         {
             //System.out.println("Got the project ID");
-            projectID=Integer.parseInt(request.getParameter("projectID"));
+            projectID=parseInt(request.getParameter("projectID"));
         }
             Project thisProject=new Project(projectID);
         if(request.getParameter("addTag")!=null)
@@ -57,7 +57,7 @@ public class tagTracker extends HttpServlet {
             //System.out.println("add tag flag");
             OpenTagTracker t=new OpenTagTracker(thisProject);
             String tag=request.getParameter("tag");
-            int folio=Integer.parseInt(request.getParameter("folio"));
+            int folio=parseInt(request.getParameter("folio"));
             String line=request.getParameter("line");
             int idNo=t.addTag(tag,folio,line);
             out.print(""+idNo);
@@ -69,7 +69,7 @@ public class tagTracker extends HttpServlet {
             //System.out.println("remove tag flag");
             OpenTagTracker t=new OpenTagTracker(thisProject);
             try{
-            t.removeTag(Integer.parseInt(request.getParameter("id")));
+            t.removeTag(parseInt(request.getParameter("id")));
             //if the id wasnt provided, delete nothing and alert the browser that nothing was deleted.
             }catch(NumberFormatException e)
             {
@@ -86,7 +86,7 @@ public class tagTracker extends HttpServlet {
             int folio=0;
             if(request.getParameter("folio")!=null)
             {
-                folio=Integer.parseInt(request.getParameter("folio"));
+                folio=parseInt(request.getParameter("folio"));
             }
             OpenTagTracker t=new OpenTagTracker(thisProject);
             Vector<String[]> tags=t.getTagsAfterFolio(folio);
@@ -104,7 +104,7 @@ public class tagTracker extends HttpServlet {
                 int folio=0;
                 if(request.getParameter("folio")!=null)
                 {
-                    folio=Integer.parseInt(request.getParameter("folio"));
+                    folio=parseInt(request.getParameter("folio"));
                 }
                 OpenTagTracker t=new OpenTagTracker(thisProject);
                 if(t.checkValidity(folio))
@@ -114,8 +114,6 @@ public class tagTracker extends HttpServlet {
                 return;
             }
 
-        } finally { 
-            out.close();
         }
     } 
 
@@ -133,7 +131,7 @@ public class tagTracker extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (SQLException ex) {
-            Logger.getLogger(tagTracker.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(tagTracker.class.getName()).log(SEVERE, null, ex);
         }
     } 
 
@@ -150,7 +148,7 @@ public class tagTracker extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (SQLException ex) {
-            Logger.getLogger(tagTracker.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(tagTracker.class.getName()).log(SEVERE, null, ex);
         }
     }
 

@@ -18,14 +18,15 @@ package edu.slu.tpen.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
-import textdisplay.Manuscript;
+import static textdisplay.Manuscript.getAllCities;
+import static textdisplay.Manuscript.getAllRepositories;
 
 /**
  * Get all manuscripts in database. 
@@ -42,16 +43,16 @@ public class GetAllManuscriptServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            String[] allCities = Manuscript.getAllCities();
-            String[] allRepositories = Manuscript.getAllRepositories();
+            String[] allCities = getAllCities();
+            String[] allRepositories = getAllRepositories();
             JSONObject jo = new JSONObject();
             jo.element("cities", allCities);
             jo.element("repositories", allRepositories);
-            PrintWriter out = response.getWriter();
-            out.print(jo);
-            out.close();
+            try (PrintWriter out = response.getWriter()) {
+                out.print(jo);
+            }
         } catch (SQLException ex) {
-            Logger.getLogger(GetAllManuscriptServlet.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(GetAllManuscriptServlet.class.getName()).log(SEVERE, null, ex);
         }
     }
     

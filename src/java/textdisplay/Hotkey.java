@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**customizable hotkeys for transcribing non enlgish texts*/
 public class Hotkey {
@@ -44,15 +47,15 @@ public class Hotkey {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             stmt.setInt(3, code);
             stmt.setInt(1, projectID);
             stmt.setInt(2, position);
             stmt.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
 
@@ -68,15 +71,15 @@ public class Hotkey {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             stmt.setInt(3, code);
             stmt.setInt(1, uid);
             stmt.setInt(2, position);
             stmt.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
 
     }
@@ -93,7 +96,7 @@ public class Hotkey {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             stmt.setInt(3, code);
             stmt.setInt(1, projectID);
@@ -101,8 +104,8 @@ public class Hotkey {
             stmt.setInt(4, 0);
             stmt.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
 
     }
@@ -113,7 +116,7 @@ public class Hotkey {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
 
             stmt = j.prepareStatement(query);
             stmt.setInt(1, uid);
@@ -129,8 +132,8 @@ public class Hotkey {
                 this.key = 0;
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
 
@@ -140,7 +143,7 @@ public class Hotkey {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
 
             stmt = j.prepareStatement(query);
             stmt.setInt(1, projectID);
@@ -157,8 +160,8 @@ public class Hotkey {
                 this.key = 0;
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
 
     }
@@ -170,7 +173,7 @@ public class Hotkey {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             stmt.setInt(1, projectID);
             ResultSet rs = stmt.executeQuery();
@@ -189,8 +192,8 @@ public class Hotkey {
                 ls_hk.add(hk);
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
         return ls_hk;
     }
@@ -215,7 +218,7 @@ public class Hotkey {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             stmt.setInt(1, newKey);
             if (projectID == 0) {
@@ -228,8 +231,8 @@ public class Hotkey {
             stmt.execute();
 
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
 
@@ -261,7 +264,7 @@ public class Hotkey {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             stmt.setInt(1, newPos);
             if (projectID > 0) {
@@ -274,8 +277,8 @@ public class Hotkey {
             stmt.execute();
             this.position = newPos;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
     /**@deprecated  use public String javascriptToAddProjectButtons(int projectID)*/
@@ -286,7 +289,7 @@ public class Hotkey {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             stmt.setInt(1, uid);
             ResultSet rs = stmt.executeQuery();
@@ -316,8 +319,8 @@ public class Hotkey {
             vars += "</script>";
             return vars + toret;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
     
@@ -328,7 +331,7 @@ public class Hotkey {
         PreparedStatement stmt = null;
         //System.out.println("build editable buttons");
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             stmt.setInt(1, projectID);
             //System.out.println("DO sql...");
@@ -348,8 +351,8 @@ public class Hotkey {
             }
             return toret;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
     /**Build the javascript used to drive all hotkeys that are part of this project*/
@@ -360,7 +363,7 @@ public class Hotkey {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             stmt.setInt(1, projectID);
             ResultSet rs = stmt.executeQuery();
@@ -390,8 +393,8 @@ public class Hotkey {
             vars += "</script>";
             return toret;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
     
@@ -401,7 +404,7 @@ public class Hotkey {
         Connection j = null;
         PreparedStatement stmt = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             stmt = j.prepareStatement(query);
             stmt.setInt(1, projectID);
             ResultSet rs = stmt.executeQuery();
@@ -430,8 +433,8 @@ public class Hotkey {
             }
             return ja.toString();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
 
@@ -454,7 +457,7 @@ public class Hotkey {
             PreparedStatement ps = null;
             PreparedStatement update=null;
             try {
-                j = DatabaseWrapper.getConnection();
+                j = getConnection();
                 ps = j.prepareStatement(query);
                 ps.setInt(1, projectID);
                 ps.setInt(2, position);
@@ -475,9 +478,9 @@ public class Hotkey {
                 }
 
             } finally {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(ps);
-                DatabaseWrapper.closePreparedStatement(update);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
+                closePreparedStatement(update);
                 
             }
         } else {
@@ -486,7 +489,7 @@ public class Hotkey {
             PreparedStatement ps = null;
             PreparedStatement update=null;
             try {
-                j = DatabaseWrapper.getConnection();
+                j = getConnection();
                 ps = j.prepareStatement(query);
                 ps.setInt(1, uid);
                 ps.setInt(2, position);
@@ -506,9 +509,9 @@ public class Hotkey {
                     }
                 }
             } finally {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(ps);
-                DatabaseWrapper.closePreparedStatement(update);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
+                closePreparedStatement(update);
             }
         }
     }

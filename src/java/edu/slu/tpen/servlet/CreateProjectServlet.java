@@ -14,9 +14,10 @@
  */
 package edu.slu.tpen.servlet;
 
-import edu.slu.tpen.servlet.util.CreateAnnoListUtil;
-import edu.slu.util.ServletUtils;
-
+import static edu.slu.tpen.servlet.Constant.ANNOTATION_SERVER_ADDR;
+import static edu.slu.tpen.servlet.util.CreateAnnoListUtil.createEmptyAnnoList;
+import static edu.slu.util.ServletUtils.getDBConnection;
+import static edu.slu.util.ServletUtils.getUID;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -24,28 +25,30 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+import static java.lang.System.out;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
+import static java.net.URLEncoder.encode;
+import static java.nio.charset.Charset.forName;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import static net.sf.json.JSONObject.fromObject;
 import servlets.createManuscript;
 import textdisplay.Folio;
+import static textdisplay.Folio.createFolioRecordFromManifest;
+import static textdisplay.Folio.getRbTok;
 import textdisplay.Metadata;
 import textdisplay.Project;
 import user.Group;
@@ -59,14 +62,13 @@ public class CreateProjectServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PrintWriter writer = response.getWriter();
-        writer.print(creatManuscriptFolioProject(request, response)); //To change body of generated methods, choose Tools | Templates.
-        writer.close();
+        try (PrintWriter writer = response.getWriter()) {
+            writer.print(creatManuscriptFolioProject(request, response));
+        }
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        super.doGet(request, response); //To change body of generated methods, choose Tools | Templates.
         this.doPost(request, response);
     }
     
@@ -81,28 +83,23 @@ public class CreateProjectServlet extends HttpServlet {
 
     
     private JSONObject resolveManifestURL(String url) throws MalformedURLException, IOException {
-        System.out.println("Resolve URL "+url);
-        InputStream is = new URL(url).openStream();
-        try {
-          BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+        out.println("Resolve URL "+url);
+        try (InputStream is = new URL(url).openStream()) {
+          BufferedReader rd = new BufferedReader(new InputStreamReader(is, forName("UTF-8")));
           String jsonText = readAll(rd);
-          JSONObject json = JSONObject.fromObject(jsonText);   
+          JSONObject json = fromObject(jsonText);   
           return json;
-        } finally {
-          is.close();
         }
     }
 
     /**
      * Create manuscript, folio and project using given json data.
      *
-     * @param repository (optional)
-     * @param archive (optional)
-     * @param city (optional)
-     * @param collection (optional)
-     * @param title (optional)
-     * @param urls
-     * @param names
+     * @param request
+     * @param response
+     * @return 
+     * @throws javax.servlet.ServletException 
+     * @throws java.io.IOException 
      */
     public String creatManuscriptFolioProject(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -159,7 +156,7 @@ public class CreateProjectServlet extends HttpServlet {
                                     JSONObject image = images.getJSONObject(n);
                                     JSONObject resource = image.getJSONObject("resource");
                                     String imageName = resource.getString("@id");
-                                    int folioKey = textdisplay.Folio.createFolioRecordFromManifest(city, canvas.getString("label"), imageName.replace('_', '&'), archive, m.getID(), 0);
+                                    int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName.replace('_', '&'), archive, m.getID(), 0);
                                     ls_folios_keys.add(folioKey);
                                 }
                             }
@@ -176,12 +173,12 @@ public class CreateProjectServlet extends HttpServlet {
             /*if(null != request.getSession().getAttribute("UID")){
              UID = (Integer) request.getSession().getAttribute("UID");
              }*/
-            UID = ServletUtils.getUID(request, response);
+            UID = getUID(request, response);
             String tmpProjName = m.getShelfMark() + " project";
             if (request.getParameter("title") != null) {
                 tmpProjName = request.getParameter("title");
             }
-            try (Connection conn = ServletUtils.getDBConnection()) {
+            try (Connection conn = getDBConnection()) {
                 conn.setAutoCommit(false);
                 Group newgroup = new Group(conn, tmpProjName, UID);
                 Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
@@ -195,7 +192,7 @@ public class CreateProjectServlet extends HttpServlet {
                         //This needs to be the same one the JSON Exporter creates and needs to be unique and unchangeable.
                         String canvasID_check = folio.getCanvas();
                         String canvasID = "";
-                        String str_folioNum = Folio.getRbTok("SERVERURL")+"canvas/"+folio.getFolioNumber();
+                        String str_folioNum = getRbTok("SERVERURL")+"canvas/"+folio.getFolioNumber();
                         if("".equals(canvasID_check)){
                             canvasID = str_folioNum;
                         }
@@ -203,8 +200,8 @@ public class CreateProjectServlet extends HttpServlet {
                             canvasID = canvasID_check;
                         }
                         //Create anno list for canvas.
-                        JSONObject annoList = CreateAnnoListUtil.createEmptyAnnoList(newProject.getProjectID(), canvasID, new JSONArray());
-                        URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/saveNewAnnotation.action");
+                        JSONObject annoList = createEmptyAnnoList(newProject.getProjectID(), canvasID, new JSONArray());
+                        URL postUrl = new URL(ANNOTATION_SERVER_ADDR + "/anno/saveNewAnnotation.action");
                         HttpURLConnection uc = (HttpURLConnection) postUrl.openConnection();
                         uc.setDoInput(true);
                         uc.setDoOutput(true);
@@ -213,11 +210,11 @@ public class CreateProjectServlet extends HttpServlet {
                         uc.setInstanceFollowRedirects(true);
                         uc.addRequestProperty("content-type", "application/x-www-form-urlencoded");
                         uc.connect();
-                        DataOutputStream dataOut = new DataOutputStream(uc.getOutputStream());
-                        dataOut.writeBytes("content=" + URLEncoder.encode(annoList.toString(), "utf-8"));
-                        dataOut.flush();
-                        dataOut.close();
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(uc.getInputStream(), "utf-8"));
+                        try (DataOutputStream dataOut = new DataOutputStream(uc.getOutputStream())) {
+                            dataOut.writeBytes("content=" + encode(annoList.toString(), "utf-8"));
+                            dataOut.flush();
+                        }
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(uc.getInputStream(), "utf-8"))){
 //                      String line="";
 //                      StringBuilder sb = new StringBuilder();
 //                      System.out.println("=============================");  
@@ -230,8 +227,8 @@ public class CreateProjectServlet extends HttpServlet {
 //                      }
 //                      System.out.println("=============================");  
 //                      System.out.println("Contents of post request ends");  
-//                      System.out.println("=============================");  
-                        reader.close();
+//                      System.out.println("=============================");                              
+                        }
                         uc.disconnect();
                     }
                 }
@@ -252,7 +249,7 @@ public class CreateProjectServlet extends HttpServlet {
                 return "/project/" + projectID;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(createManuscript.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(createManuscript.class.getName()).log(SEVERE, null, ex);
         }
         return "500";
     }

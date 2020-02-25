@@ -16,13 +16,16 @@ package edu.slu.tpen.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import textdisplay.Metadata;
 
 /**
@@ -50,7 +53,7 @@ public class UpdateMetadataByProjectIDServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 //        System.out.println("project id =========== " + request.getParameter("projectID"));
-        this.projectID = Integer.parseInt(request.getParameter("projectID"));
+        this.projectID = parseInt(request.getParameter("projectID"));
         try {
             if(null != projectID && -1 != projectID && projectID != 0){
                 //update metadata if project ID is not 0. It is int type, so it's never null. 
@@ -70,14 +73,14 @@ public class UpdateMetadataByProjectIDServlet extends HttpServlet {
                 metadata.setSubject(request.getParameter("subject"));
                 metadata.commit();
                 PrintWriter out = response.getWriter();
-                out.print(HttpServletResponse.SC_OK);
+                out.print(SC_OK);
             }else{
                 //send error code if the project ID is 0. 
                 PrintWriter out = response.getWriter();
-                out.print(HttpServletResponse.SC_BAD_REQUEST);
+                out.print(SC_BAD_REQUEST);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UpdateMetadataByProjectIDServlet.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(UpdateMetadataByProjectIDServlet.class.getName()).log(SEVERE, null, ex);
         }
     }
 

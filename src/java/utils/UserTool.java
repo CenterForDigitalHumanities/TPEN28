@@ -16,12 +16,14 @@
  */
 package utils;
 
-import textdisplay.DatabaseWrapper;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Stack;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**
  * This class controls tools that can be displayed in an iframe like dictionaries and abbreviation lists.
@@ -88,14 +90,14 @@ public class UserTool {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, project);
          ps.setString(2, url);
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -109,7 +111,7 @@ public class UserTool {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, project);
          ResultSet rs = ps.executeQuery();
@@ -123,8 +125,8 @@ public class UserTool {
             toret[i] = tmp.pop();
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
       return toret;
    }
@@ -137,13 +139,13 @@ public class UserTool {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, projectID);
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 }

@@ -13,6 +13,8 @@
 
 package detectimages;
 
+import static java.lang.Runtime.getRuntime;
+import static java.lang.System.out;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -33,9 +35,9 @@ public Vector<blob> get(String filename)
 }
 public synchronized void add(Vector<blob> b, String filename)
 {
-    if(Runtime.getRuntime().freeMemory()<50000000)
+    if( getRuntime().freeMemory()<50000000)
     {
-        System.out.print("No space for new cache entry"+filename+"\n");
+            out.print("No space for new cache entry"+filename+"\n");
         blobs.remove(blobs.keys().nextElement());
         
 
@@ -48,6 +50,6 @@ public synchronized void add(Vector<blob> b, String filename)
 public void destroy()
 {
     this.blobs=null;
-    Runtime.getRuntime().gc();
+        getRuntime().gc();
 }
 }

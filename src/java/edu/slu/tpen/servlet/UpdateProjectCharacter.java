@@ -7,9 +7,10 @@ package edu.slu.tpen.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,16 +50,16 @@ public class UpdateProjectCharacter extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException{
-        int projectID = Integer.parseInt(request.getParameter("projectID"));
-        int position = Integer.parseInt(request.getParameter("position"));
-        int newKey = Integer.parseInt(request.getParameter("key"));
+        int projectID = parseInt(request.getParameter("projectID"));
+        int position = parseInt(request.getParameter("position"));
+        int newKey = parseInt(request.getParameter("key"));
         PrintWriter out = response.getWriter();
         try {
             Hotkey keyToUpdate = new Hotkey(projectID, position, true);
             keyToUpdate.setKey(newKey);
             out.println("New key added");
         } catch (SQLException ex) {
-            Logger.getLogger(UpdateProjectCharacter.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(UpdateProjectCharacter.class.getName()).log(SEVERE, null, ex);
         }
 
         

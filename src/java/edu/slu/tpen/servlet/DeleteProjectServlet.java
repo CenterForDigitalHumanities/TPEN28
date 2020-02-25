@@ -14,18 +14,18 @@
  */
 package edu.slu.tpen.servlet;
 
+import static edu.slu.util.ServletUtils.getUID;
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import edu.slu.util.ServletUtils;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import textdisplay.Project;
 import user.Group;
 import user.User;
@@ -40,9 +40,9 @@ public class DeleteProjectServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int projectNumToDelete = Integer.parseInt(request.getParameter("projectID"));
+        int projectNumToDelete = parseInt(request.getParameter("projectID"));
         int UID = 0;
-        UID = ServletUtils.getUID(request, response);
+        UID = getUID(request, response);
         if (UID != -1) {
             //UID = Integer.parseInt(request.getSession().getAttribute("UID").toString());
             try {
@@ -53,12 +53,12 @@ public class DeleteProjectServlet extends HttpServlet {
                 if (isTPENAdmin || projectGroup.isAdmin(UID)) {
                     todel.delete();
                 }else{
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setStatus(SC_UNAUTHORIZED);
                     PrintWriter out = response.getWriter();
-                    out.print(HttpServletResponse.SC_UNAUTHORIZED);
+                    out.print(SC_UNAUTHORIZED);
                 }
             } catch (SQLException ex) {
-                Logger.getLogger(DeleteProjectServlet.class.getName()).log(Level.SEVERE, null, ex);
+                getLogger(DeleteProjectServlet.class.getName()).log(SEVERE, null, ex);
             }
         }else{
             //user doesn't log in

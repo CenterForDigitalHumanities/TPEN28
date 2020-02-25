@@ -14,8 +14,11 @@
  */
 package servlets;
 
+import static edu.slu.util.ServletUtils.getDBConnection;
+import static edu.slu.util.ServletUtils.reportInternalError;
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.servlet.ServletException;
@@ -23,12 +26,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import static edu.slu.util.ServletUtils.getDBConnection;
-import static edu.slu.util.ServletUtils.reportInternalError;
 import textdisplay.Folio;
 import textdisplay.Manuscript;
 import textdisplay.Project;
 import textdisplay.Transcription;
+import static textdisplay.Transcription.getProjectTranscriptions;
 
 /**
  * @author Jon Deering
@@ -51,9 +53,9 @@ public class fixColumns extends HttpServlet {
          resp.sendError(403);
       } else {
          PrintWriter out = resp.getWriter();
-         int UID = Integer.parseInt(session.getAttribute("UID").toString());
-         int projectID = Integer.parseInt(req.getParameter("projectID"));
-         int folioNum = Integer.parseInt(req.getParameter("folioNum"));
+         int UID = parseInt(session.getAttribute("UID").toString());
+         int projectID = parseInt(req.getParameter("projectID"));
+         int folioNum = parseInt(req.getParameter("folioNum"));
 
          try (Connection conn = getDBConnection()) {
             Project thisProject = new Project(projectID);
@@ -69,30 +71,30 @@ public class fixColumns extends HttpServlet {
                      int decimalPoint = req.getParameter("t" + i).indexOf('.');
                      int tmp;
                      if (decimalPoint > 0) {
-                        tmp = Integer.parseInt(req.getParameter("t" + i).substring(0, decimalPoint));
+                        tmp =   parseInt(req.getParameter("t" + i).substring(0, decimalPoint));
                      } else {
-                        tmp = Integer.parseInt(req.getParameter("t" + i));
+                        tmp =   parseInt(req.getParameter("t" + i));
                      }
                      int tmp2;
                      decimalPoint = req.getParameter("l" + i).indexOf('.');
                      if (decimalPoint > 0) {
-                        tmp2 = Integer.parseInt(req.getParameter("l" + i).substring(0, decimalPoint));
+                        tmp2 =  parseInt(req.getParameter("l" + i).substring(0, decimalPoint));
                      } else {
-                        tmp2 = Integer.parseInt(req.getParameter("l" + i));
+                        tmp2 =  parseInt(req.getParameter("l" + i));
                      }
                      int tmp3;
                      decimalPoint = req.getParameter("w" + i).indexOf('.');
                      if (decimalPoint > 0) {
-                        tmp3 = Integer.parseInt(req.getParameter("w" + i).substring(0, decimalPoint));
+                        tmp3 =  parseInt(req.getParameter("w" + i).substring(0, decimalPoint));
                      } else {
-                        tmp3 = Integer.parseInt(req.getParameter("w" + i));
+                        tmp3 =  parseInt(req.getParameter("w" + i));
                      }
                      int tmp4;
                      decimalPoint = req.getParameter("b" + i).indexOf('.');
                      if (decimalPoint > 0) {
-                        tmp4 = Integer.parseInt(req.getParameter("b" + i).substring(0, decimalPoint));
+                        tmp4 =  parseInt(req.getParameter("b" + i).substring(0, decimalPoint));
                      } else {
-                        tmp4 = Integer.parseInt(req.getParameter("b" + i));
+                        tmp4 =  parseInt(req.getParameter("b" + i));
                      }
                      lines[i] = tmp;
                      lines2[i] = tmp2;
@@ -122,10 +124,10 @@ public class fixColumns extends HttpServlet {
                   break;
                }
             }
-            Transcription[] t = Transcription.getProjectTranscriptions(projectID, folioNum);
-            for (int i = 0; i < t.length; i++) {
-               t[i].remove();
-            }
+            Transcription[] t = getProjectTranscriptions(projectID, folioNum);
+                for (Transcription t1 : t) {
+                    t1.remove();
+                }
             Folio thisFolio = new Folio(folioNum, true);
 
             //Folio thisFolio=new Folio(folioNum,true);

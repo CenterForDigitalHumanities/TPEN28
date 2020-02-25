@@ -5,13 +5,9 @@
  */
 package edu.slu.tpen.servlet;
 
-import edu.slu.tpen.servlet.util.EncryptUtil;
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -49,7 +45,7 @@ public class LogoutHookServlet extends HttpServlet {
             }
             response.sendRedirect(uri);
         } catch (Exception ex) {
-            Logger.getLogger(LogoutHookServlet.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(LogoutHookServlet.class.getName()).log(SEVERE, null, ex);
         }
         
     }

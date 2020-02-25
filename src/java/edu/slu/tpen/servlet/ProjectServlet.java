@@ -14,18 +14,24 @@
  */
 package edu.slu.tpen.servlet;
 
+import edu.slu.tpen.transfer.JsonImporter;
+import edu.slu.tpen.transfer.JsonLDExporter;
+import static edu.slu.util.ServletUtils.getBaseContentType;
+import static edu.slu.util.ServletUtils.getUID;
+import static edu.slu.util.ServletUtils.reportInternalError;
 import java.io.IOException;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
 import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import edu.slu.tpen.transfer.JsonImporter;
-import edu.slu.tpen.transfer.JsonLDExporter;
-import static edu.slu.util.ServletUtils.getBaseContentType;
-import static edu.slu.util.ServletUtils.getUID;
-import static edu.slu.util.ServletUtils.reportInternalError;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import static javax.servlet.http.HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE;
 import textdisplay.Project;
 import user.Group;
 import user.User;
@@ -75,12 +81,12 @@ public class ProjectServlet extends HttpServlet {
                 String check = "transcribe";
                 String redirect = req.getPathInfo().substring(1);
                 if (redirect.contains(check)) {
-                    projID = Integer.parseInt(redirect.replace("/" + check, ""));
+                    projID = parseInt(redirect.replace("/" + check, ""));
                     String redirectURL = req.getContextPath() + "/transcription.html?projectID=" + projID;
                     resp.sendRedirect(redirectURL);
                 } else {
                     //System.out.println("Project 2");
-                    projID = Integer.parseInt(req.getPathInfo().substring(1).replace("/", "").replace("manifest.json",""));
+                    projID = parseInt(req.getPathInfo().substring(1).replace("/", "").replace("manifest.json",""));
                     Project proj = new Project(projID);
                     //System.out.println("Project 3");
                     if (proj.getProjectID() > 0) {
@@ -91,22 +97,22 @@ public class ProjectServlet extends HttpServlet {
                                // System.out.println("Project 5");
                                 resp.setContentType("application/ld+json; charset=UTF-8");
                                 resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
-                                resp.setStatus(HttpServletResponse.SC_OK);
+                                resp.setStatus(SC_OK);
                             } else {
-                                resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                                resp.setStatus(SC_NOT_MODIFIED);
                             }
                         } else {
-                            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                            resp.sendError(SC_UNAUTHORIZED);
                         }
                     } else {
-                        resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                        resp.sendError(SC_NOT_FOUND);
                     }
                 }
             } catch (NumberFormatException | SQLException | IOException ex) {
                 throw new ServletException(ex);
             }
         } else {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.sendError(SC_UNAUTHORIZED);
         }
     }
 
@@ -135,27 +141,27 @@ public class ProjectServlet extends HttpServlet {
     private static void receiveJsonLD(int uid, HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (uid >= 0) {
             try {
-                int projID = Integer.parseInt(req.getPathInfo().substring(1));
+                int projID = parseInt(req.getPathInfo().substring(1));
                 Project proj = new Project(projID);
                 if (proj.getProjectID() > 0) {
                     if (new Group(proj.getGroupID()).isMember(uid)) {
                         if (getBaseContentType(req).equals("application/json")) {
                             new JsonImporter(proj, uid).update(req.getInputStream());
-                            resp.setStatus(HttpServletResponse.SC_OK);
+                            resp.setStatus(SC_OK);
                         } else {
-                            resp.sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Expecting application/json");
+                            resp.sendError(SC_UNSUPPORTED_MEDIA_TYPE, "Expecting application/json");
                         }
                     } else {
-                        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                        resp.sendError(SC_UNAUTHORIZED);
                     }
                 } else {
-                    resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                    resp.sendError(SC_NOT_FOUND);
                 }
             } catch (NumberFormatException | SQLException | IOException ex) {
                 reportInternalError(resp, ex);
             }
         } else {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.sendError(SC_UNAUTHORIZED);
         }
     }
 

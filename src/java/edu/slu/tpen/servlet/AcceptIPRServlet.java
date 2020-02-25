@@ -8,13 +8,14 @@ package edu.slu.tpen.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
+import static net.sf.json.JSONObject.fromObject;
 import user.User;
 
 /**
@@ -35,7 +36,7 @@ public class AcceptIPRServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String content = request.getParameter("content");
-        JSONObject params = JSONObject.fromObject(content);
+        JSONObject params = fromObject(content);
         User user = null;
         int folioNum = params.getInt("folio");
         try {
@@ -44,7 +45,7 @@ public class AcceptIPRServlet extends HttpServlet {
             PrintWriter out = response.getWriter();
             out.println("IPR has been accepted");
         } catch (SQLException ex) {
-            Logger.getLogger(AcceptIPRServlet.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(AcceptIPRServlet.class.getName()).log(SEVERE, null, ex);
         }
 
     }

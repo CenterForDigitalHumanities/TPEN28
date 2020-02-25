@@ -14,9 +14,10 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,26 +39,23 @@ public class batchUpdateLinePositions extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
             if(request.getParameter("lineID")!=null)
             {
                 String lineID = request.getParameter("lineID");
                 if(request.getParameter("newwidth")!=null)
                 {
-                    int newWidth=Integer.parseInt(request.getParameter("newwidth"));
+                    int newWidth=parseInt(request.getParameter("newwidth"));
                     textdisplay.Transcription t=new textdisplay.Transcription(lineID);
                     t.updateColumnWidth(newWidth);
                 }
                 if(request.getParameter("newleft")!=null)
                 {
-                    int newLeft=Integer.parseInt(request.getParameter("newleft"));
+                    int newLeft=parseInt(request.getParameter("newleft"));
                     textdisplay.Transcription t=new textdisplay.Transcription(lineID);
                     t.updateColumnLeft(newLeft);
                 }
             }
-        } finally { 
-            out.close();
         }
     } 
 
@@ -75,7 +73,7 @@ public class batchUpdateLinePositions extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (SQLException ex) {
-            Logger.getLogger(batchUpdateLinePositions.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(batchUpdateLinePositions.class.getName()).log(SEVERE, null, ex);
         }
     } 
 
@@ -92,7 +90,7 @@ public class batchUpdateLinePositions extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (SQLException ex) {
-            Logger.getLogger(batchUpdateLinePositions.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(batchUpdateLinePositions.class.getName()).log(SEVERE, null, ex);
         }
     }
 

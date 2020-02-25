@@ -8,21 +8,16 @@ package edu.slu.tpen.servlet;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import static java.lang.System.out;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import textdisplay.DatabaseWrapper;
-import textdisplay.Folio;
+import static textdisplay.Folio.getBadFolioReport;
 
 /**
  *
@@ -51,29 +46,27 @@ public class FolioReport extends HttpServlet {
             clearer.close();
         }
         catch (Exception e){
-            System.out.println("File not yet created...");
+            out.println("File not yet created...");
         }
-        PrintWriter out = new PrintWriter(new    
-        FileOutputStream("/home/hanyan/sql/folioOutput.txt",true));  
-        String newline = "\n";
-
-        //try (PrintWriter out = response.getWriter()) {
-        //out.println("Below is a report of the folios whose URL's are broken: "+newline);
-        System.out.println("Processing folio report request...");
-        try {
-            String foliosToReturn = Folio.getBadFolioReport();
-            System.out.println("Writing to text file...");
-            out.println(foliosToReturn + newline);
-        } catch (SQLException ex) {
-            Logger.getLogger(FolioReport.class.getName()).log(Level.SEVERE, null, ex);
-            out.println(ex + newline);
-        }
-        System.out.println("File created!");
-        //out.println("End of the listt.  Hopefully it is short.");
-        out.flush();
-        out.close();
-        //}
-    }
+        try (PrintWriter out = new PrintWriter(new    
+                FileOutputStream("/home/hanyan/sql/folioOutput.txt",true))) {
+            String newline = "\n";
+            //try (PrintWriter out = response.getWriter()) {
+            //out.println("Below is a report of the folios whose URL's are broken: "+newline);
+            out.println("Processing folio report request...");
+            try {
+                String foliosToReturn = getBadFolioReport();
+                out.println("Writing to text file...");
+                out.println(foliosToReturn + newline);
+            } catch (SQLException ex) {
+                getLogger(FolioReport.class.getName()).log(SEVERE, null, ex);
+                out.println(ex + newline);
+            }
+            out.println("File created!");
+            //out.println("End of the listt.  Hopefully it is short.");
+            out.flush();
+            //}
+        }    }
     
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

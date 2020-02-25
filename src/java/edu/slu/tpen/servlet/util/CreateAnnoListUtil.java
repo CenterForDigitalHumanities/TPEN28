@@ -6,10 +6,8 @@
 package edu.slu.tpen.servlet.util;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import textdisplay.Folio;
 
 /**
  *

@@ -16,13 +16,17 @@
 package edu.slu.tpen.servlet;
 
 import java.io.IOException;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.out;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import javax.servlet.http.HttpSession;
 import textdisplay.Project;
 import user.Group;
@@ -40,11 +44,11 @@ public class AddUserToProjectServlet extends HttpServlet {
         HttpSession session = request.getSession();
         //System.out.println("Add user to project ID:"+request.getParameter("projectID"));
         if (session.getAttribute("UID") != null) {
-            int UID = Integer.parseInt(session.getAttribute("UID").toString());
+            int UID = parseInt(session.getAttribute("UID").toString());
             try {
                 User thisUser = new user.User(UID);
                 if(null != request.getParameter("uname") && null != request.getParameter("projectID")){
-                    Project thisProject = new Project(Integer.parseInt(request.getParameter("projectID")));
+                    Project thisProject = new Project(parseInt(request.getParameter("projectID")));
                     int result = thisUser.invite(request.getParameter("uname"), request.getParameter("fname"), request.getParameter("lname"));
                     if (result == 0) {
                         //successfully send out email to user
@@ -55,7 +59,7 @@ public class AddUserToProjectServlet extends HttpServlet {
                             response.getWriter().print(newUser.getUID());
                         }else{
                             //if user is not admin, return unauthorized. 
-                            response.getWriter().print(response.SC_UNAUTHORIZED);
+                            response.getWriter().print(SC_UNAUTHORIZED);
                         }
                     }else if (result == 2) {
                         //account created but email issue occured, usually happens in dev environments with no email server.
@@ -66,7 +70,7 @@ public class AddUserToProjectServlet extends HttpServlet {
                             response.getWriter().print(newUser.getUID());
                         }else{
                             //if user is not admin, return unauthorized. 
-                            response.getWriter().print(response.SC_UNAUTHORIZED);
+                            response.getWriter().print(SC_UNAUTHORIZED);
                         }
                     }else if(result == 1){
                         //user exits
@@ -77,27 +81,27 @@ public class AddUserToProjectServlet extends HttpServlet {
                             response.getWriter().print(newUser.getUID());
                         }else{
                             //if user is not admin, return unauthorized. 
-                            System.out.println("user not admin error");
-                            response.getWriter().print(response.SC_UNAUTHORIZED);
+                            out.println("user not admin error");
+                            response.getWriter().print(SC_UNAUTHORIZED);
                         }
                     }else{
                         //user doesn't exist
-                        System.out.println("user doesnt exist error");
-                        response.getWriter().print(response.SC_NOT_ACCEPTABLE);
+                        out.println("user doesnt exist error");
+                        response.getWriter().print(SC_NOT_ACCEPTABLE);
                     }
                 }else{
                     //if there is no uname
-                    System.out.println("There is no uname error.");
-                    response.getWriter().print(response.SC_NOT_ACCEPTABLE);
+                    out.println("There is no uname error.");
+                    response.getWriter().print(SC_NOT_ACCEPTABLE);
                 }
             } catch (SQLException ex) {
-                System.out.println("SQL exception");
-                Logger.getLogger(AddUserToProjectServlet.class.getName()).log(Level.SEVERE, null, ex);
+                out.println("SQL exception");
+                getLogger(AddUserToProjectServlet.class.getName()).log(SEVERE, null, ex);
             }
         }else{
             //if user doesn't log in, return unauthorized. 
-            System.out.println("No user logged in.");
-            response.getWriter().print(response.SC_UNAUTHORIZED);
+            out.println("No user logged in.");
+            response.getWriter().print(SC_UNAUTHORIZED);
         }
     }
 

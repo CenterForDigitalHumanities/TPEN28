@@ -260,8 +260,9 @@
                         <%if (thisUser.isAdmin()) { //hiding non-Admin tab%>
                         <li><a title="Manage Users" href="#tabs-3">Manage Users</a><div id="userAlert" class='ui-icon-alert ui-icon right' style="display:none;margin: 8px 8px 0 0;"></div></li>
                         <li><a title="Reports" href="#reportsTab">Reports</a></li>
+                        <li><a title="Update Maintenance Message" href="#updateTab">Maintenance Message</a></li>
                         <%}%>
-                        <li><a title="Update T-PEN" href="#updateTab">Manage Upgrade</a></li>
+                        
                         <li><a title="About the T&#8209;PEN project" href="#aboutTab">About T&#8209;PEN</a></li>
                     </ul>
                     <div id="tabs-1">

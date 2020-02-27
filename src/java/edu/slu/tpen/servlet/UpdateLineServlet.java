@@ -68,7 +68,7 @@ public class UpdateLineServlet extends HttpServlet {
             HttpSession session = request.getSession();
 
             if (session.getAttribute("UID") == null ||request.getParameter("projectID") == null) {
-                response.sendError(response.SC_FORBIDDEN);
+                response.sendError(response.SC_UNAUTHORIZED);
                 response.setHeader("Access-Control-Allow-Origin", "*");
                return;
             }
@@ -102,7 +102,7 @@ public class UpdateLineServlet extends HttpServlet {
                         out.print(ESAPI.encoder().decodeForHTML(new Transcription(line).getText() +","+ new Transcription(line).getComment()));
                         return;
                     } else {
-                        response.sendError(response.SC_FORBIDDEN);
+                        response.sendError(response.SC_UNAUTHORIZED);
                         response.setHeader("Access-Control-Allow-Origin", "*");
                         return;
                     }

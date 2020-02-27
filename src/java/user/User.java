@@ -945,16 +945,20 @@ public class User {
             try {
                 m.sendMail(getRbTok("EMAILSERVER"), "TPEN@t-pen.org", getRbTok("NOTIFICATIONEMAIL"),
                         "new user request", body);
-            } catch (Exception e) {
+            } catch (MessagingException e) {
                 emailFailure = true;
             }
             // send a notification email to the invitee
             body = this.getFname() + " " + this.getLname() + " (" + this.getUname()
-                    + ") has invited you to join their transcription project on TPEN. Enter this email as a user name and \"Reset Password\" to accept.  \nThe TPEN team";
+                    + ") has invited you to join their transcription project on TPEN.  \n"
+                    + "If you'd like to accept, head to http://t-pen.org/TPEN/admin.jsp and enter "+uname+" to activate your account. "
+                    + "You will receive an email to set your password and may then update your username and start your own projects.\n\n"
+                    + "This is the last message you will receive if you do not wish to create an account and no further action is required.\n\n"
+                    + "Thanks for transcribing, the TPEN team";
             try {
                 m.sendMail(getRbTok("EMAILSERVER"), "TPEN@t-pen.org", newUser.getUname(),
-                        "An invitation to transcribe on TPEN", body);
-            } catch (Exception e) {
+                        "An invitation to transcribe on t-pen.org", body);
+            } catch (MessagingException e) {
                 emailFailure = true;
             }
             // System.out.println("What is email failure: "+emailFailure);

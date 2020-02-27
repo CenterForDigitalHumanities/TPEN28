@@ -404,6 +404,12 @@
                                 <input type="text" name="email">
                                 <input type="submit" name="emailSubmitted" value="Reset Password"/>
                             </form>
+                            <h3>Accept an Invitation</h3>
+                            Please enter the email address associated with your invitation to receive a temporary password.
+                            <form action="admin.jsp" method="POST">
+                                <input type="text" name="email">
+                                <input type="submit" name="emailSubmitted" value="Redeem Invitation"/>
+                            </form>
                         </div>
                         <%
                                 //if they arent logged in, dont bother with showing them any of the other stuff

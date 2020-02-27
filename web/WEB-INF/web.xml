@@ -691,7 +691,8 @@
         <url-pattern>/autoParse</url-pattern>
     </servlet-mapping>
     <session-config>
-        <session-timeout>720</session-timeout>
+        <!-- In minutes -->
+        <session-timeout>60</session-timeout>
     </session-config>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

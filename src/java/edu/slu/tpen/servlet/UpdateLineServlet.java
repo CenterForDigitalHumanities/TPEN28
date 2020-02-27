@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import javax.servlet.http.HttpSession;
 import static org.owasp.esapi.ESAPI.encoder;
 import textdisplay.Project;
@@ -71,7 +72,7 @@ public class UpdateLineServlet extends HttpServlet {
             }
             HttpSession session = request.getSession();
             if (session.getAttribute("UID") == null || request.getParameter("projectID") == null) {
-                response.sendError(SC_FORBIDDEN);
+                response.sendError(SC_UNAUTHORIZED);
                 response.setHeader("Access-Control-Allow-Origin", "*");
                 return;
             }

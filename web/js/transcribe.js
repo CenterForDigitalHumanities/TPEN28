@@ -4609,7 +4609,7 @@ function updateLine(line, cleanup, updateList){
                         // success
                     }).fail(function(err){
                         line.attr("hasError","Saving Failed "+err.status);
-                        if(err.status === 403){
+                        if(err.status === 401){
                             var theURL = window.location.href;
                             return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                         }
@@ -4622,7 +4622,7 @@ function updateLine(line, cleanup, updateList){
                         // success
                 }).fail(function(err){
                     line.attr("hasError","Saving Failed "+err.status);
-                    if(err.status === 403){
+                    if(err.status === 401){
                         var theURL = window.location.href;
                         return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                     }
@@ -4645,7 +4645,7 @@ function updateLine(line, cleanup, updateList){
                         // success
                     }).fail(function(err){
                         line.attr("hasError","Saving Failed "+err.status);
-                        if(err.status === 403){
+                        if(err.status === 401){
                             var theURL = window.location.href;
                             return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                         }
@@ -4665,7 +4665,7 @@ function updateLine(line, cleanup, updateList){
                         // success
                     }).fail(function(err){
                         line.attr("hasError","Saving Failed "+err.status);
-                        if(err.status === 403){
+                        if(err.status === 401){
                             var theURL = window.location.href;
                             return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                         }

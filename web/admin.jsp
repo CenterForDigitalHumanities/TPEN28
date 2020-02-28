@@ -453,15 +453,15 @@
                                     Project[] userProjects = thisUser.getUserProjects();
                                     if (userProjects.length > 0) {
                                         out.print("You are a member of " + userProjects.length + " project");
-                                    }
-//                                    if (userProjects.length == 1) {
-//                                        out.print(", " + userProjects[0].getProjectName() + ".");
-//                                    } else {
-//                                        out.print("s:");
-//                                        for (int i = 0; i < userProjects.length; i++) {
-//                                            out.println("<span>" + (i + 1) + ". " + userProjects[i].getProjectName() + "</span>");
-//                                        }
-//                                    }
+                                        if (userProjects.length == 1) {
+                                            out.print(", " + userProjects[0].getProjectName() + ".");
+                                        } else {
+                                            out.print("s:");
+                                            for (int i = 0; i < userProjects.length; i++) {
+                                                out.println("<span>" + (i + 1) + ". " + userProjects[i].getProjectName() + "</span>");
+                                            }
+                                        }
+                                     }
                                 %>
 
                             </li>

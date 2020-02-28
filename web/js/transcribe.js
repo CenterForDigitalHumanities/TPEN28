@@ -4613,6 +4613,9 @@ function updateLine(line, cleanup, updateList){
                             var theURL = window.location.href;
                             return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                         }
+                        else if(err.status === 403){
+                            showPermissionsError();
+                        }
                         else{
                             $(".trexHead").show();
                             $("#genericIssue").show(1000);
@@ -4626,6 +4629,9 @@ function updateLine(line, cleanup, updateList){
                         var theURL = window.location.href;
                         return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                     }
+                    else if(err.status === 403){
+                            showPermissionsError();
+                        }
                     else{
                         $(".trexHead").show();
                         $("#genericIssue").show(1000);
@@ -4649,6 +4655,9 @@ function updateLine(line, cleanup, updateList){
                             var theURL = window.location.href;
                             return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                         }
+                        else if(err.status === 403){
+                            showPermissionsError();
+                        }
                         else{
                             $(".trexHead").show();
                             $("#genericIssue").show(1000);
@@ -4668,6 +4677,9 @@ function updateLine(line, cleanup, updateList){
                         if(err.status === 401){
                             var theURL = window.location.href;
                             return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
+                        }
+                        else if(err.status === 403){
+                            showPermissionsError();
                         }
                         else{
                             $(".trexHead").show();
@@ -4689,7 +4701,19 @@ function updateLine(line, cleanup, updateList){
     }
 }
 
-
+function showPermissionError(){
+    //I believe allow public read is always true, since that situation is caught on page load.  We will be paranoid and double check here.
+    var msgText = "This is not a public project and you do not have permission to be here.  Click OK to return to the home page.";
+    var buttonAction = "document.location.href='index.jsp'";
+    if(tpen.project.permissions.allow_public_read_transcription){
+        msgText = "You do not have permission to modify this data.  Click 'OK' to dismiss this message and continue viewing the transcription.";
+        buttonAction = "$(this).hide()";
+    }
+    $("#issueMessage").html(msgText);
+    $("#issueBtn").attr("onclick", buttonAction);
+    $(".trexHead").show();
+    $("#genericIssue").show(1000);
+}
 
 function saveNewLine(lineBefore, newLine){
     var projID = tpen.project.id;

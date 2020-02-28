@@ -28,8 +28,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import javax.servlet.http.HttpSession;
+import textdisplay.ProjectPermissions;
 import textdisplay.Transcription;
+import user.Group;
 
 /**
  *
@@ -57,16 +60,19 @@ public class updateLinePositions extends HttpServlet {
       try {
          int UID = 0;
          if (session.getAttribute("UID") == null) {
-            response.sendError(SC_FORBIDDEN);
+            response.sendError(SC_UNAUTHORIZED);
             return;
          } else {
             UID = parseInt(session.getAttribute("UID").toString());
             user.User thisUser = new user.User(UID);
             int projectID = 0;
             textdisplay.Project thisProject = null;
+            ProjectPermissions pms = null;
+            
             if (request.getParameter("projectID") != null) {
                projectID = parseInt(request.getParameter("projectID"));
                thisProject = new textdisplay.Project(projectID);
+               pms = new ProjectPermissions(projectID);
             }
             String folioNum;
 
@@ -76,7 +82,10 @@ public class updateLinePositions extends HttpServlet {
                folioNum = "" + thisProject.firstPage();
 
             }
-
+            if(!(new Group(thisProject.getGroupID()).isMember(UID) || pms.getAllow_public_modify_line_parsing())){
+                response.sendError(SC_FORBIDDEN);
+                return;
+            }
             if (request.getParameter("submitted") != null) {
 
                if (request.getParameter("remove") != null) {

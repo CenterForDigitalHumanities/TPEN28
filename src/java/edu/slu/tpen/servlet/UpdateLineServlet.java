@@ -35,6 +35,7 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import javax.servlet.http.HttpSession;
 import static org.owasp.esapi.ESAPI.encoder;
 import textdisplay.Project;
+import textdisplay.ProjectPermissions;
 import textdisplay.Transcription;
 import user.Group;
 
@@ -94,7 +95,8 @@ public class UpdateLineServlet extends HttpServlet {
                 String line = request.getParameter("line");
                 try {
                     Project thisProject = new Project(projectID);
-                    if (new Group(thisProject.getGroupID()).isMember(uid)) {
+                    ProjectPermissions pms = new ProjectPermissions(projectID);
+                    if (new Group(thisProject.getGroupID()).isMember(uid) || (pms.getAllow_public_modify() || pms.getAllow_public_modify_annotation())) {
                         Transcription t = new Transcription(line);
                         t.archive(); //create an archived version before making changes
                         t.setText(text);

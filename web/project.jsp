@@ -48,7 +48,7 @@
             #project li, #ms li, #team li, #options li,#export li {padding: 0.4em; padding-left: 1.5em; height: 100%;overflow: hidden; float:left; width:32%; position: relative;margin-right: 1%;}
             #project li ul,#ms li ul,#team li ul, #options li ul, #export li ul {padding: 0;margin: 0;}
             #project li ul li,#ms li ul li,#team li ul li, #options li ul li, #export li ul li {list-style:outside none;padding:0;width:100%;height:100%;}
-            #project div.tall {position: absolute;right:0;width: 29%;}
+            #project div.tall {position: absolute;right:0;width: 29%; height: 80%}
             #project div.tall li {position: absolute;right:20px;height:48%;margin:0;width:100%;min-height: 120px;}
             #project div.tall li:last-child {bottom:-13px;min-height: 80px;}
             #projectList {max-height: 300px;overflow: auto;}

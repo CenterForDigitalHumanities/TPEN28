@@ -82,7 +82,7 @@ public class updateLinePositions extends HttpServlet {
                folioNum = "" + thisProject.firstPage();
 
             }
-            if(!(new Group(thisProject.getGroupID()).isMember(UID) || pms.getAllow_public_modify_line_parsing())){
+            if(!(new Group(thisProject.getGroupID()).isMember(UID) || pms.getAllow_public_modify() || pms.getAllow_public_modify_line_parsing())){
                 response.sendError(SC_FORBIDDEN);
                 return;
             }

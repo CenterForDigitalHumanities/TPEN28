@@ -4724,12 +4724,17 @@ function showPermissionError(){
     var buttonAction = "document.location.href='index.jsp'";
     if(tpen.project.permissions.allow_public_read_transcription){
         msgText = "You do not have permission to modify this data.  Click 'OK' to dismiss this message and continue viewing the transcription.";
-        buttonAction = "$(this).hide()";
+        buttonAction = "hidePermissionError()";
     }
-    $("#issueMessage").html(msgText);
+    $("#issueMessage").html(msgText);   
     $("#issueBtn").attr("onclick", buttonAction);
     $(".trexHead").show();
     $("#genericIssue").show(1000);
+}
+
+function hidePermissionError(){
+    $(".trexHead").hide();
+    $("#genericIssue").hide();
 }
 
 function saveNewLine(lineBefore, newLine){

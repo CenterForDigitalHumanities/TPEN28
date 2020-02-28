@@ -815,10 +815,7 @@ function setTranscribingUser(){
     else{
         user += tpen.user.fname+" ";
     }
-    if(!tpen.user.lname){
-        user += "?";
-    }
-    else{
+    if(tpen.user.lname){
         user += tpen.user.lname;
     }
     $("#trimCurrentUser").html(user);
@@ -1012,6 +1009,16 @@ function loadTranscription(pid, tool){
                    $(".turnMsg").html("Could not find this project.  Check the project ID. Refresh the page to try again or contact your T&#8209;PEN admin.");
                    $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
                 }
+                else if (jqXHR.status && jqXHR.status === 401){
+                    clearTimeout(longLoadingProject);
+                   $(".turnMsg").html("You are not logged in.  Please log in to access this transcription.");
+                   $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
+                }
+                else if (jqXHR.status && jqXHR.status === 403){
+                    clearTimeout(longLoadingProject);
+                   $(".turnMsg").html("You do not have permission to see this transcription.");
+                   $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
+                }
                 else {
                     clearTimeout(longLoadingProject);
                     $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
@@ -1200,14 +1207,24 @@ function loadTranscription(pid, tool){
                 error: function(jqXHR, error, errorThrown) {
                     if (jqXHR.status && jqXHR.status === 404){
                         clearTimeout(longLoadingProject);
-                        $(".turnMsg").html("Could not find this project.  Check the project ID.  Refresh the page to try again or contact your T&#8209;PEN admin.");
-                        $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
-                     }
-                     else {
-                         clearTimeout(longLoadingProject);
-                         $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
-                         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
-                     }
+                       $(".turnMsg").html("Could not find this project.  Check the project ID. Refresh the page to try again or contact your T&#8209;PEN admin.");
+                       $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
+                    }
+                    else if (jqXHR.status && jqXHR.status === 401){
+                        clearTimeout(longLoadingProject);
+                       $(".turnMsg").html("You are not logged in.  Please log in to access this transcription.");
+                       $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
+                    }
+                    else if (jqXHR.status && jqXHR.status === 403){
+                        clearTimeout(longLoadingProject);
+                       $(".turnMsg").html("You do not have permission to see this transcription.");
+                       $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
+                    }
+                    else {
+                        clearTimeout(longLoadingProject);
+                        $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
+                        $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                    }
                     //load Iframes after user check and project information data call
                     loadIframes();
                 }
@@ -4614,7 +4631,7 @@ function updateLine(line, cleanup, updateList){
                             return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                         }
                         else if(err.status === 403){
-                            showPermissionsError();
+                            showPermissionError();
                         }
                         else{
                             $(".trexHead").show();
@@ -4630,7 +4647,7 @@ function updateLine(line, cleanup, updateList){
                         return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                     }
                     else if(err.status === 403){
-                            showPermissionsError();
+                            showPermissionError();
                         }
                     else{
                         $(".trexHead").show();
@@ -4656,7 +4673,7 @@ function updateLine(line, cleanup, updateList){
                             return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                         }
                         else if(err.status === 403){
-                            showPermissionsError();
+                            showPermissionError();
                         }
                         else{
                             $(".trexHead").show();
@@ -4679,7 +4696,7 @@ function updateLine(line, cleanup, updateList){
                             return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                         }
                         else if(err.status === 403){
-                            showPermissionsError();
+                            showPermissionError();
                         }
                         else{
                             $(".trexHead").show();

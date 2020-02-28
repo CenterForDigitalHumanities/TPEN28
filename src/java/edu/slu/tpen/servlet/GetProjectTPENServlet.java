@@ -40,6 +40,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
@@ -224,7 +225,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                         }
                         gc(); //Force garbage cleaning to remove null pointers, empty variables, and new Whatevers that were destroyed by return statements.
                     } else {
-                        response.sendError(SC_UNAUTHORIZED);
+                        response.sendError(SC_FORBIDDEN);
                         gc();
                     }
                 } else {
@@ -278,7 +279,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                             response.sendError(SC_UNSUPPORTED_MEDIA_TYPE, "Expecting application/json");
                         }
                     } else {
-                        response.sendError(SC_UNAUTHORIZED);
+                        response.sendError(SC_FORBIDDEN);
                     }
                 } else {
                     response.sendError(SC_NOT_FOUND);

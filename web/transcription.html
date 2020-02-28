@@ -879,7 +879,8 @@
                         $(".instructions").show();
                         $(".hideme").show();
                     }
-
+                    tpen.user.fname = data.uname;
+                    setTranscribingUser();
                 }
                 else {
                     tpen.user.UID = 0;

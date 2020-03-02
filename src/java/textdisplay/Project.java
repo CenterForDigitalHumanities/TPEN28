@@ -167,7 +167,7 @@ public class Project {
         addUserTool(conn, "Latin Vulgate", "http://vulsearch.sourceforge.net/cgi-bin/vulsearch");
         addUserTool(conn, "Latin Dictionary", "http://www.perseus.tufts.edu/hopper/resolveform?lang=latin");
         addUserTool(conn, "Enigma", "http://ciham-digital.huma-num.fr/enigma/");
-        addUserTool(conn, "Capelli's Abbreviation", "https://centerfordigitalhumanities.github.io/capelli/");
+        addUserTool(conn, "Cappelli's Abbreviation", "https://centerfordigitalhumanities.github.io/cappelli/");
 
     }
 

@@ -815,10 +815,7 @@ function setTranscribingUser(){
     else{
         user += tpen.user.fname+" ";
     }
-    if(!tpen.user.lname){
-        user += "?";
-    }
-    else{
+    if(tpen.user.lname){
         user += tpen.user.lname;
     }
     $("#trimCurrentUser").html(user);
@@ -1012,6 +1009,16 @@ function loadTranscription(pid, tool){
                    $(".turnMsg").html("Could not find this project.  Check the project ID. Refresh the page to try again or contact your T&#8209;PEN admin.");
                    $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
                 }
+                else if (jqXHR.status && jqXHR.status === 401){
+                    clearTimeout(longLoadingProject);
+                   $(".turnMsg").html("You are not logged in.  Please log in to access this transcription.");
+                   $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
+                }
+                else if (jqXHR.status && jqXHR.status === 403){
+                    clearTimeout(longLoadingProject);
+                   $(".turnMsg").html("You do not have permission to see this transcription.");
+                   $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
+                }
                 else {
                     clearTimeout(longLoadingProject);
                     $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
@@ -1200,14 +1207,24 @@ function loadTranscription(pid, tool){
                 error: function(jqXHR, error, errorThrown) {
                     if (jqXHR.status && jqXHR.status === 404){
                         clearTimeout(longLoadingProject);
-                        $(".turnMsg").html("Could not find this project.  Check the project ID.  Refresh the page to try again or contact your T&#8209;PEN admin.");
-                        $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
-                     }
-                     else {
-                         clearTimeout(longLoadingProject);
-                         $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
-                         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
-                     }
+                       $(".turnMsg").html("Could not find this project.  Check the project ID. Refresh the page to try again or contact your T&#8209;PEN admin.");
+                       $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
+                    }
+                    else if (jqXHR.status && jqXHR.status === 401){
+                        clearTimeout(longLoadingProject);
+                       $(".turnMsg").html("You are not logged in.  Please log in to access this transcription.");
+                       $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
+                    }
+                    else if (jqXHR.status && jqXHR.status === 403){
+                        clearTimeout(longLoadingProject);
+                       $(".turnMsg").html("You do not have permission to see this transcription.");
+                       $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
+                    }
+                    else {
+                        clearTimeout(longLoadingProject);
+                        $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
+                        $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                    }
                     //load Iframes after user check and project information data call
                     loadIframes();
                 }
@@ -4613,6 +4630,9 @@ function updateLine(line, cleanup, updateList){
                             var theURL = window.location.href;
                             return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                         }
+                        else if(err.status === 403){
+                            showPermissionError();
+                        }
                         else{
                             $(".trexHead").show();
                             $("#genericIssue").show(1000);
@@ -4626,6 +4646,9 @@ function updateLine(line, cleanup, updateList){
                         var theURL = window.location.href;
                         return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                     }
+                    else if(err.status === 403){
+                            showPermissionError();
+                        }
                     else{
                         $(".trexHead").show();
                         $("#genericIssue").show(1000);
@@ -4649,6 +4672,9 @@ function updateLine(line, cleanup, updateList){
                             var theURL = window.location.href;
                             return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                         }
+                        else if(err.status === 403){
+                            showPermissionError();
+                        }
                         else{
                             $(".trexHead").show();
                             $("#genericIssue").show(1000);
@@ -4668,6 +4694,9 @@ function updateLine(line, cleanup, updateList){
                         if(err.status === 401){
                             var theURL = window.location.href;
                             return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
+                        }
+                        else if(err.status === 403){
+                            showPermissionError();
                         }
                         else{
                             $(".trexHead").show();
@@ -4689,7 +4718,24 @@ function updateLine(line, cleanup, updateList){
     }
 }
 
+function showPermissionError(){
+    //I believe allow public read is always true, since that situation is caught on page load.  We will be paranoid and double check here.
+    var msgText = "This is not a public project and you do not have permission to be here.  Click OK to return to the home page.";
+    var buttonAction = "document.location.href='index.jsp'";
+    if(tpen.project.permissions.allow_public_read_transcription){
+        msgText = "You do not have permission to modify this data.  Click 'OK' to dismiss this message and continue viewing the transcription.";
+        buttonAction = "hidePermissionError()";
+    }
+    $("#issueMessage").html(msgText);   
+    $("#issueBtn").attr("onclick", buttonAction);
+    $(".trexHead").show();
+    $("#genericIssue").show(1000);
+}
 
+function hidePermissionError(){
+    $(".trexHead").hide();
+    $("#genericIssue").hide();
+}
 
 function saveNewLine(lineBefore, newLine){
     var projID = tpen.project.id;

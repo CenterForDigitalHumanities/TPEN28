@@ -5,18 +5,17 @@
  */
 package edu.slu.tpen.servlet;
 
-import edu.slu.util.ServletUtils;
 import java.io.IOException;
-import java.sql.Connection;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import utils.Tool;
-import utils.UserTool;
+import static utils.Tool.removeTool;
+import static utils.Tool.tools.valueOf;
 
 /**
  * Remove user tools from user by user id and tool name. 
@@ -27,10 +26,10 @@ public class RemoveUserToolServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            Tool.removeTool(Tool.tools.valueOf(request.getParameter("toolName")), Integer.parseInt(request.getParameter("uid")));
+            removeTool(valueOf(request.getParameter("toolName")), parseInt(request.getParameter("uid")));
             response.getWriter().print("1");
         } catch (SQLException ex) {
-            Logger.getLogger(AddProjectToolServlet.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(AddProjectToolServlet.class.getName()).log(SEVERE, null, ex);
         } 
     }
 

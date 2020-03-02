@@ -12,25 +12,27 @@
  * or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-
 package edu.slu.tpen.servlet;
 
 import java.io.IOException;
+import static java.lang.Integer.parseInt;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import textdisplay.DatabaseWrapper;
+import static textdisplay.DatabaseWrapper.getConnection;
+import static textdisplay.Folio.createFolioRecordFromManifest;
 
 /**
- * Upload image to tpen. 
- * This is a transformation of tpen function to web service. It's using tpen MySQL database. 
+ * Upload image to tpen. This is a transformation of tpen function to web
+ * service. It's using tpen MySQL database.
+ *
  * @author hanyan
  */
 public class ImageUploadServlet extends HttpServlet {
@@ -48,57 +50,54 @@ public class ImageUploadServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String imageURL = request.getParameter("imageURL");
         String repository = "unknown";
-        if(null != request.getParameter("repository")){
+        if (null != request.getParameter("repository")) {
             repository = request.getParameter("repository");
-        }else{
+        } else {
             //take the first part of image url to be the repository
         }
         String archive = "unknown";
-        if(null != request.getParameter("archive")){
+        if (null != request.getParameter("archive")) {
             archive = request.getParameter("archive");
         }
         String city = "unknown";
-        if(null != request.getParameter("city")){
+        if (null != request.getParameter("city")) {
             city = request.getParameter("city");
         }
         String collection = "unknown";
-        if(null != request.getParameter("collection")){
+        if (null != request.getParameter("collection")) {
             collection = request.getParameter("collection");
         }
         String pageName = "unknown";
-        if(null != request.getParameter("pageName")){
+        if (null != request.getParameter("pageName")) {
             pageName = request.getParameter("pageName");
         }
-        if(null != imageURL){
-            if(null != request.getParameter("msID")){
+        if (null != imageURL) {
+            if (null != request.getParameter("msID")) {
                 //if user choose an existing manuscript, add the image into the manuscript.
-                Connection conn = DatabaseWrapper.getConnection();
-                String sql = "select max(sequence) from folio where msID=?";
-                try {
-                    PreparedStatement ps = conn.prepareStatement(sql);
-                    ps.setInt(1, Integer.parseInt(request.getParameter("msID")));
-                    ResultSet rs = ps.executeQuery();
-                    int maxSequence = 0;
-                    while(rs.next()){
-                        maxSequence = rs.getInt("sequence");
+                try (Connection conn = getConnection()) {
+                    String sql = "select max(sequence) from folio where msID=?";
+                    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                        ps.setInt(1, parseInt(request.getParameter("msID")));
+                        try (ResultSet rs = ps.executeQuery()) {
+                            int maxSequence = 0;
+                            while (rs.next()) {
+                                maxSequence = rs.getInt("sequence");
+                            }
+                            int num = createFolioRecordFromManifest(collection, pageName, imageURL, archive, parseInt(request.getParameter("msID")), maxSequence + 1);
+                        }
                     }
-                    int num = textdisplay.Folio.createFolioRecordFromManifest(collection, pageName, 
-                            imageURL, archive, Integer.parseInt(request.getParameter("msID")), maxSequence+1);
-                    rs.close();
-                    ps.close();
-                    conn.close();
                 } catch (SQLException ex) {
-                    Logger.getLogger(ImageUploadServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    getLogger(ImageUploadServlet.class.getName()).log(SEVERE, null, ex);
                 }
-            }else{
+            } else {
                 //if user didn't choose a manuscript, create a new manuscript first. 
                 try {
                     //create a manuscript
                     textdisplay.Manuscript m = new textdisplay.Manuscript(repository, archive, city, city, -999);
-                    int num = textdisplay.Folio.createFolioRecordFromManifest(collection, pageName, 
+                    int num = createFolioRecordFromManifest(collection, pageName,
                             imageURL, archive, m.getID(), 0);
                 } catch (SQLException ex) {
-                    Logger.getLogger(ImageUploadServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    getLogger(ImageUploadServlet.class.getName()).log(SEVERE, null, ex);
                 }
             }
         }
@@ -108,5 +107,5 @@ public class ImageUploadServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         super.doPost(req, resp); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

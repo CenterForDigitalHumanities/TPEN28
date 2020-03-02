@@ -35,13 +35,10 @@ public class logout extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
             request.getSession().setAttribute("UID", null);
             request.getSession().invalidate();
             out.print("Logout complete");
-        } finally { 
-            out.close();
         }
     } 
 

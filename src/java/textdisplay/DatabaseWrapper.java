@@ -10,14 +10,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 and limitations under the License.
  */
 package textdisplay;
+import static java.lang.Class.forName;
+import static java.lang.Thread.currentThread;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import org.apache.commons.dbcp.BasicDataSource;
+import static textdisplay.Folio.getRbTok;
 
 
 
@@ -34,7 +37,7 @@ public class DatabaseWrapper
             try {
             // The newInstance() call is a work around for some
             // broken Java implementations
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            forName("com.mysql.jdbc.Driver").newInstance();
             } catch (Exception ex) {
                 // handle the error
             }
@@ -50,19 +53,19 @@ public class DatabaseWrapper
             {
                 d=new BasicDataSource();
         d.setDriverClassName("com.mysql.jdbc.Driver");
-        d.setUrl("jdbc:mysql://"+Folio.getRbTok("DATABASE")+"?useUnicode=true&amp;characterEncoding=utf8&amp;max_allowed_packet=16M");
-        d.setUsername(Folio.getRbTok("DBUSER"));
-        d.setPassword(Folio.getRbTok("DBPASSWORD"));
+        d.setUrl("jdbc:mysql://"+getRbTok("DATABASE")+"?useUnicode=true&amp;characterEncoding=utf8&amp;max_allowed_packet=16M");
+        d.setUsername(getRbTok("DBUSER"));
+        d.setPassword(getRbTok("DBPASSWORD"));
         d.setInitialSize(40);
         d.setMaxActive(40);
         d.setValidationQuery("select 1");
             }
-            StackTraceElement [] stack=Thread.currentThread().getStackTrace();
+            StackTraceElement [] stack=currentThread().getStackTrace();
             String stackdump="";
             return d.getConnection();
             } catch (SQLException ex)
             {
-            Logger.getLogger(DatabaseWrapper.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(DatabaseWrapper.class.getName()).log(SEVERE, null, ex);
             return null;
             }
     }
@@ -79,7 +82,7 @@ public class DatabaseWrapper
         }
         catch(SQLException e)
         {
-            Logger.getLogger(DatabaseWrapper.class.getName()).log(Level.INFO, "Failed to close db connection\n");
+            getLogger(DatabaseWrapper.class.getName()).log(INFO, "Failed to close db connection\n");
         }
     }
     /**Close a preparedstatement, ignoring the potential for a sql exception because there is nothing to be done about it*/
@@ -91,7 +94,7 @@ public class DatabaseWrapper
         }
         catch(SQLException e)
         {
-            Logger.getLogger(DatabaseWrapper.class.getName()).log(Level.INFO, "Failed to close prepared statement\n");
+            getLogger(DatabaseWrapper.class.getName()).log(INFO, "Failed to close prepared statement\n");
         }
     }
     /**Close a resultset, ignoring the potential for a sql exception because there is nothing to be done about it*/
@@ -103,7 +106,7 @@ public class DatabaseWrapper
         }
         catch(SQLException e)
         {
-            Logger.getLogger(DatabaseWrapper.class.getName()).log(Level.INFO, "Failed to close result set\n");
+            getLogger(DatabaseWrapper.class.getName()).log(INFO, "Failed to close result set\n");
         }
         
     }

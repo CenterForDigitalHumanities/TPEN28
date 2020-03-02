@@ -11,11 +11,11 @@ and limitations under the License.
  */
 package detectimages;
 
+import static detectimages.blob.getMatrixBlobs;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 
 public class BlobLoader implements Callable{
     private blobManager bm;
@@ -30,11 +30,11 @@ public class BlobLoader implements Callable{
     public Object call() {
         try {
             //System.out.print("caching "+this.blobFile+"\n");
-            bm.add(blob.getMatrixBlobs(blobFile), blobFile);
+            bm.add(getMatrixBlobs(blobFile), blobFile);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(BlobLoader.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(BlobLoader.class.getName()).log(SEVERE, null, ex);
         } catch (Exception ex) {
-            Logger.getLogger(BlobLoader.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(BlobLoader.class.getName()).log(SEVERE, null, ex);
         }
         return null;
     }

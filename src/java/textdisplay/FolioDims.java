@@ -9,6 +9,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 
 public class FolioDims {
@@ -27,7 +31,7 @@ public class FolioDims {
      *       
     */
     public FolioDims(int folioDimsID) throws SQLException{
-        try (Connection j = DatabaseWrapper.getConnection()) {
+        try (Connection j = getConnection()) {
             folioDimID = folioDimsID;
             try (PreparedStatement stmt = j.prepareStatement("Select * from foliodim where folioDimsID=?")) {
                 stmt.setInt(1, folioDimsID);
@@ -50,7 +54,7 @@ public class FolioDims {
         @params folioID: a folio id
     */
     public FolioDims(int folID, boolean folioFlag) throws SQLException{
-        try (Connection j = DatabaseWrapper.getConnection()) {
+        try (Connection j = getConnection()) {
             folioID = folID;
             try (PreparedStatement stmt = j.prepareStatement("Select * from foliodim where folioID=?")) {
                 stmt.setInt(1, folioID);
@@ -74,7 +78,7 @@ public class FolioDims {
         @params folioID: a folio id
     */
     public FolioDims(int projectFolioID, boolean flag, boolean projectfolioFlag) throws SQLException{
-        try (Connection j = DatabaseWrapper.getConnection()) {
+        try (Connection j = getConnection()) {
             projectfolioID = projectFolioID;
             try (PreparedStatement stmt = j.prepareStatement("Select * from foliodim where folioDimID=?")) {
                 stmt.setInt(1, projectfolioID);
@@ -100,8 +104,8 @@ public class FolioDims {
         PreparedStatement stmt = null;
         try {
            String query = "insert into foliodim (folioID, projectfolioID, imagewidth, imageheight, canvaswidth, canvasheight) values(?,?,?,?,?,?)";
-           j = DatabaseWrapper.getConnection();
-           stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+           j = getConnection();
+           stmt = j.prepareStatement(query, RETURN_GENERATED_KEYS);
            stmt.setInt(1, folioID);
            stmt.setInt(2, projectFolioID);
            stmt.setInt(3, imagew);
@@ -117,8 +121,8 @@ public class FolioDims {
               return 0;
            }
         } finally {
-           DatabaseWrapper.closeDBConnection(j);
-           DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
     
@@ -130,8 +134,8 @@ public class FolioDims {
         PreparedStatement stmt = null;
         try {
            String query = "insert into foliodim (folioID, projectfolioID, imagewidth, imageheight, canvaswidth, canvasheight) values(?,?,?,?,?,?)";
-           j = DatabaseWrapper.getConnection();
-           stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+           j = getConnection();
+           stmt = j.prepareStatement(query, RETURN_GENERATED_KEYS);
            stmt.setInt(1, folioID);
            stmt.setInt(2, -1);
            stmt.setInt(3, imagew);
@@ -147,8 +151,8 @@ public class FolioDims {
               return 0;
            }
         } finally {
-           DatabaseWrapper.closeDBConnection(j);
-           DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
     

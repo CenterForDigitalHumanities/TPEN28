@@ -14,20 +14,23 @@
  */
 package edu.slu.tpen.transfer;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import static edu.slu.util.JsonUtils.*;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.InputStream;
+import static java.lang.String.format;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import static edu.slu.util.JsonUtils.*;
+import static java.util.logging.Logger.getLogger;
 import textdisplay.Folio;
+import static textdisplay.Folio.getRbTok;
 import textdisplay.Project;
 import textdisplay.Transcription;
-import user.User;
+import static textdisplay.Transcription.getProjectTranscriptions;
 
 
 /**
@@ -53,7 +56,7 @@ public class JsonImporter {
       List<Object> canvasses = getArray(manifest, "canvasses", true);
 
       if (canvasses.size() != folios.length) {
-         throw new IOException(String.format("Malformed JSON input:  %d folios in T-PEN project, but %d canvasses in input.", folios.length, canvasses.size()));
+         throw new IOException(format("Malformed JSON input:  %d folios in T-PEN project, but %d canvasses in input.", folios.length, canvasses.size()));
       }
       int folioI = 0;
       for (Object c: canvasses) {
@@ -64,10 +67,10 @@ public class JsonImporter {
          Map<String, Object> canvas = (Map<String, Object>)c;
          String folioURI = getFolioURI(canvas, f);
          if (folioURI == null) {
-            throw new IOException(String.format("Malformed JSON input: no image match for folio %s.", f.getImageName()));
+            throw new IOException(format("Malformed JSON input: no image match for folio %s.", f.getImageName()));
          }
 
-         Transcription[] transcrs = Transcription.getProjectTranscriptions(project.getProjectID(), f.getFolioNumber());
+         Transcription[] transcrs = getProjectTranscriptions(project.getProjectID(), f.getFolioNumber());
 
          List<Object> rows = getArray(canvas, "rows", true);
          int transcrI = 0;
@@ -105,7 +108,7 @@ public class JsonImporter {
          throw new IOException("Malformed JSON input: canvas with no images.");
       }
       
-      String folioURI = Folio.getRbTok("SERVERURL") + f.getImageURLResize();
+      String folioURI = getRbTok("SERVERURL") + f.getImageURLResize();
 
       for (Object o: images) {
          if (!(o instanceof Map)) {
@@ -158,5 +161,5 @@ public class JsonImporter {
       transcr.remove();
    }
 
-   private static Logger LOG = Logger.getLogger(JsonImporter.class.getName());
+   private static Logger LOG = getLogger(JsonImporter.class.getName());
 }

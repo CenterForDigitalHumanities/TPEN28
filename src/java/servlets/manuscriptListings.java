@@ -13,15 +13,19 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import textdisplay.Manuscript;
+import static textdisplay.Manuscript.getManuscriptsByCity;
+import static textdisplay.Manuscript.getManuscriptsByCityAndRepository;
+import static textdisplay.Manuscript.getManuscriptsByRepository;
 import user.User;
 
 /**
@@ -48,13 +52,13 @@ public class manuscriptListings extends HttpServlet {
                 if (request.getParameter("repository") != null) {
                     String city = request.getParameter("city");
                     String repo = request.getParameter("repository");
-                    Manuscript[] mss = Manuscript.getManuscriptsByCityAndRepository(city, repo);
+                    Manuscript[] mss = getManuscriptsByCityAndRepository(city, repo);
                     out.print("<div id=\"count\" class=\"right\">");
                     out.print("<h3>" + mss.length + " total manuscripts available</h3>");
                     out.print("</div><br>");
                     int UID = 0;
                     if (session.getAttribute("UID") != null) {
-                        UID = Integer.parseInt(session.getAttribute("UID").toString());
+                        UID = parseInt(session.getAttribute("UID").toString());
                     }
                     int[] msIDs = new int[0];
                     if (UID > 0) {
@@ -70,25 +74,24 @@ public class manuscriptListings extends HttpServlet {
                         }
                     }
                     
-                    for (int i = 0; i < mss.length; i++) {
-                        out.print(mss[i].getCity() + ", " + mss[i].getRepository() + " " + mss[i].getCollection() + " (hosted by " + mss[i].getArchive() + ")\n");
-                        if (mss[i].isRestricted()) {
+                    for (Manuscript ms : mss) {
+                        out.print(ms.getCity() + ", " + ms.getRepository() + " " + ms.getCollection() + " (hosted by " + ms.getArchive() + ")\n");
+                        if (ms.isRestricted()) {
                             out.print("<span class=\"restricted\">Restricted Access</span>\n");
                         }
 // @cubap removed the existing project check
-                        out.print("<a onclick='createProject(" + mss[i].getID() + ");'>Transcribe</a>" + "\n");
-                        
-                        out.print("<a href=addMStoProject.jsp?ms=" + mss[i].getID() + ">Add to project</a>" + "\n<br>");
+out.print("<a onclick='createProject(" + ms.getID() + ");'>Transcribe</a>" + "\n");
+out.print("<a href=addMStoProject.jsp?ms=" + ms.getID() + ">Add to project</a>" + "\n<br>");
                     }
                 } else {
                     String city = request.getParameter("city");
-                    Manuscript[] mss = Manuscript.getManuscriptsByCity(city);
+                    Manuscript[] mss = getManuscriptsByCity(city);
                     out.print("<div id=\"count\" class=\"right\">");
                     out.print("<h3>" + mss.length + " total manuscripts available</h3>");
                     out.print("</div><br>");
                     int UID = 0;
                     if (session.getAttribute("UID") != null) {
-                        UID = Integer.parseInt(session.getAttribute("UID").toString());
+                        UID = parseInt(session.getAttribute("UID").toString());
                     }
                     
                     int[] msIDs = new int[0];
@@ -105,26 +108,26 @@ public class manuscriptListings extends HttpServlet {
                         }
                     }
                     
-                    for (int i = 0; i < mss.length; i++) {
-                        out.print(mss[i].getCity() + ", " + mss[i].getRepository() + " " + mss[i].getCollection() + " (hosted by " + mss[i].getArchive() + ")\n");
-                        if (mss[i].isRestricted()) {
+                    for (Manuscript ms : mss) {
+                        out.print(ms.getCity() + ", " + ms.getRepository() + " " + ms.getCollection() + " (hosted by " + ms.getArchive() + ")\n");
+                        if (ms.isRestricted()) {
                             out.print("<span class=\"restricted\">Restricted Access</span>\n");
                         }
                         // TODO: Build a project from the MS and then send to transcription.html?projectID=##
-                        out.print("<a onclick='createProject(" + mss[i].getID() + ");' class=\"unmarked\">Transcribe</a>" + "\n");
-                        out.print("<a href=addMStoProject.jsp?ms=" + mss[i].getID() + ">Add to project</a>" + "\n<br>");
+                        out.print("<a onclick='createProject(" + ms.getID() + ");' class=\"unmarked\">Transcribe</a>" + "\n");
+                        out.print("<a href=addMStoProject.jsp?ms=" + ms.getID() + ">Add to project</a>" + "\n<br>");
                     }
                 }
             } else {
                 if (request.getParameter("repository") != null) {
                     String repo = request.getParameter("repository");
-                    Manuscript[] mss = Manuscript.getManuscriptsByRepository(repo);
+                    Manuscript[] mss = getManuscriptsByRepository(repo);
                     out.print("<div id=\"count\" class=\"right\">");
                     out.print("<h3>" + mss.length + " total manuscripts available</h3>");
                     out.print("</div><br>");
                     int UID = 0;
                     if (session.getAttribute("UID") != null) {
-                        UID = Integer.parseInt(session.getAttribute("UID").toString());
+                        UID = parseInt(session.getAttribute("UID").toString());
                     }
                     int[] msIDs = new int[0];
                     if (UID > 0) {
@@ -139,18 +142,18 @@ public class manuscriptListings extends HttpServlet {
                             }
                         }
                     }
-                    for (int i = 0; i < mss.length; i++) {
-                        out.print(mss[i].getCity() + ", " + mss[i].getRepository() + " " + mss[i].getCollection() + " (hosted by " + mss[i].getArchive() + ")\n");
-                        if (mss[i].isRestricted()) {
+                    for (Manuscript ms : mss) {
+                        out.print(ms.getCity() + ", " + ms.getRepository() + " " + ms.getCollection() + " (hosted by " + ms.getArchive() + ")\n");
+                        if (ms.isRestricted()) {
                             out.print("<span class=\"restricted\">Restricted Access</span>\n");
                         }
-                        out.print("<a onclick='createProject(" + mss[i].getID() + ");'>Transcribe</a>" + "\n");
-                        out.print("<a href=addMStoProject.jsp?ms=" + mss[i].getID() + ">Add to project</a>" + "\n<br>");
+                        out.print("<a onclick='createProject(" + ms.getID() + ");'>Transcribe</a>" + "\n");
+                        out.print("<a href=addMStoProject.jsp?ms=" + ms.getID() + ">Add to project</a>" + "\n<br>");
                     }
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(manuscriptListings.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(manuscriptListings.class.getName()).log(SEVERE, null, ex);
         } finally {
             out.close();
         }

@@ -404,6 +404,12 @@
                                 <input type="text" name="email">
                                 <input type="submit" name="emailSubmitted" value="Reset Password"/>
                             </form>
+                            <h3>Accept an Invitation</h3>
+                            Please enter the email address associated with your invitation to receive a temporary password.
+                            <form action="admin.jsp" method="POST">
+                                <input type="text" name="email">
+                                <input type="submit" name="emailSubmitted" value="Redeem Invitation"/>
+                            </form>
                         </div>
                         <%
                                 //if they arent logged in, dont bother with showing them any of the other stuff
@@ -447,15 +453,15 @@
                                     Project[] userProjects = thisUser.getUserProjects();
                                     if (userProjects.length > 0) {
                                         out.print("You are a member of " + userProjects.length + " project");
-                                    }
-                                    if (userProjects.length == 1) {
-                                        out.print(", " + userProjects[0].getProjectName() + ".");
-                                    } else {
-                                        out.print("s:");
-                                        for (int i = 0; i < userProjects.length; i++) {
-                                            out.println("<span>" + (i + 1) + ". " + userProjects[i].getProjectName() + "</span>");
+                                        if (userProjects.length == 1) {
+                                            out.print(", " + userProjects[0].getProjectName() + ".");
+                                        } else {
+                                            out.print("s:");
+                                            for (int i = 0; i < userProjects.length; i++) {
+                                                out.println("<span>" + (i + 1) + ". " + userProjects[i].getProjectName() + "</span>");
+                                            }
                                         }
-                                    }
+                                     }
                                 %>
 
                             </li>
@@ -804,6 +810,7 @@
                     <%} // end of isAdmin()
                                     }%>
                     <!--                end of tabs-3, manage users-->
+                    <%if (thisUser.isAdmin()) {%>
                     <div id="updateTab">
                         <ul id="updateManagement">
                             <li class="gui-tab-section">
@@ -837,6 +844,7 @@
                             </li>
                         </ul>
                     </div>
+                    <%}%>
                     <div id="aboutTab">
                         <ul id="about">
                             <li class="gui-tab-section">
@@ -1167,35 +1175,37 @@
                 var params = {"getSettings" : "get", "cancelUpgrade":"false"};
                 $.post(url, params)
                     .done(function(data){
-                        var managerData = JSON.parse(data);
-                        var mdate = managerData.upgradeDate;
-                        var message = managerData.upgradeMessage;
-                        var countdown = managerData.countdown;
-                        var options = {  
-                            weekday: "long", year: "numeric", month: "short",  
-                            day: "numeric", hour: "2-digit", minute: "2-digit"  
-                        };  
-                        var dateForUser = new Date(mdate);
-                        if(managerData.active > 0){
-                            $("#upgradeMessage").html(message);
-                            $("#schedmaintenance").html(dateForUser.toLocaleTimeString("en-us", options)); //.format('l, F jS, Y g:00a')
-                            if(countdown > 0){
-                                setCountdown(mdate);
+                        if(data){
+                            var managerData = JSON.parse(data);
+                            var mdate = managerData.upgradeDate;
+                            var message = managerData.upgradeMessage;
+                            var countdown = managerData.countdown;
+                            var options = {  
+                                weekday: "long", year: "numeric", month: "short",  
+                                day: "numeric", hour: "2-digit", minute: "2-digit"  
+                            };  
+                            var dateForUser = new Date(mdate);
+                            if(managerData.active > 0){
+                                $("#upgradeMessage").html(message);
+                                $("#schedmaintenance").html(dateForUser.toLocaleTimeString("en-us", options)); //.format('l, F jS, Y g:00a')
+                                if(countdown > 0){
+                                    setCountdown(mdate);
+                                }
+                                else{
+                                    $("#countdown").html("");
+                                }
+                                //return(dateForUser.format('l, F jS, Y g:00a'));
                             }
                             else{
-                                $("#countdown").html("");
+                                var today = new Date();
+                                while ((today.getDay() !== 1) && (today.getDay() !== 3) && (today.getDay() !== 5)){
+                                    today.setDate(today.getDate()+1);
+                                }
+                                // set to 8am Central Time
+                                today.setHours(14 - today.getTimezoneOffset()/60);
+                                //return(today.format('l, F jS, Y g:00a'));
+                                $("#schedmaintenance").html(today.format('l, F jS, Y g:00a'));
                             }
-                            //return(dateForUser.format('l, F jS, Y g:00a'));
-                        }
-                        else{
-                            var today = new Date();
-                            while ((today.getDay() !== 1) && (today.getDay() !== 3) && (today.getDay() !== 5)){
-                                today.setDate(today.getDate()+1);
-                            }
-                            // set to 8am Central Time
-                            today.setHours(14 - today.getTimezoneOffset()/60);
-                            //return(today.format('l, F jS, Y g:00a'));
-                            $("#schedmaintenance").html(today.format('l, F jS, Y g:00a'));
                         }
                     });
             }

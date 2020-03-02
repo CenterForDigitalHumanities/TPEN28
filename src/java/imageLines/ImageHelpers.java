@@ -17,31 +17,38 @@
 package imageLines;
 
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.Transparency;
+import static java.awt.RenderingHints.KEY_INTERPOLATION;
+import static java.awt.Transparency.OPAQUE;
 import java.awt.geom.AffineTransform;
+import static java.awt.geom.AffineTransform.getScaleInstance;
 import java.awt.image.BufferedImage;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import static java.lang.System.out;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.logging.Level;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
+import static java.util.logging.Logger.getLogger;
+import static javax.imageio.ImageIO.read;
 import javax.media.jai.Histogram;
-import javax.media.jai.JAI;
+import static javax.media.jai.JAI.create;
 import javax.media.jai.PlanarImage;
+import static javax.media.jai.PlanarImage.wrapRenderedImage;
+import static javax.media.jai.operator.TransposeDescriptor.FLIP_HORIZONTAL;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
+import static org.apache.http.auth.AuthScope.ANY;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 
@@ -54,9 +61,9 @@ public class ImageHelpers {
     * Scale the image to have the specified height and width in pixels.
     */
    public static BufferedImage scale(BufferedImage img, int height, int width) {
-      BufferedImage bdest = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+      BufferedImage bdest = new BufferedImage(width, height, TYPE_INT_RGB);
       Graphics2D g = bdest.createGraphics();
-      AffineTransform at = AffineTransform.getScaleInstance((double)width / img.getWidth(),
+      AffineTransform at = getScaleInstance((double)width / img.getWidth(),
               (double)height / img.getHeight());
       g.drawRenderedImage(img, at);
       g.dispose();
@@ -77,8 +84,8 @@ public class ImageHelpers {
            int targetHeight,
            Object hint,
            boolean higherQuality) {
-      int type = (img.getTransparency() == Transparency.OPAQUE)
-              ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+      int type = (img.getTransparency() == OPAQUE)
+              ? TYPE_INT_RGB : TYPE_INT_ARGB;
       BufferedImage ret = (BufferedImage) img;
       int w, h;
       if (higherQuality) {
@@ -111,7 +118,7 @@ public class ImageHelpers {
 
          BufferedImage tmp = new BufferedImage(w, h, type);
          Graphics2D g2 = tmp.createGraphics();
-         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
+         g2.setRenderingHint(KEY_INTERPOLATION, hint);
          g2.drawImage(ret, 0, 0, w, h, null);
          g2.dispose();
 
@@ -132,7 +139,7 @@ public class ImageHelpers {
          ParameterBlock pb = new ParameterBlock();
          pb.addSource(img);
          pb.add(RGB_COMPONENT_MATRIX);
-         greyImage = JAI.create("bandcombine", pb);
+         greyImage = create("bandcombine", pb);
       } else {
          greyImage = img;
       }
@@ -146,7 +153,7 @@ public class ImageHelpers {
       pb.add(new double[] { 256.0 });
 
       // Calculate the histogram of the image.
-      PlanarImage histImage = JAI.create("histogram", pb);
+      PlanarImage histImage = create("histogram", pb);
       Histogram h = (Histogram)histImage.getProperty("histogram");
       // Calculate the thresholds based on the selected method.
       double[] thresholds = null;
@@ -186,7 +193,7 @@ public class ImageHelpers {
       pb.addSource(image);
       pb.add(1.0 * threshold);
       // Creates a new, thresholded image and uses it on the DisplayJAI component
-      PlanarImage thresholdedImage = JAI.create("binarize", pb);
+      PlanarImage thresholdedImage = create("binarize", pb);
       return thresholdedImage.getAsBufferedImage();
    }
 
@@ -195,7 +202,7 @@ public class ImageHelpers {
     */
    public static BufferedImage readAsBufferedImage(String filename) throws IOException {
       try (FileInputStream fis = new FileInputStream(filename)) {
-         return ImageIO.read(fis);
+         return read(fis);
       }
    }
 
@@ -213,7 +220,7 @@ public class ImageHelpers {
       }
 
       try (InputStream i = u.getInputStream()) {
-         return ImageIO.read(i);
+         return read(i);
       }
    }
 
@@ -227,13 +234,13 @@ public class ImageHelpers {
       int responseCode = conn.getResponseCode();
 
       if (responseCode == 200 || responseCode == 304) {
-         LOG.log(Level.INFO, "good response{0}", responseCode);
+         LOG.log(INFO, "good response{0}", responseCode);
       } else {
-         LOG.log(Level.INFO, "bad response {0}", responseCode);
+         LOG.log(INFO, "bad response {0}", responseCode);
       }
 
       try (InputStream i = conn.getInputStream()) {
-         return ImageIO.read(i);
+         return read(i);
       }
    }
 
@@ -245,12 +252,11 @@ public class ImageHelpers {
        conn.setRequestProperty ("Authorization", "Basic " + encoding);*/
       DefaultHttpClient httpclient = new DefaultHttpClient();
 
-      httpclient.getCredentialsProvider().setCredentials(
-              new AuthScope(AuthScope.ANY),
+      httpclient.getCredentialsProvider().setCredentials(new AuthScope(ANY),
               new UsernamePasswordCredentials(uname, pass));
       HttpHead head = new HttpHead(imageURLString);
       //HttpGet httpget = new HttpGet(imageURLString);
-      System.out.println("executing head request" + head.getRequestLine());
+        out.println("executing head request" + head.getRequestLine());
 
       HttpResponse response;
       try {
@@ -260,7 +266,7 @@ public class ImageHelpers {
             return true;
          }
       } catch (IOException ex) {
-         Logger.getLogger(ImageHelpers.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(ImageHelpers.class.getName()).log(SEVERE, null, ex);
       }
       return false;
    }
@@ -271,12 +277,12 @@ public class ImageHelpers {
     * right side and very dark, as this can cause issues when detecting lines.
     */
    public static BufferedImage flipHorizontal(BufferedImage image) {
-      PlanarImage j = PlanarImage.wrapRenderedImage(image);
-      j = (PlanarImage) JAI.create("transpose", j, javax.media.jai.operator.TransposeDescriptor.FLIP_HORIZONTAL);
+      PlanarImage j = wrapRenderedImage(image);
+      j = (PlanarImage) create("transpose", j, FLIP_HORIZONTAL);
       return j.getAsBufferedImage();
    }
 
    private static final double[][] RGB_COMPONENT_MATRIX = {{0.114, 0.587, 0.299, 0}};
 
-   private static final Logger LOG = Logger.getLogger(ImageHelpers.class.getName());
+   private static final Logger LOG = getLogger(ImageHelpers.class.getName());
 }

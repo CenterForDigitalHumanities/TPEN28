@@ -5,15 +5,19 @@
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import javax.servlet.http.HttpSession;
-import org.owasp.esapi.ESAPI;
+import static org.owasp.esapi.ESAPI.encoder;
 import textdisplay.Project;
 import textdisplay.Transcription;
 import user.Group;
@@ -34,14 +38,13 @@ public class UpdateLine extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
             
             
 
             if (request.getParameter("text") == null) {
 
-                response.sendError(response.SC_BAD_REQUEST);
+                response.sendError(SC_BAD_REQUEST);
                 return;
             }
             String text = request.getParameter("text");
@@ -52,14 +55,14 @@ public class UpdateLine extends HttpServlet {
             HttpSession session = request.getSession();
 
             if (session.getAttribute("UID") == null ||request.getParameter("projectID") == null) {
-                response.sendError(response.SC_FORBIDDEN);
+                response.sendError(SC_FORBIDDEN);
                return;
             }
-            int uid = Integer.parseInt(session.getAttribute("UID").toString());
+            int uid = parseInt(session.getAttribute("UID").toString());
             if (request.getParameter("line") == null) {
 
                 if (request.getParameter("projectID") != null) {
-                    int projectID = Integer.parseInt(request.getParameter("projectID"));
+                    int projectID = parseInt(request.getParameter("projectID"));
                     try {
                         Project thisProject = new Project(projectID);
                         if (new Group(thisProject.getGroupID()).isMember(uid)) {
@@ -71,7 +74,7 @@ public class UpdateLine extends HttpServlet {
             }
 
             if (request.getParameter("projectID") != null) {
-                int projectID = Integer.parseInt(request.getParameter("projectID"));
+                int projectID = parseInt(request.getParameter("projectID"));
                 String line = request.getParameter("line");
                 try {
                     Project thisProject = new Project(projectID);
@@ -82,15 +85,15 @@ public class UpdateLine extends HttpServlet {
                         t.setComment(comment);
                         t.setCreator(uid);
                         
-                        out.print(ESAPI.encoder().decodeForHTML(new Transcription(line).getText()));
+                        out.print(encoder().decodeForHTML(new Transcription(line).getText()));
                         return;
                     } else {
-                        response.sendError(response.SC_FORBIDDEN);
+                        response.sendError(SC_FORBIDDEN);
                         return;
                     }
                 } catch (SQLException ex) {
-                    Logger.getLogger(UpdateLine.class.getName()).log(Level.SEVERE, null, ex);
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    getLogger(UpdateLine.class.getName()).log(SEVERE, null, ex);
+                    response.sendError(SC_INTERNAL_SERVER_ERROR);
                 }
             }
             else
@@ -105,7 +108,7 @@ public class UpdateLine extends HttpServlet {
                         out.print("success");
                         return;
                         } catch (SQLException ex) {
-                    Logger.getLogger(UpdateLine.class.getName()).log(Level.SEVERE, null, ex);
+                    getLogger(UpdateLine.class.getName()).log(SEVERE, null, ex);
                 }
 
             }
@@ -114,8 +117,6 @@ public class UpdateLine extends HttpServlet {
             out.print("failure");
 
 
-        } finally {
-            out.close();
         }
     }
 

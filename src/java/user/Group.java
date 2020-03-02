@@ -20,10 +20,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import textdisplay.DatabaseWrapper;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
+import static user.Group.roles.Contributor;
+import static user.Group.roles.Leader;
+import static user.Group.roles.None;
+import static user.Group.roles.values;
 
 /**
  * Represents a single group of users.
@@ -51,7 +57,7 @@ public class Group {
       PreparedStatement ps = null;
       try {
          groupID = id;
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
 
          ps = j.prepareStatement("select * from groups where GID=?");
          ps.setInt(1, id);
@@ -65,8 +71,8 @@ public class Group {
          }
 
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -78,7 +84,7 @@ public class Group {
     * @throws SQLException
     */
    public Group(Connection j, String gname, int uid) throws SQLException {
-      try (PreparedStatement groupStmt = j.prepareStatement("INSERT INTO groups (name) VALUE (?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+      try (PreparedStatement groupStmt = j.prepareStatement("INSERT INTO groups (name) VALUE (?)", RETURN_GENERATED_KEYS)) {
          groupStmt.setString(1, name = gname);
          groupStmt.executeUpdate();
 
@@ -89,7 +95,7 @@ public class Group {
             try (PreparedStatement membersStmt = j.prepareStatement("INSERT INTO groupmembers (UID, GID, role) VALUES (?, ?, ?)")) {
                membersStmt.setInt(1, uid);
                membersStmt.setInt(2, groupID);               
-               membersStmt.setString(3, roles.Leader.toString());   // The creator of a group gets leader, otherwise noone else could be invited.
+               membersStmt.setString(3, Leader.toString());   // The creator of a group gets leader, otherwise noone else could be invited.
                membersStmt.executeUpdate();
             }
          }
@@ -125,7 +131,7 @@ public class Group {
       PreparedStatement qry = null;
       qry = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
           //System.out.println("group ID in group ======== " + this.groupID);
          qry = j.prepareStatement("select UID from groupmembers where GID=?");
          qry.setInt(1, groupID);
@@ -146,8 +152,8 @@ public class Group {
          }
          return users;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
       }
    }
 
@@ -162,7 +168,7 @@ public class Group {
       PreparedStatement qry = null;
       qry = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
 
          qry = j.prepareStatement("select UID from groupmembers where GID=? and role='Leader'");
          qry.setInt(1, groupID);
@@ -181,8 +187,8 @@ public class Group {
 
          return users;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
       }
    }
 
@@ -196,10 +202,9 @@ public class Group {
    public String getMembersTable() throws SQLException {
       String toret = "";
       User[] groupmembers = this.getMembers();
-      for (int i = 0; i < groupmembers.length; i++) {
-         User thisUser = groupmembers[i];
-         toret += "<tr><td>" + thisUser.getUID() + "</td><td>" + thisUser.getFname() + thisUser.getLname() + "</td></tr>";
-      }
+        for (User thisUser : groupmembers) {
+            toret += "<tr><td>" + thisUser.getUID() + "</td><td>" + thisUser.getFname() + thisUser.getLname() + "</td></tr>";
+        }
       return toret;
    }
 
@@ -214,15 +219,15 @@ public class Group {
       PreparedStatement qry = null;
       qry = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
 
-         qry = j.prepareStatement("Delete from groupmembers where GID=? and UID=? LIMIT 1", PreparedStatement.RETURN_GENERATED_KEYS);
+         qry = j.prepareStatement("Delete from groupmembers where GID=? and UID=? LIMIT 1", RETURN_GENERATED_KEYS);
          qry.setInt(1, groupID);
          qry.setInt(2, UID);
          qry.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
       }
    }
 
@@ -235,17 +240,17 @@ public class Group {
       try {
          User u = new User(identifier, true);
          if (u != null && u.getUID() > 0) {
-            addMember(u.getUID(), Group.roles.Contributor);
+            addMember(u.getUID(), Contributor);
             return true;
          } else {
             u = new User(identifier);
             if (u != null && u.getUID() > 0) {
-               addMember(u.getUID(), Group.roles.Contributor);
+               addMember(u.getUID(), Contributor);
                return true;
             }
          }
       } catch (SQLException ex) {
-         Logger.getLogger(Group.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(Group.class.getName()).log(SEVERE, null, ex);
       }
       return false;
    }
@@ -262,16 +267,16 @@ public class Group {
       PreparedStatement qry = null;
       qry = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          qry = j.prepareStatement("insert into groupmembers (GID,UID,role) values(?,?,?)");
          //System.out.println("groupmembers row add with GID, UID, contributor: "+groupID+", "+UID+", contributor");
          qry.setInt(1, groupID);
          qry.setInt(2, UID);
-         qry.setString(3, roles.Contributor.toString());
+         qry.setString(3, Contributor.toString());
          qry.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
       }
    }
 
@@ -287,7 +292,7 @@ public class Group {
       PreparedStatement qry = null;
       qry = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
 
          qry = j.prepareStatement("insert into groupmembers (GID,UID,role) values(?,?,?)");
          qry.setInt(1, groupID);
@@ -295,8 +300,8 @@ public class Group {
          qry.setString(3, thisRole.toString());
          qry.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
       }
    }
 
@@ -315,7 +320,7 @@ public class Group {
          qry = null;
          try {
             String query = "Update groupmembers set role=? where GID=? and UID=?";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
 
             qry = j.prepareStatement(query);
             qry.setString(1, thisRole.toString());
@@ -323,8 +328,8 @@ public class Group {
             qry.setInt(3, targetUID);
             qry.execute();
          } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+                closeDBConnection(j);
+                closePreparedStatement(qry);
          }
       }
    }
@@ -340,13 +345,12 @@ public class Group {
           //System.out.println("sample ============== " + UID);
           //System.out.println("memeber len ===== " + this.getMembers().length);
          User[] groupmembers = this.getMembers();
-         for (int i = 0; i < groupmembers.length; i++) {
-            User thisUser = groupmembers[i];
-            // System.out.println("mem user ID ====== " + thisUser.getUID());
-            if (thisUser.getUname().equals(uname)) {
-               return true;
+            for (User thisUser : groupmembers) {
+                // System.out.println("mem user ID ====== " + thisUser.getUID());
+                if (thisUser.getUname().equals(uname)) {
+                    return true;
+                }
             }
-         }
          return false;
       } catch (SQLException e) {
          return false;
@@ -364,13 +368,12 @@ public class Group {
           //System.out.println("sample ============== " + UID);
           //System.out.println("memeber len ===== " + this.getMembers().length);
          User[] groupmembers = this.getMembers();
-         for (int i = 0; i < groupmembers.length; i++) {
-            User thisUser = groupmembers[i];
-            // System.out.println("mem user ID ====== " + thisUser.getUID());
-            if (thisUser.getUID() == UID) {
-               return true;
+            for (User thisUser : groupmembers) {
+                // System.out.println("mem user ID ====== " + thisUser.getUID());
+                if (thisUser.getUID() == UID) {
+                    return true;
+                }
             }
-         }
          return false;
       } catch (SQLException e) {
          return false;
@@ -385,12 +388,12 @@ public class Group {
     * @throws SQLException
     */
    private roles getUserRole(int UID) throws SQLException {
-      roles thisRole = roles.None;
+      roles thisRole = None;
       Connection j = null;
       PreparedStatement qry = null;
       qry = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
 
          qry = j.prepareStatement("select role from groupmembers where UID=? and GID=?");
          qry.setInt(1, UID);
@@ -399,17 +402,17 @@ public class Group {
          if (rs.next()) {
             String roleText = rs.getString(1);
             //Now match the string with the enum
-            roles[] allVals = roles.values();
-            for (int i = 0; i < allVals.length; i++) {
-               if (allVals[i].toString().compareTo(roleText) == 0) {
-                  thisRole = allVals[i];
-               }
-            }
+            roles[] allVals = values();
+                for (roles allVal : allVals) {
+                    if (allVal.toString().compareTo(roleText) == 0) {
+                        thisRole = allVal;
+                    }
+                }
          }
          return thisRole;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
       }
    }
 
@@ -422,7 +425,7 @@ public class Group {
     * @throws SQLException
     */
    public Boolean isAdmin(int UID) throws SQLException {
-      if (getUserRole(UID) == roles.Leader) {
+      if (getUserRole(UID) == Leader) {
          return true;
       }
       return false;

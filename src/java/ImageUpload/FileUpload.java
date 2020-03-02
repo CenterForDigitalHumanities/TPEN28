@@ -16,20 +16,22 @@
  */
 package ImageUpload;
 
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-import java.io.*;
-import java.sql.Connection;
-import java.util.*;
-import javax.servlet.ServletException;
-import javax.servlet.http.*;
-import org.apache.commons.fileupload.*;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import static ImageUpload.UserImageCollection.create;
 import static edu.slu.util.ServletUtils.getDBConnection;
 import static edu.slu.util.ServletUtils.getUID;
 import static edu.slu.util.ServletUtils.reportInternalError;
-import textdisplay.Folio;
+import java.io.*;
+import static java.lang.Integer.parseInt;
+import java.sql.Connection;
+import java.util.*;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.*;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import org.apache.commons.fileupload.*;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import static textdisplay.Folio.getRbTok;
 import textdisplay.Manuscript;
 import textdisplay.Project;
 import user.Group;
@@ -111,17 +113,17 @@ public class FileUpload extends HttpServlet implements Servlet {
             String repository = req.getParameter("repository");
             String archive = "private";
 
-            long maxSize = Integer.parseInt(Folio.getRbTok("maxUploadSize")); //200 megs
+            long maxSize = parseInt(getRbTok("maxUploadSize")); //200 megs
             List uploadedItems = upload.parseRequest(req);
             Iterator i = uploadedItems.iterator();
             while (i.hasNext()) {
                FileItem fileItem = (FileItem)i.next();
                if (fileItem.isFormField() == false) {
                   if (fileItem.getSize() > 0 && fileItem.getSize() < maxSize && fileItem.getName().toLowerCase().endsWith("zip")) {
-                     File f = new File(Folio.getRbTok("uploadLocation") + "/" + thisUser.getLname() + thisUser.getUID() + ".zip");
+                     File f = new File(getRbTok("uploadLocation") + "/" + thisUser.getLname() + thisUser.getUID() + ".zip");
                      fileItem.write(f);
                      Manuscript ms = new Manuscript(repository, archive, collection, city, -999);
-                     UserImageCollection.create(conn, f, thisUser, ms);
+                            create(conn, f, thisUser, ms);
                      Group g = new Group(conn, ms.getShelfMark(), thisUser.getUID());
                      Project p = new Project(conn, ms.getShelfMark(), g.getGroupID());
                      p.setFolios(conn, ms.getFolios());
@@ -135,7 +137,7 @@ public class FileUpload extends HttpServlet implements Servlet {
             session.setAttribute("LISTENER", null);
          }
       } else {
-			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+			resp.sendError(SC_UNAUTHORIZED);
 		}
    }
 }

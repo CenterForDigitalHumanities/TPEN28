@@ -16,6 +16,7 @@
  */
 package imageLines;
 
+import static edu.slu.util.ImageUtils.getJPEGDimension;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -25,9 +26,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.imageio.ImageIO;
-import edu.slu.util.ImageUtils;
-import textdisplay.DatabaseWrapper;
+import static javax.imageio.ImageIO.read;
+import static javax.imageio.ImageIO.write;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**
  * This class manages the caching of images for TPEN, so we arent constantly hitting the image host for the
@@ -58,12 +59,12 @@ public class ImageCache {
     */
    public static BufferedImage getImage(int folioNum) throws SQLException, IOException {
 		try (InputStream stream = getImageStream(folioNum)) {
-			return stream != null ? ImageIO.read(stream) : null;
+			return stream != null ? read(stream) : null;
 		}
    }
    
    public static InputStream getImageStream(int folioNum) throws SQLException, IOException {
-      try (Connection j = DatabaseWrapper.getConnection()) {
+      try (Connection j = getConnection()) {
          try (PreparedStatement ps = j.prepareStatement("select image from imagecache where folio=?")) {
             ps.setInt(1, folioNum);
             ResultSet rs = ps.executeQuery();
@@ -91,13 +92,13 @@ public class ImageCache {
     * @throws IOException
     */
    public static Dimension getImageDimension(int folioNum) throws SQLException, IOException {
-      try (Connection j = DatabaseWrapper.getConnection()) {
+      try (Connection j = getConnection()) {
          try (PreparedStatement ps = j.prepareStatement("select image from imagecache where folio = ?")) {
             ps.setInt(1, folioNum);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                try (InputStream input = rs.getBinaryStream(1)) {
-                  return ImageUtils.getJPEGDimension(input);
+                  return getJPEGDimension(input);
                }
             }
          }
@@ -134,7 +135,7 @@ public class ImageCache {
     */
    public static void setImage(int folioNum, BufferedImage img) throws SQLException, IOException {
 
-      try (Connection j = DatabaseWrapper.getConnection()) {
+      try (Connection j = getConnection()) {
          try (PreparedStatement ps = j.prepareStatement("select folio from imagecache where folio=?")) {
             ps.setInt(1, folioNum);
             if (!ps.executeQuery().next()) {
@@ -142,7 +143,7 @@ public class ImageCache {
                try (PreparedStatement ps2 = j.prepareStatement("insert into imagecache (folio, image) values(?,?)")) {
                   // Write the image to a binary array to send to the DB
                   ByteArrayOutputStream baos = new ByteArrayOutputStream(1000);
-                  ImageIO.write(img, "jpg", baos);
+                        write(img, "jpg", baos);
                   baos.flush();
 
                   byte[] result = baos.toByteArray();

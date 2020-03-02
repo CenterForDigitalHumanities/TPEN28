@@ -14,19 +14,26 @@
  */
 package edu.slu.util;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+import static edu.slu.util.LangUtils.getMessage;
 import java.io.IOException;
+import static java.lang.Integer.parseInt;
+import static java.lang.String.format;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
+import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import javax.servlet.http.HttpSession;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
-import textdisplay.DatabaseWrapper;
-import textdisplay.Folio;
+import static textdisplay.DatabaseWrapper.getConnection;
+import static textdisplay.Folio.getRbTok;
 import user.User;
 
 /**
@@ -61,7 +68,7 @@ public class ServletUtils {
 	 * around our existing call.
 	 */
 	public static Connection getDBConnection() throws SQLException {
-		return DatabaseWrapper.getConnection();
+		return getConnection();
 	}
 
 	/**
@@ -81,7 +88,7 @@ public class ServletUtils {
 		if (sess != null) {
 			Object uidStr = sess.getAttribute("UID");
 			if (uidStr != null) {
-				return Integer.parseInt(uidStr.toString());
+				return parseInt(uidStr.toString());
 			}
 		}
 		// if paleo session id has been passed in, use that to kick off a new user session
@@ -94,11 +101,11 @@ public class ServletUtils {
 				Object uidStr = paleoSession.getAttribute("UID");
 				sess = req.getSession(true);
 				sess.setAttribute("UID",
-						Integer.parseInt(uidStr.toString()));
+						parseInt(uidStr.toString()));
 
 				// need to invalidate the paleo session at this point
 				paleoSession.invalidate();
-				return Integer.parseInt(uidStr.toString());
+				return parseInt(uidStr.toString());
 			}
 
 		}
@@ -120,7 +127,7 @@ public class ServletUtils {
 	 * Check for the given host in a version.properties setting.
 	 */
 	public static boolean verifyHostInList(String host, String propName) {
-		String propVal = Folio.getRbTok(propName);
+		String propVal = getRbTok(propName);
 		if (propVal != null) {
 			String[] propHosts = propVal.split(",");
 			for (String h : propHosts) {
@@ -147,9 +154,9 @@ public class ServletUtils {
 	 */
 	public static void reportError(HttpServletResponse resp, int code,
 			Throwable ex, String msg) throws IOException {
-		LOG.log(Level.SEVERE, msg, ex);
+		LOG.log(SEVERE, msg, ex);
 		resp.sendError(code,
-				String.format("%s: %s", msg, LangUtils.getMessage(ex)));
+				format("%s: %s", msg, getMessage(ex)));
 	}
 
 	/**
@@ -164,23 +171,23 @@ public class ServletUtils {
 		if (ex instanceof InvocationTargetException) {
 			reportInternalError(resp, ex.getCause());
 		} else if (ex instanceof MySQLIntegrityConstraintViolationException) {
-			reportError(resp, HttpServletResponse.SC_CONFLICT, ex,
+			reportError(resp, SC_CONFLICT, ex,
 					"Database integrity violation");
 		} else if (ex instanceof SQLException) {
-			reportError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex,
+			reportError(resp, SC_INTERNAL_SERVER_ERROR, ex,
 					"Database error");
 		} else if (ex instanceof NumberFormatException) {
-			reportError(resp, HttpServletResponse.SC_BAD_REQUEST, ex,
+			reportError(resp, SC_BAD_REQUEST, ex,
 					"Unable to parse number");
 		} else if (ex instanceof NoSuchMethodException) {
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+			resp.sendError(SC_INTERNAL_SERVER_ERROR,
 					"No such method: " + ex.getMessage());
 		} else {
-			reportError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex,
+			reportError(resp, SC_INTERNAL_SERVER_ERROR, ex,
 					"Internal server error");
 		}
 	}
 
-	private static final Logger LOG = Logger.getLogger(ServletUtils.class
+	private static final Logger LOG = getLogger(ServletUtils.class
 			.getName());
 }

@@ -11,24 +11,28 @@ and limitations under the License.
  */
 package user;
 
-import java.math.BigInteger;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.currentTimeMillis;
+import static java.lang.System.err;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.mail.MessagingException;
-import textdisplay.*;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
+import textdisplay.Folio;
+import static textdisplay.Folio.getRbTok;
+import textdisplay.Manuscript;
+import textdisplay.Project;
+import textdisplay.ProjectPriority;
+import textdisplay.WelcomeMessage;
 import utils.RandomString;
 
 /**
@@ -43,10 +47,6 @@ public class User {
     private String fname;
     private String lname;
     private String openID;
-
-    private String getOpenID() {
-        return openID;
-    }
 
     /**
      * Get the unique user identifier for the owner of this comment
@@ -67,7 +67,7 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, UID);
             ResultSet rs = ps.executeQuery();
@@ -78,8 +78,8 @@ public class User {
             }
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
             }
         }
     }
@@ -94,12 +94,11 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, UID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                String toret = "";
                 try {
                     return new Date(rs.getTimestamp(1).getTime());
 
@@ -111,8 +110,8 @@ public class User {
                 return new Date(0);
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -124,7 +123,7 @@ public class User {
         Date d = this.getLastActiveDate();
         if (d.getTime() == 0)
             return -1;
-        long msdiff = System.currentTimeMillis() - d.getTime();
+        long msdiff = currentTimeMillis() - d.getTime();
         int minutesDiff = (int) (msdiff / 60000);
 
         return minutesDiff;
@@ -140,7 +139,7 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, UID);
             ResultSet rs = ps.executeQuery();
@@ -154,8 +153,8 @@ public class User {
             }
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
             }
         }
     }
@@ -169,7 +168,7 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, UID);
             ResultSet rs = ps.executeQuery();
@@ -180,8 +179,8 @@ public class User {
             }
         } finally {
             if (j != null) {
-                DatabaseWrapper.closeDBConnection(j);
-                DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
             }
         }
     }
@@ -229,7 +228,7 @@ public class User {
         PreparedStatement qry = null;
         qry = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
 
             qry = j.prepareStatement("select * from users where UID=?");
             qry.setInt(1, id);
@@ -242,8 +241,8 @@ public class User {
                 this.openID = rs.getString("openID");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
         }
     }
 
@@ -260,7 +259,7 @@ public class User {
         PreparedStatement qry = null;
         qry = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
 
             qry = j.prepareStatement("select * from users where openID=?");
             qry.setString(1, openID);
@@ -273,8 +272,8 @@ public class User {
                 this.openID = rs.getString("openID");
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
         }
     }
 
@@ -290,7 +289,7 @@ public class User {
         PreparedStatement qry = null;
         qry = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
 
             qry = j.prepareStatement("Select UID,pass from users where Uname=? and pass=SHA1(?)");
             qry.setString(1, uname);
@@ -298,41 +297,19 @@ public class User {
             ResultSet rs;
             rs = qry.executeQuery();
             if (rs.next()) {
-                this.UID = Integer.parseInt(rs.getString("UID"));
+                this.UID = parseInt(rs.getString("UID"));
                 this.Uname = uname;
                 User tmp = new User(UID);
                 this.fname = tmp.fname;
                 this.lname = tmp.lname;
 
-            } else {
-                qry = j.prepareStatement("Select UID,pass from users where Uname=? and pass=(?)");
-                qry.setString(1, uname);
-                java.security.MessageDigest d = null;
-                d = java.security.MessageDigest.getInstance("SHA-1");
-                d.reset();
-                d.update(pass.getBytes());
-                pass = new String(d.digest());
-
-                qry.setString(2, pass);
-                rs = qry.executeQuery();
-
-                rs = qry.executeQuery();
-                if (rs.next()) {
-                    this.UID = Integer.parseInt(rs.getString("UID"));
-                    this.Uname = uname;
-                    User tmp = new User(UID);
-                    this.fname = tmp.fname;
-                    this.lname = tmp.lname;
-
-                }
-                return;
             }
         } catch (Exception e) {
-            return;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
         }
+        return;
     }
 
     /**
@@ -348,7 +325,7 @@ public class User {
         PreparedStatement qry = null;
         qry = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
 
             // the openID='' means prevents someone trying to login to an openid account
             // using a password, they can only use openid
@@ -368,8 +345,8 @@ public class User {
                 UID = 0;
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
         }
     }
 
@@ -379,14 +356,14 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
-            ps.setTimestamp(1, new java.sql.Timestamp(System.currentTimeMillis()));
+            ps.setTimestamp(1, new java.sql.Timestamp(currentTimeMillis()));
             ps.setInt(2, UID);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -396,7 +373,7 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, UID);
             ResultSet rs = ps.executeQuery();
@@ -408,8 +385,8 @@ public class User {
                 }
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         return false;
     }
@@ -422,7 +399,7 @@ public class User {
             body = this.getFname() + " " + this.getLname() + " (" + this.getUname() + ") says:\n" + body;
 
             try {
-                m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org", Folio.getRbTok("NOTIFICATIONEMAIL"),
+                m.sendMail(getRbTok("EMAILSERVER"), "TPEN@t-pen.org", getRbTok("NOTIFICATIONEMAIL"),
                         "TPEN contact", body);
             } catch (Exception e) {
                 return 2; // created user, but email issue occured
@@ -456,13 +433,13 @@ public class User {
                 // m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org",
                 // Folio.getRbTok("NOTIFICATIONEMAIL"), "new user request", body);
             } catch (Exception e) {
-                System.err.println("Created User, "+uname+", but activation issue occured during signup:"+e.getMessage());
-                // return 2; // created user, but email issue occured
-                return 3; // created user, but activation issue occured
+                err.println("Created User, "+uname+", but activation issue occurred during signup:"+e.getMessage());
+                // return 2; // created user, but email issue occurred
+                return 3; // created user, but activation issue occurred
             }
             return 0; // total success
         } else {
-            System.err.println("Did not create User at signup: "+uname);
+            err.println("Did not create User at signup: "+uname);
             return 1; // failed to create
         }
     }
@@ -479,7 +456,7 @@ public class User {
         PreparedStatement qry = null;
         qry = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
 
             qry = j.prepareStatement("select * from users where Uname=?");
             qry.setString(1, Uname);
@@ -493,8 +470,8 @@ public class User {
 
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
         }
     }
 
@@ -520,7 +497,6 @@ public class User {
         } else {
             this.UID = -1;
         }
-
     }
 
     /**
@@ -562,13 +538,13 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, UID);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
 
     }
@@ -585,7 +561,7 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -598,8 +574,8 @@ public class User {
             }
 
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         return toret;
     }
@@ -610,17 +586,17 @@ public class User {
         String query = "SELECT DISTINCT creator FROM transcription WHERE DATE > ( NOW( ) + INTERVAL -2 MONTH )";
         Connection j = null;
         PreparedStatement ps = null;
-        Stack<User> tmp = new Stack();
+        Stack<User> tmp = new Stack<>();
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 tmp.push(new User(rs.getInt(1)));
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         active = new User[tmp.size()];
         // odd looking way of doing this copy, I know, but it was convenient
@@ -644,7 +620,7 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -657,8 +633,8 @@ public class User {
             }
 
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         return toret;
     }
@@ -675,7 +651,7 @@ public class User {
         PreparedStatement qry = null;
         qry = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
 
             if (this.exists()) {
                 /*
@@ -700,8 +676,8 @@ public class User {
 
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
         }
     }
 
@@ -730,29 +706,30 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setString(1, pass);
             ps.setInt(2, UID);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         if (sendEmail) {
             textdisplay.mailer m = new textdisplay.mailer();
             String body = "Your TPEN password has been reset to " + newPass + "\n"
                     + "You may head to http://t-pen.org and change it.";
-            m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org", this.Uname, "TPEN Password Reset", body);
+            m.sendMail(getRbTok("EMAILSERVER"), "TPEN@t-pen.org", this.Uname, "TPEN Password Reset", body);
         }
         return newPass;
     }
 
-    /** Send the welcome message and set the user's password. */
+    /** Send the welcome message and set the user's password.
+     * @return pass String generated password */
     public String activateUser() throws SQLException, NoSuchAlgorithmException, MessagingException, Exception {
         String pass = resetPassword(false);
         textdisplay.mailer m = new textdisplay.mailer();
-        m.sendMail(Folio.getRbTok("EMAILSERVER"), Folio.getRbTok("NOTIFICATIONEMAIL"), this.Uname, "Welcome to TPEN",
+        m.sendMail(getRbTok("EMAILSERVER"), getRbTok("NOTIFICATIONEMAIL"), this.Uname, "Welcome to TPEN",
                 new WelcomeMessage().getMessage(this.fname + " " + this.lname, pass));
         return pass;
     }
@@ -766,13 +743,13 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, UID);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -781,9 +758,9 @@ public class User {
         String query = "select UID from users where UNIX_TIMESTAMP(lastActive)>(UNIX_TIMESTAMP(now())-60)";
         Connection j = null;
         PreparedStatement ps = null;
-        Stack<User> tmp = new Stack();
+        Stack<User> tmp = new Stack<>();
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
 
             ResultSet rs = ps.executeQuery();
@@ -791,8 +768,8 @@ public class User {
                 tmp.push(new User(rs.getInt(1)));
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         User[] toret = new User[tmp.size()];
         for (int i = 0; i < toret.length; i++) {
@@ -802,38 +779,18 @@ public class User {
     }
 
     /**
-     * Is there already a record for this Uname or ID?
+     * Is there already a record for this UID?
      * 
      * @return
      * @throws SQLException
      */
     public Boolean exists() throws SQLException {
-        Connection j = null;
-        PreparedStatement qry = null;
-        qry = null;
-        try {
-            if (openID != null) {
-                return false;
-            }
-            j = DatabaseWrapper.getConnection();
-
-            qry = j.prepareStatement("select * from users where Uname=?");
-            qry.setString(1, Uname);
-            ResultSet rs = qry.executeQuery();
-            if (rs.next()) {
-                return true;
-            }
-            qry = j.prepareStatement("select * from users where UID=?");
+        try (Connection j = getConnection()) {
+            PreparedStatement qry = j.prepareStatement("select * from users where UID=? OR Uname=?");
             qry.setInt(1, UID);
-            rs = qry.executeQuery();
-            if (rs.next()) {
-                return true;
-            }
-
-            return false;
-        } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            qry.setString(2, this.Uname);
+            ResultSet rs = qry.executeQuery();
+            return rs.next();
         }
     }
 
@@ -845,9 +802,8 @@ public class User {
     public Group[] getUserGroups() {
         Connection j = null;
         PreparedStatement qry = null;
-        qry = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
 
             qry = j.prepareStatement("select * from groupmembers where UID=?");
             qry.setInt(1, UID);
@@ -863,21 +819,20 @@ public class User {
                 groups[recordCount] = new Group(rs.getInt("GID"));
                 recordCount++;
             }
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
             return groups;
         } catch (SQLException e) {
             return null;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
         }
     }
 
     /**
      * Return an int of lines of transcription for which this creator
      * 
-     * @param uid int User ID
      * @return int count of lines
      * @throws SQLException
      */
@@ -885,9 +840,8 @@ public class User {
         String query = "select * from transcription where creator=?";
         Connection j = null;
         PreparedStatement ps = null;
-        Stack<Transcription> orderedTranscriptions = new Stack();
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, UID);
             ResultSet rs = ps.executeQuery();
@@ -897,8 +851,8 @@ public class User {
             }
             return recordCount;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
 
     }
@@ -916,12 +870,12 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, UID);
             ps.setInt(2, UID);
             ResultSet rs = ps.executeQuery();
-            Stack<Integer> projectIDs = new Stack();
+            Stack<Integer> projectIDs = new Stack<>();
             while (rs.next()) {
                 projectIDs.push(rs.getInt("project.id"));
             }
@@ -933,8 +887,8 @@ public class User {
             }
             return toret;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -947,10 +901,9 @@ public class User {
     public String getAllUsersDropdown() throws SQLException {
         Connection j = null;
         PreparedStatement qry = null;
-        qry = null;
         try {
             String toret = "";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             String qryText = "select distinct creator from transcription";
 
             qry = j.prepareStatement(qryText);
@@ -959,47 +912,45 @@ public class User {
                 User tmp = new User(rs.getInt("creator"));
                 toret += "<option value=\"" + tmp.UID + "\">" + tmp.fname + " " + tmp.lname + "</option>";
             }
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
             return toret;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
         }
     }
 
     /**
-     * Inivte a new user to join TPEN. Returns 0 on successful user creation, 1 on
+     * Invite a new user to join TPEN. Returns 0 on successful user creation, 1 on
      * user creation failure, and 2 if user creation succeeded but email failed,
      * which is common on test systems and should produce a warning
      */
     public int invite(String uname, String fname, String lname) throws SQLException {
         Boolean emailFailure = false;
         User newUser = new User(uname, lname, fname, "");
-        // System.out.println("Defined user to continue on. Can we?");
         if (newUser.getUID() > 0) {
-            // System.out.println("Yes. We made a new user.");
-            // System.out.println(this.getFname() + " " + this.getLname() + " (" +
-            // this.getUname() + ") has invited " + newUser.getFname() + " " +
-            // newUser.getLname() + " (" + newUser.getUname() + ") to join TPEN.");
-
             textdisplay.mailer m = new textdisplay.mailer();
             String body = this.getFname() + " " + this.getLname() + " (" + this.getUname() + ") has invited  "
                     + newUser.getFname() + " " + newUser.getLname() + " (" + newUser.getUname()
                     + ") to join TPEN, which needs your approval.\n";
             try {
-                m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org", Folio.getRbTok("NOTIFICATIONEMAIL"),
+                m.sendMail(getRbTok("EMAILSERVER"), "TPEN@t-pen.org", getRbTok("NOTIFICATIONEMAIL"),
                         "new user request", body);
-            } catch (Exception e) {
+            } catch (MessagingException e) {
                 emailFailure = true;
             }
             // send a notification email to the invitee
             body = this.getFname() + " " + this.getLname() + " (" + this.getUname()
-                    + ") has invited you to join their transcription project on TPEN.  Your initial password is blank, please log in and set a password.  \nThe TPEN team";
+                    + ") has invited you to join their transcription project on TPEN.  \n"
+                    + "If you'd like to accept, head to http://t-pen.org/TPEN/admin.jsp and enter "+uname+" to activate your account. "
+                    + "You will receive an email to set your password and may then update your username and start your own projects.\n\n"
+                    + "This is the last message you will receive if you do not wish to create an account and no further action is required.\n\n"
+                    + "Thanks for transcribing, the TPEN team";
             try {
-                m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org", newUser.getUname(),
-                        "An invitation to transcribe on TPEN", body);
-            } catch (Exception e) {
+                m.sendMail(getRbTok("EMAILSERVER"), "TPEN@t-pen.org", newUser.getUname(),
+                        "An invitation to transcribe on t-pen.org", body);
+            } catch (MessagingException e) {
                 emailFailure = true;
             }
             // System.out.println("What is email failure: "+emailFailure);
@@ -1012,9 +963,8 @@ public class User {
             // This is where invite did not have to make a new user. The user being invited
             // is already a part of T-PEN. Send an email still? Right now, no.
             // System.out.println("No. We did not make a new user, do not send an email.");
+            return 1;
         }
-
-        return 1;
     }
 
     /**
@@ -1026,9 +976,8 @@ public class User {
         String query = "select * from admins where uid=?";
         Connection j = null;
         PreparedStatement qry = null;
-        qry = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             qry = j.prepareStatement(query);
             qry.setInt(1, UID);
             ResultSet rs = qry.executeQuery();
@@ -1036,8 +985,8 @@ public class User {
                 return true;
             return false;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
         }
 
     }
@@ -1055,7 +1004,7 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, UID);
             ResultSet rs = ps.executeQuery();
@@ -1065,8 +1014,8 @@ public class User {
                 return false;
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
 
     }
@@ -1082,14 +1031,14 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setString(1, password);
             ps.setInt(2, UID);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -1103,15 +1052,15 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             String query = "insert into ipr (uid,archive) values(?,?)";
             ps = j.prepareStatement(query);
             ps.setString(2, new Folio(folioNum).getArchive());
             ps.setInt(1, UID);
             ps.execute();
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 
@@ -1121,13 +1070,12 @@ public class User {
     public Boolean hasAcceptedIPR(int folioNum) throws SQLException {
         Connection j = null;
         PreparedStatement qry = null;
-        qry = null;
         try {
 
             Folio fol = new Folio(folioNum);
             fol.getArchive();
             String query = "select * from ipr where archive=? and uid=?";
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
 
             qry = j.prepareStatement(query);
             qry.setString(1, fol.getArchive());
@@ -1141,8 +1089,8 @@ public class User {
 
             return false;
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(qry);
+            closeDBConnection(j);
+            closePreparedStatement(qry);
         }
     }
 
@@ -1162,7 +1110,7 @@ public class User {
         Connection j = null;
         PreparedStatement ps = null;
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             if (!this.isAdmin())
                 ps.setInt(1, UID);
@@ -1177,8 +1125,8 @@ public class User {
                 toret = tmp;
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
 
         return toret;
@@ -1188,17 +1136,17 @@ public class User {
         String query = "select * from admins";
         Connection j = null;
         PreparedStatement ps = null;
-        ArrayList toret = new ArrayList();
+        ArrayList<User> toret = new ArrayList<>();
         try {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 toret.add(new User(rs.getInt(1)));
             }
         } finally {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         User[] tr = new User[toret.size()];
         for (int i = 0; i < tr.length; i++) {

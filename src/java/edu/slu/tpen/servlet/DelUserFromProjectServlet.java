@@ -16,13 +16,16 @@
 package edu.slu.tpen.servlet;
 
 import java.io.IOException;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import javax.servlet.http.HttpSession;
 import textdisplay.Project;
 import user.Group;
@@ -40,33 +43,33 @@ public class DelUserFromProjectServlet extends HttpServlet {
         HttpSession session = request.getSession();
         if (session.getAttribute("UID") != null) {
             try {
-                int UID = Integer.parseInt(session.getAttribute("UID").toString());
+                int UID = parseInt(session.getAttribute("UID").toString());
                 User thisUser = new user.User(UID);
                 if(null != request.getParameter("uname") && null != request.getParameter("projectID")){
                     User newUser = new User(request.getParameter("uname"));
                     if(null != newUser){
-                        Project thisProject = new Project(Integer.parseInt(request.getParameter("projectID")));
+                        Project thisProject = new Project(parseInt(request.getParameter("projectID")));
                         Group g = new Group(thisProject.getGroupID());
                         if (g.isAdmin(thisUser.getUID())) {
                             g.remove(newUser.getUID());
                         }else{
                             //if user is not admin, return unauthorized. 
-                            response.getWriter().print(response.SC_UNAUTHORIZED);
+                            response.getWriter().print(SC_UNAUTHORIZED);
                         }
                     }else{
                         //if there is no uname
-                        response.getWriter().print(response.SC_NOT_ACCEPTABLE);
+                        response.getWriter().print(SC_NOT_ACCEPTABLE);
                     }
                 }else{
                     //if there is no uname
-                    response.getWriter().print(response.SC_NOT_ACCEPTABLE);
+                    response.getWriter().print(SC_NOT_ACCEPTABLE);
                 }
             } catch (SQLException ex) {
-                Logger.getLogger(DelUserFromProjectServlet.class.getName()).log(Level.SEVERE, null, ex);
+                getLogger(DelUserFromProjectServlet.class.getName()).log(SEVERE, null, ex);
             }
         }else{
             //if user doesn't log in, return unauthorized. 
-            response.getWriter().print(response.SC_UNAUTHORIZED);
+            response.getWriter().print(SC_UNAUTHORIZED);
         }          
     }
 

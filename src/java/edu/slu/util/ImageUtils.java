@@ -16,12 +16,14 @@ package edu.slu.util;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.color.ColorSpace;
+import static java.awt.color.ColorSpace.CS_GRAY;
+import static java.awt.color.ColorSpace.getInstance;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
+import static java.util.logging.Logger.getLogger;
 
 
 /**
@@ -57,7 +59,7 @@ public class ImageUtils {
    }
 
    public static BufferedImage convertToGreyscale(BufferedImage src) {
-      return new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null).filter(src, null);
+      return new ColorConvertOp(getInstance(CS_GRAY), null).filter(src, null);
    }
 
 
@@ -99,5 +101,5 @@ public class ImageUtils {
 //      }
 //   }
    
-   private static final Logger LOG = Logger.getLogger(ImageUtils.class.getName());
+   private static final Logger LOG = getLogger(ImageUtils.class.getName());
 }

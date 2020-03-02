@@ -13,16 +13,15 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.net.URLEncoder.encode;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.owasp.esapi.errors.EncodingException;
-import textdisplay.Manuscript;
+import static textdisplay.Manuscript.getRepositoriesByCity;
 
 /**
  *Produce an html dropdown with known Manuscript repositories ( the official homes of the manuscripts
@@ -41,24 +40,21 @@ public class repoLister extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
             if(request.getParameter("city")!=null)
             {
                 String city=request.getParameter("city");
-                String [] repos= Manuscript.getRepositoriesByCity(city);
+                String [] repos= getRepositoriesByCity(city);
                 if (repos.length>1) out.print("<option selected value=\"all\">Select a Repository</option>");
                 for(int i=0;i<repos.length;i++)
                 {
-                        out.print("<option class=\"" + (i + 1) + "\" value=\"" + java.net.URLEncoder.encode(repos[i],"UTF-8") + "\">" + repos[i] + "</option>");
+                        out.print("<option class=\"" + (i + 1) + "\" value=\"" + encode(repos[i],"UTF-8") + "\">" + repos[i] + "</option>");
                 }
             }
         } catch (SQLException ex)
             {
-            Logger.getLogger(repoLister.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-            out.close();
-        }
+            getLogger(repoLister.class.getName()).log(SEVERE, null, ex);
+            }
     } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

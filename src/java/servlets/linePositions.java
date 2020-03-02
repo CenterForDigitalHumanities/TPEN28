@@ -14,9 +14,10 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,8 +39,7 @@ public class linePositions extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
         //is this a project request?
         if(request.getParameter("projectID")!=null)
         {
@@ -51,7 +51,7 @@ public class linePositions extends HttpServlet {
             if(request.getParameter("msID")!=null)
             {
                 response.setContentType("application/xml");
-                int msID=Integer.parseInt(request.getParameter("msID"));
+                int msID=parseInt(request.getParameter("msID"));
                 Manuscript m=new Manuscript(msID,true);
                 response.setHeader( "Content-Disposition", "attachment; filename=\""+m.getShelfMark().replace(".", " ")+" line positions.xml");
 
@@ -62,9 +62,7 @@ public class linePositions extends HttpServlet {
             }
         }
         } catch (SQLException ex) {
-            Logger.getLogger(linePositions.class.getName()).log(Level.SEVERE, null, ex);
-        } finally { 
-            out.close();
+            getLogger(linePositions.class.getName()).log(SEVERE, null, ex);
         }
     } 
 

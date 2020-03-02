@@ -19,6 +19,8 @@ package textdisplay;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import static java.lang.System.currentTimeMillis;
+import static java.lang.Thread.currentThread;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
@@ -27,11 +29,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import static java.util.Arrays.asList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
+import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
+import static java.util.logging.Logger.getLogger;
 import javax.xml.transform.stream.StreamSource;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -42,8 +45,12 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.owasp.esapi.ESAPI;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
+import static org.owasp.esapi.ESAPI.encoder;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
+import static textdisplay.Folio.getRbTok;
 
 
 /**
@@ -63,7 +70,7 @@ public class TagButton {
     * @return the tag description, or the tag text if the description hasn't been set
     */
    public String getDescription() {
-      return StringEscapeUtils.escapeHtml(description.length() > 0 ? description : tag);
+      return escapeHtml(description.length() > 0 ? description : tag);
    }
    String description;
 
@@ -80,7 +87,7 @@ public class TagButton {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, color);
          ps.setInt(1, projectID);
@@ -88,8 +95,8 @@ public class TagButton {
          ps.execute();
          this.xmlColor = color;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
 
    }
@@ -103,7 +110,7 @@ public class TagButton {
       PreparedStatement stmt = null;
       try {
          String query = "insert into buttons(uid,position,text,description) values (?,?,?,?)";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
          stmt.setInt(1, uid);
@@ -117,8 +124,8 @@ public class TagButton {
          this.uid = uid;
          this.xmlColor = "";
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -132,11 +139,11 @@ public class TagButton {
          TagButton t = new TagButton(projectID, position, true);
          t.deleteTag();
       } catch (Exception e) {
-         Logger.getLogger(TagButton.class.getName()).log(Level.SEVERE, null, e);
+            getLogger(TagButton.class.getName()).log(SEVERE, null, e);
       }
       try {
          String query = "insert into projectbuttons(project,position,text,description) values (?,?,?,?)";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
          stmt.setInt(1, projectID);
@@ -151,10 +158,10 @@ public class TagButton {
          this.projectID = projectID;
          this.xmlColor = "";
       } catch (Exception e) {
-         Logger.getLogger(TagButton.class.getName()).log(Level.SEVERE, null, e);
+            getLogger(TagButton.class.getName()).log(SEVERE, null, e);
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -166,7 +173,7 @@ public class TagButton {
       PreparedStatement stmt = null;
       try {
          String query = "insert into buttons(uid,position,text,param1, param2, param3, param4, param5) values (?,?,?,?,?,?,?,?)";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
          stmt.setInt(1, uid);
@@ -187,8 +194,8 @@ public class TagButton {
          this.uid = uid;
          this.xmlColor = "";
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -204,7 +211,7 @@ public class TagButton {
             TagButton t = new TagButton(projectID, position, true);
             t.deleteTag();
          } catch (Exception e) {
-            Logger.getLogger(TagButton.class.getName()).log(Level.SEVERE, null, e);
+                getLogger(TagButton.class.getName()).log(SEVERE, null, e);
          }
          for (int i = 0; i < params.length; i++) {
             if (params[i] == null || params[i].contains("null")) {
@@ -212,7 +219,7 @@ public class TagButton {
             }
          }
          String query = "insert into projectbuttons(project,position,text,param1, param2, param3, param4, param5, description) values (?,?,?,?,?,?,?,?,?)";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
          stmt.setInt(1, projectID);
@@ -232,8 +239,8 @@ public class TagButton {
          this.projectID = projectID;
          this.xmlColor = "";
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -245,7 +252,7 @@ public class TagButton {
       PreparedStatement stmt = null;
       try {
          String query = "select * from buttons where uid=? and position=?";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setInt(1, uid);
          stmt.setInt(2, position);
@@ -259,30 +266,30 @@ public class TagButton {
             if (rs.getString("param1").length() > 0) {
                parameters = new String[5];
 
-               parameters[0] = ESAPI.encoder().encodeForHTML(rs.getString("param1"));
+               parameters[0] = encoder().encodeForHTML(rs.getString("param1"));
                if (!parameters[0].contains("&quot;")) {
                   parameters[0] += "=&quot;&quot;";
                }
                if (rs.getString("param2").length() > 0) {
-                  parameters[1] = ESAPI.encoder().encodeForHTML(rs.getString("param2"));
+                  parameters[1] = encoder().encodeForHTML(rs.getString("param2"));
                   if (!parameters[1].contains("&quot;")) {
                      parameters[1] += "=&quot;&quot;";
                   }
                }
                if (rs.getString("param3").length() > 0) {
-                  parameters[2] = ESAPI.encoder().encodeForHTML(rs.getString("param3"));
+                  parameters[2] = encoder().encodeForHTML(rs.getString("param3"));
                   if (!parameters[2].contains("&quot;")) {
                      parameters[2] += "=&quot;&quot;";
                   }
                }
                if (rs.getString("param4").length() > 0) {
-                  parameters[3] = ESAPI.encoder().encodeForHTML(rs.getString("param4"));
+                  parameters[3] = encoder().encodeForHTML(rs.getString("param4"));
                   if (!parameters[3].contains("&quot;")) {
                      parameters[3] += "=&quot;&quot;";
                   }
                }
                if (rs.getString("param5").length() > 0) {
-                  parameters[4] = ESAPI.encoder().encodeForHTML(rs.getString("param5"));
+                  parameters[4] = encoder().encodeForHTML(rs.getString("param5"));
                   if (!parameters[4].contains("&quot;")) {
                      parameters[4] += "=&quot;&quot;";
                   }
@@ -295,8 +302,8 @@ public class TagButton {
 
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -308,7 +315,7 @@ public class TagButton {
       PreparedStatement stmt = null;
       try {
          String query = "select * from projectbuttons where project=? and position=?";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setInt(1, projectID);
          stmt.setInt(2, position);
@@ -323,30 +330,30 @@ public class TagButton {
             if (rs.getString("param1").length() > 0) {
                parameters = new String[5];
 
-               parameters[0] = ESAPI.encoder().encodeForHTML(rs.getString("param1"));
+               parameters[0] = encoder().encodeForHTML(rs.getString("param1"));
                if (!parameters[0].contains("&quot;")) {
                   parameters[0] += "=&quot;&quot;";
                }
                if (rs.getString("param2").length() > 0) {
-                  parameters[1] = ESAPI.encoder().encodeForHTML(rs.getString("param2"));
+                  parameters[1] = encoder().encodeForHTML(rs.getString("param2"));
                   if (!parameters[1].contains("&quot;")) {
                      parameters[1] += "=&quot;&quot;";
                   }
                }
                if (rs.getString("param3").length() > 0) {
-                  parameters[2] = ESAPI.encoder().encodeForHTML(rs.getString("param3"));
+                  parameters[2] = encoder().encodeForHTML(rs.getString("param3"));
                   if (!parameters[2].contains("&quot;")) {
                      parameters[2] += "=&quot;&quot;";
                   }
                }
                if (rs.getString("param4").length() > 0) {
-                  parameters[3] = ESAPI.encoder().encodeForHTML(rs.getString("param4"));
+                  parameters[3] = encoder().encodeForHTML(rs.getString("param4"));
                   if (!parameters[3].contains("&quot;")) {
                      parameters[3] += "=&quot;&quot;";
                   }
                }
                if (rs.getString("param5").length() > 0) {
-                  parameters[4] = ESAPI.encoder().encodeForHTML(rs.getString("param5"));
+                  parameters[4] = encoder().encodeForHTML(rs.getString("param5"));
                   if (!parameters[4].contains("&quot;")) {
                      parameters[4] += "=&quot;&quot;";
                   }
@@ -358,8 +365,8 @@ public class TagButton {
             this.tag = "";
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -382,7 +389,7 @@ public class TagButton {
                parameters[i] = "";
             }
          }
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(1, parameters[0]);
          stmt.setString(2, parameters[1]);
@@ -408,8 +415,8 @@ public class TagButton {
             this.parameters = null;
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
 
    }
@@ -458,7 +465,7 @@ public class TagButton {
             query = "UPDATE projectbuttons set position=? where project=? and position=?";
          }
 
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, newPos);
          ps.setInt(3, position);
@@ -468,8 +475,8 @@ public class TagButton {
             ps.setInt(2, uid);
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -487,7 +494,7 @@ public class TagButton {
             query = "update buttons set text=? where uid=? and position=?";
          }
 
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(1, newTag);
          if (projectID > 0) {
@@ -499,8 +506,8 @@ public class TagButton {
          stmt.execute();
          tag = newTag;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -508,18 +515,18 @@ public class TagButton {
     * The actual button markup
     */
    public String getButton() {
-      Date date = new Date(System.currentTimeMillis());
-      StackTraceElement[] t = Thread.currentThread().getStackTrace();
+      Date date = new Date(currentTimeMillis());
+      StackTraceElement[] t = currentThread().getStackTrace();
       DateFormat formatter = new SimpleDateFormat("yyyy-mm-dd H:M:S");
       formatter.format(date);
       String stackTrace = "";
       Boolean caller = false;
-      for (int i = 0; i < t.length; i++) {
-         stackTrace += t[i].toString() + "\n";
-         if (t[i].toString().contains("getAllProjectButtonsClassic")) {
-            caller = true;
-         }
-      }
+        for (StackTraceElement t1 : t) {
+            stackTrace += t1.toString() + "\n";
+            if (t1.toString().contains("getAllProjectButtonsClassic")) {
+                caller = true;
+            }
+        }
       if (!caller) {
          //LOG.log(Level.SEVERE, "{0} Running tagButton.getAllProjectButtonsClassic\n{1}", new Object[]{formatter.format(date), stackTrace});
       }
@@ -586,14 +593,14 @@ public class TagButton {
    }
 
  public static String getAllProjectButtonsClassic(int projectID) throws SQLException {
-      Date date = new Date(System.currentTimeMillis());
-      StackTraceElement[] t = Thread.currentThread().getStackTrace();
+      Date date = new Date(currentTimeMillis());
+      StackTraceElement[] t = currentThread().getStackTrace();
       DateFormat formatter = new SimpleDateFormat("yyyy-mm-dd H:M:S");
       formatter.format(date);
       String stackTrace = "";
-      for (int i = 0; i < t.length; i++) {
-         stackTrace += t[i].toString() + "\n";
-      }
+        for (StackTraceElement t1 : t) {
+            stackTrace += t1.toString() + "\n";
+        }
 
       //LOG.log(Level.SEVERE, "{0} Running tagButton.getAllProjectButtonsClassic\n{1}", new Object[]{formatter.format(date), stackTrace});
       Connection j = null;
@@ -601,7 +608,7 @@ public class TagButton {
       try {
          String toret = "";
          String query = "select distinct(position) from projectbuttons where project=? order by position";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setInt(1, projectID);
          ResultSet rs = stmt.executeQuery();
@@ -624,8 +631,8 @@ public class TagButton {
          }
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
  
@@ -633,21 +640,21 @@ public class TagButton {
     * get all of the buttons for this Project and build them.  Specifically for use in buttons.jsp
     */
    public static String buildAllProjectXML(int projectID) throws SQLException {
-      Date date = new Date(System.currentTimeMillis());
-      StackTraceElement[] t = Thread.currentThread().getStackTrace();
+      Date date = new Date(currentTimeMillis());
+      StackTraceElement[] t = currentThread().getStackTrace();
       DateFormat formatter = new SimpleDateFormat("yyyy-mm-dd H:M:S");
       formatter.format(date);
       String stackTrace = "";
       String toret = "";
-      for (int i = 0; i < t.length; i++) {
-         stackTrace += t[i].toString() + "\n";
-      }
+        for (StackTraceElement t1 : t) {
+            stackTrace += t1.toString() + "\n";
+        }
       //LOG.log(Level.SEVERE, "{0} Running tagButton.getAllProjectButtons\n{1}", new Object[]{formatter.format(date), stackTrace});
       Connection j = null;
       PreparedStatement stmt = null;
       try {
          String query = "select distinct(position) from projectbuttons where project=? order by position";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setInt(1, projectID);
          ResultSet rs = stmt.executeQuery();
@@ -720,8 +727,8 @@ public class TagButton {
          
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -730,21 +737,21 @@ public class TagButton {
     */
    public static String getAllProjectButtons(int projectID) throws SQLException {
        //System.out.println("Get all project buttons");
-      Date date = new Date(System.currentTimeMillis());
-      StackTraceElement[] t = Thread.currentThread().getStackTrace();
+      Date date = new Date(currentTimeMillis());
+      StackTraceElement[] t = currentThread().getStackTrace();
       DateFormat formatter = new SimpleDateFormat("yyyy-mm-dd H:M:S");
       formatter.format(date);
       String stackTrace = "";
-      for (int i = 0; i < t.length; i++) {
-         stackTrace += t[i].toString() + "\n";
-      }
+        for (StackTraceElement t1 : t) {
+            stackTrace += t1.toString() + "\n";
+        }
       //LOG.log(Level.SEVERE, "{0} Running tagButton.getAllProjectButtons\n{1}", new Object[]{formatter.format(date), stackTrace});
       Connection j = null;
       PreparedStatement stmt = null;
       try {
          String toret = "";
          String query = "select distinct(position) from projectbuttons where project=? order by position";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setInt(1, projectID);
          ResultSet rs = stmt.executeQuery();
@@ -804,8 +811,8 @@ public class TagButton {
          }
          return ja.toString();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -817,13 +824,13 @@ public class TagButton {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, projectID);
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -841,7 +848,7 @@ public class TagButton {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          if (this.projectID > 0) {
             ps.setInt(2, projectID);
@@ -852,8 +859,8 @@ public class TagButton {
          ps.setString(1, desc);
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -875,7 +882,7 @@ public class TagButton {
          updateQuery = "update projectbuttons set position=? where project=? and position=?";
       }
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          if (this.projectID > 0) {
             ps.setInt(1, projectID);
@@ -909,9 +916,9 @@ public class TagButton {
          }
 
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
-         DatabaseWrapper.closePreparedStatement(update);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+            closePreparedStatement(update);
       }
 
 
@@ -931,7 +938,7 @@ public class TagButton {
          if (projectID > 0) {
             query = "update projectbuttons set text=? where project=? and position=?";
          }
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(1, newTag);
          if (projectID > 0) {
@@ -943,8 +950,8 @@ public class TagButton {
          stmt.execute();
          tag = newTag;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -954,7 +961,7 @@ public class TagButton {
    public static String xslRunner(StreamSource xml) throws SaxonApiException {
       Processor proc = new Processor(false);
       XsltCompiler comp = proc.newXsltCompiler();
-      XsltExecutable exp = comp.compile(new StreamSource(new File(Folio.getRbTok("XSLTLOCATION") + "schema2.xsl")));
+      XsltExecutable exp = comp.compile(new StreamSource(new File(getRbTok("XSLTLOCATION") + "schema2.xsl")));
       XdmNode source = proc.newDocumentBuilder().build(xml);
       Serializer out = new Serializer();
       StringWriter w = new StringWriter();
@@ -993,14 +1000,14 @@ public class TagButton {
                   //now split the value list, they are delimited by a single space
                   String[] values = valueList.split(",");
                   parameterWithValueList param = new parameterWithValueList(tmp[j]);
-                  param.values.addAll(Arrays.asList(values));
+                  param.values.addAll(asList(values));
                   v.add(param);
                }
             }
          }
          return toret;
       } catch (SaxonApiException ex) {
-         Logger.getLogger(TagButton.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(TagButton.class.getName()).log(SEVERE, null, ex);
       }
       return null;
    }
@@ -1014,7 +1021,7 @@ public class TagButton {
       try {
          String toret = "";
          String query = "select * from buttons where uid=?";
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setInt(1, uid);
          ResultSet rs = stmt.executeQuery();
@@ -1027,10 +1034,10 @@ public class TagButton {
          }
          return toret.split("\n");
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
    
-   private static final Logger LOG = Logger.getLogger(TagButton.class.getName());
+   private static final Logger LOG = getLogger(TagButton.class.getName());
 }

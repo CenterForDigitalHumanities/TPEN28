@@ -7,9 +7,10 @@ package edu.slu.tpen.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -46,9 +47,9 @@ public class SaveNewProjectCharacter extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int projectID = Integer.parseInt(request.getParameter("projectID"));
-        int position = Integer.parseInt(request.getParameter("position"));
-        int code = Integer.parseInt(request.getParameter("code"));
+        int projectID = parseInt(request.getParameter("projectID"));
+        int position = parseInt(request.getParameter("position"));
+        int code = parseInt(request.getParameter("code"));
         String sendOut = "";
         PrintWriter out = response.getWriter();
         try {
@@ -57,7 +58,7 @@ public class SaveNewProjectCharacter extends HttpServlet {
             out.println(sendOut);
             out.close();
         } catch (SQLException ex) {
-            Logger.getLogger(UpdateProjectTag.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(UpdateProjectTag.class.getName()).log(SEVERE, null, ex);
         }
     }
 

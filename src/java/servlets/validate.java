@@ -14,19 +14,23 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.xml.sax.SAXException;
 import textdisplay.Manuscript;
+import static textdisplay.Manuscript.getFullDocument;
 import textdisplay.Project;
-import textdisplay.TagFilter;
+import static textdisplay.TagFilter.noteStyles.remove;
 import utils.XmlSchema;
 import utils.XmlSchema.types;
+import static utils.XmlSchema.types.RELAXNG;
+import static utils.XmlSchema.types.RELAXNG_COMPACT;
 
 /**
  *
@@ -44,14 +48,13 @@ public class validate extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
             if(request.getParameter("projectID")==null)
             {
                 out.print("Validations skipped: No project specified");
                     return;
             }
-            int projectID=Integer.parseInt(request.getParameter("projectID"));
+            int projectID=parseInt(request.getParameter("projectID"));
             try {
                 Project p = new Project(projectID);
                 String schemaURL=p.getSchemaURL();
@@ -60,26 +63,22 @@ public class validate extends HttpServlet {
                     out.print("Validations skipped: No schema specified");
                     return;
                 }
-                types schemaType=types.RELAXNG;
+                types schemaType=RELAXNG;
                 //if the schema file ending is rnc, assume its compact, otherwise go with non compact
                 if(p.getSchemaURL().endsWith("rnc"))
-                    schemaType=types.RELAXNG_COMPACT;
+                    schemaType=RELAXNG_COMPACT;
                 XmlSchema s=new XmlSchema(p.getSchemaURL(),schemaType);
            
             Manuscript ms=new Manuscript(5);
-            String content=ms.getFullDocument(p,TagFilter.noteStyles.remove,false,false,false);
+            String content=getFullDocument(p, remove,false,false,false);
             if(!(s.validate(content)))
                 out.print("validation failed: "+s.getMessages()+"\n");
             else
                 out.print("valid");
-            } catch (SAXException ex) {
-                Logger.getLogger(validate.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SQLException ex) {
-                Logger.getLogger(validate.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SAXException | SQLException ex) {
+                getLogger(validate.class.getName()).log(SEVERE, null, ex);
             }
 
-        } finally { 
-            out.close();
         }
     } 
 

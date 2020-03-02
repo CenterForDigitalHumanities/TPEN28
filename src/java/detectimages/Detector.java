@@ -14,14 +14,17 @@
  */
 package detectimages;
 
+import static edu.slu.util.ImageUtils.cloneImage;
 import java.awt.image.*;
 import java.io.BufferedWriter;
 import static java.lang.Math.abs;
+import static java.lang.System.out;
 import java.util.*;
-import java.util.logging.Level;
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
-import static edu.slu.util.ImageUtils.cloneImage;
-//import static edu.slu.util.ImageUtils.writeDebugImage;
+import static java.util.logging.Logger.getLogger;
 
 /**
  * This is the column and line detector. It is old, so it has a fair amount of legacy code and some really
@@ -95,10 +98,10 @@ public class Detector {
     */
    public void addline(int newline) {
       int j, i;
-      System.out.println(found);
+        out.println(found);
       for (i = 0; i < found; i++) {
          if (goodLines[i] == 0) {
-            System.out.println("error:line " + i + " is zero");
+                out.println("error:line " + i + " is zero");
          }
          if (goodLines[i] >= newline) {
             for (j = found; j >= i; j--) {
@@ -391,7 +394,7 @@ public class Detector {
             if (l.getWidth() * 5 > bin.getWidth()) {
                //if the col is more than 20% of the image width
                columns.add(l);
-               LOG.log(Level.INFO, "Added column {4} for line @ {0},{1},{2},{3}", new Object[]{l.getStartHorizontal(), l.getWidth(), l.getStartVertical(), l.getDistance(), columns.size() });
+               LOG.log(INFO, "Added column {4} for line @ {0},{1},{2},{3}", new Object[]{l.getStartHorizontal(), l.getWidth(), l.getStartVertical(), l.getDistance(), columns.size() });
             }
             //Just inverts findingNegative
             findingNegative = !findingNegative;
@@ -411,11 +414,11 @@ public class Detector {
       Boolean makeSingleCol = false;
       if (columns.isEmpty()) {
          makeSingleCol = true;
-         LOG.log(Level.WARNING, "Column detection doesn't pass sanity check, forcing single column.");
+         LOG.log(WARNING, "Column detection doesn't pass sanity check, forcing single column.");
       }
       if (forceSingle) {
          makeSingleCol = true;
-         LOG.log(Level.INFO, "Forcing single column by user request.");
+         LOG.log(INFO, "Forcing single column by user request.");
       }
       if (makeSingleCol) {
 
@@ -513,16 +516,16 @@ public class Detector {
             float slopec = (a[nexta] - c[nextc]) / ((float) colwidth * 2);
 
             if (abs(slopeb) < slope_insanity_num) {
-               LOG.log(Level.FINE, "skipping a b");
+               LOG.log(FINE, "skipping a b");
                nextb++;
             } else {
-               LOG.log(Level.FINE, "{0}pres", abs(slopeb));
+               LOG.log(FINE, "{0}pres", abs(slopeb));
             }
             if (abs(slopec) < slope_insanity_num) {
                nextc++;
-               LOG.log(Level.FINE, "skipping a c");
+               LOG.log(FINE, "skipping a c");
             } else {
-               LOG.log(Level.FINE, "{0}pres", abs(slopec));
+               LOG.log(FINE, "{0}pres", abs(slopec));
             }
             newListing[finalLineCount] = a[nexta];
             finalLineCount++;
@@ -535,13 +538,13 @@ public class Detector {
             if (abs(slopea) < slope_insanity_num) {
                nexta++;
             } else {
-               LOG.log(Level.FINE, "{0}inb", abs(slopea));
+               LOG.log(FINE, "{0}inb", abs(slopea));
             }
 
             if (abs(slopec) < slope_insanity_num) {
                nextc++;
             } else {
-               LOG.log(Level.FINE, "{0}inb", abs(slopec));
+               LOG.log(FINE, "{0}inb", abs(slopec));
             }
             newListing[finalLineCount] = b[nextb];
             finalLineCount++;
@@ -555,12 +558,12 @@ public class Detector {
             if (abs(slopea) < slope_insanity_num) {
                nexta++;
             } else {
-               LOG.log(Level.FINE, "{0}inc", abs(slopea));
+               LOG.log(FINE, "{0}inc", abs(slopea));
             }
             if (abs(slopeb) < slope_insanity_num) {
                nextb++;
             } else {
-               LOG.log(Level.FINE, "{0}inc", abs(slopeb));
+               LOG.log(FINE, "{0}inc", abs(slopeb));
             }
             newListing[finalLineCount] = c[nextc];
             finalLineCount++;
@@ -570,5 +573,5 @@ public class Detector {
       return newListing;
    }
 
-   private static final Logger LOG = Logger.getLogger(Detector.class.getName());
+   private static final Logger LOG = getLogger(Detector.class.getName());
 }

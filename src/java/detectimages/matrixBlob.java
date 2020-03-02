@@ -15,12 +15,17 @@
  * @author Jon Deering
  */
 package detectimages;
+import static imageLines.ImageHelpers.readAsBufferedImage;
+import static imageLines.ImageHelpers.scale;
 import java.awt.image.BufferedImage;
-import java.util.Vector;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
-import imageLines.ImageHelpers;
+import static java.lang.Math.abs;
+import static java.lang.System.currentTimeMillis;
+import static java.lang.System.out;
+import static java.lang.Thread.currentThread;
+import java.util.Vector;
+import static javax.imageio.ImageIO.write;
 
 
 public class matrixBlob {
@@ -34,11 +39,10 @@ public class matrixBlob {
       matrix = new int[b.getWidth() + 1][b.getHeight() + 1];
       xSize = b.getHeight();
       ySize = b.getWidth();
-      // System.out.print("x size is "+xSize+" Y size is "+ySize+"\n");
-      for (int i = 0; i < b.arrayVersion.length; i++) {
-
-         matrix[b.arrayVersion[i].x][b.arrayVersion[i].y] = 1;
-      }
+        // System.out.print("x size is "+xSize+" Y size is "+ySize+"\n");
+        for (pixel arrayVersion : b.arrayVersion) {
+            matrix[arrayVersion.x][arrayVersion.y] = 1;
+        }
    }
 
    public matrixBlob scaleMatrixBlob(blob b, int height) {
@@ -66,15 +70,13 @@ public class matrixBlob {
                   }
 
                } catch (ArrayIndexOutOfBoundsException e) {
-                  System.out.print("error at i=" + i + " j=" + j + "\n");
-                  e.printStackTrace();
-                  System.out.flush();
+                        out.print("error at i=" + i + " j=" + j + "\n");
+                        out.flush();
                }
             }
          }
          return new matrixBlob(newOne, newPixelCount);
       } catch (Exception e) {
-         e.printStackTrace();
       }
       return null;
    }
@@ -87,7 +89,7 @@ public class matrixBlob {
    public double compareWithImplicitScaling(matrixBlob b) {
       try {
          double toret = 0.0;
-         int lcm = matrixBlob.determineLCM(b.matrix[0].length, this.matrix[0].length);
+         int lcm = determineLCM(b.matrix[0].length, this.matrix[0].length);
 
          int aMultiplier = lcm / this.matrix[0].length;
          int bMultiplier = lcm / b.matrix[0].length;
@@ -108,7 +110,6 @@ public class matrixBlob {
           else
           return (double)matches/(lcm*b.matrix.length*bMultiplier);*/
       } catch (Exception e) {
-         e.printStackTrace();
          return 0.0;
       }
 
@@ -118,13 +119,13 @@ public class matrixBlob {
    }
 
    public double compareWithScaling(matrixBlob b) {
-      if (Math.abs(this.matrix.length / this.matrix[0].length - b.matrix.length / b.matrix[0].length) > .3) {
+      if (abs(this.matrix.length / this.matrix[0].length - b.matrix.length / b.matrix[0].length) > .3) {
          return 0.0;
       }
 
       try {
          double toret = 0.0;
-         matrixBlob[] res = matrixBlob.scaleUsingCommonFactor(this, b);
+         matrixBlob[] res = scaleUsingCommonFactor(this, b);
          if (res.length != 2) {
             return 0.0;
          }
@@ -139,7 +140,6 @@ public class matrixBlob {
          //this.writeGlyph("bl"+this.pixelCount+"_"+toret+"_", b);
          return toret;
       } catch (Exception e) {
-         e.printStackTrace();
       }
       return 0.0;
 
@@ -161,7 +161,6 @@ public class matrixBlob {
             return (double) matches / b.pixelCount;
          }
       } catch (Exception e) {
-         e.printStackTrace();
       }
       return 0.0;
    }
@@ -220,7 +219,6 @@ public class matrixBlob {
                }
             }
          } catch (Exception e) {
-            e.printStackTrace();
          }
 
 
@@ -231,7 +229,6 @@ public class matrixBlob {
          }
 
       } catch (Exception e) {
-         e.printStackTrace();
          return 0.0;
       }
    }
@@ -346,7 +343,7 @@ public class matrixBlob {
    }
 
    public BufferedImage writeGlyph(String prefix) throws IOException {
-      BufferedImage toret = ImageHelpers.readAsBufferedImage("/usr/blankimg.jpg");
+      BufferedImage toret = readAsBufferedImage("/usr/blankimg.jpg");
       if (toret.getWidth() > matrix.length && toret.getHeight() > matrix[0].length) {
          toret = toret.getSubimage(0, 0, matrix.length, matrix[0].length);
       }
@@ -359,13 +356,13 @@ public class matrixBlob {
             }
          }
       }
-      ImageIO.write(toret, "jpg", new File("/usr/glyphs/" + prefix + Thread.currentThread().getId() + ".jpg"));
+        write(toret, "jpg", new File("/usr/glyphs/" + prefix + currentThread().getId() + ".jpg"));
       return toret;
    }
 
    public BufferedImage writeGlyph(String prefix, matrixBlob mb2) throws IOException {
-      BufferedImage toret = ImageHelpers.readAsBufferedImage("/usr/blankimg.jpg");
-      toret = ImageHelpers.scale(toret, this.matrix.length + mb2.matrix.length, this.matrix[0].length + mb2.matrix[0].length);
+      BufferedImage toret = readAsBufferedImage("/usr/blankimg.jpg");
+      toret = scale(toret, this.matrix.length + mb2.matrix.length, this.matrix[0].length + mb2.matrix[0].length);
 
       //if( toret.getWidth()>matrix.length && toret.getHeight()>matrix[0].length)
       // toret=toret.getSubimage(0, 0, matrix.length, matrix[0].length);
@@ -387,7 +384,7 @@ public class matrixBlob {
          }
       }
 //    toret=toret.getSubimage(0, 0, matrix.length+mb2.matrix.length, matrix[0].length+mb2.matrix[0].length);
-      ImageIO.write(toret, "jpg", new File("/usr/glyphs/" + prefix + System.currentTimeMillis() + Thread.currentThread().getId() + ".jpg"));
+        write(toret, "jpg", new File("/usr/glyphs/" + prefix + currentTimeMillis() + currentThread().getId() + ".jpg"));
       return toret;
    }
 

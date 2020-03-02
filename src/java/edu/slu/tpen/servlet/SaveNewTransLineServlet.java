@@ -6,21 +6,24 @@
 package edu.slu.tpen.servlet;
 
 import edu.slu.tpen.entity.transcription.Annotation;
+import static edu.slu.tpen.servlet.Constant.ANNOTATION_SERVER_ADDR;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import static java.lang.Integer.parseInt;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.net.URLEncoder.encode;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
+import static net.sf.json.JSONObject.fromObject;
 
 /**
  * This servlet is used for IIIF store (rerum.io). It saves new trans-line to rerum.io. 
@@ -32,14 +35,14 @@ public class SaveNewTransLineServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if(null != req.getSession().getAttribute("UID")){
-            int UID = Integer.parseInt(req.getSession().getAttribute("UID").toString());
+            int UID = parseInt(req.getSession().getAttribute("UID").toString());
             Annotation anno = new Annotation();
             anno.setContent(req.getParameter("content"));
-            JSONObject jo = JSONObject.fromObject(anno.getContent());
+            JSONObject jo = fromObject(anno.getContent());
             jo.element("oa:createdBY", req.getLocalName() + "/" + UID);
             anno.setContent(jo.toString());
             try {
-                URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/saveNewAnnotation.action");
+                URL postUrl = new URL(ANNOTATION_SERVER_ADDR + "/anno/saveNewAnnotation.action");
                 HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
                 // Output to the connection. Default is
                 // false, set to true because post
@@ -55,10 +58,11 @@ public class SaveNewTransLineServlet extends HttpServlet {
                 connection.setInstanceFollowRedirects(true);
                 connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 connection.connect();
-                DataOutputStream out = new DataOutputStream(connection.getOutputStream()); 
-                out.writeBytes("content=" + URLEncoder.encode(anno.getContent(), "utf-8"));
-                out.flush();
-                out.close(); // flush and close
+                try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
+                    out.writeBytes("content=" + encode(anno.getContent(), "utf-8"));
+                    out.flush();
+                    // flush and close
+                }
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
                 String line="";
                 StringBuilder sb = new StringBuilder();
@@ -77,9 +81,9 @@ public class SaveNewTransLineServlet extends HttpServlet {
                 connection.disconnect();
                 resp.getWriter().print(sb.toString());
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(SaveNewTransLineServlet.class.getName()).log(Level.SEVERE, null, ex);
+                getLogger(SaveNewTransLineServlet.class.getName()).log(SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(SaveNewTransLineServlet.class.getName()).log(Level.SEVERE, null, ex);
+                getLogger(SaveNewTransLineServlet.class.getName()).log(SEVERE, null, ex);
             }
         }else{
             resp.getWriter().print("You didn't log in. ");

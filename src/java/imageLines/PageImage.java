@@ -20,8 +20,9 @@ package imageLines;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import javax.imageio.ImageIO;
+import static javax.imageio.ImageIO.write;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -47,11 +48,11 @@ public class PageImage extends HttpServlet {
       try (OutputStream os = response.getOutputStream()) {
          String folioParam = request.getParameter("folio");
          if (folioParam != null) {
-            Folio f = new Folio(Integer.parseInt(folioParam));
+            Folio f = new Folio(parseInt(folioParam));
             BufferedImage img = f.loadLocalImage();
             if (img != null) {
                response.setContentType("image/jpeg");
-               ImageIO.write(img, "jpg", os);
+                    write(img, "jpg", os);
             } else {
                response.sendError(400, "Unknown image archive");
             }

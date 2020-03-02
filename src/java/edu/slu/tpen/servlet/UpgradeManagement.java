@@ -7,17 +7,18 @@ package edu.slu.tpen.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import javax.servlet.http.HttpSession;
 import net.sf.json.JSONObject;
 import user.UpgradeManager;
@@ -47,10 +48,10 @@ public class UpgradeManagement extends HttpServlet {
         //System.out.println("Upgarde serverlet");
         int ucountdown = 0;
         if (session.getAttribute("UID") != null) {
-            thisUser = new user.User(Integer.parseInt(session.getAttribute("UID").toString()));
+            thisUser = new user.User(parseInt(session.getAttribute("UID").toString()));
         }
         else{
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(SC_UNAUTHORIZED);
         }
         if (null != thisUser && thisUser.isAdmin()){
             //System.out.println("U1");
@@ -122,10 +123,8 @@ public class UpgradeManagement extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(UpgradeManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParseException ex) {
-            Logger.getLogger(UpgradeManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException | ParseException ex) {
+            getLogger(UpgradeManagement.class.getName()).log(SEVERE, null, ex);
         }
     }
 
@@ -142,10 +141,8 @@ public class UpgradeManagement extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(UpgradeManagement.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParseException ex) {
-            Logger.getLogger(UpgradeManagement.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException | ParseException ex) {
+            getLogger(UpgradeManagement.class.getName()).log(SEVERE, null, ex);
         }
     }
 

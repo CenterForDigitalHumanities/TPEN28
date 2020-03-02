@@ -16,24 +16,29 @@
  */
 package ImageUpload;
 
+import static imageLines.ImageHelpers.readAsBufferedImage;
+import static imageLines.ImageHelpers.scale;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import static java.lang.System.out;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Stack;
-import java.util.logging.Level;
+import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
+import static java.util.logging.Logger.getLogger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
-import java.sql.Connection;
-import javax.imageio.ImageIO;
-import imageLines.ImageHelpers;
+import static javax.imageio.ImageIO.write;
 import textdisplay.Folio;
+import static textdisplay.Folio.createFolioRecords;
+import static textdisplay.Folio.getRbTok;
 import textdisplay.Manuscript;
 import user.User;
 
@@ -55,23 +60,20 @@ public class UserImageCollection {
       }
 
       Folio[] fols = m.getFolios();
-      for (int i = 0; i < fols.length; i++) {
-
-         //delete the image
-         File tmp = new File(fols[i].getImageName());
-         if (tmp.exists()) {
-            tmp.delete();
-         }
-         /*@TODO consider implementing deeper deletion of the other data*/
-         //remove the Folio record
-
-         //remove any project references to this
-
-         //remove any transcriptions that reference this
-
-
-      }
-      //now delete the Manuscript record
+        for (Folio fol : fols) {
+            //delete the image
+            File tmp = new File(fol.getImageName());
+            if (tmp.exists()) {
+                tmp.delete();
+            }
+            /*@TODO consider implementing deeper deletion of the other data*/
+            //remove the Folio record
+            
+            //remove any project references to this
+            
+            //remove any transcriptions that reference this
+        }
+        //now delete the Manuscript record
    }
 
    private static File[] removeItem(File[] old, int item) {
@@ -95,7 +97,7 @@ public class UserImageCollection {
     * @throws Exception
     */
    public static void create(Connection conn, File zippedFile, User uploader, Manuscript ms) throws Exception {
-      String directory = Folio.getRbTok("uploadLocation");
+      String directory = getRbTok("uploadLocation");
       File dir = new File(directory + "/" + uploader.getLname() + "/" + ms.getID());
       if (!dir.exists()) {
          dir.mkdirs();
@@ -109,13 +111,13 @@ public class UserImageCollection {
       File[] images = getAllJPGsRecursive(dir);
       for (int i = 0; i < images.length; i++) {
          if (!validateImage(images[i])) {
-            System.out.print("bad image "+images[i].getName()+", would do something\n");
+                out.print("bad image "+images[i].getName()+", would do something\n");
             images = removeItem(images, i);
             i--;
          }
 
       }
-      Folio.createFolioRecords(conn, ms.getCollection(), images, "private", ms.getID(), "");
+        createFolioRecords(conn, ms.getCollection(), images, "private", ms.getID(), "");
    }
 
    /**
@@ -142,16 +144,15 @@ public class UserImageCollection {
    public static Stack<File> getJPGSInFolder(File dir) {
       Stack<File> res = new Stack();
       File[] allFiles = dir.listFiles();
-      for (int i = 0; i < allFiles.length; i++) {
-         if (allFiles[i].getName().toLowerCase().contains(".jpg")) {
-            res.add(allFiles[i]);
-         } else {
-            if (allFiles[i].isDirectory()) {
-               res = merge(res, getJPGSInFolder(allFiles[i]));
+        for (File allFile : allFiles) {
+            if (allFile.getName().toLowerCase().contains(".jpg")) {
+                res.add(allFile);
+            } else {
+                if (allFile.isDirectory()) {
+                    res = merge(res, getJPGSInFolder(allFile));
+                }
             }
-         }
-
-      }
+        }
       return res;
    }
 
@@ -180,7 +181,7 @@ public class UserImageCollection {
     * @throws IOException if the file doesnt exist..
     */
    static public void extractFolder(String zipFile) throws ZipException, IOException {
-      System.out.println(zipFile);
+        out.println(zipFile);
       int BUFFER = 2048;
       File file = new File(zipFile);
 
@@ -232,15 +233,15 @@ public class UserImageCollection {
     */
    private static Boolean validateImage(File f) {
       try {
-         BufferedImage img = ImageHelpers.readAsBufferedImage(f.getAbsolutePath());
-         img = ImageHelpers.scale(img, 2000);
-         ImageIO.write(img, "jpg", f);
+         BufferedImage img = readAsBufferedImage(f.getAbsolutePath());
+         img = scale(img, 2000);
+            write(img, "jpg", f);
       } catch (Exception e) {
-         LOG.log(Level.SEVERE, e.getMessage());
+         LOG.log(SEVERE, e.getMessage());
          return false;
       }
       return true;
    }
    
-   private static final Logger LOG = Logger.getLogger(UserImageCollection.class.getName());
+   private static final Logger LOG = getLogger(UserImageCollection.class.getName());
 }

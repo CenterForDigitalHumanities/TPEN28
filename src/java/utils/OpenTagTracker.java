@@ -11,13 +11,16 @@ and limitations under the License.
  */
 package utils;
 
+import static java.lang.Integer.parseInt;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Hashtable;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import java.util.Vector;
-import textdisplay.DatabaseWrapper;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 import textdisplay.Folio;
 import textdisplay.Project;
 import textdisplay.Transcription;
@@ -57,7 +60,7 @@ public class OpenTagTracker
             Connection j=null;
 PreparedStatement ps=null;
             try{
-                j=DatabaseWrapper.getConnection();
+                j=  getConnection();
                 ps=null;
                 String query="select * from tagtracking where folio in (";
                 int count=projectFolios.length-i-1;
@@ -100,8 +103,8 @@ PreparedStatement ps=null;
                 return toret;
             }
             finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+                    closeDBConnection(j);
+                    closePreparedStatement(ps);
             }
             }
         }
@@ -117,22 +120,20 @@ DatabaseWrapper.closePreparedStatement(ps);
         //build a list of folios which come after this one in the Folio order for the Project.
         Folio [] projectFolios=thisProject.getFolios();
         int count=0;
-        for(int i=0;i<projectFolios.length;i++)
-        {
+        for (Folio projectFolio : projectFolios) {
             //this is the one, everything after this should be included in the list.
-            if(projectFolios[i].getFolioNumber()==folioNum || folioNum == 0) //if foliNum==0 the requestor doesnt care to specify a start point, so start with the first Folio.
-            {
-                if(projectFolios[i].getFolioNumber()==folioNum)
-                count++;
+            if (projectFolio.getFolioNumber() == folioNum || folioNum == 0) {
+                if (projectFolio.getFolioNumber() == folioNum) {
+                    count++;
+                }
                 break;
             }
             count++;
-            
         }
             Connection j=null;
 PreparedStatement ps=null;
             try{
-                j=DatabaseWrapper.getConnection();
+                j=getConnection();
                 ps=null;
                 String query="select * from tagtracking where folio in (";
                 
@@ -163,8 +164,8 @@ PreparedStatement ps=null;
             }
                     
             finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
             }
             
         
@@ -177,7 +178,7 @@ DatabaseWrapper.closePreparedStatement(ps);
         Connection j=null;
 PreparedStatement ps=null;
         try{
-            j=DatabaseWrapper.getConnection();
+            j=getConnection();
             //find the first occurance of this tag by getting the Folio/line identifiers for all of them, then looking for which Folio occurs first in the Project
             
             //the limit 1 shouldnt be needed, and could be removed after testing.
@@ -187,8 +188,8 @@ PreparedStatement ps=null;
         }
         finally
         {
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         return true;
     }
@@ -199,10 +200,10 @@ DatabaseWrapper.closePreparedStatement(ps);
 PreparedStatement ps=null;
         try{
             Integer lineID = 0;
-            j=DatabaseWrapper.getConnection();
+            j=getConnection();
             line = line.replace("line/", "");
-            lineID = Integer.parseInt(line);
-            ps=j.prepareStatement("insert into tagtracking(tag,folio,line, projectID) values(?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
+            lineID = parseInt(line);
+            ps=j.prepareStatement("insert into tagtracking(tag,folio,line, projectID) values(?,?,?,?)", RETURN_GENERATED_KEYS);
             ps.setString(1, tag);
             ps.setInt(2, folio);
             ps.setInt(3, lineID);
@@ -216,8 +217,8 @@ PreparedStatement ps=null;
         }
         finally
         {
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 

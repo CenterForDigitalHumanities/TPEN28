@@ -14,16 +14,26 @@
  */
 package textdisplay;
 
+import static edu.slu.util.ServletUtils.getDBConnection;
+import static java.lang.System.currentTimeMillis;
+import static java.lang.System.out;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.mail.MessagingException;
-import org.owasp.esapi.ESAPI;
-import static edu.slu.util.ServletUtils.getDBConnection;
+import static org.owasp.esapi.ESAPI.encoder;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
+import static textdisplay.Folio.getRbTok;
+import static textdisplay.Folio.zeroPadLastNumberFourPlaces;
+import static textdisplay.TagFilter.noteStyles.endnote;
+import static textdisplay.TagFilter.noteStyles.remove;
 import user.User;
 
 
@@ -55,7 +65,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, archive);
          ps.setString(2, collection);
@@ -69,8 +79,8 @@ public class Manuscript {
          }
       } finally {
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
    }
@@ -94,7 +104,7 @@ public class Manuscript {
       PreparedStatement ps = null;
       String query = "select count(id) from manuscript where restricted!=-999";
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ResultSet rs = ps.executeQuery();
          if (rs.next()) {
@@ -102,8 +112,8 @@ public class Manuscript {
          }
          return 0;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -115,7 +125,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, id);
          ResultSet rs = ps.executeQuery();
@@ -128,8 +138,8 @@ public class Manuscript {
          }
       } finally {
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
    }
@@ -142,7 +152,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, folio);
          ResultSet rs = ps.executeQuery();
@@ -161,8 +171,8 @@ public class Manuscript {
          }
       } finally {
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
    }
@@ -214,7 +224,7 @@ public class Manuscript {
             }
          }
          try (PreparedStatement insertion = conn.prepareStatement("INSERT INTO `manuscript` (`repository`, `archive`, `msIdentifier`, `city`, `restricted`) "
-              + "VALUES (?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+              + "VALUES (?,?,?,?,?)", RETURN_GENERATED_KEYS)) {
             insertion.setString(1, repo);
             insertion.setString(2, arch);
             insertion.setString(3, coll);
@@ -266,7 +276,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(updateQuery);
          ps.setString(1, city);
          ps.setString(2, repository);
@@ -275,8 +285,8 @@ public class Manuscript {
          ps.execute();
       } finally {
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
    }
@@ -291,7 +301,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, repo);
          ps.setString(2, city);
@@ -308,8 +318,8 @@ public class Manuscript {
          }
       } finally {
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
       return toret;
@@ -325,7 +335,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, repo);
          ResultSet rs = ps.executeQuery();
@@ -340,8 +350,8 @@ public class Manuscript {
          }
       } finally {
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
       return toret;
@@ -357,7 +367,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ResultSet rs = ps.executeQuery();
          while (rs.next()) {
@@ -370,8 +380,8 @@ public class Manuscript {
          }
       } finally {
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
       return toret;
@@ -387,7 +397,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ResultSet rs = ps.executeQuery();
          while (rs.next()) {
@@ -400,8 +410,8 @@ public class Manuscript {
          }
       } finally {
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
       return toret;
@@ -416,7 +426,7 @@ public class Manuscript {
       PreparedStatement ps = null;
       String[] toret = new String[0];
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, city);
          ResultSet rs = ps.executeQuery();
@@ -429,8 +439,8 @@ public class Manuscript {
             toret[toret.length - 1] = rs.getString(1);
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
       return toret;
    }
@@ -445,7 +455,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, city);
          ResultSet rs = ps.executeQuery();
@@ -460,8 +470,8 @@ public class Manuscript {
          }
       } finally {
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
       return toret;
@@ -475,9 +485,9 @@ public class Manuscript {
       String query = "select transcription.text, transcription.line from transcription join folios on folios.pageNumber=transcription.folio where collection=? and archive=? and creator=? and projectID=0 order by folio,line";
       Connection j = null;
       PreparedStatement ps = null;
-      long startTime = System.currentTimeMillis();
+      long startTime = currentTimeMillis();
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, collection);
          ps.setString(2, archive);
@@ -488,11 +498,11 @@ public class Manuscript {
          }
          return toret;
       } finally {
-         long totalTime = System.currentTimeMillis() - startTime;
-         System.out.print("Built a ms object in " + totalTime + "ms\n");
+         long totalTime = currentTimeMillis() - startTime;
+            out.print("Built a ms object in " + totalTime + "ms\n");
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
    }
@@ -508,7 +518,7 @@ public class Manuscript {
       PreparedStatement ps = null;
 
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
 
          ps.setInt(1, p.projectID);
@@ -539,8 +549,8 @@ public class Manuscript {
          return toret;
       } finally {
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
    }
@@ -557,7 +567,7 @@ public class Manuscript {
       PreparedStatement ps = null;
 
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
 
          ps.setInt(1, p.projectID);
@@ -574,11 +584,11 @@ public class Manuscript {
             }
             if (imageWrap && rs.getInt("transcription.folio") != oldfolio) {
                oldfolio = rs.getInt("transcription.folio");
-               toret += "<TPENimage name=\"" + ESAPI.encoder().encodeForXML(ESAPI.encoder().decodeForHTML(new Folio(oldfolio).getPageName())) + "\" ";
+               toret += "<TPENimage name=\"" + encoder().encodeForXML(encoder().decodeForHTML(new Folio(oldfolio).getPageName())) + "\" ";
                if (new Folio(oldfolio).getImageURL().contains("t-pen")) {
                   toret += " url=\"\"/>";
                } else {
-                  toret += " url=\"" + ESAPI.encoder().encodeForXML(new Folio(oldfolio).getImageURL()) + "\"/>";
+                  toret += " url=\"" + encoder().encodeForXML(new Folio(oldfolio).getImageURL()) + "\"/>";
                }
             }
             String tmp = rs.getString(1);
@@ -595,14 +605,14 @@ public class Manuscript {
                } else {
                   toret += tmp;
                }
-               if (!(includeNotes == TagFilter.noteStyles.remove) && !(includeNotes == TagFilter.noteStyles.endnote) && rs.getString(2).trim().length() > 0 && rs.getString(2).compareTo(" ") != 0 && rs.getString(2).compareTo("null") != 0) {
+               if (!(includeNotes == remove) && !(includeNotes == endnote) && rs.getString(2).trim().length() > 0 && rs.getString(2).compareTo(" ") != 0 && rs.getString(2).compareTo("null") != 0) {
                   if (toret.endsWith("\n")) {
                      toret += "<tpen_note>" + rs.getString(2) + "</tpen_note>\n";
                   } else {
                      toret += "\n<tpen_note>" + rs.getString(2) + "</tpen_note>\n";
                   }
                }
-               if ((includeNotes == TagFilter.noteStyles.endnote) && rs.getString(2).trim().length() > 0 && rs.getString(2).compareTo(" ") != 0 && rs.getString(2).compareTo("null") != 0) {
+               if ((includeNotes == endnote) && rs.getString(2).trim().length() > 0 && rs.getString(2).compareTo(" ") != 0 && rs.getString(2).compareTo("null") != 0) {
                   if (toret.charAt(toret.length() - 1) == ' ') {
                      toret = toret.substring(0, toret.length() - 1);
                      toret += "<tpen_note>" + note_ctr + "</tpen_note> ";
@@ -621,8 +631,8 @@ public class Manuscript {
          }
          return toret + endNotes;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -640,7 +650,7 @@ public class Manuscript {
       String endNotes = "\n";
 
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
 
          ps.setInt(1, p.projectID);
@@ -683,14 +693,14 @@ public class Manuscript {
                   } else {
                      toret += tmp;
                   }
-                  if (!(includeNotes == TagFilter.noteStyles.remove) && !(includeNotes == TagFilter.noteStyles.endnote) && rs.getString(2).trim().length() > 0 && rs.getString(2).compareTo(" ") != 0 && rs.getString(2).compareTo("null") != 0) {
+                  if (!(includeNotes == remove) && !(includeNotes == endnote) && rs.getString(2).trim().length() > 0 && rs.getString(2).compareTo(" ") != 0 && rs.getString(2).compareTo("null") != 0) {
                      if (toret.endsWith("\n")) {
                         toret += "<tpen_note>" + rs.getString(2) + "</tpen_note>\n";
                      } else {
                         toret += "\n<tpen_note>" + rs.getString(2) + "</tpen_note>\n";
                      }
                   }
-                  if ((includeNotes == TagFilter.noteStyles.endnote) && rs.getString(2).trim().length() > 0 && rs.getString(2).compareTo(" ") != 0 && rs.getString(2).compareTo("null") != 0) {
+                  if ((includeNotes == endnote) && rs.getString(2).trim().length() > 0 && rs.getString(2).compareTo(" ") != 0 && rs.getString(2).compareTo("null") != 0) {
                      if (toret.charAt(toret.length() - 1) == ' ') {
                         toret = toret.substring(0, toret.length() - 1);
                         toret += "<tpen_note>" + note_ctr + "</tpen_note> ";
@@ -709,8 +719,8 @@ public class Manuscript {
          return toret + endNotes;
       } finally {
          if (j != null) {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closeDBConnection(j);
+                closePreparedStatement(ps);
          }
       }
    }
@@ -729,7 +739,7 @@ public class Manuscript {
       String endNotes = "\n";
 
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
 
          ps.setInt(1, p.projectID);
@@ -750,11 +760,11 @@ public class Manuscript {
                   toret += "[" + new Folio(oldfolio).getPageName() + "]\n";
                }
                if (imageWrap) {
-                  toret += "<TPENimage name=\"" + ESAPI.encoder().encodeForXML(ESAPI.encoder().decodeForHTML(new Folio(oldfolio).getPageName())) + "\" ";
+                  toret += "<TPENimage name=\"" + encoder().encodeForXML(encoder().decodeForHTML(new Folio(oldfolio).getPageName())) + "\" ";
                   if (new Folio(oldfolio).getImageURL().contains("t-pen")) {
                      toret += " url=\"\"/>";
                   } else {
-                     toret += " url=\"" + ESAPI.encoder().encodeForXML(new Folio(oldfolio).getImageURL()) + "\"/>";
+                     toret += " url=\"" + encoder().encodeForXML(new Folio(oldfolio).getImageURL()) + "\"/>";
                   }
                }
                if (goingOutOfRange) {
@@ -785,7 +795,7 @@ public class Manuscript {
                      toret += tmp;
                   }
 
-                  if (!(includeNotes == TagFilter.noteStyles.remove) && !(includeNotes == TagFilter.noteStyles.endnote) && rs.getString(2).trim().length() > 0 && rs.getString(2).compareTo(" ") != 0 && rs.getString(2).compareTo("null") != 0) {
+                  if (!(includeNotes == remove) && !(includeNotes == endnote) && rs.getString(2).trim().length() > 0 && rs.getString(2).compareTo(" ") != 0 && rs.getString(2).compareTo("null") != 0) {
                      if (toret.endsWith("\n")) {
                         toret += "<tpen_note>" + rs.getString(2) + "</tpen_note>\n";
                      } else {
@@ -793,7 +803,7 @@ public class Manuscript {
                      }
                   }
 
-                  if ((includeNotes == TagFilter.noteStyles.endnote) && rs.getString(2).trim().length() > 0 && rs.getString(2).compareTo(" ") != 0 && rs.getString(2).compareTo("null") != 0) {
+                  if ((includeNotes == endnote) && rs.getString(2).trim().length() > 0 && rs.getString(2).compareTo(" ") != 0 && rs.getString(2).compareTo("null") != 0) {
                      if (toret.charAt(toret.length() - 1) == ' ') {
                         toret = toret.substring(0, toret.length() - 1);
                         toret += "<tpen_note>" + note_ctr + "</tpen_note> ";
@@ -811,8 +821,8 @@ public class Manuscript {
          }
          return toret + endNotes;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -848,14 +858,14 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, uid);
          ps.setInt(2, this.id);
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -870,14 +880,14 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, uid);
          ps.setInt(2, this.id);
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -892,7 +902,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, uid);
          ps.setInt(2, this.id);
@@ -906,13 +916,13 @@ public class Manuscript {
             /**
              * @TODO make mail server a config parameter
              */
-            m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org", requestor.getUname(), "TPEN manuscript access request", message);
+            m.sendMail(getRbTok("EMAILSERVER"), "TPEN@t-pen.org", requestor.getUname(), "TPEN manuscript access request", message);
          } catch (MessagingException ex) {
-            Logger.getLogger(Manuscript.class.getName()).log(Level.SEVERE, null, ex);
+                getLogger(Manuscript.class.getName()).log(SEVERE, null, ex);
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -928,7 +938,7 @@ public class Manuscript {
       PreparedStatement ps = null;
       User[] s = new User[0];
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, id);
          ResultSet rs = ps.executeQuery();
@@ -943,8 +953,8 @@ public class Manuscript {
             s = tmp;
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
       return s;
    }
@@ -961,7 +971,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, id);
          ps.setInt(2, u.getUID());
@@ -972,8 +982,8 @@ public class Manuscript {
             return false;
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -993,7 +1003,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, id);
          //System.out.println("select restricted from manuscript where id="+id);
@@ -1002,8 +1012,8 @@ public class Manuscript {
             return new User(rs.getInt(1));
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
       //System.out.println("Did not find controlling user");
       return null;
@@ -1020,7 +1030,7 @@ public class Manuscript {
       PreparedStatement ps = null;
       //System.out.println("Is "+id+" a restricted manifest?");
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, id);
          ResultSet rs = ps.executeQuery();
@@ -1037,8 +1047,8 @@ public class Manuscript {
          }
       } 
       finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
       return false;
    }
@@ -1051,7 +1061,7 @@ public class Manuscript {
          //just set the restriction ser id to 0
          this.makeRestricted(0);
       } catch (SQLException ex) {
-         Logger.getLogger(Manuscript.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(Manuscript.class.getName()).log(SEVERE, null, ex);
       }
    }
 
@@ -1063,14 +1073,14 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, controllingUID);
          ps.setInt(2, id);
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -1087,7 +1097,7 @@ public class Manuscript {
          /**
           * @TODO make mail server a config parameter
           */
-         m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org", controller.getUname(), "TPEN manuscript access request", message);
+         m.sendMail(getRbTok("EMAILSERVER"), "TPEN@t-pen.org", controller.getUname(), "TPEN manuscript access request", message);
          return true;
       } catch (Exception e) {
          return false;
@@ -1107,22 +1117,22 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setInt(1, this.id);
          ResultSet rs = ps.executeQuery();
          while (rs.next()) {
             Folio f = new Folio(rs.getInt(1));
-            toret += "<image name=\"" + ESAPI.encoder().encodeForXML(rs.getString(2)) + "\">";
+            toret += "<image name=\"" + encoder().encodeForXML(rs.getString(2)) + "\">";
             Line[] allLines = f.getlines();
-            for (int i = 0; i < allLines.length; i++) {
-               toret += "<line><x>" + allLines[i].getLeft() + "</x><y>" + allLines[i].getTop() + "</y><w>" + allLines[i].getWidth() + "</w><h>" + allLines[i].getHeight() + "</h></line>\n";
-            }
+                for (Line allLine : allLines) {
+                    toret += "<line><x>" + allLine.getLeft() + "</x><y>" + allLine.getTop() + "</y><w>" + allLine.getWidth() + "</w><h>" + allLine.getHeight() + "</h></line>\n";
+                }
             toret += "</image>";
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
       return toret;
    }
@@ -1138,7 +1148,7 @@ public class Manuscript {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          String qry = "select * from folios where msID=? ";
          stmt = j.prepareStatement(qry);
          stmt.setInt(1, id);
@@ -1149,7 +1159,7 @@ public class Manuscript {
          while (rs.next()) {
             //toret+="<option value=\""+rs.getInt("pageNumber")+"\">"+textdisplay.archive.getShelfMark(rs.getString("archive"))+" "+rs.getString("collection")+" "+rs.getString("pageName")+"</option>";
             //pageNames.add(rs.getString("pageName"));
-            pageNames.add(Folio.zeroPadLastNumberFourPlaces(rs.getString("pageName").replace("-000", "")));
+            pageNames.add(zeroPadLastNumberFourPlaces(rs.getString("pageName").replace("-000", "")));
             pageNumbers.add(rs.getInt("pageNumber"));
          }
          int[] pageNumbersArray = new int[pageNumbers.size()];
@@ -1160,23 +1170,23 @@ public class Manuscript {
             pageNumbersArray[i] = pageNumbers.get(i);
          }
 
-         //sort the pages according to the zero padded names of the pages
-         for (int i = 0; i < paddedPageNameArray.length; i++) {
-            for (int k = 0; k < paddedPageNameArray.length - 1; k++) {
-               if (paddedPageNameArray[k].compareTo(paddedPageNameArray[k + 1]) > 0) {
-                  String tmpStr = paddedPageNameArray[k];
-                  paddedPageNameArray[k] = paddedPageNameArray[k + 1];
-                  paddedPageNameArray[k + 1] = tmpStr;
-                  int tmpInt = pageNumbersArray[k];
-                  pageNumbersArray[k] = pageNumbersArray[k + 1];
-                  pageNumbersArray[k + 1] = tmpInt;
-               }
+            //sort the pages according to the zero padded names of the pages
+            for (String paddedPageNameArray1 : paddedPageNameArray) {
+                for (int k = 0; k < paddedPageNameArray.length - 1; k++) {
+                    if (paddedPageNameArray[k].compareTo(paddedPageNameArray[k + 1]) > 0) {
+                        String tmpStr = paddedPageNameArray[k];
+                        paddedPageNameArray[k] = paddedPageNameArray[k + 1];
+                        paddedPageNameArray[k + 1] = tmpStr;
+                        int tmpInt = pageNumbersArray[k];
+                        pageNumbersArray[k] = pageNumbersArray[k + 1];
+                        pageNumbersArray[k + 1] = tmpInt;
+                    }
+                }
             }
-         }
          return pageNumbersArray;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -1191,7 +1201,7 @@ public class Manuscript {
       PreparedStatement stmt = null;
       try {
 
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
 
          String qry = "select * from folios where msID=? order by sequence,pageNumber ";
          if (this.getArchive().compareTo("Stanford") == 0) {
@@ -1208,7 +1218,7 @@ public class Manuscript {
          while (rs.next()) {
             //toret+="<option value=\""+rs.getInt("pageNumber")+"\">"+textdisplay.archive.getShelfMark(rs.getString("archive"))+" "+rs.getString("collection")+" "+rs.getString("pageName")+"</option>";
             //pageNames.add(rs.getString("pageName"));
-            pageNames.add(Folio.zeroPadLastNumberFourPlaces(rs.getString("pageName").replace("-000", "")));
+            pageNames.add(zeroPadLastNumberFourPlaces(rs.getString("pageName").replace("-000", "")));
             pageNumbers.add(rs.getInt("pageNumber"));
          }
          int[] pageNumbersArray = new int[pageNumbers.size()];
@@ -1219,19 +1229,18 @@ public class Manuscript {
             pageNumbersArray[i] = pageNumbers.get(i);
          }
          if (this.getArchive().compareTo("Stanford") != 0) {
-            //sort the pages according to the zero padded names of the pages
-            for (int i = 0; i < paddedPageNameArray.length; i++) {
-               for (int k = 0; k < paddedPageNameArray.length - 1; k++) {
-                  if (paddedPageNameArray[k].compareTo(paddedPageNameArray[k + 1]) > 0) {
-                     String tmpStr = paddedPageNameArray[k];
-                     paddedPageNameArray[k] = paddedPageNameArray[k + 1];
-                     paddedPageNameArray[k + 1] = tmpStr;
-                     int tmpInt = pageNumbersArray[k];
-                     pageNumbersArray[k] = pageNumbersArray[k + 1];
-                     pageNumbersArray[k + 1] = tmpInt;
-                  }
-               }
-            }
+                //sort the pages according to the zero padded names of the pages
+                for (String paddedPageNameArray1 : paddedPageNameArray) {
+                    for (int k = 0; k < paddedPageNameArray.length - 1; k++) {
+                        if (paddedPageNameArray[k].compareTo(paddedPageNameArray[k + 1]) > 0) {
+                            String tmpStr = paddedPageNameArray[k];
+                            paddedPageNameArray[k] = paddedPageNameArray[k + 1];
+                            paddedPageNameArray[k + 1] = tmpStr;
+                            int tmpInt = pageNumbersArray[k];
+                            pageNumbersArray[k] = pageNumbersArray[k + 1];
+                            pageNumbersArray[k + 1] = tmpInt;
+                        }
+                    }}
          }
          Folio[] toret = new Folio[pageNumbersArray.length];
          for (int i = 0; i < toret.length; i++) {
@@ -1240,8 +1249,8 @@ public class Manuscript {
 
          return toret;
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
       }
    }
 
@@ -1252,16 +1261,16 @@ public class Manuscript {
     */
    public void cleanEmptyMSIDManuscript() {
       String query = "DELETE FROM manuscript WHERE NOT EXISTS (SELECT * FROM folios WHERE msID = id) AND msIdentifier = ''";
-      Connection conn = DatabaseWrapper.getConnection();
+      Connection conn = getConnection();
       PreparedStatement ps = null;
       try {
          ps = conn.prepareStatement(query);
          ps.executeUpdate();
       } catch (SQLException ex) {
-         Logger.getLogger(Manuscript.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(Manuscript.class.getName()).log(SEVERE, null, ex);
       } finally {
-         DatabaseWrapper.closeDBConnection(conn);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(conn);
+            closePreparedStatement(ps);
       }
    }
 }

@@ -550,8 +550,8 @@
                             <dt>Compare Pages </dt>
                             <dd>View other pages from this project. Use the inspection tool to take a closer look. </dd>
 
-                            <dt>Capelli Abbreviations </dt>
-                            <dd>A. Capelli's <cite>Lexicon Abbreviaturarum</cite> for Latin and Italian abbreviations. </dd>
+                            <dt>Cappelli Abbreviations </dt>
+                            <dd>A. Cappelli's <cite>Lexicon Abbreviaturarum</cite> for Latin and Italian abbreviations. </dd>
                         </dl>
 
                         <div class="helpSubsection">page tools <button type="button" onclick="Help.lightUp('#canvasControls')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </div>
@@ -787,12 +787,12 @@
         </div>
         <div id="genericIssue" class="ui-widget ui-corner-all ui-widget-content">
             <h2 class="ui-widget-header ui-corner-all">Data Error</h2>
-            <p>
+            <p id="issueMessage">
                 There was an issue saving some of your data.  Please refresh the page to resume your activity.  If you continue to see this error
                 please contact the T&#8209;PEN Admin.
             </p>
             <div class="clear right buttons">
-                <button class="ui-button tpenButton" onclick="document.location.reload();">OK</button>
+                <button id="issueBtn" class="ui-button tpenButton" onclick="document.location.reload();">OK</button>
             </div>
         </div>
         <div id="iprAccept" class="ui-widget ui-corner-all ui-widget-content">
@@ -879,7 +879,8 @@
                         $(".instructions").show();
                         $(".hideme").show();
                     }
-
+                    tpen.user.fname = data.uname;
+                    setTranscribingUser();
                 }
                 else {
                     tpen.user.UID = 0;
@@ -1807,23 +1808,29 @@
         var params = {"getSettings" : "get", "cancelUpgrade":"false"};
         $.post(url, params)
             .done(function(data){
-                var managerData = JSON.parse(data);
-                var mdate = managerData.upgradeDate;
-                var countdown = managerData.countdown;
-                var options = {
-                    weekday: "long", year: "numeric", month: "short",
-                    day: "numeric", hour: "2-digit", minute: "2-digit"
-                };
-                var dateForUser = new Date(mdate);
-                $("#maintenance").attr("title", "Maintenance sheduled on "+dateForUser);
-                if(managerData.active > 0){
-                    if(countdown > 0){
-                        setCountdown(mdate);
-                        $("#schedmaintenance").hide();
+                if(data){
+                    var managerData = JSON.parse(data);
+                    var mdate = managerData.upgradeDate;
+                    var countdown = managerData.countdown;
+                    var options = {
+                        weekday: "long", year: "numeric", month: "short",
+                        day: "numeric", hour: "2-digit", minute: "2-digit"
+                    };
+                    var dateForUser = new Date(mdate);
+                    $("#maintenance").attr("title", "Maintenance sheduled on "+dateForUser);
+                    if(managerData.active > 0){
+                        if(countdown > 0){
+                            setCountdown(mdate);
+                            $("#schedmaintenance").hide();
+                        }
+                        else{
+                            $("#schedmaintenance").html(dateForUser.toLocaleTimeString("en-us", options));
+                            $("#countdown").hide();
+                            attachWindowResize();
+                        }
                     }
                     else{
-                        $("#schedmaintenance").html(dateForUser.toLocaleTimeString("en-us", options));
-                        $("#countdown").hide();
+                        $("#maintenance").hide();
                         attachWindowResize();
                     }
                 }
@@ -1831,7 +1838,6 @@
                     $("#maintenance").hide();
                     attachWindowResize();
                 }
-
             });
     }
 

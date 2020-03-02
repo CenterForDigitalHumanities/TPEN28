@@ -14,15 +14,19 @@
  */
 package detectimages;
 
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import imageLines.ImageHelpers;
+import static detectimages.blob.drawBlob;
 import static edu.slu.util.ImageUtils.cloneImage;
-//import static edu.slu.util.ImageUtils.writeDebugImage;
+import static imageLines.ImageHelpers.binaryThreshold;
+import static imageLines.ImageHelpers.scale;
+import java.awt.image.BufferedImage;
+import static java.lang.System.out;
+import java.util.ArrayList;
+import static java.util.Arrays.copyOf;
+import static java.util.Arrays.sort;
+import java.util.List;
+import static java.util.logging.Level.INFO;
+import java.util.logging.Logger;
+import static java.util.logging.Logger.getLogger;
 
 /**
  * @author Jon Deering
@@ -37,9 +41,9 @@ public class imageProcessor {
 
    static int thresholdMethod = 0;
 
-   private int maxHeight;
+   private final int maxHeight;
    private BufferedImage orig;
-   private BufferedImage untouchedImage;
+   private final BufferedImage untouchedImage;
 
    /**
     * Constructor for use in real-time line detection.
@@ -48,8 +52,8 @@ public class imageProcessor {
     * @param h
     */
    public imageProcessor(BufferedImage img, int h) {
-       System.out.println("I made it into the img processor with this img +++++++++");
-       System.out.println(img);
+        out.println("I made it into the img processor with this img +++++++++");
+        out.println(img);
       untouchedImage = img;
       orig = img;
       maxHeight = h;
@@ -68,10 +72,10 @@ public class imageProcessor {
     * @return Vector containing all lines, null in case of unrecoverable error
     */
    public List<line> detectLines(boolean doBlobExtract) {
-      orig = ImageHelpers.scale(untouchedImage, maxHeight);
+      orig = scale(untouchedImage, maxHeight);
 //      writeDebugImage(orig, "detectLines.orig");
-      BufferedImage stored = ImageHelpers.scale(orig, 1000);
-      BufferedImage bin = ImageHelpers.scale(ImageHelpers.binaryThreshold(untouchedImage, 4), maxHeight);
+      BufferedImage stored = scale(orig, 1000);
+      BufferedImage bin = scale(binaryThreshold(untouchedImage, 4), maxHeight);
 //      writeDebugImage(bin, "detectLines.bin");
       for (int i = 0; i < bin.getWidth(); i++) {
          for (int j = 0; j < bin.getHeight(); j++) {
@@ -114,7 +118,7 @@ public class imageProcessor {
          }
          for (int i = 0; i < blobs.size(); i++) {
             if ((blobs.get(i).size < 4000)) {
-               blob.drawBlob(orig, blobs.get(i).x, blobs.get(i).y, blobs.get(i), 0x000000);
+                    drawBlob(orig, blobs.get(i).x, blobs.get(i).y, blobs.get(i), 0x000000);
             }
          }
       }
@@ -126,7 +130,7 @@ public class imageProcessor {
       List<line> lines = new ArrayList<>();
       createViewableVerticalProfile(orig, "", lines);
 
-      orig = ImageHelpers.scale(orig, 1000);
+      orig = scale(orig, 1000);
       if (lines.size() > 3) {
          lines = new ArrayList<>();
          lines.add(new line());
@@ -139,12 +143,12 @@ public class imageProcessor {
       List<line> allLines = new ArrayList<>();
       for (int i = 0; i < lines.size(); i++) {
          line col = lines.get(i);
-         BufferedImage storedBin = ImageHelpers.binaryThreshold(stored, 4);
+         BufferedImage storedBin = binaryThreshold(stored, 4);
          BufferedImage colOnly = storedBin.getSubimage(col.getStartHorizontal(), col.getStartVertical(), col.getWidth(), col.getDistance());
          Detector d = new Detector(colOnly, colOnly);
          //d.debugLabel = imageFile.getName();
          d.detect(true);
-         LOG.log(Level.INFO, "total lines in col is {0}", d.lines.size());
+         LOG.log(INFO, "total lines in col is {0}", d.lines.size());
          for (int j = 0; j < d.lines.size(); j++) {
             line r = d.lines.get(j);
             allLines.add(r);
@@ -188,8 +192,8 @@ public class imageProcessor {
             }
          }
       }
-      int[] ordered = Arrays.copyOf(vals, vals.length);
-      Arrays.sort(ordered);
+      int[] ordered = copyOf(vals, vals.length);
+        sort(ordered);
       int x = 0;
       List<line> lines = new ArrayList<>();
       int median = ordered[ordered.length / 6];
@@ -216,7 +220,7 @@ public class imageProcessor {
                line l = new line();
                l.setStartHorizontal(x);
                l.setWidth(i - x);
-               LOG.log(Level.INFO, "I: New line {5}/{0}: {1},{2},{3},{4}", new Object[] { i, l.getStartHorizontal(), l.getStartVertical(), l.getWidth(), l.getDistance(), lines.size() });
+               LOG.log(INFO, "I: New line {5}/{0}: {1},{2},{3},{4}", new Object[] { i, l.getStartHorizontal(), l.getStartVertical(), l.getWidth(), l.getDistance(), lines.size() });
                lines.add(l);
                x = 0;
             }
@@ -230,7 +234,7 @@ public class imageProcessor {
                l.setStartHorizontal(x);
                l.setWidth(i - x);
                lines.add(l);
-               LOG.log(Level.INFO, "II: New line {5}/{0}: {1},{2},{3},{4}", new Object[] { i, l.getStartHorizontal(), l.getStartVertical(), l.getWidth(), l.getDistance(), lines.size() });
+               LOG.log(INFO, "II: New line {5}/{0}: {1},{2},{3},{4}", new Object[] { i, l.getStartHorizontal(), l.getStartVertical(), l.getWidth(), l.getDistance(), lines.size() });
                x = 0;
             }
          }
@@ -305,5 +309,5 @@ public class imageProcessor {
       return img;
    }
    
-   private static final Logger LOG = Logger.getLogger(imageProcessor.class.getName());
+   private static final Logger LOG = getLogger(imageProcessor.class.getName());
 }

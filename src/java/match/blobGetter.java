@@ -16,11 +16,16 @@
  */
 package match;
 
+import detectimages.blob;
+import static detectimages.blob.getBlob;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.out;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import detectimages.blob;
+import static textdisplay.DatabaseWrapper.getConnection;
+import static textdisplay.Folio.getRbTok;
 import textdisplay.Manuscript;
 
 /**
@@ -35,19 +40,19 @@ public class blobGetter {
 
       Manuscript ms = new Manuscript(folio);
       blob b;
-      String path = textdisplay.Folio.getRbTok("PALEODATADIR") + "/" + ms.getID() + "/";
-      b = detectimages.blob.getBlob(path, folio + ".txt", blob);
+      String path = getRbTok("PALEODATADIR") + "/" + ms.getID() + "/";
+      b = getBlob(path, folio + ".txt", blob);
       return b;
 
    }
 
    public blobGetter(String img, int blob) throws SQLException {
       Connection j = null;
-      int folioNum = Integer.parseInt(img.split("\\.")[0]);
+      int folioNum = parseInt(img.split("\\.")[0]);
       Manuscript ms = new Manuscript(folioNum);
-      String path = textdisplay.Folio.getRbTok("PALEODATADIR") + "/" + ms.getID() + "/";
+      String path = getRbTok("PALEODATADIR") + "/" + ms.getID() + "/";
       try {
-         j = textdisplay.DatabaseWrapper.getConnection();
+         j = getConnection();
 
          String selectQuery = "select * from `blobs` where `img`=? and `blob`=?";
          PreparedStatement select = j.prepareStatement(selectQuery);
@@ -66,13 +71,13 @@ public class blobGetter {
          } else {
             blob b = null;
             if (img.contains(".")) {
-               b = detectimages.blob.getBlob(path, img, blob);
+               b =  getBlob(path, img, blob);
             } else {
-               b = detectimages.blob.getBlob(path, img + ".txt", blob);
+               b =  getBlob(path, img + ".txt", blob);
             }
 
             if (b == null) {
-               System.out.print("missing blob " + img + ":" + blob + "\n");
+                    out.print("missing blob " + img + ":" + blob + "\n");
 
             }
             y = b.getY();

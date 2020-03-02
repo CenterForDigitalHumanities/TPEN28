@@ -15,20 +15,17 @@ package utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import static java.lang.System.setProperty;
 import java.net.URL;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.*;
+import static javax.xml.XMLConstants.RELAXNG_NS_URI;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import static javax.xml.validation.SchemaFactory.newInstance;
 import javax.xml.validation.Validator;
 import org.xml.sax.SAXException;
-import textdisplay.Manuscript;
-import textdisplay.Project;
-import textdisplay.TagFilter;
+import static utils.XmlSchema.types.RELAXNG_COMPACT;
 
 /**Handles validating the contents of a project against the associated xml schema*/
 public class XmlSchema
@@ -63,11 +60,11 @@ public class XmlSchema
     {
         //messages will contain this message if the schema is in a not yet supported format
         messages="Not yet implemented";
-        if(this.type==types.RELAXNG_COMPACT)
-         System.setProperty("javax.xml.validation.SchemaFactory:"+XMLConstants.RELAXNG_NS_URI,"com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory");
+        if(this.type==RELAXNG_COMPACT)
+         setProperty("javax.xml.validation.SchemaFactory:"+RELAXNG_NS_URI,"com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory");
         else
-            System.setProperty("javax.xml.validation.SchemaFactory:"+XMLConstants.RELAXNG_NS_URI,"com.thaiopensource.relaxng.jaxp.XMLSyntaxSchemaFactory");
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.RELAXNG_NS_URI);
+            setProperty("javax.xml.validation.SchemaFactory:"+RELAXNG_NS_URI,"com.thaiopensource.relaxng.jaxp.XMLSyntaxSchemaFactory");
+        SchemaFactory factory = newInstance(RELAXNG_NS_URI);
         //change to use the schema stored here
         Schema schemaObj = factory.newSchema(new URL(schemaURL));
         Validator validator = schemaObj.newValidator();
@@ -103,8 +100,8 @@ public static String validateTEIAll(String text) throws SAXException, IOExceptio
         String fileName="The document";
 
         // 1. Lookup a factory for the RNG schema
-        System.setProperty("javax.xml.validation.SchemaFactory:"+XMLConstants.RELAXNG_NS_URI,"com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory");
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.RELAXNG_NS_URI);
+        setProperty("javax.xml.validation.SchemaFactory:"+RELAXNG_NS_URI,"com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory");
+        SchemaFactory factory = newInstance(RELAXNG_NS_URI);
         File schemaLocation = new File("/usr/web/tei_all.rnc"); //use a schema stored on the server, could easily use a remote one but tei-all is ~275k
         Schema schema = factory.newSchema(schemaLocation);
         Validator validator = schema.newValidator();

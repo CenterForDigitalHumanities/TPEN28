@@ -14,12 +14,13 @@ package dmstech;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
+import static com.hp.hpl.jena.query.QueryExecutionFactory.create;
 import com.hp.hpl.jena.query.QueryFactory;
+import static com.hp.hpl.jena.query.QueryFactory.create;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import static com.hp.hpl.jena.rdf.model.ModelFactory.createDefaultModel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,10 +48,7 @@ public class manifestAggregation {
         Stack<String>urls=new Stack();
         String format="";
         URL m3Url=new URL(url);
-        HttpURLConnection m3connection = null;
-        
-        // set up our connection for downloading
-        m3connection = (HttpURLConnection) m3Url.openConnection();
+        HttpURLConnection m3connection = (HttpURLConnection) m3Url.openConnection();
         m3connection.setRequestMethod("GET");
         m3connection.setRequestProperty("accept", "application/xml");
         m3connection.setDoOutput(true);
@@ -65,23 +63,23 @@ public class manifestAggregation {
         }
         
         // open our input stream
-        BufferedReader m3Reader = null;
+        BufferedReader m3Reader;
         m3Reader = new BufferedReader(new InputStreamReader(m3connection.getInputStream()));
         
         // create our model (BOZO:  What does this actually do?)
-        Model m3Model = ModelFactory.createDefaultModel();
+        Model m3Model = createDefaultModel();
         m3Model.read(m3Reader, null, format);
         
         // get all aggregations as a {subject}-{obj} pair
         String queryString="prefix ore:<http://www.openarchives.org/ore/terms/> select * where{   ?subject ore:describes ?obj  }";
         Query query = QueryFactory.create(queryString);
-        QueryExecution qe = QueryExecutionFactory.create(query, m3Model);
+        QueryExecution qe = create(query, m3Model);
         ResultSet results = qe.execSelect();
         while (results.hasNext()) {
             QuerySolution qs = results.next();
             queryString="prefix ore:<http://www.openarchives.org/ore/terms/> select * where{ ?sub ore:describes <"+qs.get("obj")+"> }";
             query = QueryFactory.create(queryString);
-            qe = QueryExecutionFactory.create(query, m3Model);
+            qe = create(query, m3Model);
             ResultSet results2 = qe.execSelect();
             while(results2.hasNext())
             {
@@ -89,7 +87,6 @@ public class manifestAggregation {
                 urls.push(qs.get("sub").toString());
             }
         }
-        
         // convert our Stack<> to String[] and return our array of manifest URLs
         toret=new String [urls.size()];
         for(int i=0;i<toret.length;i++)

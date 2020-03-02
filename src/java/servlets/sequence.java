@@ -14,9 +14,10 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -39,14 +40,13 @@ public class sequence extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-       // response.setContentType("application/xml");
-        PrintWriter out = response.getWriter();
-        try {
+        // response.setContentType("application/xml");
+        try (PrintWriter out = response.getWriter()) {
         if(request.getParameter("p")!=null)
         {
             int page=0;
             
-            page=Integer.parseInt(request.getParameter("p"));
+            page=parseInt(request.getParameter("p"));
 
             Folio f;
                 try
@@ -55,25 +55,23 @@ public class sequence extends HttpServlet {
                     
                     } catch (SQLException ex)
                     {
-                    Logger.getLogger(sequence.class.getName()).log(Level.SEVERE, null, ex);
+                    getLogger(sequence.class.getName()).log(SEVERE, null, ex);
                     }
 
         }
         else
         {
-            int projectID=Integer.parseInt(request.getParameter("projectID"));
+            int projectID=parseInt(request.getParameter("projectID"));
                 try
                     {
                     Project p = new Project(projectID);
                     out.print(p.getOACSequence());
                     } catch (SQLException ex)
                     {
-                    Logger.getLogger(sequence.class.getName()).log(Level.SEVERE, null, ex);
+                    getLogger(sequence.class.getName()).log(SEVERE, null, ex);
                     }
 
         }
-        } finally { 
-            out.close();
         }
     } 
 

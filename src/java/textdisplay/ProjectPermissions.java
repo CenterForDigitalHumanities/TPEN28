@@ -15,8 +15,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 
 public class ProjectPermissions {
@@ -28,7 +29,7 @@ public ProjectPermissions(int projectID) throws SQLException
 PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, projectID);
             ResultSet rs=ps.executeQuery();
@@ -55,8 +56,8 @@ PreparedStatement ps=null;
             }
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         
 }
@@ -75,15 +76,15 @@ public int getProjectID()
     PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(2, projectID);
             ps.setBoolean(1, allow_export);
             ps.execute();
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         this.allow_public_export = allow_export;
     }
@@ -98,15 +99,15 @@ public int getProjectID()
     PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(2, projectID);
             ps.setBoolean(1, a);
             ps.execute();
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         this.allow_OAC_read = a;
     }
@@ -121,15 +122,15 @@ public int getProjectID()
     PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(2, projectID);
             ps.setBoolean(1, a);
             ps.execute();
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
 
         this.allow_OAC_write = a;
@@ -145,15 +146,15 @@ public int getProjectID()
     PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(2, projectID);
             ps.setBoolean(1, a);
             ps.execute();
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
 
         this.allow_public_copy = a;
@@ -169,15 +170,15 @@ public int getProjectID()
     PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(2, projectID);
             ps.setBoolean(1, a);
             ps.execute();
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
 
         this.allow_public_modify = a;
@@ -193,15 +194,15 @@ public int getProjectID()
     PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(2, projectID);
             ps.setBoolean(1, allow_public_modify_buttons);
             ps.execute();
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
 
         this.allow_public_modify_buttons = allow_public_modify_buttons;
@@ -218,15 +219,15 @@ public int getProjectID()
     PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(2, projectID);
             ps.setBoolean(1, allow_public_modify_line_parsing);
             ps.execute();
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         this.allow_public_modify_line_parsing = allow_public_modify_line_parsing;
     }
@@ -241,15 +242,15 @@ public int getProjectID()
     PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(2, projectID);
             ps.setBoolean(1, allow_public_modify_metadata);
             ps.execute();
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         this.allow_public_modify_metadata = allow_public_modify_metadata;
     }
@@ -264,15 +265,15 @@ public int getProjectID()
     PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(2, projectID);
             ps.setBoolean(1, allow_public_read_transcription);
             ps.execute();
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         this.allow_public_read_transcription = allow_public_read_transcription;
     }
@@ -298,15 +299,15 @@ public int getProjectID()
     PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(2, projectID);
             ps.setBoolean(1, allow_public_modify_annotation);
             ps.execute();
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         this.allow_public_modify_annotation = allow_public_modify_annotation;
     }
@@ -321,15 +322,15 @@ public int getProjectID()
     PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(2, projectID);
             ps.setBoolean(1, allow_public_modify_notes);
             ps.execute();
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         this.allow_public_modify_notes = allow_public_modify_notes;
     }

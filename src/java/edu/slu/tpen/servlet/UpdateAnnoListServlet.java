@@ -5,6 +5,7 @@
  */
 package edu.slu.tpen.servlet;
 
+import static edu.slu.tpen.servlet.Constant.ANNOTATION_SERVER_ADDR;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,9 +13,9 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.net.URLEncoder.encode;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +30,7 @@ public class UpdateAnnoListServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            URL postUrl = new URL(Constant.ANNOTATION_SERVER_ADDR + "/anno/updateAnnotation.action");
+            URL postUrl = new URL(ANNOTATION_SERVER_ADDR + "/anno/updateAnnotation.action");
             HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
             connection.setDoOutput(true);
             connection.setDoInput(true);
@@ -38,11 +39,13 @@ public class UpdateAnnoListServlet extends HttpServlet {
             connection.setInstanceFollowRedirects(true);
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.connect();
-            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
             //value to save
-            out.writeBytes("content=" + URLEncoder.encode(request.getParameter("content"), "utf-8"));
-            out.flush();
-            out.close(); // flush and close
+            try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
+                //value to save
+                out.writeBytes("content=" + encode(request.getParameter("content"), "utf-8"));
+                out.flush();
+                // flush and close
+            }
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
             String line="";
             StringBuilder sb = new StringBuilder();
@@ -56,9 +59,9 @@ public class UpdateAnnoListServlet extends HttpServlet {
             response.setHeader("Content-Location", "absoluteURI");
             response.getWriter().print(sb.toString());
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(UpdateAnnoListServlet.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(UpdateAnnoListServlet.class.getName()).log(SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(UpdateAnnoListServlet.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(UpdateAnnoListServlet.class.getName()).log(SEVERE, null, ex);
         }
     }
 

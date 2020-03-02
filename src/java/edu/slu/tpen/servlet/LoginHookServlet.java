@@ -7,22 +7,24 @@ package edu.slu.tpen.servlet;
 
 import edu.slu.tpen.servlet.util.EncryptUtil;
 import java.io.IOException;
-import java.net.URLDecoder;
+import static java.net.URLDecoder.decode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import textdisplay.DatabaseWrapper;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**
  * This is a SSO function for NewBerry. When user logs in on NewBerry, it sends user info here and puts user info into tpen part session. 
@@ -46,11 +48,10 @@ public class LoginHookServlet extends HttpServlet {
         String text = request.getQueryString();
         EncryptUtil mcrypt = new EncryptUtil();
         try {
-            String decrypted = URLDecoder.decode(new String( mcrypt.decrypt( text ) ), "UTF-8");
+            String decrypted = decode(new String( mcrypt.decrypt( text ) ), "UTF-8");
             String[] params = decrypted.split("&");
             Map<String, Object> vals = new HashMap();
-            for(int i = 0; i < params.length; i++){
-                String param = params[i];
+            for (String param : params) {
                 if(param.contains("=")){
                     String[] nameVal = param.split("=");
                     if(nameVal.length == 2){
@@ -64,7 +65,7 @@ public class LoginHookServlet extends HttpServlet {
             String query = "select * from users where email = ?";
             Connection j = null;
             PreparedStatement ps=null;
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setString(1, vals.get("email") + "");
             ResultSet rs = ps.executeQuery();
@@ -72,8 +73,8 @@ public class LoginHookServlet extends HttpServlet {
             while(rs.next()){
                 uid = rs.getInt("UID");
             }
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
             if(uid != 0){
                 //if user exits, put user info into session. 
                 HttpSession session = request.getSession();
@@ -82,8 +83,8 @@ public class LoginHookServlet extends HttpServlet {
             }else{
                 //if user doesn't exist, create a new user. 
                 String insertUser = "insert into users (uname, email) values (?,?)";
-                j = DatabaseWrapper.getConnection();
-                ps = j.prepareStatement(insertUser, Statement.RETURN_GENERATED_KEYS);
+                j = getConnection();
+                ps = j.prepareStatement(insertUser, RETURN_GENERATED_KEYS);
                 ps.setString(1, vals.get("username") + "");
                 ps.setString(2, vals.get("email") + "");
                 ps.executeUpdate();
@@ -110,7 +111,7 @@ public class LoginHookServlet extends HttpServlet {
             }
             response.sendRedirect((String)vals.get("redirect_uri"));
         } catch (Exception ex) {
-            Logger.getLogger(LoginHookServlet.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(LoginHookServlet.class.getName()).log(SEVERE, null, ex);
         }
     }
 

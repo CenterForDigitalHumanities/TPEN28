@@ -20,31 +20,34 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import static java.awt.Toolkit.getDefaultToolkit;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.out;
+import static java.lang.Thread.sleep;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
+import static java.nio.channels.FileChannel.MapMode.READ_ONLY;
+import static java.nio.charset.Charset.defaultCharset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import java.util.regex.Pattern;
+import static java.util.regex.Pattern.compile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 /**
  * A blob is a representation of the boolean matrix that describes a single glyph from a binarized image
@@ -93,8 +96,8 @@ public class blob implements Serializable {
       }
    }
 //coordinates of a pixel in the blob. Any pixel will do.
-   static Pattern p = Pattern.compile("\\n");
-   static Pattern comma = Pattern.compile(",");
+   static Pattern p = compile("\\n");
+   static Pattern comma = compile(",");
    protected int x;
    protected int y;
    protected int width;
@@ -131,14 +134,14 @@ public class blob implements Serializable {
     */
    public static blob getBlob(String imageName, int blobIdentifier) {
       try {
-         Vector<blob> b = blob.getBlobs("data/" + imageName);
+         Vector<blob> b = getBlobs("data/" + imageName);
 
          return b.get(blobIdentifier);
       } catch (FileNotFoundException ex) {
-         Logger.getLogger(blob.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(blob.class.getName()).log(SEVERE, null, ex);
          return null;
       } catch (IOException ex) {
-         Logger.getLogger(blob.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(blob.class.getName()).log(SEVERE, null, ex);
          return null;
       }
    }
@@ -149,14 +152,14 @@ public class blob implements Serializable {
     */
    public static blob getBlob(String path, String imageName, int blobIdentifier) {
       try {
-         Vector<blob> b = blob.getBlobs(path + imageName);
+         Vector<blob> b = getBlobs(path + imageName);
 
          return b.get(blobIdentifier);
       } catch (FileNotFoundException ex) {
-         Logger.getLogger(blob.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(blob.class.getName()).log(SEVERE, null, ex);
          return null;
       } catch (IOException ex) {
-         Logger.getLogger(blob.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(blob.class.getName()).log(SEVERE, null, ex);
          return null;
       }
    }
@@ -217,9 +220,9 @@ public class blob implements Serializable {
       pixel[] pixelArray = pixels.toArray(new pixel[pixels.size()]);
       Arrays.sort(pixelArray);
       pixels = new Vector();
-      for (int i = 0; i < pixelArray.length; i++) {
-         pixels.add(pixelArray[i]);
-      }
+        for (pixel pixelArray1 : pixelArray) {
+            pixels.add(pixelArray1);
+        }
    }
 
    /**
@@ -355,10 +358,10 @@ public class blob implements Serializable {
     */
    public static ImagePanel2 displayImage(BufferedImage img) {
       JFrame fr = new JFrame();
-      fr.setDefaultCloseOperation(fr.EXIT_ON_CLOSE);
+      fr.setDefaultCloseOperation(EXIT_ON_CLOSE);
       //fr.setTitle(title)
       ImagePanel2 pan = new ImagePanel2(img);
-      Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
+      Toolkit toolkit = getDefaultToolkit();
       Dimension screensize = toolkit.getScreenSize();
 
       pan.setSize(screensize.width, screensize.height);
@@ -457,25 +460,21 @@ public class blob implements Serializable {
 
 
       Boolean wouldabroke = false;
-      for (int i = 0; i < aArray.length; i++) {
-
-
-         innercount = 0;
-         pixel aCurrent = aArray[i];
-
-         for (int j = 0; j < bArray.length; j++) {
-            pixel bCurrent = bArray[j];
-            if ((aCurrent.x == (bCurrent.x) && aCurrent.y == (bCurrent.y))) {
-               //System.out.print("offset "+ offset+"\n");
-
-               good++;
-
-
+        for (pixel aArray1 : aArray) {
+            innercount = 0;
+            pixel aCurrent = aArray1;
+            for (pixel bCurrent : bArray) {
+                if ((aCurrent.x == (bCurrent.x) && aCurrent.y == (bCurrent.y))) {
+                    //System.out.print("offset "+ offset+"\n");
+                    
+                    good++;
+                    
+                    
+                }
+                
+                innercount++;
             }
-
-            innercount++;
-         }
-      }
+        }
 
 
       if (a.size > b.size) {
@@ -493,7 +492,7 @@ public class blob implements Serializable {
       String query = "Insert into blobs(image, size) values(?,?)";
       String pixelQuery = "Insert into pixels(x,y,BlobId) values(?,?,?)";
 
-      PreparedStatement stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+      PreparedStatement stmt = j.prepareStatement(query, RETURN_GENERATED_KEYS);
       stmt.setInt(2, b.size);
       stmt.setString(1, image);
       ResultSet rs;
@@ -567,11 +566,11 @@ public class blob implements Serializable {
          return;
       }
       w.append("<szx>" + matrix.length + "</szx><szy>" + matrix[0].length + "</szy><id>" + b.id + "</id>\n");
-      for (int i = 0; i < matrix.length; i++) {
-         for (int j = 0; j < matrix[0].length; j++) {
-            w.append(matrix[i][j] + ",");
-         }
-      }
+        for (int[] matrix1 : matrix) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                w.append(matrix1[j] + ",");
+            }
+        }
 
 
       w.flush();
@@ -584,10 +583,10 @@ public class blob implements Serializable {
       try {
          String buff = assignmentReader.readLine();
          String[] toret = buff.split(" ");
-         FileWriter w = new FileWriter(statefile);
-         w.write(buff);
-         w.flush();
-         w.close();
+            try (FileWriter w = new FileWriter(statefile)) {
+                w.write(buff);
+                w.flush();
+            }
          return toret;
 
       } catch (IOException ex) {
@@ -635,14 +634,14 @@ public class blob implements Serializable {
          //j.close();
          return;
       } catch (Exception e) {
-         System.out.print("Encountered error sending results. " + e.toString() + "\n. Retrying in 5 seconds...");
+            out.print("Encountered error sending results. " + e.toString() + "\n. Retrying in 5 seconds...");
 
       }
       //failed last time, try again.
       try {
-         Thread.sleep(4000);
+            sleep(4000);
       } catch (InterruptedException ex) {
-         Logger.getLogger(blob.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(blob.class.getName()).log(SEVERE, null, ex);
       }
    }
 
@@ -653,7 +652,6 @@ public class blob implements Serializable {
          w.append(toWrite);
          w.flush();
       } catch (IOException ex) {
-         ex.printStackTrace();
       }
    }
 
@@ -664,18 +662,17 @@ public class blob implements Serializable {
          w.append(imageNames[0] + ":" + count1 + ";" + imageNames[1] + ":" + count2 + "\n");
          w.flush();
       } catch (IOException ex) {
-         ex.printStackTrace();
       }
    }
 
    public static void writeResults(int count, String[] imageNames, FileWriter w) throws SQLException {
       try {
          w.append(imageNames[0] + ":" + imageNames[1] + ":" + count + "\n");
-         System.out.print(imageNames[0] + ":" + imageNames[1] + ":" + count + "\n");
-         System.out.flush();
+            out.print(imageNames[0] + ":" + imageNames[1] + ":" + count + "\n");
+            out.flush();
          w.flush();
       } catch (IOException ex) {
-         Logger.getLogger(blob.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(blob.class.getName()).log(SEVERE, null, ex);
       }
    }
 
@@ -721,56 +718,47 @@ public class blob implements Serializable {
 
       int idCounter = 0;
 
-      String[] stuff = blob.readFileIntoArray(filename); //p.split(readFile(filename.replace(".txt.txt", ".txt")));
-
-      for (int i = 0; i < stuff.length; i++) {
-         buff = stuff[i];
-
-         if (buff.contains("b")) {
-            if (thisOne != null) {
-               thisOne.arrayVersion = thisOne.pixels.toArray(new pixel[thisOne.pixels.size()]);
-               thisOne.width = maxX;
-               thisOne.height = maxY;
-               thisOne.matrixVersion = new matrixBlob(thisOne);
-               //thisOne.blockVersion=new BlockBlob(thisOne.matrixVersion);
-               thisOne.altVersion = new altBlob(thisOne);
-               blobs.add(thisOne);
-               thisOne.id = idCounter;
-               idCounter++;
-               maxX = 0;
-               maxY = 0;
+      String[] stuff = readFileIntoArray(filename); //p.split(readFile(filename.replace(".txt.txt", ".txt")));
+        for (String stuff1 : stuff) {
+            buff = stuff1;
+            if (buff.contains("b")) {
+                if (thisOne != null) {
+                    thisOne.arrayVersion = thisOne.pixels.toArray(new pixel[thisOne.pixels.size()]);
+                    thisOne.width = maxX;
+                    thisOne.height = maxY;
+                    thisOne.matrixVersion = new matrixBlob(thisOne);
+                    //thisOne.blockVersion=new BlockBlob(thisOne.matrixVersion);
+                    thisOne.altVersion = new altBlob(thisOne);
+                    blobs.add(thisOne);
+                    thisOne.id = idCounter;
+                    idCounter++;
+                    maxX = 0;
+                    maxY = 0;
+                }   thisOne = new blob();
+                try {
+                    int startx = buff.indexOf("<sx>") + 4;
+                    int endx = buff.indexOf("</sx>");
+                    int starty = buff.indexOf("<sy>") + 4;
+                    int endy = buff.indexOf("</sy>");
+                    int x = parseInt(buff.substring(startx, endx));
+                    int y = parseInt(buff.substring(starty, endy));
+                    thisOne.x = x;
+                    thisOne.y = y;
+                }catch (StringIndexOutOfBoundsException e) {
+                    int k = 0;
+                }
+            } else {
+                String[] parts = comma.split(buff);
+                int x = parseInt(parts[0]);
+                int y = parseInt(parts[1]);
+                if (x > maxX) {
+                    maxX = x;
+                }   if (y > maxY) {
+                    maxY = y;
+                }   thisOne.pixels.add(new pixel(x, y));
+                thisOne.size++;
             }
-            thisOne = new blob();
-            try {
-               int startx = buff.indexOf("<sx>") + 4;
-               int endx = buff.indexOf("</sx>");
-               int starty = buff.indexOf("<sy>") + 4;
-               int endy = buff.indexOf("</sy>");
-               int x = Integer.parseInt(buff.substring(startx, endx));
-
-               int y = Integer.parseInt(buff.substring(starty, endy));
-               thisOne.x = x;
-               thisOne.y = y;
-
-            } catch (StringIndexOutOfBoundsException e) {
-               int k = 0;
-            }
-         } else {
-            String[] parts = comma.split(buff);
-            int x = Integer.parseInt(parts[0]);
-
-            int y = Integer.parseInt(parts[1]);
-            if (x > maxX) {
-               maxX = x;
-            }
-            if (y > maxY) {
-               maxY = y;
-            }
-            thisOne.pixels.add(new pixel(x, y));
-            thisOne.size++;
-         }
-
-      }
+        }
       //System.out.print(blobs.size() + " " + idCounter);
       lastPage = blobs;
       return blobs;
@@ -794,7 +782,7 @@ public class blob implements Serializable {
 //img=imageHelpers.scale(img,2500);
          int idCounter = 0;
 
-         String[] stuff = blob.readFileIntoArray(filename); //p.split(readFile(filename.replace(".txt.txt", ".txt")));
+         String[] stuff = readFileIntoArray(filename); //p.split(readFile(filename.replace(".txt.txt", ".txt")));
          int[][] matrix = null;
 
          for (int i = 0; i < stuff.length; i++) {
@@ -823,9 +811,9 @@ public class blob implements Serializable {
                   int endx = buff.indexOf("</sx>");
                   int starty = buff.indexOf("<sy>") + 4;
                   int endy = buff.indexOf("</sy>");
-                  int x = Integer.parseInt(buff.substring(startx, endx));
+                  int x = parseInt(buff.substring(startx, endx));
 
-                  int y = Integer.parseInt(buff.substring(starty, endy));
+                  int y = parseInt(buff.substring(starty, endy));
                   thisOne.x = x;
                   thisOne.y = y;
 
@@ -841,10 +829,10 @@ public class blob implements Serializable {
                int endy = buff.indexOf("</szy>");
                int startid = buff.indexOf("<id>") + 4;
                int endid = buff.indexOf("</id>");
-               int id = Integer.parseInt(buff.substring(startid, endid));
-               int sizeX = Integer.parseInt(buff.substring(startx, endx));
+               int id = parseInt(buff.substring(startid, endid));
+               int sizeX = parseInt(buff.substring(startx, endx));
                thisOne.id = id;
-               int sizeY = Integer.parseInt(buff.substring(starty, endy));
+               int sizeY = parseInt(buff.substring(starty, endy));
                matrix = new int[sizeY][sizeX];
                i++;
                buff = stuff[i];
@@ -868,7 +856,6 @@ public class blob implements Serializable {
          lastPage = blobs;
          return blobs;
       } catch (Exception e) {
-         e.printStackTrace();
       }
       return null;
 
@@ -887,7 +874,7 @@ public class blob implements Serializable {
             v.add(b.readLine());
          }
       } catch (IOException ex) {
-         Logger.getLogger(blob.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(blob.class.getName()).log(SEVERE, null, ex);
       }
       toret = new String[v.size()];
       for (int i = 0; i < toret.length; i++) {
@@ -900,14 +887,11 @@ public class blob implements Serializable {
     * Faster way to read the entire data file in 1 go, courtesy of stackoverflow
     */
    private static String readFile(String path) throws IOException {
-      FileInputStream stream = new FileInputStream(new File(path));
-      try {
+      try (FileInputStream stream = new FileInputStream(new File(path))) {
          FileChannel fc = stream.getChannel();
-         MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+         MappedByteBuffer bb = fc.map(READ_ONLY, 0, fc.size());
          /* Instead of using default, pass in a decoder. */
-         return Charset.defaultCharset().decode(bb).toString();
-      } finally {
-         stream.close();
+         return defaultCharset().decode(bb).toString();
       }
    }
 
@@ -920,36 +904,30 @@ public class blob implements Serializable {
       URLConnection conn = url.openConnection();
 
 
-      // Read all the text returned by the server
-      InputStream in = conn.getInputStream();
-      File dest = new File(destination);
-      if (dest.exists()) {
-         dest.delete();
-      }
-      BufferedOutputStream tmpOut = new BufferedOutputStream(new FileOutputStream(destination));
-      int total = conn.getContentLength() / 1000000;
-      int done = 0;
-      int doneMB = -1;
-      byte[] bytes = new byte[4096];
-
-      String str = "";
-      while (true) {
-         int len = in.read(bytes);
-         if (len == -1) {
-            break;
-         }
-         tmpOut.write(bytes, 0, len);
-         done += len;
-
-         if (doneMB < done / 1000000) {
-            doneMB = done / 1000000;
-
-            System.out.print("" + doneMB + "mb / " + total + "\n");
-         }
-
-         tmpOut.flush();
-      }
-      in.close();
+        try ( // Read all the text returned by the server
+                InputStream in = conn.getInputStream()) {
+            File dest = new File(destination);
+            if (dest.exists()) {
+                dest.delete();
+            }     BufferedOutputStream tmpOut = new BufferedOutputStream(new FileOutputStream(destination));
+            int total = conn.getContentLength() / 1000000;
+            int done = 0;
+            int doneMB = -1;
+            byte[] bytes = new byte[4096];
+            String str = "";
+            while (true) {
+                int len = in.read(bytes);
+                if (len == -1) {
+                    break;
+                }      tmpOut.write(bytes, 0, len);
+                done += len;
+                if (doneMB < done / 1000000) {
+                    doneMB = done / 1000000;
+                    out.print("" + doneMB + "mb / " + total + "\n");
+                }
+                tmpOut.flush();
+            }
+        }
    }
 
    /**
@@ -959,23 +937,22 @@ public class blob implements Serializable {
       int BUFFER = 4096;
       BufferedOutputStream dest = null;
       FileInputStream fis = new FileInputStream(fileLoc);
-      ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
-      ZipEntry entry;
-      while ((entry = zis.getNextEntry()) != null) {
-         System.out.println("Extracting: " + entry);
-         int count;
-         byte data[] = new byte[BUFFER];
-         // write the files to the disk
-         FileOutputStream fos = new FileOutputStream(dataPath + entry.getName());
-         dest = new BufferedOutputStream(fos, BUFFER);
-         while ((count = zis.read(data, 0, BUFFER))
-                 != -1) {
-            dest.write(data, 0, count);
-         }
-         dest.flush();
-         dest.close();
-      }
-      zis.close();
+        try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis))) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                out.println("Extracting: " + entry);
+                int count;
+                byte data[] = new byte[BUFFER];
+                // write the files to the disk
+                FileOutputStream fos = new FileOutputStream(dataPath + entry.getName());
+                dest = new BufferedOutputStream(fos, BUFFER);
+                while ((count = zis.read(data, 0, BUFFER))
+                        != -1) {
+                    dest.write(data, 0, count);
+                }      dest.flush();
+                dest.close();
+            }
+        }
    }
 
    public int getWidth() {

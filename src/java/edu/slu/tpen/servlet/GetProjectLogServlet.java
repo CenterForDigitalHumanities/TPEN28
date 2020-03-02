@@ -16,13 +16,16 @@
 package edu.slu.tpen.servlet;
 
 import java.io.IOException;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import textdisplay.Project;
 
 /**
@@ -43,17 +46,17 @@ public class GetProjectLogServlet extends HttpServlet {
         if(null != request.getParameter("projectID")){
             try {
                 String projectID = request.getParameter("projectID");
-                Project p = new Project(Integer.parseInt(projectID));
+                Project p = new Project(parseInt(projectID));
                 if(null != request.getSession().getAttribute("uid")){
                     response.getWriter().print(p.getProjectLog());
                 }else{
-                    response.sendError(response.SC_UNAUTHORIZED);
+                    response.sendError(SC_UNAUTHORIZED);
                 }
             } catch (SQLException ex) {
-                Logger.getLogger(GetProjectLogServlet.class.getName()).log(Level.SEVERE, null, ex);
+                getLogger(GetProjectLogServlet.class.getName()).log(SEVERE, null, ex);
             }
         }else{
-            response.sendError(response.SC_NOT_ACCEPTABLE);
+            response.sendError(SC_NOT_ACCEPTABLE);
         }
     }
 

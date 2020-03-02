@@ -15,6 +15,7 @@
 package detectimages;
 
 import java.awt.image.BufferedImage;
+import static java.lang.String.format;
 
 
 /**
@@ -99,6 +100,6 @@ public class line {
    
    @Override
    public String toString() {
-      return String.format("line(%d,%d,%d,%d)", startHorizontal, startVertical, width, distance);
+      return format("line(%d,%d,%d,%d)", startHorizontal, startVertical, width, distance);
    }
 }

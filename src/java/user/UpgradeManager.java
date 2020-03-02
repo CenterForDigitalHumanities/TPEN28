@@ -9,9 +9,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Date;
-import textdisplay.DatabaseWrapper;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**
  *
@@ -26,7 +27,7 @@ public class UpgradeManager {
     
     /* Get the current upgrade settings */
     public UpgradeManager() throws SQLException{
-        Connection j = DatabaseWrapper.getConnection();
+        Connection j = getConnection();
         PreparedStatement stmt = null;
         stmt = j.prepareStatement("Select * from upgrademanager");
         ResultSet rs = stmt.executeQuery();
@@ -47,8 +48,8 @@ public class UpgradeManager {
         //System.out.println("NEW UPGRADE SETTINGS!");
         try {
            String query = "update upgrademanager set upgradeDate=?, upgradeMessage=?, countdown=?, active=? where managerID=1";
-           j = DatabaseWrapper.getConnection();
-           stmt = j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+           j = getConnection();
+           stmt = j.prepareStatement(query, RETURN_GENERATED_KEYS);
            stmt.setString(1, d);
            stmt.setString(2, m);
            stmt.setInt(3, c);
@@ -62,8 +63,8 @@ public class UpgradeManager {
            countdown = c;
            active = 1;
         } finally {
-           DatabaseWrapper.closeDBConnection(j);
-           DatabaseWrapper.closePreparedStatement(stmt);
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
         }
     }
     
@@ -71,7 +72,7 @@ public class UpgradeManager {
         Connection j = null;
         PreparedStatement stmt = null;
         String query = "update upgrademanager set active=0 where managerID=1";
-        j = DatabaseWrapper.getConnection();
+        j = getConnection();
         stmt = j.prepareStatement(query);
         stmt.execute();
         active = 0;

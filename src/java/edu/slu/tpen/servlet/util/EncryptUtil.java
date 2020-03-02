@@ -2,25 +2,30 @@ package edu.slu.tpen.servlet.util;
 
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.arraycopy;
+import static java.lang.System.out;
+import static java.net.URLDecoder.decode;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.crypto.Cipher;
+import static javax.crypto.Cipher.DECRYPT_MODE;
+import static javax.crypto.Cipher.ENCRYPT_MODE;
+import static javax.crypto.Cipher.getInstance;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import textdisplay.Folio;
+import static textdisplay.Folio.getRbTok;
 
 public class EncryptUtil {
 
         static char[] HEX_CHARS = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
-        private String iv = Folio.getRbTok("IV"); 
+        private String iv = getRbTok("IV"); 
         private IvParameterSpec ivspec;
         private SecretKeySpec keyspec;
         private Cipher cipher;
-        private String SecretKey = Folio.getRbTok("KEY");
+        private String SecretKey = getRbTok("KEY");
 
         public EncryptUtil()
         {
@@ -29,14 +34,13 @@ public class EncryptUtil {
             keyspec = new SecretKeySpec(SecretKey.getBytes(), "AES");
 
             try {
-                    cipher = Cipher.getInstance("AES/CBC/NoPadding");
-            } catch (NoSuchAlgorithmException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-            } catch (NoSuchPaddingException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    cipher = getInstance("AES/CBC/NoPadding");
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+                // TODO Auto-generated catch block
+
             }
+        // TODO Auto-generated catch block
+        
         }
 
         public byte[] encrypt(String text) throws Exception
@@ -47,7 +51,7 @@ public class EncryptUtil {
             byte[] encrypted = null;
 
             try {
-                    cipher.init(Cipher.ENCRYPT_MODE, keyspec, ivspec);
+                    cipher.init(ENCRYPT_MODE, keyspec, ivspec);
 
                     encrypted = cipher.doFinal(padString(text).getBytes());
             } catch (Exception e)
@@ -65,7 +69,7 @@ public class EncryptUtil {
 
             byte[] decrypted = null;
 
-                    cipher.init(Cipher.DECRYPT_MODE, keyspec, ivspec);
+                    cipher.init(DECRYPT_MODE, keyspec, ivspec);
 
                     decrypted = cipher.doFinal(hexToBytes(code));
                     //Remove trailing zeroes
@@ -77,7 +81,7 @@ public class EncryptUtil {
                         if( trim > 0 )
                         {
                             byte[] newArray = new byte[decrypted.length - trim];
-                            System.arraycopy(decrypted, 0, newArray, 0, decrypted.length - trim);
+                            arraycopy(decrypted, 0, newArray, 0, decrypted.length - trim);
                             decrypted = newArray;
                         }
                     }
@@ -106,7 +110,7 @@ public class EncryptUtil {
                     int len = str.length() / 2;
                     byte[] buffer = new byte[len];
                     for (int i=0; i<len; i++) {
-                            buffer[i] = (byte) Integer.parseInt(str.substring(i*2,i*2+2),16);
+                            buffer[i] = (byte) parseInt(str.substring(i*2,i*2+2),16);
                     }
                     return buffer;
             }
@@ -140,7 +144,7 @@ public class EncryptUtil {
         public static void main(String[] args) throws UnsupportedEncodingException{
             String sampleQueryStr1 = "45dd983c89cb66e1746568b9643788bb63f8d0210ebf0543c5d0a30c85a0d32bceaba341f15e34edf6fdfc7ce1febb88419fc98d4415762872efea47e849f32e59fe318b5688e9a7f5be66364642bc2d81fb1ecb836f75f67c50f25adcf33e6d234a59d153088d5a764fa1abbc041474060c7b59d1099fd39a7e00a2119acb75";
 //            sampleQueryStr1 = new String(Base64.decodeBase64(sampleQueryStr1));
-            System.out.println(sampleQueryStr1);
+            out.println(sampleQueryStr1);
             EncryptUtil mcrypt = new EncryptUtil();
             
             /* Encrypt */
@@ -154,10 +158,10 @@ public class EncryptUtil {
 //                encrypted = MCrypt.bytesToHex( mcrypt.encrypt("id=dp_sunny_client&email=sunnywd.lee%40utoronto.ca&role=1&redirect_uri=https%3A%2F%2Fsunnyl.library.utoronto.ca%2Fhome") );
                 /* Decrypt */
 //                System.out.println("");
-                String decrypted = URLDecoder.decode(new String( mcrypt.decrypt( sampleQueryStr1 ) ), "UTF-8");
-                System.out.println(decrypted);
+                String decrypted = decode(new String( mcrypt.decrypt( sampleQueryStr1 ) ), "UTF-8");
+                out.println(decrypted);
             } catch (Exception ex) {
-                Logger.getLogger(EncryptUtil.class.getName()).log(Level.SEVERE, null, ex);
+                getLogger(EncryptUtil.class.getName()).log(SEVERE, null, ex);
             }
         }
 }

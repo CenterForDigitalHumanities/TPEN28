@@ -15,6 +15,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 
 /**Store additional information that needs to be sent with the city name for google maps to correctly plot the location.*/
 public class CityMap {
@@ -31,7 +34,7 @@ public class CityMap {
     Connection j=null;
     PreparedStatement ps=null;
     try{
-        j=DatabaseWrapper.getConnection();
+        j=  getConnection();
         ps=j.prepareStatement(query);
         ps.setString(1, city);
         ResultSet rs=ps.executeQuery();
@@ -50,8 +53,8 @@ public class CityMap {
  }
     }
     finally{
-        DatabaseWrapper.closeDBConnection(j);
-        DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
 
     }
 }
@@ -72,7 +75,7 @@ public class CityMap {
     Connection j=null;
     PreparedStatement ps=null;
     try{
-        j=DatabaseWrapper.getConnection();
+        j=  getConnection();
         ps=j.prepareStatement(query);
         ps.setString(1, value);
         ps.setString(2, city);
@@ -80,8 +83,8 @@ public class CityMap {
 
     }
     finally{
-        DatabaseWrapper.closeDBConnection(j);
-        DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
 
     }
 }

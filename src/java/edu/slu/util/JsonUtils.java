@@ -16,6 +16,8 @@ package edu.slu.util;
 
 import java.awt.Rectangle;
 import java.io.IOException;
+import static java.lang.Integer.parseInt;
+import static java.lang.String.format;
 import java.util.List;
 import java.util.Map;
 
@@ -37,10 +39,10 @@ public class JsonUtils {
    public static Map<String, Object> getObject(Map<String, Object> map, String key, boolean nonNull) throws IOException {
       Object obj = map.get(key);
       if (obj == null && nonNull) {
-         throw new IOException(String.format("Malformed JSON input: missing \"%s\" entry.", key));
+         throw new IOException(format("Malformed JSON input: missing \"%s\" entry.", key));
       }
       if (obj != null && !(obj instanceof Map)) {
-         throw new IOException(String.format("Malformed JSON input: \"%s\" entry is not an object.", key));
+         throw new IOException(format("Malformed JSON input: \"%s\" entry is not an object.", key));
       }
       return (Map<String, Object>)obj;
    }
@@ -56,10 +58,10 @@ public class JsonUtils {
    public static List<Object> getArray(Map<String, Object> map, String key, boolean nonNull) throws IOException {
       Object obj = map.get(key);
       if (obj == null && nonNull) {
-         throw new IOException(String.format("Malformed JSON input: missing \"%s\" entry.", key));
+         throw new IOException(format("Malformed JSON input: missing \"%s\" entry.", key));
       }
       if (obj != null && !(obj instanceof List)) {
-         throw new IOException(String.format("Malformed JSON input: \"%s\" entry is not an array.", key));
+         throw new IOException(format("Malformed JSON input: \"%s\" entry is not an array.", key));
       }
       return (List<Object>)obj;
    }
@@ -83,7 +85,7 @@ public class JsonUtils {
    public static int getInt(Map<String, Object> map, String key) throws IOException {
       Object o = map.get(key);
       if (o == null || !(o instanceof Number)) {
-         throw new IOException(String.format("Malformed JSON input: unable to extract numeric value for \"%s\"", key));
+         throw new IOException(format("Malformed JSON input: unable to extract numeric value for \"%s\"", key));
       }
       return ((Number)o).intValue();
    }
@@ -98,7 +100,7 @@ public class JsonUtils {
       if (hashPos >= 0) {
          String[] coordStrs = str.substring(hashPos + 6).split(",");
          if (coordStrs.length == 4) {
-            return new Rectangle(Integer.parseInt(coordStrs[0]), Integer.parseInt(coordStrs[1]), Integer.parseInt(coordStrs[2]), Integer.parseInt(coordStrs[3]));
+            return new Rectangle(parseInt(coordStrs[0]), parseInt(coordStrs[1]), parseInt(coordStrs[2]), parseInt(coordStrs[3]));
          }
       }
       return null;

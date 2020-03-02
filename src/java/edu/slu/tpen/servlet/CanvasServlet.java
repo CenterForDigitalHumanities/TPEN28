@@ -7,25 +7,30 @@ package edu.slu.tpen.servlet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import static textdisplay.Transcription.LOG;
+import static edu.slu.tpen.entity.Image.Canvas.getAnnotationListsForProject;
+import static edu.slu.util.LangUtils.buildQuickMap;
+import static imageLines.ImageCache.getImageDimension;
 import java.awt.Dimension;
 import java.io.IOException;
+import static java.lang.Integer.parseInt;
+import static java.lang.String.format;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.logging.Level;
-import edu.slu.tpen.entity.Image.Canvas;
-import imageLines.ImageCache;
-import textdisplay.Folio;
-import static edu.slu.util.LangUtils.buildQuickMap;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import static net.sf.json.JSONObject.fromObject;
+import textdisplay.Folio;
+import static textdisplay.Folio.getRbTok;
 import textdisplay.FolioDims;
-import textdisplay.TagButton;
+import static textdisplay.FolioDims.createFolioDimsRecord;
 
 
 /**
@@ -47,20 +52,20 @@ public class CanvasServlet extends HttpServlet{
         //System.out.println("Get a canvas");
             int folioID = 0;
             try {
-                folioID = Integer.parseInt(req.getPathInfo().substring(1).replace("/", ""));
+                folioID = parseInt(req.getPathInfo().substring(1).replace("/", ""));
                 //System.out.println(req.getPathInfo().substring(1));
                // System.out.println(folioID);
                 if (folioID > 0) {
                     Folio f = new Folio(folioID);
                     resp.setContentType("application/json; charset=UTF-8");
                     resp.getWriter().write(export(buildPage(f)));
-                    resp.setStatus(HttpServletResponse.SC_OK);
+                    resp.setStatus(SC_OK);
                 } else {
-                    Logger.getLogger(CanvasServlet.class.getName()).log(Level.SEVERE, null, "No ID provided for canvas");
-                    resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                    getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
+                    resp.sendError(SC_NOT_FOUND);
                 }
             } catch (NumberFormatException | SQLException | IOException ex) {
-                Logger.getLogger(CanvasServlet.class.getName()).log(Level.SEVERE, null, ex);
+                getLogger(CanvasServlet.class.getName()).log(SEVERE, null, ex);
                 throw new ServletException(ex);
             }
 
@@ -95,14 +100,14 @@ public class CanvasServlet extends HttpServlet{
     private JSONObject buildPage(Folio f) throws SQLException, IOException {
       Integer msID = f.getMSID();
       String msID_str = msID.toString();
-      String canvasID = Folio.getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();  
+      String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();  
       String[] otherContent;
       FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
       Dimension storedDims = null;
       int canvasWidth = 0;
       int canvasHeight = 0;
       if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-          storedDims = ImageCache.getImageDimension(f.getFolioNumber());
+          storedDims = getImageDimension(f.getFolioNumber());
          if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry, or there was a bad one we can't use
             storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
          }
@@ -117,8 +122,8 @@ public class CanvasServlet extends HttpServlet{
       JSONObject imageAnnot = new JSONObject();
       imageAnnot.element("@type", "oa:Annotation");
       imageAnnot.element("motivation", "sc:painting");
-      Map<String, Object> imageResource_map = buildQuickMap("@id", String.format("%s%s", Folio.getRbTok("SERVERURL"), f.getImageURLResize()), "@type", "dctypes:Image", "format", "image/jpeg");
-      JSONObject imageResource = JSONObject.fromObject(imageResource_map);
+      Map<String, Object> imageResource_map = buildQuickMap("@id", format("%s%s", getRbTok("SERVERURL"), f.getImageURLResize()), "@type", "dctypes:Image", "format", "image/jpeg");
+      JSONObject imageResource = fromObject(imageResource_map);
       imageResource.element("height",0 ); 
       imageResource.element("width",0 ); 
       
@@ -128,7 +133,7 @@ public class CanvasServlet extends HttpServlet{
                     //generate canvas values for foliodim
                     canvasHeight = 1000;
                     canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
-                    FolioDims.createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                    createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
                 }
             }
             else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
@@ -147,10 +152,10 @@ public class CanvasServlet extends HttpServlet{
       imageAnnot.element("on", canvasID);
       images.add(imageAnnot);
       //FIXME this looks for data on anno store.  Cannot build list this way for canvas servlet while not looking to anno store.  
-      otherContent = Canvas.getAnnotationListsForProject(-1, canvasID, 0);
+      otherContent = getAnnotationListsForProject(-1, canvasID, 0);
       //otherContent = Canvas.getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID());
       //it seems like it wants me to do Arrays.toString(otherContent), but then it is not formatted correctly.  
-      result.element("otherContent", JSONArray.fromObject(otherContent));
+      result.element("otherContent", fromObject(otherContent));
       result.element("images", images);
       return result;
    }

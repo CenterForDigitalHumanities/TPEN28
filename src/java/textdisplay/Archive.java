@@ -18,12 +18,23 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import static java.lang.System.arraycopy;
+import static java.lang.System.out;
+import static java.lang.Thread.sleep;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static textdisplay.Archive.connectionType.cookie;
+import static textdisplay.Archive.connectionType.httpAuth;
+import static textdisplay.Archive.connectionType.none;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
+import static textdisplay.Manuscript.getAllCities;
+import static textdisplay.Manuscript.getManuscriptsByCity;
 
 /**
  * Methods for retrieving information about a single Archive (IPR for example) along with lots of old,
@@ -35,7 +46,7 @@ public class Archive {
 
    String name;
    Boolean permitBatchProcessing;
-   private connectionType connectionMethod = connectionType.none;
+   private connectionType connectionMethod = none;
    private String uname = "";
    private String pass = "";
    private String cookieURL = "";
@@ -74,7 +85,7 @@ public class Archive {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, name);
          ResultSet rs = ps.executeQuery();
@@ -82,19 +93,19 @@ public class Archive {
             pass = rs.getString("pass");
             uname = rs.getString("uname");
             if (pass != null && uname != null && pass.length() > 0 && uname.length() > 0) {
-               connectionMethod = connectionType.httpAuth;
+               connectionMethod = httpAuth;
             }
             cookieURL = rs.getString("cookieURL");
-            if (connectionMethod == connectionType.none && cookieURL != null && cookieURL.length() > 0) {
-               connectionMethod = connectionType.cookie;
+            if (connectionMethod == none && cookieURL != null && cookieURL.length() > 0) {
+               connectionMethod = cookie;
             }
             if (rs.getBoolean("local")) {
-               connectionMethod = connectionType.none;
+               connectionMethod = none;
             }
          }
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -113,14 +124,14 @@ public class Archive {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, msg);
          ps.setString(2, this.name);
          ps.execute();
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -136,7 +147,7 @@ public class Archive {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, name);
          ResultSet rs = ps.executeQuery();
@@ -145,8 +156,8 @@ public class Archive {
          }
          return "";
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -162,7 +173,7 @@ public class Archive {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, this.name);
          ResultSet rs = ps.executeQuery();
@@ -173,8 +184,8 @@ public class Archive {
          //return ESAPI.encoder().encodeForHTML("The IPR agreement for this repository hasn't been added yet. If you click agree, you will have no idea what you are agreeing to.");
          return "The IPR agreement for this repository hasn't been added yet. If you click agree, you will have no idea what you are agreeing to.";
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -191,20 +202,20 @@ public class Archive {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ResultSet rs = ps.executeQuery();
          while (rs.next()) {
             String[] tmp = new String[toret.length + 1];
-            System.arraycopy(toret, 0, tmp, 0, toret.length);
+                arraycopy(toret, 0, tmp, 0, toret.length);
             tmp[tmp.length - 1] = rs.getString("name");
             toret = tmp;
          }
 
 
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
       return toret;
    }
@@ -221,15 +232,15 @@ public class Archive {
       Connection j = null;
       PreparedStatement ps = null;
       try {
-         j = DatabaseWrapper.getConnection();
+         j = getConnection();
          ps = j.prepareStatement(query);
          ps.setString(1, agreement);
          ps.setString(2, this.name);
          ps.execute();
 
       } finally {
-         DatabaseWrapper.closeDBConnection(j);
-         DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
       }
    }
 
@@ -241,16 +252,16 @@ public class Archive {
     */
    public static String listAllManuscripts() throws SQLException {
       String toret = "";
-      String[] cities = Manuscript.getAllCities();
-      for (int i = 0; i < cities.length; i++) {
-         Manuscript[] mss = Manuscript.getManuscriptsByCity(cities[i]);
-         for (int k = 0; k < mss.length; k++) {
-            toret += (mss[k].getShelfMark() + " (hosted by " + mss[k].getArchive() + ")\n");
-      // TODO: Build a project from the MS and then send to transcription.html?projectID=##
-            toret += ("<a href='javascript:createProject(" + mss[k].getID() + ");'>Start transcribing</a>" + "\n");
-            toret += ("<a href='javascript:createProject(" + mss[k].getID() + ");'>Add to project</a>" + "\n<br>");
-         }
-      }
+      String[] cities = getAllCities();
+        for (String citie : cities) {
+            Manuscript[] mss = getManuscriptsByCity(citie);
+            for (Manuscript ms : mss) {
+                toret += (ms.getShelfMark() + " (hosted by " + ms.getArchive() + ")\n");
+                // TODO: Build a project from the MS and then send to transcription.html?projectID=##
+                toret += ("<a href='javascript:createProject(" + ms.getID() + ");'>Start transcribing</a>" + "\n");
+                toret += ("<a href='javascript:createProject(" + ms.getID() + ");'>Add to project</a>" + "\n<br>");
+            }
+        }
       return toret;
    }
 
@@ -313,7 +324,7 @@ public class Archive {
 
    public static BufferedReader fetchAndPrepare(String url) throws MalformedURLException, IOException {
       try {
-         Thread.sleep(5000);//sleep for 1000 ms
+            sleep(5000);//sleep for 1000 ms
       } catch (InterruptedException ie) {
          //If this thread was intrrupted by nother thread
       }
@@ -322,9 +333,9 @@ public class Archive {
          BufferedReader dLR = new BufferedReader(new InputStreamReader(new URL(url).openConnection().getInputStream()));
 
          if (!dLR.ready()) {
-            System.out.print("1Dcoument reader not ready, sleeping .5 seconds!\n");
+                out.print("1Dcoument reader not ready, sleeping .5 seconds!\n");
             try {
-               Thread.sleep(500);//sleep for 1000 ms
+                    sleep(500);//sleep for 1000 ms
             } catch (InterruptedException ie) {
                //If this thread was intrrupted by nother thread
             }
@@ -337,7 +348,6 @@ public class Archive {
          BufferedReader toret = new BufferedReader(new StringReader(dLRBuilder.toString()));
          return toret;
       } catch (Exception e) {
-         e.printStackTrace();
       }
 
       BufferedReader toret = new BufferedReader(new StringReader(""));

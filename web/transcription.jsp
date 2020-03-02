@@ -865,7 +865,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
                                     <dt class="showMe">History</dt>
                                     <dd>Lists the previous saved versions of the <span ref="glossParsing" class="glossary">line parsing</span> and <span ref="glossTranscription" class="glossary">transcription text</span>. Mouseover the history entries to reveal options to revert to a previous version.</dd>
                                     <dt class="showMe">Abbreviations</dt>
-                                    <dd>Browse A. Capelli's <cite>lexicon abbreviarum</cite> Latin and Italian abbreviations.</dd>
+                                    <dd>Browse A. Cappelli's <cite>lexicon abbreviarum</cite> Latin and Italian abbreviations.</dd>
                                     <dt class="showMe">Compare Pages</dt>
                                     <dd>View other pages from this project. Use the available <span class="showMe">magnify tool</span> to take a closer look.</dd>
                                     <dt class="showMe">Linebreak</dt>

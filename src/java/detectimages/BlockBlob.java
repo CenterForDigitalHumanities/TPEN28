@@ -12,15 +12,14 @@
 package detectimages;
 
 import com.nativelibs4java.opencl.*;
-import com.nativelibs4java.opencl.CLMem.*;
-import com.nativelibs4java.opencl.util.*;
-import com.nativelibs4java.util.*;
+import static com.nativelibs4java.opencl.CLMem.Usage.Input;
+import static com.nativelibs4java.opencl.JavaCL.createBestContext;
+import static com.nativelibs4java.util.IOUtils.readText;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteOrder;
 import org.bridj.Pointer;
 import static org.bridj.Pointer.*;
-import static java.lang.Math.*;
-import java.nio.ByteOrder;
 
 
 public class BlockBlob {
@@ -59,7 +58,7 @@ public class BlockBlob {
         blockDim2 = 0;
 
         int[] results = new int[blockBlobs.length];
-        CLContext context = JavaCL.createBestContext();
+        CLContext context = createBestContext();
         CLQueue queue = context.createDefaultQueue();
         ByteOrder byteOrder = context.getByteOrder();
 
@@ -86,14 +85,14 @@ public class BlockBlob {
         }
 
         // Create OpenCL input buffers (using the native memory pointers aPtr and bPtr) :
-        CLBuffer<Integer> baseBlock = context.createBuffer(Usage.Input, bPtr);
-        CLBuffer<Integer> compareBlocks = context.createBuffer(Usage.Input, aPtr);
+        CLBuffer<Integer> baseBlock = context.createBuffer(Input, bPtr);
+        CLBuffer<Integer> compareBlocks = context.createBuffer(Input, aPtr);
 
         // Create an OpenCL output buffer :
-        CLBuffer<Integer> result = context.createIntBuffer(Usage.Input, blockBlobs.length);
+        CLBuffer<Integer> result = context.createIntBuffer(Input, blockBlobs.length);
 
         // Read the program sources and compile them :
-        String src = IOUtils.readText(new File("/usr/blockCompare.cl"));
+        String src = readText(new File("/usr/blockCompare.cl"));
 
         CLProgram program = context.createProgram(src);
 

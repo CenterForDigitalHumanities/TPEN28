@@ -16,10 +16,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.owasp.esapi.ESAPI;
+import static org.owasp.esapi.ESAPI.encoder;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
+import static textdisplay.Project.getAllAssociatedProjects;
 import user.User;
 
 
@@ -40,7 +43,7 @@ public PartnerProject(int id) throws SQLException
     Connection j=null;
 PreparedStatement ps=null;
     try{
-        j=DatabaseWrapper.getConnection();
+        j=  getConnection();
         ps=j.prepareStatement(query);
         ps.setInt(1, id);
         ResultSet rs=ps.executeQuery();
@@ -59,8 +62,8 @@ PreparedStatement ps=null;
     }
     finally
     {
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
     }
 }
 /**Create a new pipeline based on a template project. The group leader of that project will recieve notifications and be added to projects which associate with
@@ -71,8 +74,8 @@ public PartnerProject(String name, String description, String url, int controlli
     Connection j=null;
 PreparedStatement ps=null;
     try{
-        j=DatabaseWrapper.getConnection();
-        ps=j.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+        j=  getConnection();
+        ps=j.prepareStatement(query, RETURN_GENERATED_KEYS);
         ps.setString(1, name);
         ps.setString(2, url);
         ps.setInt(3, controllingUser);
@@ -90,8 +93,8 @@ PreparedStatement ps=null;
 
     }
     finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
     }
 }
 
@@ -100,15 +103,15 @@ DatabaseWrapper.closePreparedStatement(ps);
 PreparedStatement ps=null;
         try{
             String query="update partnerproject set user=? where id=?";
-            j=DatabaseWrapper.getConnection();
+            j=getConnection();
             ps=j.prepareStatement(query);
             ps.setInt(1, controllingUser);
             ps.setInt(2, this.id);
             ps.execute();
         }
         finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         this.controllingUser = controllingUser;
     }
@@ -118,15 +121,15 @@ DatabaseWrapper.closePreparedStatement(ps);
 PreparedStatement ps=null;
         try{
             String query="update partnerproject set description=? where id=?";
-            j=DatabaseWrapper.getConnection();
+            j=getConnection();
             ps=j.prepareStatement(query);
             ps.setString(1, description);
             ps.setInt(2, this.id);
             ps.execute();
         }
         finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         this.description = description;
     }
@@ -136,15 +139,15 @@ DatabaseWrapper.closePreparedStatement(ps);
 PreparedStatement ps=null;
         try{
             String query="update partnerproject set name=? where id=?";
-            j=DatabaseWrapper.getConnection();
+            j=getConnection();
             ps=j.prepareStatement(query);
             ps.setString(1, name);
             ps.setInt(2, this.id);
             ps.execute();
         }
         finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         this.name = name;
     }
@@ -154,15 +157,15 @@ DatabaseWrapper.closePreparedStatement(ps);
 PreparedStatement ps=null;
         try{
             String query="update partnerproject set projectID=? where id=?";
-            j=DatabaseWrapper.getConnection();
+            j=getConnection();
             ps=j.prepareStatement(query);
             ps.setInt(1, templateProject);
             ps.setInt(2, this.id);
             ps.execute();
         }
         finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         this.templateProject = templateProject;
     }
@@ -172,15 +175,15 @@ DatabaseWrapper.closePreparedStatement(ps);
 PreparedStatement ps=null;
         try{
             String query="update partnerproject set url=? where id=?";
-            j=DatabaseWrapper.getConnection();
+            j=getConnection();
             ps=j.prepareStatement(query);
             ps.setString(1, url);
             ps.setInt(2, this.id);
             ps.execute();
         }
         finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         this.url = url;
     }
@@ -189,7 +192,7 @@ DatabaseWrapper.closePreparedStatement(ps);
         String [] toret = new String[3];
         toret[2] = new PartnerProject(id).getName();
         //remove associated projects
-        Project [] associates = Project.getAllAssociatedProjects(id);
+        Project [] associates = getAllAssociatedProjects(id);
         int numOfAssoc = (associates != null) ? associates.length : 0;
         for (int i=0;i<numOfAssoc;i++){
             associates[i].setAssociatedPartnerProject(0);
@@ -204,7 +207,7 @@ DatabaseWrapper.closePreparedStatement(ps);
 PreparedStatement ps=null;
         try{
             String query="delete from partnerproject where id=?";
-            j=DatabaseWrapper.getConnection();
+            j=getConnection();
             ps=j.prepareStatement(query);
             ps.setInt(1, id);
             ps.execute();
@@ -217,8 +220,8 @@ PreparedStatement ps=null;
             return toret;
         }
         finally {
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 public User getControllingUser() throws SQLException
@@ -227,7 +230,7 @@ public User getControllingUser() throws SQLException
 }
 public String getURL()
 {
-    return ESAPI.encoder().encodeForHTML(url);
+    return encoder().encodeForHTML(url);
 }
 public int getID()
 {
@@ -239,11 +242,11 @@ public Project getTemplateProject() throws SQLException
 }
 public String getDescription()
 {
-    return ESAPI.encoder().encodeForHTML(description);
+    return encoder().encodeForHTML(description);
 }
 public String getName()
 {
-    return ESAPI.encoder().encodeForHTML(name);
+    return encoder().encodeForHTML(name);
 }
 /**Get all existing pipelines*/
 public static PartnerProject [] getAllPartnerProjects() throws SQLException
@@ -254,7 +257,7 @@ public static PartnerProject [] getAllPartnerProjects() throws SQLException
 PreparedStatement ps=null;
     Stack<PartnerProject> tmp=new Stack();
     try{
-        j=DatabaseWrapper.getConnection();
+        j=  getConnection();
         ps=j.prepareStatement(query);
         ResultSet rs=ps.executeQuery();
         while(rs.next())
@@ -263,8 +266,8 @@ PreparedStatement ps=null;
         }
     }
     finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
     }
     all=new PartnerProject [tmp.size()];
     //odd looking way of doing this copy, I know, but it was convenient

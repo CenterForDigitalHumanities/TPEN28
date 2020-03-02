@@ -808,7 +808,7 @@
                                     // User Tools
                                         String[] toolCheck = new String[21];
                                         String[] toolName = new String[21];
-                                        toolName[20] = "Capelli's Abbreviation"; // part of the capelli fix.  If its not part of a project, there is a null, so hard ser it here.  
+                                        toolName[20] = "Cappelli's Abbreviation"; // part of the capelli fix.  If its not part of a project, there is a null, so hard ser it here.  
                                         String track = "";
                                         Tool.tools[] TOOLS = 
                                         {Tool.tools.compare, Tool.tools.parsing, Tool.tools.preview, Tool.tools.history, Tool.tools.linebreak, Tool.tools.fullpage, Tool.tools.paleography,
@@ -855,7 +855,7 @@
                                             String toolURL = projectTools[i].getUrl();
                                             if (toolURL.endsWith("capelli/")) {
                                                 toolCheck[20] = "checked=true";
-                                                toolName[20] = "Capelli's Abbreviation"; //This is not in the back end for this project toolLabel, we always want it to be the same so hard code it. 
+                                                toolName[20] = "Cappelli's Abbreviation"; //This is not in the back end for this project toolLabel, we always want it to be the same so hard code it. 
                                                 continue;
                                             }
                                             if (toolURL.endsWith("vulsearch")) {
@@ -921,7 +921,7 @@
                                         }
                                         out.print(toolOptions.toString());
                                     %>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[20]);%> value="https://centerfordigitalhumanities.github.io/capelli/" title="Capelli's Abbreviations"/><span contentEditable="true"><%out.print(toolName[20]);%></span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[20]);%> value="https://centerfordigitalhumanities.github.io/cappelli/" title="Cappelli's Abbreviations"/><span contentEditable="true"><%out.print(toolName[20]);%></span></label>
                                     <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[14]);%> value="http://vulsearch.sourceforge.net/cgi-bin/vulsearch" title="Latin Vulgate Search"/><span contentEditable="true"><%out.print(toolName[14]);%></span></label>
                                     <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[19]);%> value="http://www.perseus.tufts.edu/hopper/resolveform?lang=latin" title="Latin Dictionary"/><span contentEditable="true"><%out.print(toolName[19]);%></span></label>
                                     <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[15]);%> value="http://quod.lib.umich.edu/m/med/lookup.html" title="Middle English Dictionary"/><span contentEditable="true"><%out.print(toolName[15]);%></span></label>

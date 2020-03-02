@@ -12,6 +12,9 @@
  */
 
 package detectimages;
+
+import static java.lang.Math.pow;
+
 /**This is a representation of the boolean matrix that describes a single glyph from a binarized image uses a single bit per pixel and bitwise and
  to run comparisons more quickly*/
 public class altBlob {
@@ -49,7 +52,7 @@ public class altBlob {
                 {
 
                     if(i*16+ctr<thearr.length&&(thearr[i*16+ctr][k])==1)
-                    val+=Math.pow(2,ctr );
+                    val+=pow(2,ctr );
                 }
                 data[i][k]=val;
 
@@ -78,7 +81,7 @@ public class altBlob {
                 {
 
                     if(i*16+ctr<thearr.length&&(thearr[i*16+ctr][k])==1)
-                    val+=Math.pow(2,ctr );
+                    val+=pow(2,ctr );
                 }
                 dataOffset[0][i][k]=val;
 
@@ -93,7 +96,7 @@ public class altBlob {
                 {
 
                     if(i*16+ctr-1<thearr.length&&(thearr[i*16-1+ctr][k])==1)
-                    val+=Math.pow(2,ctr );
+                    val+=pow(2,ctr );
                 }
                 dataOffset[1][i][k]=val;
 
@@ -107,7 +110,7 @@ public class altBlob {
                 {
 
                     if(i*16+ctr+1<thearr.length&&(thearr[i*16+1+ctr][k])==1)
-                    val+=Math.pow(2,ctr );
+                    val+=pow(2,ctr );
                 }
                 dataOffset[2][i][k]=val;
 

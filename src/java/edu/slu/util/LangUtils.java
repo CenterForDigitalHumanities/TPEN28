@@ -15,6 +15,7 @@
 package edu.slu.util;
 
 import java.io.FileNotFoundException;
+import static java.lang.String.format;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class LangUtils {
       if (t instanceof NullPointerException) {
          return "Null pointer exception";
       } else if (t instanceof FileNotFoundException) {
-         return String.format("File %s not found", t.getMessage());
+         return format("File %s not found", t.getMessage());
       } else if (t instanceof ArrayIndexOutOfBoundsException) {
          return "Array index out of bounds: " + t.getMessage();
       } else if (t instanceof OutOfMemoryError) {
@@ -43,7 +44,7 @@ public class LangUtils {
          int quotePos = msg.indexOf('\"');
          if (quotePos > 0) {
             // Exception message is of form "For input string: \"foo\"".
-            return String.format("Unable to interpret %s as a number", msg.substring(quotePos));
+            return format("Unable to interpret %s as a number", msg.substring(quotePos));
          }
          return msg;
       } else {

@@ -14,9 +14,10 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -39,19 +40,16 @@ public class parseImage extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
             if(request.getParameter("folio")!=null)
             {
                 try {
                     //run line parsing if this Folio has not already been parsed.
-                    Folio f = new Folio(Integer.parseInt(request.getParameter("folio")), true);
+                    Folio f = new Folio(parseInt(request.getParameter("folio")), true);
                 } catch (SQLException ex) {
-                    Logger.getLogger(parseImage.class.getName()).log(Level.SEVERE, null, ex);
+                    getLogger(parseImage.class.getName()).log(SEVERE, null, ex);
                 }
             }
-        } finally { 
-            out.close();
         }
     } 
 

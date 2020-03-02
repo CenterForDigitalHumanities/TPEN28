@@ -4,13 +4,17 @@
  */
 
 package textdisplay;
+import static java.lang.System.out;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 /**
  *
  * @author obi1one
@@ -31,7 +35,7 @@ this.uid=uid;
 PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, uid);
             ResultSet rs=ps.executeQuery();
@@ -43,8 +47,8 @@ PreparedStatement ps=null;
 
             }
         finally{
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
 
         //because the results were stored in a stack, they will come out backward, so reverse them using another stack
@@ -72,7 +76,7 @@ PreparedStatement ps=null;
 PreparedStatement ps=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             ps = j.prepareStatement(checkQuery);
             ps.setInt(1, projectID);
             ps.setInt(2, uid);
@@ -95,8 +99,8 @@ PreparedStatement ps=null;
             }
         finally
         {
-            DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
     public void verifyPriorityContents() throws SQLException
@@ -111,7 +115,7 @@ PreparedStatement inserter=null;
 PreparedStatement checker=null;
         try
             {
-            j = DatabaseWrapper.getConnection();
+            j = getConnection();
             inserter=j.prepareStatement(insertQuery);
                 ps = j.prepareStatement(projectSelector);
                 checker=j.prepareStatement(checkQuery);
@@ -138,10 +142,10 @@ PreparedStatement checker=null;
             }
             finally
         {
-                DatabaseWrapper.closePreparedStatement(checker);
-                DatabaseWrapper.closePreparedStatement(inserter);
-                DatabaseWrapper.closeDBConnection(j);
-            DatabaseWrapper.closePreparedStatement(ps);
+                closePreparedStatement(checker);
+                closePreparedStatement(inserter);
+                closeDBConnection(j);
+            closePreparedStatement(ps);
             }
 
 
@@ -155,10 +159,10 @@ PreparedStatement checker=null;
             int [][] ret=p.getOrderedProjects();
             for(int i=0;i<ret[0].length;i++)
             {
-                System.out.print(""+ret[0][i]+":"+ret[1][i]+"\n");
+                out.print(""+ret[0][i]+":"+ret[1][i]+"\n");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ProjectPriority.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(ProjectPriority.class.getName()).log(SEVERE, null, ex);
         }
     }
 }

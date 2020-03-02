@@ -12,35 +12,31 @@ and limitations under the License.
 
 package dmstech;
 
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
+import static com.hp.hpl.jena.query.QueryExecutionFactory.create;
 import com.hp.hpl.jena.query.QueryFactory;
+import static com.hp.hpl.jena.query.QueryFactory.create;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import static com.hp.hpl.jena.rdf.model.ModelFactory.createDefaultModel;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFList;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Selector;
-import com.hp.hpl.jena.rdf.model.SimpleSelector;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.out;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 
 /**
  * A sequence of canvases which represent a manuscript.
@@ -95,14 +91,14 @@ public class sequence {
         // variable to hold values temporarily
         String tmpVal = "";
         
-        Model sequenceModel = ModelFactory.createDefaultModel();
+        Model sequenceModel = createDefaultModel();
         Stack<canvas> accumulator = new Stack();
         int positionCounter = 1;
         //Read all of the urls that were given into a single graph. Usually we just get the manifest,
         //but the imageannotations can also be included
-        for (int i = 0; i < sequenceUrl.length; i++) {
+        for (URL sequenceUrl1 : sequenceUrl) {
             HttpURLConnection connection = null;
-            connection = (HttpURLConnection) sequenceUrl[i].openConnection();
+            connection = (HttpURLConnection) sequenceUrl1.openConnection();
             connection.setRequestMethod("GET");
             //this header is for Hopkins, they server based on requested type
             //connection.setRequestProperty("accept", "application/xml");
@@ -127,7 +123,7 @@ public class sequence {
         String queryString7 = "prefix tei:<http://www.tei-c.org/ns/1.0/> select ?sub ?object WHERE{ ?sub tei:institution ?object }";
         
         Query query = QueryFactory.create(queryString);
-        QueryExecution qe = QueryExecutionFactory.create(query, sequenceModel);
+        QueryExecution qe = create(query, sequenceModel);
         ResultSet results = qe.execSelect();
         String m3UrlString = "";
         
@@ -137,7 +133,7 @@ public class sequence {
             m3UrlString = qs.get("subject").toString();
             String resourceQueryString = "prefix ore:<http://www.openarchives.org/ore/terms/> select ?object  WHERE{ <" + m3UrlString + "> ore:isDescribedBy ?object}";
             query = QueryFactory.create(resourceQueryString);
-            qe = QueryExecutionFactory.create(query, sequenceModel);
+            qe = create(query, sequenceModel);
             results = qe.execSelect();
             //now find where the normal sequence actually resides
             if (results.hasNext()) {
@@ -146,13 +142,13 @@ public class sequence {
 //                System.out.print("\t\tNormal sequence:  found at URL="+qs.get("object").toString()+"\n");
             }
             else {
-                System.out.print("\t\tNormal sequence:  not found!");
+                out.print("\t\tNormal sequence:  not found!");
                 return;
             }
         }
         
         query = QueryFactory.create(queryString2);
-        qe = QueryExecutionFactory.create(query, sequenceModel);
+        qe = create(query, sequenceModel);
         results = qe.execSelect();
         String ImgAnnoUrlString = "";
         if (results.hasNext()) {
@@ -162,23 +158,23 @@ public class sequence {
             //now find the associated resource
             String resourceQueryString = "prefix ore:<http://www.openarchives.org/ore/terms/> select ?object  WHERE{ <" + ImgAnnoUrlString + "> ore:isDescribedBy ?object}";
             query = QueryFactory.create(resourceQueryString);
-            qe = QueryExecutionFactory.create(query, sequenceModel);
+            qe = create(query, sequenceModel);
             results = qe.execSelect();
             //now find where the image-annotation list actually resides
             if (results.hasNext()) {
                 qs = results.next();
                 ImgAnnoUrlString = qs.get("object").toString();
-                System.out.print("\t\tImage-annotation list:  found at URL="+ImgAnnoUrlString+"\n");
+                out.print("\t\tImage-annotation list:  found at URL="+ImgAnnoUrlString+"\n");
             }
             else {
-                System.out.print("\t\tImage-annotation list:  not found!");
+                out.print("\t\tImage-annotation list:  not found!");
             }
             
         }
         
         // get city (from <tei:settlement>)
         query = QueryFactory.create(queryString3);
-        qe = QueryExecutionFactory.create(query, sequenceModel);
+        qe = create(query, sequenceModel);
         results = qe.execSelect();
         if (results.hasNext()) {
             QuerySolution qs = results.next();
@@ -187,7 +183,7 @@ public class sequence {
         
         // get collection (from <tei:collection>)
         query = QueryFactory.create(queryString4);
-        qe = QueryExecutionFactory.create(query, sequenceModel);
+        qe = create(query, sequenceModel);
         results = qe.execSelect();
 //        tmpVal = "";
         if (results.hasNext()) {
@@ -197,7 +193,7 @@ public class sequence {
         
         // get collection, part B (from <tei:idno>)
         query = QueryFactory.create(queryString5);
-        qe = QueryExecutionFactory.create(query, sequenceModel);
+        qe = create(query, sequenceModel);
         results = qe.execSelect();
         tmpVal = "";
         if (results.hasNext()) {
@@ -212,14 +208,14 @@ public class sequence {
         
         // get repository (from <tei:repository>)
         query = QueryFactory.create(queryString6);
-        qe = QueryExecutionFactory.create(query, sequenceModel);
+        qe = create(query, sequenceModel);
         results = qe.execSelect();
         if (results.hasNext()) {
             QuerySolution qs = results.next();
             repository = qs.get("object").toString();
         }else{
             query = QueryFactory.create(queryString7);
-            qe = QueryExecutionFactory.create(query, sequenceModel);
+            qe = create(query, sequenceModel);
             results = qe.execSelect();
             if(results.hasNext()){
                 QuerySolution qs = results.next();
@@ -246,7 +242,7 @@ public class sequence {
                 format = "";
             }
             
-            Model m3Model = ModelFactory.createDefaultModel();
+            Model m3Model = createDefaultModel();
             BufferedReader m3Reader = null;
             m3Reader = new BufferedReader(new InputStreamReader(m3connection.getInputStream()));
             m3Model.read(m3Reader, null, format);
@@ -258,7 +254,7 @@ public class sequence {
             m3connection.connect();
             m3Reader = new BufferedReader(new InputStreamReader(m3connection.getInputStream()));
             
-            sequenceModel = ModelFactory.createDefaultModel();
+            sequenceModel = createDefaultModel();
             if (ImgAnnoUrlString.toLowerCase().endsWith("n3")) {
                 format = "N3";
             } else {
@@ -273,7 +269,7 @@ public class sequence {
             queryString = "prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX list: <http://jena.hpl.hp.com/ARQ/list#> select * where{   ?subject list:member ?obj}"; //<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>  ?predicate}";
             query = QueryFactory.create(queryString);
             query = QueryFactory.create(queryString);
-            qe = QueryExecutionFactory.create(query, m3Model);
+            qe = create(query, m3Model);
             results = qe.execSelect();
             while (results.hasNext()) {
                 QuerySolution qs = results.next();
@@ -286,7 +282,7 @@ public class sequence {
                 
                 //fetch the canvas title
                 Query innerQuery = QueryFactory.create("select  ?pred where { <" + r.getURI() + "> " + "<http://purl.org/dc/elements/1.1/title> ?pred}");
-                qe = QueryExecutionFactory.create(innerQuery, m3Model);
+                qe = create(innerQuery, m3Model);
                 ResultSet innerResults = qe.execSelect();
                 String title="";
                 while (innerResults.hasNext()) {
@@ -301,14 +297,14 @@ public class sequence {
                 String canvasWidth="", canvasHeight="";
                 int cwidth=0, cheight=0;
                 innerQuery = QueryFactory.create("prefix exif:<http://www.w3.org/2003/12/exif/ns#> select  ?pred  where {  <" + r.getURI() + "> " + "exif:width ?pred}");
-                qe = QueryExecutionFactory.create(innerQuery, m3Model);
+                qe = create(innerQuery, m3Model);
                 innerResults = qe.execSelect();
                 while (innerResults.hasNext()) {
                     QuerySolution qs2 = innerResults.next();
                     canvasWidth = qs2.get("pred").toString().split("\\^")[0];
                 }
                 innerQuery = QueryFactory.create("prefix exif:<http://www.w3.org/2003/12/exif/ns#> select  ?pred where { <" + r.getURI() + "> " + "exif:height ?pred}");
-                qe = QueryExecutionFactory.create(innerQuery, m3Model);
+                qe = create(innerQuery, m3Model);
                 innerResults = qe.execSelect();
                 while (innerResults.hasNext()) {
                     QuerySolution qs2 = innerResults.next();
@@ -317,7 +313,7 @@ public class sequence {
                 // now, parse the strings into actual int's
                 if(canvasWidth.compareTo("")!=0) {
                     try {
-                        cwidth=Integer.parseInt(canvasWidth);
+                        cwidth=parseInt(canvasWidth);
                     }
                     catch(NumberFormatException e) {
                         //just leave it as 0
@@ -325,7 +321,7 @@ public class sequence {
                 }
                 if(canvasHeight.compareTo("")!=0) {
                     try {
-                        cheight=Integer.parseInt(canvasHeight);
+                        cheight=parseInt(canvasHeight);
                     }
                     catch(NumberFormatException e) {
                         //just leave it as 0
@@ -338,7 +334,7 @@ public class sequence {
                 
                 //find anything that has the canvas as a target. Should find an image annotation.
                 Query innerQuery3 = QueryFactory.create("select ?sub  where { ?sub <http://www.openannotation.org/ns/hasTarget> <" + r.getURI() + "> }");
-                qe = QueryExecutionFactory.create(innerQuery3, sequenceModel);
+                qe = create(innerQuery3, sequenceModel);
                 ResultSet innerResults2 = qe.execSelect();
                 while (innerResults2.hasNext()) {
                     QuerySolution innerqs2 = innerResults2.next();
@@ -347,7 +343,7 @@ public class sequence {
 //                    System.out.print("\t\t\t\tFound sub that targets canvas at URI="+innerqs2.getResource("sub").getURI()+"\n");
                     
                     Query innerQuery4 = QueryFactory.create("select ?pred  where { <" + innerqs2.getResource("sub").getURI() + "> <http://www.openannotation.org/ns/hasBody> ?pred }");
-                    qe = QueryExecutionFactory.create(innerQuery4, sequenceModel);
+                    qe = create(innerQuery4, sequenceModel);
                     ResultSet innerResults4 = qe.execSelect();
                     //the body of the image annotation can be an image or an imagechoice
                     if (innerResults4.hasNext()) {
@@ -358,7 +354,7 @@ public class sequence {
                         
                         //check to see if this is an imagechoice or an imagebody
                         innerQuery4 = QueryFactory.create(" prefix dms:<http://dms.stanford.edu/ns/> prefix sc:<http://www.shared-canvas.org/ns/>  select ?pred   where {{ <" + img + "> ?pred dms:ImageBody } union{<" + img + "> ?pred sc:ImageBody }}");
-                        qe = QueryExecutionFactory.create(innerQuery4, sequenceModel);
+                        qe = create(innerQuery4, sequenceModel);
                         innerResults4 = qe.execSelect();
                         
                         // image body
@@ -371,7 +367,7 @@ public class sequence {
                             // get image dimensions
                             //
                             innerQuery = QueryFactory.create("prefix exif:<http://www.w3.org/2003/12/exif/ns#> select  ?obj where { <" + img + "> " + " exif:height ?obj  }");
-                            qe = QueryExecutionFactory.create(innerQuery, sequenceModel);
+                            qe = create(innerQuery, sequenceModel);
                             innerResults = qe.execSelect();
                             String imageHeight="";
                             while (innerResults.hasNext()) {
@@ -380,14 +376,14 @@ public class sequence {
                             }
                             int imgHeight=0;
                             try{
-                                imgHeight=Integer.parseInt(imageHeight);
+                                imgHeight=parseInt(imageHeight);
                             }
                             catch(NumberFormatException e)
                             {
                             }
                             
                             innerQuery = QueryFactory.create("prefix exif:<http://www.w3.org/2003/12/exif/ns#> select  ?obj where { <" + img + "> " + " exif:width ?obj  }");
-                            qe = QueryExecutionFactory.create(innerQuery, sequenceModel);
+                            qe = create(innerQuery, sequenceModel);
                             innerResults = qe.execSelect();
                             String imageWidth="";
                             while (innerResults.hasNext()) {
@@ -396,7 +392,7 @@ public class sequence {
                             }
                             int imgWidth=0;
                             try{
-                                imgWidth=Integer.parseInt(imageWidth);
+                                imgWidth=parseInt(imageWidth);
                             }
                             catch(NumberFormatException e)
                             {
@@ -420,7 +416,7 @@ public class sequence {
                             
                             //this was an imagechoice, query deeper to find all possible images
                             innerQuery4 = QueryFactory.create("prefix dms:<http://dms.stanford.edu/ns/> prefix sc:<http://www.shared-canvas.org/ns/>  select ?obj  where {{{ <" + img + "> dms:option ?obj }UNION{ <" + img + "> dms:default ?obj }} union { <" + img + "> sc:option ?obj }UNION{ <" + img + "> sc:default ?obj }}");
-                            qe = QueryExecutionFactory.create(innerQuery4, sequenceModel);
+                            qe = create(innerQuery4, sequenceModel);
                             innerResults4 = qe.execSelect();
                             //Build an image choice for each image in the options list.
                             Stack<ImageChoice> imgs = new Stack();
@@ -436,7 +432,7 @@ public class sequence {
                             ImageChoice[] imgAnnos = new ImageChoice[imgs.size()];
                             
                             // if we did NOT get any Choices...
-                            if(imgs.size()==0)
+                            if(imgs.isEmpty())
                             {
                                 String imageurl="";
                                 imgAnnos=new ImageChoice[1];
@@ -451,11 +447,11 @@ public class sequence {
                                 // @TODO:  Catch a more-specific exception...  NullPointerException?
                                 catch (Exception e)
                                 {
-                                    System.out.println("Error while populating ImageChoice!");
-                                    System.out.println("\t--at Canvas URI="+canvas);
-                                    System.out.println("\t--at target-er URI="+innerqs2.getResource("sub").getURI());
-                                    System.out.println("\t--at ?image annotation? URI="+img);
-                                    System.out.println("\t--msg = "+e.toString());
+                                    out.println("Error while populating ImageChoice!");
+                                    out.println("\t--at Canvas URI="+canvas);
+                                    out.println("\t--at target-er URI="+innerqs2.getResource("sub").getURI());
+                                    out.println("\t--at ?image annotation? URI="+img);
+                                    out.println("\t--msg = "+e.toString());
                                 }
                                 
                                 imgAnnos[0]=new ImageChoice(imageurl,0,0);
@@ -519,32 +515,29 @@ public class sequence {
             //if(true)return;
             //if city is populated, print shelfmark
             if (s.getCity().compareTo("") != 0) {
-                System.out.print("Shelfmark:" + s.city + ", " + s.repository + ", " + s.collection + "\n");
+                out.print("Shelfmark:" + s.city + ", " + s.repository + ", " + s.collection + "\n");
             }
             canvas[] canvases = s.getSequenceItems();
-            for (int i = 0; i < canvases.length; i++) {
-                System.out.print("Position:" + canvases[i].getPosition() + "\n");
-                System.out.print("Title:" + canvases[i].getTitle() + "\n");
-                System.out.print("Canvas:" + canvases[i].getCanvas() +" w:"+canvases[i].getWidth()+" h:"+canvases[i].getHeight()+ "\n");
-                
-                ImageChoice[] images = canvases[i].getImageURL();
-                if(false && images.length==0)
-                {
-                    String imageurl=canvases[i].getCanvas().split("#")[0];
+            for (canvas canvase : canvases) {
+                out.print("Position:" + canvase.getPosition() + "\n");
+                out.print("Title:" + canvase.getTitle() + "\n");
+                out.print("Canvas:" + canvase.getCanvas() + " w:" + canvase.getWidth() + " h:" + canvase.getHeight() + "\n");
+                ImageChoice[] images = canvase.getImageURL();
+                if (false && images.length==0) {
+                    String imageurl = canvase.getCanvas().split("#")[0];
                     imageurl=imageurl.split("data/")[1];
                     imageurl="http://fsiserver.library.jhu.edu/server?type=image&source=rose/"+imageurl+"&height=2000";
                     ImageChoice [] im=new ImageChoice[1];
                     im[0]=new ImageChoice(imageurl,0,0);
-                    canvases[i].setImageURL(im);
+                    canvase.setImageURL(im);
                     images=im;
                 }
-                for (int c = 0; c < images.length; c++) {
-                    System.out.print("Image:" + images[c].getImageURL() +" w:"+images[c].getWidth()+" h:"+images[c].getHeight()+ "\n");
+                for (ImageChoice image : images) {
+                    out.print("Image:" + image.getImageURL() + " w:" + image.getWidth() + " h:" + image.getHeight() + "\n");
                 }
-                
             }
         } catch (IOException ex) {
-            Logger.getLogger(sequence.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(sequence.class.getName()).log(SEVERE, null, ex);
         }
     }
     
@@ -558,7 +551,7 @@ public class sequence {
     public String createRDF(String format)
     {
         String toret="";
-        Model model = ModelFactory.createDefaultModel();
+        Model model = createDefaultModel();
         model.setNsPrefix("dms", "http://dms.stanford.edu/ns/");
         model.setNsPrefix("oac", "http://www.openannotation.org/ns/");
         model.setNsPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -575,18 +568,16 @@ public class sequence {
         Property OAChasBody=model.createProperty("http://www.openannotation.org/ns/", "hasBody");
         RDFList l=model.createList(new RDFNode[]{seq});
         Property aggregates=model.createProperty("http://www.openarchives.org/ore/terms/","aggregates");
-        for(int i=0;i<this.sequenceItems.length;i++)
-        {
-            Resource view=model.createResource(sequenceItems[i].getCanvas());
+        for (canvas sequenceItem : this.sequenceItems) {
+            Resource view = model.createResource(sequenceItem.getCanvas());
             //view.addProperty(rdfType,view );
             view.addProperty(rdfType, DMScanvas);
             seq.addProperty(aggregates,view);
-            Resource image=model.createResource(sequenceItems[i].getImageURL()[0].getImageURL());
+            Resource image = model.createResource(sequenceItem.getImageURL()[0].getImageURL());
             image.addProperty(rdfType, imageBody);
-            Resource imageAnnotation=model.createResource(sequenceItems[i].getCanvas()+"/ImageAnnotation");
+            Resource imageAnnotation = model.createResource(sequenceItem.getCanvas() + "/ImageAnnotation");
             imageAnnotation.addProperty(OAChasTarget, view);
             imageAnnotation.addProperty(OAChasBody, image);
-            
             l.add(view);
         }
         StringWriter tmp=new StringWriter();

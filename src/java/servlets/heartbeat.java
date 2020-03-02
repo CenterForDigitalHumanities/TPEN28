@@ -13,9 +13,10 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -35,24 +36,21 @@ public class heartbeat extends HttpServlet {
         throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session=request.getSession();
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
             if (session.getAttribute("UID") == null) {
                 response.sendError(403);
                 return;
             } 
             else {
-                int UID = Integer.parseInt(session.getAttribute("UID").toString());
+                int UID = parseInt(session.getAttribute("UID").toString());
                 try {
                     user.User thisUser = new user.User(UID);
                     thisUser.updateLastActive();
                     
                 } catch (SQLException ex) {
-                    Logger.getLogger(heartbeat.class.getName()).log(Level.SEVERE, null, ex);
+                    getLogger(heartbeat.class.getName()).log(SEVERE, null, ex);
                 }
             }
-        } finally {            
-            out.close();
         }
     }
 

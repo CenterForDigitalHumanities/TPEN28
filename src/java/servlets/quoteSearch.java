@@ -13,13 +13,12 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.lang.Integer.parseInt;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import javax.servlet.http.HttpSession;
 
 public class quoteSearch extends HttpServlet {
@@ -34,12 +33,11 @@ public class quoteSearch extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
+        try (PrintWriter out = response.getWriter()) {
             int UID = 0;
             HttpSession session = request.getSession();
             if (session.getAttribute("UID") == null) {
-                response.sendError(response.SC_FORBIDDEN);
+                response.sendError(SC_FORBIDDEN);
                 return;
             }
             String searchText=request.getParameter("searchText");
@@ -47,19 +45,17 @@ public class quoteSearch extends HttpServlet {
             int fuzzy=2;
             if(request.getParameter("fuzzy")!=null)
             {
-                fuzzy=Integer.parseInt(request.getParameter("fuzzy"));
+                fuzzy=parseInt(request.getParameter("fuzzy"));
             }
             if(request.getParameter("minLength")!=null)
             {
-                minLength=Integer.parseInt(request.getParameter("minLength"));
+                minLength=parseInt(request.getParameter("minLength"));
             }
 //            try {
 //    //            out.print(Search.TextSearcher.search(searchText, minLength, fuzzy));
 //            } catch (SQLException ex) {
 //                Logger.getLogger(quoteSearch.class.getName()).log(Level.SEVERE, null, ex);
 //            }
-        } finally {            
-            out.close();
         }
     }
 

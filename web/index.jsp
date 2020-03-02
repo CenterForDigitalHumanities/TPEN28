@@ -63,7 +63,6 @@
         <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
         <!--[if lt IE 8]><link rel="stylesheet" href="css/ie.css" type="text/css" media="screen, projection"><![endif]-->
         <link type="text/css" href="css/custom-theme/jQuery.css" rel="stylesheet" />
-        <link href='http://fonts.googleapis.com/css?family=Stardos+Stencil:700' rel='stylesheet' type='text/css'>
         <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
         <script src="js/manuscriptFilters.js" type="text/javascript"></script>
@@ -280,37 +279,39 @@
             // http://www.opensource.org/licenses/mit-license.php
             if(!Date.prototype.format){Date.prototype.format=(function(){var a={d:function(){var b=this.getDate().toString();return b.length===1?"0"+b:b},D:function(){return a.l.call(this).slice(0,3)},j:function(){return this.getDate()},l:function(){switch(this.getDay()){case 0:return"Sunday";case 1:return"Monday";case 2:return"Tuesday";case 3:return"Wednesday";case 4:return"Thursday";case 5:return"Friday";case 6:return"Saturday"}},N:function(){return this.getDay()===0?7:this.getDay()},S:function(){if(this.getDate()>3&&this.getDate()<21){return"th"}switch(this.getDate().toString().slice(-1)){case"1":return"st";case"2":return"nd";case"3":return"rd";default:return"th"}},w:function(){return this.getDay()},z:function(){return Math.floor(((this-new Date(this.getFullYear(),0,1))/86400000),0)},W:function(){var b=new Date(this.getFullYear(),0,1);return Math.ceil((((this-b)/86400000)+b.getDay()+1)/7)},F:function(){switch(this.getMonth()){case 0:return"January";case 1:return"February";case 2:return"March";case 3:return"April";case 4:return"May";case 5:return"June";case 6:return"July";case 7:return"August";case 8:return"September";case 9:return"October";case 10:return"November";case 11:return"December"}},m:function(){var b=(this.getMonth()+1).toString();return b.length===1?"0"+b:b},M:function(){return a.F.call(this).slice(0,3)},n:function(){return this.getMonth()+1},t:function(){return 32-new Date(this.getFullYear(),this.getMonth(),32).getDate()},L:function(){return new Date(this.getFullYear(),1,29).getDate()===29?1:0},o:function(){return null},Y:function(){return this.getFullYear()},y:function(){return this.getFullYear().toString().slice(-2)},a:function(){return this.getHours()<12?"am":"pm"},A:function(){return this.getHours()<12?"AM":"PM"},B:function(){return null},g:function(){var b=this.getHours();return b>12?b-12:b},G:function(){return this.getHours()},h:function(){var b=a.g.call(this).toString();return b.length===1?"0"+b:b},H:function(){var b=a.G.call(this).toString();return b.length===1?"0"+b:b},i:function(){return this.getMinutes()<10?"0"+this.getMinutes():this.getMinutes()},s:function(){return this.getSeconds()<10?"0"+this.getSeconds():this.getSeconds()},u:function(){return this.getMilliseconds()},e:function(){return null},I:function(){return null},O:function(){var b=this.getTimezoneOffset()/60;return(b<0?"":"+")+(b<10?"0"+b.toString():b.toString())+"00"},P:function(){var b=a.O.call(this);return b.slice(0,3)+":"+b.slice(-2)},T:function(){return null},Z:function(){return parseInt(a.O.call(this),10)*60},c:function(){function c(d){return d<10?"0"+d.toString():d.toString()}var b="";b+=this.getUTCFullYear()+"-";b+=c(this.getUTCMonth()+1)+"-";b+=c(this.getUTCDate())+"T";b+=c(this.getUTCHours())+":";b+=c(this.getUTCMinutes())+":";b+=c(this.getUTCSeconds())+"Z";return b},r:function(){return this.toUTCString()},U:function(){return this.getTime()}};return function(b){var c="",e="",d;for(d=0;d<=b.length;d+=1){e=b.charAt(d);if(a.hasOwnProperty(e)){c+=a[e].call(this).toString()}else{c+=e}}return c}}())};
            
-             function maintenanceDate(){
+            function maintenanceDate(){
                 var url="upgradeManagement";
                 var params = {"getSettings" : "get", "cancelUpgrade":"false"};
                 $.post(url, params)
                     .done(function(data){
-                        var managerData = JSON.parse(data);
-                        var mdate = managerData.upgradeDate;
-                        var message = managerData.upgradeMessage;
-                        var countdown = managerData.countdown;
-                        var options = {  
-                            weekday: "long", year: "numeric", month: "short",  
-                            day: "numeric", hour: "2-digit", minute: "2-digit"  
-                        };  
-                        var dateForUser = new Date(mdate);
-                        if(managerData.active > 0){
-                            $("#upgradeMessage").html(message);
-                            $("#schedmaintenance").html(dateForUser.toLocaleTimeString("en-us", options));
-                            if(countdown > 0){
-                                setCountdown(mdate);
+                        if(data){
+                            var managerData = JSON.parse(data);
+                            var mdate = managerData.upgradeDate;
+                            var message = managerData.upgradeMessage;
+                            var countdown = managerData.countdown;
+                            var options = {  
+                                weekday: "long", year: "numeric", month: "short",  
+                                day: "numeric", hour: "2-digit", minute: "2-digit"  
+                            };  
+                            var dateForUser = new Date(mdate);
+                            if(managerData.active > 0){
+                                $("#upgradeMessage").html(message);
+                                $("#schedmaintenance").html(dateForUser.toLocaleTimeString("en-us", options));
+                                if(countdown > 0){
+                                    setCountdown(mdate);
+                                }
+                                //return(dateForUser.format('l, F jS, Y g:00a'));
                             }
-                            //return(dateForUser.format('l, F jS, Y g:00a'));
-                        }
-                        else{
-                            var today = new Date();
-                            while ((today.getDay() !== 1) && (today.getDay() !== 3) && (today.getDay() !== 5)){
-                                today.setDate(today.getDate()+1);
-                            }
-                            // set to 8am Central Time
-                            today.setHours(14 - today.getTimezoneOffset()/60);
-                            //return(today.format('l, F jS, Y g:00a'));
-                            $("#schedmaintenance").html(today.toLocaleTimeString("en-us", options));
+                            else{
+                                var today = new Date();
+                                while ((today.getDay() !== 1) && (today.getDay() !== 3) && (today.getDay() !== 5)){
+                                    today.setDate(today.getDate()+1);
+                                }
+                                // set to 8am Central Time
+                                today.setHours(14 - today.getTimezoneOffset()/60);
+                                //return(today.format('l, F jS, Y g:00a'));
+                                $("#schedmaintenance").html(today.toLocaleTimeString("en-us", options));
+                            }  
                         }
                     });
             }
@@ -356,56 +357,13 @@
                 timer = setInterval(showRemaining, 1000);
             }
             
-            var blogTags = new Array();
-            function blogPostsJson(data) {
-                        var posts = data.feed;
-                        recentArticleDate = Date.parse(posts.entry[0].published.$t);
-                        var addResult = new Array();
-                        var blogContents = new Array();
-                        for (var i=0;i<posts.entry.length;i++){
-                            var tagsLength = posts.entry[i].category.length;
-                            var theseTags = new Array();
-                            for (var j=0;j<tagsLength;j++){
-                                var thisTag = posts.entry[i].category[j].term;
-                                theseTags.push(thisTag);
-                                if ($.inArray(thisTag,blogTags) === -1){
-                                    blogTags.push(thisTag);
-                                }
-                            }
-                            addResult.push(
-                                "<li class='blogTitle ui-state-default ",theseTags.join(" "),"'><a href='",posts.entry[i].link.pop().href,"' target='_blank'>",
-                                posts.entry[i].title.$t.replace("T-PEN","T&#8209;PEN"),
-                                "</a></li>");
-                            blogContents.push(
-                                "<li class='blogEntry'><div class='byline'><div class='blogDate small'>",
-                                posts.entry[i].published.$t.substr(0, 16),
-                                "</div><div class='blogAuthor small'>Written by ",
-                                posts.entry[i].author[0].name.$t,
-                                "</div></div><div class='blogSnippet'>",
-                                posts.entry[i].content.$t,
-                                "</div></li>");
-                        }
-                        $(function(){
-                          $("#blogTitles")
-                            .append(addResult.join(""));
-                        $("#blogContent")
-                            .append(blogContents.join(""));
-                      $("#blogTags").append(buildBlogTags());
-                      $("#blogLoad").remove();
-                        });
-            };
             function tabSize(){
-            if(!!$("#tabs").length && !!$("#projects").length && !!$("#blogTitles").length && !!$("#recentProject").length) {
+            if(!!$("#tabs").length && !!$("#projects").length && !!$("#recentProject").length) {
                 var tabsHeight = $("#tabs").height();
                     var maxHeight = tabsHeight-$("#projects").position().top;
                         $("#projects")
                             .css("max-height",maxHeight);
-                    maxHeight = tabsHeight-$("#blogTitles").position().top;
-                        $("#blogTitles")
-                            .css("max-height",maxHeight).attr('class','');
-                        $("#blogContent")
-                            .css("max-height",maxHeight);
-                        $(".blogTitle").eq(0).trigger("mouseover"); //default to first
+                    maxHeight = tabsHeight;
                     $(".lists").filter(":visible").each(function(){
                         maxHeight = tabsHeight-$(this).position().top;
                             $(this)
@@ -418,34 +376,7 @@
                     }
             }
             }
-            function buildBlogTags(){
-                var tagOptions = new Array();
-                var tagsLength = blogTags.length;
-                for (var i=0;i<tagsLength;i++){
-                    if (blogTags[i] == 'T-PEN') continue;
-                    tagOptions.push(blogTags[i]);
-                }
-                return "<option>"+tagOptions.join("</option><option>")+"</option>";
-            }
-//            Google and Facebook Buttons
-//            (function() {
-//                var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-//                po.src = 'https://apis.google.com/js/plusone.js';
-//                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-//            })();
-//            (function(d, s, id) {
-//  var js, fjs = d.getElementsByTagName(s)[0];
-//  if (d.getElementById(id)) return;
-//  js = d.createElement(s); js.id = id;
-//  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-//  fjs.parentNode.insertBefore(js, fjs);
-//}(document, 'script', 'facebook-jssdk'));
-$(window).load(function(){gapi.plusone.go();});
         </script>
-        <script src="http://digital-editor.blogspot.com/feeds/posts/default?alt=json-in-script&callback=blogPostsJson"></script>
-<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
-  {parsetags: 'explicit'}
-</script>
     </head>
     <body id="landing2">
         <div id="wrapper2">

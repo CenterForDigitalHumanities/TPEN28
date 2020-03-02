@@ -13,19 +13,18 @@
  * permissions and limitations under the License.
  */
 package edu.slu.tpen.servlet;
-import edu.slu.util.ServletUtils;
+import static edu.slu.util.ServletUtils.getDBConnection;
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.Integer.parseInt;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import textdisplay.Project;
 import user.Group;
 import user.User;
@@ -39,7 +38,7 @@ public class CreateProjectClassic extends HttpServlet {
             writer.print(createProject(request, response));
             writer.close();
         } catch (SQLException ex) {
-            Logger.getLogger(CreateProjectClassic.class.getName()).log(Level.SEVERE, null, ex);
+            getLogger(CreateProjectClassic.class.getName()).log(SEVERE, null, ex);
         }
     }
 
@@ -55,11 +54,11 @@ public class CreateProjectClassic extends HttpServlet {
      */
     public String createProject(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException, SQLException {
-            int UID = Integer.parseInt(request.getSession().getAttribute("UID").toString());
+            int UID = parseInt(request.getSession().getAttribute("UID").toString());
             int projectID = 0;
             textdisplay.Project thisProject = null;
             if (UID > 0 && request.getParameter("ms")!=null) {
-                textdisplay.Manuscript mss=new textdisplay.Manuscript(Integer.parseInt(request.getParameter("ms")),true);
+                textdisplay.Manuscript mss=new textdisplay.Manuscript(parseInt(request.getParameter("ms")),true);
                 int [] msIDs=new int[0];
                 User u = new User(UID);
                 textdisplay.Project[] p = u.getUserProjects();
@@ -85,7 +84,7 @@ public class CreateProjectClassic extends HttpServlet {
                     if (request.getParameter("title") != null) {
                         tmpProjName = request.getParameter("title");
                     }
-                    try (Connection conn = ServletUtils.getDBConnection()) {
+                    try (Connection conn = getDBConnection()) {
                        conn.setAutoCommit(false);
                        Group newgroup = new Group(conn, tmpProjName, UID);
                        Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());

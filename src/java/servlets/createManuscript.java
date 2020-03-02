@@ -8,14 +8,16 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.System.out;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import static textdisplay.Folio.createFolioRecordFromVhmml;
 
 /**
  *
@@ -54,19 +56,19 @@ public class createManuscript extends HttpServlet {
                     repository=request.getParameter("repository");
                 }
                 textdisplay.Manuscript m=new textdisplay.Manuscript(repository, archive, city, city, -999);
-                System.out.println("msID ============= " + m.getID());
+                out.println("msID ============= " + m.getID());
                 String urls=request.getParameter("urls");
                 String [] seperatedURLs=urls.split(";");
                 String names=request.getParameter("names");
                 String [] seperatedNames=names.split(",");
                 for(int i=0;i<seperatedURLs.length;i++)
                 {
-                    int num = textdisplay.Folio.createFolioRecordFromVhmml(city, seperatedNames[i], seperatedURLs[i].replace('_', '&'), archive, m.getID());
+                    int num = createFolioRecordFromVhmml(city, seperatedNames[i], seperatedURLs[i].replace('_', '&'), archive, m.getID());
                 }
                 PrintWriter writer = response.getWriter();
                 writer.print(m.getID());
             } catch (SQLException ex) {
-                Logger.getLogger(createManuscript.class.getName()).log(Level.SEVERE, null, ex);
+                getLogger(createManuscript.class.getName()).log(SEVERE, null, ex);
             }
         }
     }

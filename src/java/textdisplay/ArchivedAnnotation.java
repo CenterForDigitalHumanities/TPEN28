@@ -16,9 +16,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.owasp.esapi.ESAPI;
+import static org.owasp.esapi.ESAPI.encoder;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 /**Handles archiving and retrieving old versions of an annotation*/
 public class ArchivedAnnotation {
     private String text;
@@ -56,7 +57,7 @@ public class ArchivedAnnotation {
     }
 
     public String getText() {
-        return ESAPI.encoder().encodeForHTML(text);
+        return encoder().encodeForHTML(text);
     }
 
     public int getW() {
@@ -81,7 +82,7 @@ public class ArchivedAnnotation {
         Connection j=null;
 PreparedStatement ps=null;
         try{
-            j=DatabaseWrapper.getConnection();
+            j=getConnection();
             ps=j.prepareStatement(query);
             ps.setInt(1, archivedID);
             ResultSet rs=ps.executeQuery();
@@ -99,8 +100,8 @@ PreparedStatement ps=null;
             }
         }
         finally{
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
     /**
@@ -117,7 +118,7 @@ DatabaseWrapper.closePreparedStatement(ps);
 PreparedStatement ps=null;
         Stack<ArchivedAnnotation> tmp=new Stack();
         try{
-            j=DatabaseWrapper.getConnection();
+            j=getConnection();
             ps=j.prepareStatement(query);
             ps.setInt(1, annotationID);
             ResultSet rs=ps.executeQuery();
@@ -134,8 +135,8 @@ PreparedStatement ps=null;
         }
         finally
         {
-DatabaseWrapper.closeDBConnection(j);
-DatabaseWrapper.closePreparedStatement(ps);
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
         return toret;
         

@@ -497,7 +497,6 @@ public class User {
         } else {
             this.UID = -1;
         }
-
     }
 
     /**
@@ -787,8 +786,9 @@ public class User {
      */
     public Boolean exists() throws SQLException {
         try (Connection j = getConnection()) {
-            PreparedStatement qry = j.prepareStatement("select * from users where UID=?");
+            PreparedStatement qry = j.prepareStatement("select * from users where UID=? OR Uname=?");
             qry.setInt(1, UID);
+            qry.setString(2, this.Uname);
             ResultSet rs = qry.executeQuery();
             return rs.next();
         }

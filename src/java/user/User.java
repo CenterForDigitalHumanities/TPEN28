@@ -786,20 +786,12 @@ public class User {
      * @throws SQLException
      */
     public Boolean exists() throws SQLException {
-        Connection j = null;
-        PreparedStatement qry = null;
-        Boolean is = false;
-        try {
-            j = getConnection();
-            qry = j.prepareStatement("select * from users where UID=?");
+        try (Connection j = getConnection()) {
+            PreparedStatement qry = j.prepareStatement("select * from users where UID=?");
             qry.setInt(1, UID);
             ResultSet rs = qry.executeQuery();
-            is = rs.next();
-        } finally {
-            closeDBConnection(j);
-            closePreparedStatement(qry);
+            return rs.next();
         }
-        return is;
     }
 
     /**
@@ -971,9 +963,8 @@ public class User {
             // This is where invite did not have to make a new user. The user being invited
             // is already a part of T-PEN. Send an email still? Right now, no.
             // System.out.println("No. We did not make a new user, do not send an email.");
+            return 1;
         }
-
-        return 1;
     }
 
     /**

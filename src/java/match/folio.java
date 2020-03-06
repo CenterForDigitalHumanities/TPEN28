@@ -81,30 +81,16 @@ public class folio {
    public static int randomPage() throws SQLException {
       String query = "select id from pages where finding=0 order by Rand() limit 1";
 
-      // String query="select min(id) from pages";
-      int rec;
-        try ( //String query="SELECT * FROM `pages` WHERE id >= (SELECT FLOOR( MAX(id) * RAND()) FROM `pages` ) ORDER BY id LIMIT 1;";
-                Connection j = getConnection()) {
+      //String query="SELECT * FROM `pages` WHERE id >= (SELECT FLOOR( MAX(id) * RAND()) FROM `pages` ) ORDER BY id LIMIT 1;";
+        try (Connection j = getConnection()) {
             PreparedStatement p = j.prepareStatement(query);
             ResultSet rs;
             rs = p.executeQuery(query);
             rs.next();
             int min = rs.getInt(1);
-            if (true) {
-                j.close();
-                return min;
-                
-            }     rs = p.executeQuery("select max(id) from pages");
-            rs.next();
-            int max = rs.getInt(1);
-            int count = max - min;
-            Random generator = new Random();
-            rec = generator.nextInt(count);
-            rec += min;
+            j.close();
+            return min;             
         }
-
-      return rec;
-
    }
 
    public String getImageName() {
@@ -232,37 +218,7 @@ public class folio {
     * Returns each line of the ms represented by a properly sized div accounting for columns
     */
    public String getLinesAsDivsWithCols() {
-      if (true) {
          return "";
-      }
-      String toret = "";
-      String onClick = "onclick=\"deleteme(this,event);\"";
-      for (int i = 0; i < linePositions.length; i++) {
-         if (i % 2 == 1 && linePositions[i] != null) {
-            toret += "<div class=\"line\" style=\"position:absolute;top:";
-            toret += linePositions[i].top;
-            toret += "px;left:" + linePositions[i].left;
-            if (linePositions[i].getWidth() > 0) {
-               toret += "px;width:" + linePositions[i].getWidth();
-            } else {
-               toret += "px;width:200";
-            }
-            toret += "px;height:" + (linePositions[i].bottom - linePositions[i].top);
-            toret += "px;background-color:aqua;\" " + onClick + " >";
-            toret += "</div>";
-         } else {
-            if (linePositions[i] != null) {
-               toret += "<div class=\"line\" style=\"position:absolute;top:" + linePositions[i].top + "px;width:100%;left:" + linePositions[i].left;
-               if (linePositions[i].getWidth() > 0) {
-                  toret += "px;width:" + linePositions[i].getWidth() + "px;height:" + (linePositions[i].bottom - linePositions[i].top) + "px;background-color:red;\" " + onClick + " >";
-               } else {
-                  toret += "px;width:200" + "px;height:" + (linePositions[i].bottom - linePositions[i].top) + "px;background-color:red;\" " + onClick + " >";
-               }
-               toret += "</div>";
-            }
-         }
-      }
-      return toret;
    }
 
    public String parkerURL() {

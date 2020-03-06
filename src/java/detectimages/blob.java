@@ -677,91 +677,10 @@ public class blob implements Serializable {
    }
 
    /**
-    * Load the blobs associated with a particular image from the database
-    */
-   /*public static Vector<blob> getBlobs(String image, Connection j) throws SQLException
-    {
-    Vector <blob> blobs=new Vector();
-    PreparedStatement stmt=j.prepareStatement("select id from blobs where image=?");
-    stmt.setString(1, image);
-    ResultSet rs=stmt.executeQuery();
-    while(rs.next())
-    {
-    PreparedStatement stmt2=j.prepareStatement("select x,y from pixels where blobID=?");
-    ResultSet pixelSet=stmt2.executeQuery();
-    blob thisOne=new blob();
-    while(rs.next())
-    {
-    pixel thisPixel=new pixel(pixelSet.getInt("x"),pixelSet.getInt("y"));
-    thisOne.pixels.push(thisPixel);
-    }
-
-    }
-    return blobs;
-    }*/
-   /**
     * Read the blobs stored in a file
     */
    public static Vector<blob> getBlobs(String filename) throws FileNotFoundException, IOException {
-      //do this is the blob file is in matrix format rather than coordinate pair format
-      if (true) {
-         return (getMatrixBlobs(filename));
-      }
-
-      Vector<blob> blobs = new Vector();
-//if(lastPage!=null)
-      //   return lastPage;
-      blob thisOne = new blob();
-      int maxX = 0;
-      int maxY = 0;
-      String buff;
-
-      int idCounter = 0;
-
-      String[] stuff = readFileIntoArray(filename); //p.split(readFile(filename.replace(".txt.txt", ".txt")));
-        for (String stuff1 : stuff) {
-            buff = stuff1;
-            if (buff.contains("b")) {
-                if (thisOne != null) {
-                    thisOne.arrayVersion = thisOne.pixels.toArray(new pixel[thisOne.pixels.size()]);
-                    thisOne.width = maxX;
-                    thisOne.height = maxY;
-                    thisOne.matrixVersion = new matrixBlob(thisOne);
-                    //thisOne.blockVersion=new BlockBlob(thisOne.matrixVersion);
-                    thisOne.altVersion = new altBlob(thisOne);
-                    blobs.add(thisOne);
-                    thisOne.id = idCounter;
-                    idCounter++;
-                    maxX = 0;
-                    maxY = 0;
-                }   thisOne = new blob();
-                try {
-                    int startx = buff.indexOf("<sx>") + 4;
-                    int endx = buff.indexOf("</sx>");
-                    int starty = buff.indexOf("<sy>") + 4;
-                    int endy = buff.indexOf("</sy>");
-                    int x = parseInt(buff.substring(startx, endx));
-                    int y = parseInt(buff.substring(starty, endy));
-                    thisOne.x = x;
-                    thisOne.y = y;
-                }catch (StringIndexOutOfBoundsException e) {
-                    int k = 0;
-                }
-            } else {
-                String[] parts = comma.split(buff);
-                int x = parseInt(parts[0]);
-                int y = parseInt(parts[1]);
-                if (x > maxX) {
-                    maxX = x;
-                }   if (y > maxY) {
-                    maxY = y;
-                }   thisOne.pixels.add(new pixel(x, y));
-                thisOne.size++;
-            }
-        }
-      //System.out.print(blobs.size() + " " + idCounter);
-      lastPage = blobs;
-      return blobs;
+        return (getMatrixBlobs(filename));
    }
 
    /**

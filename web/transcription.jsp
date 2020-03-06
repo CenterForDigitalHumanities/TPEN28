@@ -1501,10 +1501,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
                     }
                     if ((ms.getControllingUser() != null) && (ms.getControllingUser().getUID() == thisUser.getUID())){
                         out.print("<a class='left ui-icon ui-icon-wrench' href=\"manuscriptAdmin.jsp?ms=" + ms.getID() + "\" title=\"Change page name or administer manuscript access\">Change Page Names</a>");
-                    }
-                    if (false && archiveLink != null && archiveLink.compareTo("") != 0) {
-                        out.print("<a class='left clear ui-icon ui-icon-image' href=\"" + archiveLink + "\" target=\"_blank\" title=\"View Source Image\">Source Image</a>");
-                }%>
+                    }%>
                 <select class="clear left" onchange="Interaction.navigateTo(this);">
                     <option SELECTED>Jump to page</option>
                     <%out.print(ESAPI.encoder().decodeFromURL(thisProject.getFolioDropdown()));%>

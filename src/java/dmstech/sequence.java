@@ -523,15 +523,6 @@ public class sequence {
                 out.print("Title:" + canvase.getTitle() + "\n");
                 out.print("Canvas:" + canvase.getCanvas() + " w:" + canvase.getWidth() + " h:" + canvase.getHeight() + "\n");
                 ImageChoice[] images = canvase.getImageURL();
-                if (false && images.length==0) {
-                    String imageurl = canvase.getCanvas().split("#")[0];
-                    imageurl=imageurl.split("data/")[1];
-                    imageurl="http://fsiserver.library.jhu.edu/server?type=image&source=rose/"+imageurl+"&height=2000";
-                    ImageChoice [] im=new ImageChoice[1];
-                    im[0]=new ImageChoice(imageurl,0,0);
-                    canvase.setImageURL(im);
-                    images=im;
-                }
                 for (ImageChoice image : images) {
                     out.print("Image:" + image.getImageURL() + " w:" + image.getWidth() + " h:" + image.getHeight() + "\n");
                 }

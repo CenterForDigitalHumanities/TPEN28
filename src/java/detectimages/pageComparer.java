@@ -106,47 +106,15 @@ public class pageComparer implements Callable
                         //double tmp=b1[i].altVersion.run(b2[j].altVersion);
                         double tmp;
                         double tmp2;
-                        if (true || (b11.matrixVersion.matrix.length - b21.matrixVersion.matrix.length > 3 || b21.matrixVersion.matrix.length - b11.matrixVersion.matrix.length > 3)) {
-                            if (b11.matrixVersion.matrix.length < b21.matrixVersion.matrix.length) {
-                                //tmp=b1[i].matrixVersion.compareWithScaling(b2[j].matrixVersion);
-                                //tmp=b1[i].matrixVersion.compareToWithAdjust(b2[j].matrixVersion.scaleMatrixBlob(b2[j],b1[i].matrixVersion.matrix.length));
-                                tmp = b11.matrixVersion.compareToWithAdjust(b21.matrixVersion);
-                            } else {
-                                //tmp=b1[i].matrixVersion.compareWithScaling(b2[j].matrixVersion);
-                                //tmp=b1[i].matrixVersion.scaleMatrixBlob(b1[i],b2[j].matrixVersion.matrix.length).compareToWithAdjust(b2[j].matrixVersion);
-                                tmp = b11.matrixVersion.compareToWithAdjust(b21.matrixVersion);
-                            }
-                            {}
+                        if (b11.matrixVersion.matrix.length < b21.matrixVersion.matrix.length) {
+                            //tmp=b1[i].matrixVersion.compareWithScaling(b2[j].matrixVersion);
+                            //tmp=b1[i].matrixVersion.compareToWithAdjust(b2[j].matrixVersion.scaleMatrixBlob(b2[j],b1[i].matrixVersion.matrix.length));
+                            tmp = b11.matrixVersion.compareToWithAdjust(b21.matrixVersion);
+                        } else {
+                            //tmp=b1[i].matrixVersion.compareWithScaling(b2[j].matrixVersion);
+                            //tmp=b1[i].matrixVersion.scaleMatrixBlob(b1[i],b2[j].matrixVersion.matrix.length).compareToWithAdjust(b2[j].matrixVersion);
+                            tmp = b11.matrixVersion.compareToWithAdjust(b21.matrixVersion);
                         }
-                        //tmp=0.0;
-                        //tmp=0.0;
-                        //tmp=0.0;
-                        //tmp=b1[i].matrixVersion.compareWithScaling(b2[j].matrixVersion);
-                        //tmp=b1[i].matrixVersion.compareWithScaling(b2[j].matrixVersion);
-                        //tmp=b1[i].matrixVersion.compareWithScaling(b2[j].matrixVersion);
-                        //tmp=b1[i].matrixVersion.compareToWithAdjust(b2[j].matrixVersion);  //
-                        //tmp=b1[i].matrixVersion.compareToWithAdjust(b2[j].matrixVersion);  //
-                        //tmp=b1[i].matrixVersion.compareToWithAdjust(b2[j].matrixVersion);  //
-                        //tmp2=b1[i].altVersion.run(b2[j].altVersion);
-                        //tmp2=b1[i].altVersion.run(b2[j].altVersion);
-                        //tmp2=b1[i].altVersion.run(b2[j].altVersion);
-                        // tmp2=(double) tmp2 /biggest;
-                        // tmp2=(double) tmp2 /biggest;
-                        // tmp2=(double) tmp2 /biggest;
-                        //else
-                        {
-                        //tmp=0.0;
-                        //tmp=b1[i].matrixVersion.compareWithScaling(b2[j].matrixVersion);
-                        //tmp=b1[i].matrixVersion.compareToWithAdjust(b2[j].matrixVersion);  //
-                        //tmp2=b1[i].altVersion.run(b2[j].altVersion);
-                        
-                        
-                        // tmp2=(double) tmp2 /biggest;
-                        
-                    }
-                        //             tmp=(double) tmp / biggest;
-                        //tmp=tmp2;
-                        //tmp=tmp2;
                         if (tmp > 0.7) {
                             matches++;
                             try{

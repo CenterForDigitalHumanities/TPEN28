@@ -62,59 +62,34 @@ public class characterImage extends HttpServlet {
         long relExpiresInMillis = currentTimeMillis() + (1000 * 2600);
         response.addHeader("Expires", getGMTTimeString(relExpiresInMillis));
         response.setContentType("image/jpeg");
-        if (true || request.getParameter("orig") != null) {
-            int width, height, x, y;
-            String pageIdentifier;
-            int blobIdentifier;
+        int width, height, x, y;
+        String pageIdentifier;
+        int blobIdentifier;
 
-            try {
-                blobIdentifier = parseInt(request.getParameter("blob"));
-                pageIdentifier = request.getParameter("page");
-            } catch (NumberFormatException | NullPointerException e) {
-                return;
-            }
-            blobGetter thisBlob = new blobGetter(pageIdentifier, blobIdentifier);
-            String s = (getRbTok("SERVERCONTEXT") + "imageResize?folioNum=" + pageIdentifier + "&height=2000");
-            out.print(s + "\n");
-            BufferedImage originalImg = getImage(parseInt(pageIdentifier));//imageHelpers.readAsBufferedImage(new URL(Folio.getRbTok("SERVERCONTEXT")+"imageResize?folioNum="+pageIdentifier+"&height=2000&code="+Folio.getRbTok("imageCode")));
-            width = thisBlob.getHeight();
-            height = thisBlob.getWidth();
-            x = thisBlob.getX();
-            y = thisBlob.getY();
-            //scale coordinates based on the fixed 1500 pixel size of the observations
-            double factor = originalImg.getHeight() / (double) 2000;
-            //factor=1.0;
-            width = (int) (width * factor);
-            height = (int) (height * factor);
-            x = (int) (x * factor);
-            y = (int) (y * factor);
-            try (OutputStream os = response.getOutputStream()) {
-                write(originalImg.getSubimage(x, y, width, height), "jpg", os);
-                originalImg = null;
-            }
-        } else {
-            String pageIdentifier;
-            int blobIdentifier;
-
-            try {
-                blobIdentifier = parseInt(request.getParameter("blob"));
-                pageIdentifier = request.getParameter("page");
-            } catch (NumberFormatException | NullPointerException e) {
-                return;
-            }
-
-            //call the blob constructor tha builds the requested blob based on the blob id and MS/page info
-            blob thisBlob = getBlob(pageIdentifier + ".txt", blobIdentifier);
-            //find the width and height of this blob, so the canvase can be sized properly.
-            int height = thisBlob.getHeight();
-            int width = thisBlob.getWidth();
-
-            BufferedImage toRender = new BufferedImage(width, height, TYPE_INT_RGB);
-            drawBlob(toRender, 0, 0, thisBlob, 0xffffff);
-            try ( //blob.drawBlob(thisBlob, toRender);
-                    OutputStream os = response.getOutputStream()) {
-                write(toRender, "jpg", os);
-            }
+        try {
+            blobIdentifier = parseInt(request.getParameter("blob"));
+            pageIdentifier = request.getParameter("page");
+        } catch (NumberFormatException | NullPointerException e) {
+            return;
+        }
+        blobGetter thisBlob = new blobGetter(pageIdentifier, blobIdentifier);
+        String s = (getRbTok("SERVERCONTEXT") + "imageResize?folioNum=" + pageIdentifier + "&height=2000");
+        out.print(s + "\n");
+        BufferedImage originalImg = getImage(parseInt(pageIdentifier));//imageHelpers.readAsBufferedImage(new URL(Folio.getRbTok("SERVERCONTEXT")+"imageResize?folioNum="+pageIdentifier+"&height=2000&code="+Folio.getRbTok("imageCode")));
+        width = thisBlob.getHeight();
+        height = thisBlob.getWidth();
+        x = thisBlob.getX();
+        y = thisBlob.getY();
+        //scale coordinates based on the fixed 1500 pixel size of the observations
+        double factor = originalImg.getHeight() / (double) 2000;
+        //factor=1.0;
+        width = (int) (width * factor);
+        height = (int) (height * factor);
+        x = (int) (x * factor);
+        y = (int) (y * factor);
+        try (OutputStream os = response.getOutputStream()) {
+            write(originalImg.getSubimage(x, y, width, height), "jpg", os);
+            originalImg = null;
         }
     }
 

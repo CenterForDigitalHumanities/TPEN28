@@ -155,33 +155,6 @@ public class sequence {
                 }
             }
         }
-        if (true) {
-            return;
-        }
-
-        //listItem =sequenceModel.getResource("http://dmstech.groups.stanford.edu/Machaut/ffr22546/manifest/NormalSequence");
-        while (sequences.hasNext()) {
-            listItem = sequences.next();
-            if (listItem.getNameSpace() != null) {
-                //System.out.print(listItem.getNameSpace()+"\n");
-
-                if (listItem.getNameSpace().compareTo("dms") == 0) {
-                    out.print("listitem:" + listItem.getURI() + "\n");
-                    break;
-                }
-            }
-        }
-        for (; !listItem.equals(nil);) {
-            // If the list is of resources ...
-            Resource entry = listItem.getProperty(first).getResource();
-            out.print(entry.getURI() + "\n");
-
-            view v = new view(sequenceModel, entry.getURI());
-//System.out.print(v.getImages().length+"\n");
-
-            // Move on to next list item
-            listItem = listItem.getProperty(rest).getResource();
-        }
     }
 
     /**

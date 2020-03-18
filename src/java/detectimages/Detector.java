@@ -266,13 +266,11 @@ public class Detector {
     */
    public void findLines() {
       BufferedImage onlySmearedPortions = cloneImage(bin);
-      if (true) {
-         for (int i = 1; i < smeared.getWidth() - 1; i++) {
-            for (int j = 0; j < smeared.getHeight() - 1; j++) {
-               onlySmearedPortions.setRGB(i, j, WHITE);
-            }
-         }
-      }
+        for (int i = 1; i < smeared.getWidth() - 1; i++) {
+           for (int j = 0; j < smeared.getHeight() - 1; j++) {
+              onlySmearedPortions.setRGB(i, j, WHITE);
+           }
+        }
       smear(hsmearDist);
       vsmear(vsmearDist, onlySmearedPortions);
       smear(hsmearDist);

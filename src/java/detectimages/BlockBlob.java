@@ -37,19 +37,7 @@ public class BlockBlob {
     }
 
     public int compare(BlockBlob b) {
-        int result = 0;
-        if (true) {
-            return blocks[0][0].compare(b.blocks[0][0]);
-        }
-        for (int i = 0; i < blocks.length; i++) {
-            for (int j = 0; j < blocks[0].length; j++) {
-                if (i < b.blocks.length && j < b.blocks[0].length) {
-                    result += blocks[i][j].compare(b.blocks[i][j]);
-                }
-            }
-        }
-
-        return result;
+        return blocks[0][0].compare(b.blocks[0][0]);
     }
     static CLKernel compareKernel = null;
 

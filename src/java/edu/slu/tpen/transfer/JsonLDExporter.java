@@ -189,7 +189,7 @@ public class JsonLDExporter {
       imageAnnot.put("motivation", "sc:painting");
       String imageURL = f.getImageURL();
       if (imageURL.startsWith("/")) {
-          imageURL = String.format("%s%s",getRbTok("SERVERURL"), f.getImageURLResize());
+          imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
       }
       Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
       

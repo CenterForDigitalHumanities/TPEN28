@@ -644,7 +644,7 @@ public class Folio {
             if (rs.next()) {
                url = rs.getString(1);
                if (url.startsWith("/")) {
-                  url = "file://" + url;
+                  url = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), folioNumber);
                } else {
                         // If it's a reference to the T-PEN pageImage servlet, point it at the
                         // current T-PEN instance.

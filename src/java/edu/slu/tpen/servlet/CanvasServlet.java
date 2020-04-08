@@ -122,7 +122,11 @@ public class CanvasServlet extends HttpServlet{
       JSONObject imageAnnot = new JSONObject();
       imageAnnot.element("@type", "oa:Annotation");
       imageAnnot.element("motivation", "sc:painting");
-      Map<String, Object> imageResource_map = buildQuickMap("@id", format("%s%s", getRbTok("SERVERURL"), f.getImageURLResize()), "@type", "dctypes:Image", "format", "image/jpeg");
+      String imageURL = f.getImageURL();
+      if (imageURL.startsWith("/")) {
+        imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
+      }
+      Map<String, Object> imageResource_map = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
       JSONObject imageResource = fromObject(imageResource_map);
       imageResource.element("height",0 ); 
       imageResource.element("width",0 ); 

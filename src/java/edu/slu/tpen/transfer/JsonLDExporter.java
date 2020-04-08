@@ -187,7 +187,11 @@ public class JsonLDExporter {
       Map<String, Object> imageAnnot = new LinkedHashMap<>();
       imageAnnot.put("@type", "oa:Annotation");
       imageAnnot.put("motivation", "sc:painting");
-      Map<String, Object> imageResource = buildQuickMap("@id", format("%s%s&user=%s", getRbTok("SERVERURL"), f.getImageURLResize(), u.getUname()), "@type", "dctypes:Image", "format", "image/jpeg");
+      String imageURL = f.getImageURL();
+      if (imageURL.startsWith("/")) {
+          imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
+      }
+      Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
       
       if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
           //doing this check will return invalid images because we will not include height and width of 0.

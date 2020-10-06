@@ -203,8 +203,8 @@
         </style>
         <%
             String projectAppend = "";
-            Boolean isMember,permitOACr,permitOACw,permitExport,permitCopy,permitModify,permitAnnotation,permitButtons,permitParsing,permitMetadata,permitNotes,permitRead;
-            isMember=permitOACr=permitOACw=permitExport=permitCopy=permitModify=permitAnnotation=permitButtons=permitParsing=permitMetadata=permitNotes=permitRead=false;
+            Boolean isAdmin,isMember,permitOACr,permitOACw,permitExport,permitCopy,permitModify,permitAnnotation,permitButtons,permitParsing,permitMetadata,permitNotes,permitRead;
+            isAdmin=isMember=permitOACr=permitOACw=permitExport=permitCopy=permitModify=permitAnnotation=permitButtons=permitParsing=permitMetadata=permitNotes=permitRead=false;
             int projectID = 0;
             if (request.getParameter("projectID") != null) {
                 projectID = Integer.parseInt(request.getParameter("projectID"));
@@ -212,6 +212,7 @@
                 Project thisProject = new Project(projectID);
                 Group thisGroup = new Group(thisProject.getGroupID());
                 isMember = thisGroup.isMember(UID);
+                isAdmin = (thisUser.isAdmin() || thisGroup.isAdmin(UID));
                 ProjectPermissions permit = new ProjectPermissions(projectID);
                 permitOACr = permit.getAllow_OAC_read();
                 permitOACw = permit.getAllow_OAC_write();
@@ -236,7 +237,7 @@
                     int projectNumToDelete = Integer.parseInt(request.getParameter("projDelete"));
                     textdisplay.Project todel = new textdisplay.Project(projectNumToDelete);
                     user.Group projectGroup = new user.Group(todel.getGroupID());
-                    if (projectGroup.isAdmin(UID)) {
+                    if (isAdmin) {
                         if (todel.delete()) {
                             //redirect to first project
                             out.print("<script>document.location=\"project.jsp\";</script>");
@@ -278,7 +279,7 @@
                 int result = thisUser.invite(request.getParameter("uname"), request.getParameter("fname"), request.getParameter("lname"));
                 if (result == 0) {
                     user.Group g = new user.Group(thisProject.getGroupID());
-                    if (g.isAdmin(thisUser.getUID())) {
+                    if (isAdmin) {
 
                         user.User newUser = new user.User(request.getParameter("uname"));
                         g.addMember(newUser.getUID());
@@ -313,7 +314,7 @@
             if (result == 2) {
                 //account created but email issue occured, usually happens in dev environments with no email server.
                 user.Group g = new user.Group(thisProject.getGroupID());
-                if (g.isAdmin(thisUser.getUID())) {
+                if (isAdmin) {
 
                     user.User newUser = new user.User(request.getParameter("uname"));
                     g.addMember(newUser.getUID());
@@ -461,7 +462,7 @@
                                                 //  Get project Leader and offer a delete option.
                                                 textdisplay.Project iProject = new textdisplay.Project(userProjects[i].getProjectID());
                                                 user.Group projectGroup = new user.Group(iProject.getGroupID());
-                                                if (projectGroup.isAdmin(UID)) {
+                                                if (isAdmin) {
                                                     out.print("<span class=\"delete ui-icon ui-icon-closethick right\" onclick=\"deleteProject(" + UID + "," + userProjects[i].getProjectID() + "," + "'" + StringEscapeUtils.escapeJavaScript(mList.getTitle()) + "'" + ");\">delete</span></li>");
                                                 } else {
                                                     out.print("</li>");
@@ -845,12 +846,13 @@
                                     <span class="ui-icon ui-icon-alert left demoAlert"></span>
                                     <span class="demoWarning">Right-To-Left has some limitations at this time. XML tags will not be available.
                                         Exporting an RTL document may produce text that is neither properly ordered nor properly RTL formatted.</span>
-                                    
+                                <% if (isAdmin){%>
                                     <h4 id="projectTools" class="clear-left" title="These options are tied to each project">Project Tools
                                         <a class="ui-icon ui-icon-plusthick" id="addTool" title="Add a Tool" onclick="$('#addingTools').fadeIn();">Add a Tool</a>
                                         <span class="left clear-left small">(Click on a label to edit the button name)</span></h4>
                                     <%
                                         //Project Tools
+                                        StringBuilder user_added_tools = new StringBuilder();
                                         String[] projectToolCheck = new String[7];
                                         for (int a = 0; a < projectToolCheck.length; a++) {
                                             projectToolCheck[a] = "";
@@ -883,8 +885,9 @@
                                                 projectToolCheck[2] = "checked";
                                             }
                                             else{
-                                                //This is an unexpected project tool
-                                                //out.print("An unknown tool "+toolLabel+", "+toolURL+" was detected. <br>");
+                                                //It is a user added iframe tool.  If they uncheck it, they will loose it.
+                                                user_added_tools.append("<label class='projectTools'><input type='checkbox' checked name='projectTool[]' ").append("value='").append(toolURL).append("'/><span contentEditable=true>").append(toolLabel).append("</span></label>");
+                                                out.print(user_added_tools.toString());
                                             }
                                         }
                                     %>
@@ -900,6 +903,7 @@
                                     <input type="hidden" name="selecTab" value="3"/>
                                     <input type="submit" name="tools" value="Save Tool Preferences" class="ui-button tpenButton right clear-left"/>
                                 </form>
+                            <% } %>
                             </li>
 <%}%>
                         </ul>

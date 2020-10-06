@@ -636,9 +636,13 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
             boolean hasMessage = (archiveMsg!=null && archiveMsg.length()>0);
             textdisplay.Manuscript thisMS = new textdisplay.Manuscript(thisFolio.getFolioNumber());
             Group thisGroup = new Group(thisProject.getGroupID());
-            Boolean isMember,permitOACr,permitOACw,permitExport,permitCopy,permitModify,permitAnnotation,permitButtons,permitParsing,permitMetadata,permitNotes,permitRead;
-            isMember=permitOACr=permitOACw=permitExport=permitCopy=permitModify=permitAnnotation=permitButtons=permitParsing=permitMetadata=permitNotes=permitRead=false;
+            Boolean isAdmin, isMember,permitOACr,permitOACw,permitExport,permitCopy,permitModify,permitAnnotation,permitButtons,permitParsing,permitMetadata,permitNotes,permitRead;
+            isAdmin=isMember=permitOACr=permitOACw=permitExport=permitCopy=permitModify=permitAnnotation=permitButtons=permitParsing=permitMetadata=permitNotes=permitRead=false;
             isMember = thisGroup.isMember(UID);
+            isAdmin = (thisUser.isAdmin() || thisGroup.isAdmin(UID));
+            if(isAdmin){
+                isMember = isAdmin;
+            }
             out.println("isMember = "+isMember);
             ProjectPermissions permit = new ProjectPermissions(projectID);
             permitOACr = permit.getAllow_OAC_read();
@@ -664,7 +668,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
             permitRead = permit.getAllow_public_read_transcription();
             out.println("permitRead = "+permitRead);
             out.println("</script>");
-            if (!thisGroup.isMember(UID) && !permitRead){
+            if (!isMember && !permitRead){
                 String errorMessage = thisUser.getFname() + ", you are not a member of this project.";
             %><%@include file="WEB-INF/includes/errorBang.jspf" %><%
                 return;

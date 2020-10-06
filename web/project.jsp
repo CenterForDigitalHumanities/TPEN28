@@ -213,6 +213,9 @@
                 Group thisGroup = new Group(thisProject.getGroupID());
                 isMember = thisGroup.isMember(UID);
                 isAdmin = (thisUser.isAdmin() || thisGroup.isAdmin(UID));
+                if(isAdmin){
+                    isMember = isAdmin;
+                }
                 ProjectPermissions permit = new ProjectPermissions(projectID);
                 permitOACr = permit.getAllow_OAC_read();
                 permitOACw = permit.getAllow_OAC_write();

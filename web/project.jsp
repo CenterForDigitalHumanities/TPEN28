@@ -788,6 +788,7 @@
                                                     continue;
                                                 }
                                                 if (newTool != null) {
+                                                    //out.println("<<<   See new user tool "+newTool+" >>> <br>");
                                                     new Tool(newTool, UID);
                                                 }
                                             }
@@ -796,6 +797,7 @@
                                             try (Connection conn = ServletUtils.getDBConnection()) {
                                                 for (int i = 0; i < projectTools.length; i++) {
                                                     String[] thisTool = projectTools[i].split("TPENTOOLURL");
+                                                    //out.println("<<<   See new project tool "+thisTool[0]+" >>> <br>");
                                                     new UserTool(conn, thisTool[0], thisTool[1], projectID);
                                                 }
                                             }
@@ -806,16 +808,16 @@
                                     <h4 class="clear-left" title="These options are unique to each user">User Tools</h4>
                                     <%
                                     // User Tools
-                                        String[] toolCheck = new String[21];
-                                        String[] toolName = new String[21];
-                                        toolName[20] = "Cappelli's Abbreviation"; // part of the capelli fix.  If its not part of a project, there is a null, so hard ser it here.  
+                                        String[] toolCheck = new String[13];
+                                        //String[] toolName = new String[13];
                                         String track = "";
                                         Tool.tools[] TOOLS = 
                                         {Tool.tools.compare, Tool.tools.parsing, Tool.tools.preview, Tool.tools.history, Tool.tools.linebreak, Tool.tools.fullpage, Tool.tools.paleography,
                                                 Tool.tools.xml, Tool.tools.characters, Tool.tools.page, Tool.tools.inspector, Tool.tools.rtl, Tool.tools.ltr};
                                         for (int i = 0; i < 13; i++) {
                                             toolCheck[i] = (Tool.isToolActive(TOOLS[i], UID)) ? "checked=true" : "";
-                                            if(i==8){
+                                            //out.print( "is tool " + TOOLS[i] +" active for user "+UID+"??  " + Tool.isToolActive(TOOLS[i], UID)+"<br>");
+                                            if(i==7){
                                                 if(Tool.isToolActive(TOOLS[i], UID)){
                                                     track = "track='checked'";
                                                 }
@@ -825,18 +827,19 @@
                                             }
                                         }
                                     %>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[1]);%> value="compare" />Compare Pages</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[2]);%> value="parsing" />Parsing Adjustment</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[3]);%> value="preview" />Preview Tool</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[4]);%> value="history" />History Tool</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[5]);%> value="linebreak" />Linebreaking Tool</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[6]);%> value="fullpage" />View Full Page</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(track);%> <%out.print(toolCheck[8]);%> value="xml" />XML Tags</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[9]);%> value="characters" />Special Characters</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[11]);%> value="inspector" />Inspect</label>
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[10]);%> value="page" />Page Tools</label>
+                                    
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[0]);%> value="compare" />Compare Pages</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[1]);%> value="parsing" />Parsing Adjustment</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[2]);%> value="preview" />Preview Tool</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[3]);%> value="history" />History Tool</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[4]);%> value="linebreak" />Linebreaking Tool</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[5]);%> value="fullpage" />View Full Page</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(track);%> <%out.print(toolCheck[7]);%> value="xml" />XML Tags</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[8]);%> value="characters" />Special Characters</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[10]);%> value="inspector" />Inspect</label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[9]);%> value="page" />Page Tools</label>
                                     <!--<label class='userTools'><input name="userTool[]" type="checkbox" <%/*out.print(toolCheck[13]);*/%> value="ltr" />LTR mode</label>-->
-                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[12]);%> value="rtl" onchange="toggleRTLOption(event);" />RTL mode </label>
+                                    <label class='userTools'><input name="userTool[]" type="checkbox" <%out.print(toolCheck[11]);%> value="rtl" onchange="toggleRTLOption(event);" />RTL mode </label>
                                     
                                     <span class="ui-helper-clearfix"></span>
                                     <span class="ui-icon ui-icon-alert left demoAlert"></span>
@@ -848,86 +851,50 @@
                                         <span class="left clear-left small">(Click on a label to edit the button name)</span></h4>
                                     <%
                                         //Project Tools
+                                        String[] projectToolCheck = new String[7];
+                                        for (int a = 0; a < projectToolCheck.length; a++) {
+                                            projectToolCheck[a] = "";
+                                        }
                                         UserTool[] projectTools = UserTool.getUserTools(projectID);
-                                        StringBuilder toolOptions = new StringBuilder();
+                                        //out.print( projectTools.length + " project tools were found by getUserTools.<br>");
                                         for (int i = 0; i < projectTools.length; i++) {
                                             String toolLabel = projectTools[i].getName();
-                                            String toolURL = projectTools[i].getUrl();
-                                            if (toolURL.endsWith("capelli/")) {
-                                                toolCheck[20] = "checked=true";
-                                                toolName[20] = "Cappelli's Abbreviation"; //This is not in the back end for this project toolLabel, we always want it to be the same so hard code it. 
-                                                continue;
+                                            String toolURL = projectTools[i].getUrl();         
+                                            //out.print( "project tool " + toolLabel + " with url "+toolURL+" was found by getUserTools.<br>");
+                                            if (toolURL.endsWith("cappelli/")) {
+                                                projectToolCheck[0] = "checked";
                                             }
-                                            if (toolURL.endsWith("vulsearch")) {
-                                                toolCheck[14] = "checked=true";
-                                                toolName[14] = toolLabel;
-                                                continue;
+                                            else if (toolURL.endsWith("vulsearch")) {
+                                                projectToolCheck[1] = "checked";
                                             }
-                                            // redacted below, but placeholding
-                                            //BH this was the Persus tool.  Now it is toolCheck and toolName [19] because I realized it too late. 4-5-17
-//                                            if (toolURL.endsWith("=latin")) {
-//                                                toolCheck[7] = "checked=true"; 
-//                                                toolName[7] = toolLabel;
-//                                                continue;
-//                                            }
-                                            if (toolURL.endsWith("lookup.html")) {
-                                                toolCheck[15] = "checked=true";
-                                                toolName[15] = toolLabel;
-                                                continue;
+                                            else if (toolURL.endsWith("lookup.html")) {
+                                                projectToolCheck[3] = "checked";
                                             }
-                                            if (toolURL.endsWith("morphologie/")) {
-                                                toolCheck[16] = "checked=true";
-                                                toolName[16] = toolLabel;
-                                                continue;
+                                            else if (toolURL.endsWith("morphologie/")) {
+                                                projectToolCheck[4] = "checked";
                                             }
-                                            if (toolURL.endsWith("production.pl")) {
-                                                toolCheck[17] = "checked=true";
-                                                toolName[17] = toolLabel;
-                                                continue;
+                                            else if (toolURL.endsWith("production.pl")) {
+                                                projectToolCheck[5] = "checked";
                                             }
-                                            if (toolURL.indexOf("enigma")>-1){
-                                                toolCheck[18] = "checked=true";
-                                                toolName[18] = toolLabel;
-                                                continue;
+                                            else if (toolURL.indexOf("enigma")>-1){
+                                                projectToolCheck[6] = "checked";
                                             }
-                                            if (toolLabel.equals("Latin Dictionary")){
-                                                toolCheck[19] = "checked=true";
-                                                toolName[19] = toolLabel;
-                                                continue;
+                                            else if (toolLabel.equals("Latin Dictionary")){
+                                                projectToolCheck[2] = "checked";
                                             }
-                                            toolOptions.append("<label class='projectTools'><input type='checkbox' checked=true name='projectTool[]' ").append("value='").append(toolURL).append("'/><span contentEditable=true>").append(toolLabel).append("</span></label>");
+                                            else{
+                                                //This is an unexpected project tool
+                                                //out.print("An unknown tool "+toolLabel+", "+toolURL+" was detected. <br>");
+                                            }
                                         }
-                                        if (toolName[14] == null) {
-                                            toolName[14] = "Latin Vulgate Search";
-                                        }
-//                                        if (toolName[7] == null) {
-                                        //BH see toolName[19] below, it is a repeat of this.  We can make 19 to be 7 if we want. 4-5-17
-//                                            toolName[7] = "Latin Dictionary";
-//                                        }
-                                        if (toolName[15] == null) {
-                                            toolName[15] = "Middle English Dictionary";
-                                        }
-                                        if (toolName[16] == null) {
-                                            toolName[16] = "French Dictionary";
-                                        }
-                                        if (toolName[17] == null) {
-                                            toolName[17] = "Dictionary of Old English";
-                                        }
-                                        if (toolName[18] == null) {
-                                            toolName[18] = "Enigma";
-                                        }
-                                        if (toolName[19] == null) {
-                                            toolName[19] = "Latin Dictionary";
-                                        }
-                                        out.print(toolOptions.toString());
                                     %>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[20]);%> value="https://centerfordigitalhumanities.github.io/cappelli/" title="Cappelli's Abbreviations"/><span contentEditable="true"><%out.print(toolName[20]);%></span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[14]);%> value="http://vulsearch.sourceforge.net/cgi-bin/vulsearch" title="Latin Vulgate Search"/><span contentEditable="true"><%out.print(toolName[14]);%></span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[19]);%> value="http://www.perseus.tufts.edu/hopper/resolveform?lang=latin" title="Latin Dictionary"/><span contentEditable="true"><%out.print(toolName[19]);%></span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[15]);%> value="http://quod.lib.umich.edu/m/med/lookup.html" title="Middle English Dictionary"/><span contentEditable="true"><%out.print(toolName[15]);%></span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[16]);%> value="http://www.cnrtl.fr/morphologie/" title="French Dictionary"/><span contentEditable="true"><%out.print(toolName[16]);%></span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[17]);%> value="http://tapor.library.utoronto.ca/cgi-bin/doe/production.pl" title="Dictionary of Old English"/><span contentEditable="true"><%out.print(toolName[17]);%></span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(toolCheck[18]);%> value="http://ciham-digital.huma-num.fr/enigma/" title="Enigma"/><span contentEditable="true"><%out.print(toolName[18]);%></span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[0]);%> value="https://centerfordigitalhumanities.github.io/cappelli/" title="Cappelli's Abbreviations"/><span contentEditable="true">Cappelli's Abbreviations</span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[1]);%> value="http://vulsearch.sourceforge.net/cgi-bin/vulsearch" title="Latin Vulgate Search"/><span contentEditable="true">Latin Vulgate Search</span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[2]);%> value="http://www.perseus.tufts.edu/hopper/resolveform?lang=latin" title="Latin Dictionary"/><span contentEditable="true">Latin Dictionary</span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[3]);%> value="http://quod.lib.umich.edu/m/med/lookup.html" title="Middle English Dictionary"/><span contentEditable="true">Middle English Dictionary</span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[4]);%> value="http://www.cnrtl.fr/morphologie/" title="French Dictionary"/><span contentEditable="true">French Dictionary</span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[5]);%> value="http://tapor.library.utoronto.ca/cgi-bin/doe/production.pl" title="Dictionary of Old English"/><span contentEditable="true">Dictionary of Old English</span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[6]);%> value="http://ciham-digital.huma-num.fr/enigma/" title="Enigma"/><span contentEditable="true">Enigma</span></label>
                                     <input type="hidden" name="p" value="<%out.print(pageno);%>"/>
                                     <input type="hidden" name="projectID" value="<%out.print(projectID);%>"/>
                                     <input type="hidden" name="selecTab" value="3"/>

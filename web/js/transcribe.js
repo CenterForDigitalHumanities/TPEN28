@@ -1315,7 +1315,7 @@ function activateUserTools(tools, permissions) {
         $("#toggleChars").show();
     }
     if ($.inArray("inspector", tools) > -1) {
-        $("#magnify1").show();
+        $(".magnifyBtn").show();
     }
 }
 
@@ -1899,7 +1899,7 @@ function reorderLinesForLTR(lines) {
 function performInterfaceShift(interface) {
     tpen.screen.mode = interface;
     if (interface === "RTL") {
-        $("#toggleXML").hide();
+        $("#toggleXML").attr("disabled", "disabled");
         $("#xmlTagPopin").hide();
         $("#prevPage").after($("#toggleNotes")); //This moves note button to the left side
         $("#toggleNotes").removeClass("pull-left").addClass("pull-right").removeClass("clear-left").addClass("clear-right");
@@ -1910,6 +1910,7 @@ function performInterfaceShift(interface) {
         });
     } else if (interface === "LTR") {
         $("#toggleXML").show();
+        $("#toggleXML").removeAttr("disabled");
         $("#nextPage").after($("#toggleNotes")); //This moves notes button to the right side.
         $("#toggleNotes").removeClass("pull-right").addClass("pull-left").removeClass("clear-right").addClass("clear-left");
         $(".notes").each(function() {

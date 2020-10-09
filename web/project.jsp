@@ -852,7 +852,8 @@
                                 <% if (isAdmin){%>
                                     <h4 id="projectTools" class="clear-left" title="These options are tied to each project">Project Tools
                                         <a class="ui-icon ui-icon-plusthick" id="addTool" title="Add a Tool" onclick="$('#addingTools').fadeIn();">Add a Tool</a>
-                                        <span class="left clear-left small">(Click on a label to edit the button name)</span></h4>
+                                        <span class="left clear-left small">(Click on a label to edit the button name)</span>
+                                    </h4>
                                     <%
                                         //Project Tools
                                         StringBuilder user_added_tools = new StringBuilder();
@@ -901,14 +902,14 @@
                                     <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[4]);%> value="http://www.cnrtl.fr/morphologie/" title="French Dictionary"/><span contentEditable="true">French Dictionary</span></label>
                                     <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[5]);%> value="http://tapor.library.utoronto.ca/cgi-bin/doe/production.pl" title="Dictionary of Old English"/><span contentEditable="true">Dictionary of Old English</span></label>
                                     <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[6]);%> value="http://ciham-digital.huma-num.fr/enigma/" title="Enigma"/><span contentEditable="true">Enigma</span></label>
+                                    <% } %>
                                     <input type="hidden" name="p" value="<%out.print(pageno);%>"/>
                                     <input type="hidden" name="projectID" value="<%out.print(projectID);%>"/>
                                     <input type="hidden" name="selecTab" value="3"/>
                                     <input type="submit" name="tools" value="Save Tool Preferences" class="ui-button tpenButton right clear-left"/>
                                 </form>
-                            <% } %>
                             </li>
-<%}%>
+                    <%}%>
                         </ul>
                     </div>
                     <%if (isMember || permitExport){%>

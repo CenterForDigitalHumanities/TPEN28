@@ -643,29 +643,30 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
             if(isAdmin){
                 isMember = isAdmin;
             }
+            out.println("isMember = "+isMember);
             ProjectPermissions permit = new ProjectPermissions(projectID);
             permitOACr = permit.getAllow_OAC_read();
-//            out.println("permitOACr = "+permitOACr);
+            out.println("permitOACr = "+permitOACr);
             permitOACw = permit.getAllow_OAC_write();
-//            out.println("permitOACw = "+permitOACw);
+            out.println("permitOACw = "+permitOACw);
             permitExport = permit.getAllow_export();
-//            out.println("permitExport = "+permitExport);
+            out.println("permitExport = "+permitExport);
             permitCopy = permit.getAllow_public_copy();
-//            out.println("permitCopy = "+permitCopy);
+            out.println("permitCopy = "+permitCopy);
             permitModify = permit.getAllow_public_modify();
-//            out.println("permitModify = "+permitModify);
+            out.println("permitModify = "+permitModify);
             permitAnnotation = permit.getAllow_public_modify_annotation();
-//            out.println("permitAnnotation = "+permitAnnotation);
+            out.println("permitAnnotation = "+permitAnnotation);
             permitButtons = permit.getAllow_public_modify_buttons();
-//            out.println("permitButtons = "+permitButtons);
+            out.println("permitButtons = "+permitButtons);
             permitParsing = permit.getAllow_public_modify_line_parsing();
-//            out.println("permitParsing = "+permitParsing);
+            out.println("permitParsing = "+permitParsing);
             permitMetadata = permit.getAllow_public_modify_metadata();
-//            out.println("permitMetadata = "+permitMetadata);
+            out.println("permitMetadata = "+permitMetadata);
             permitNotes = permit.getAllow_public_modify_notes();
-//            out.println("permitNotes = "+permitNotes);
+            out.println("permitNotes = "+permitNotes);
             permitRead = permit.getAllow_public_read_transcription();
-//            out.println("permitRead = "+permitRead);
+            out.println("permitRead = "+permitRead);
             out.println("</script>");
             if (!isMember && !permitRead){
                 String errorMessage = thisUser.getFname() + ", you are not a member of this project.";

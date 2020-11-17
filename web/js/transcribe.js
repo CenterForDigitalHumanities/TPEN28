@@ -65,7 +65,8 @@ var tpen = {
         }
     },
     user: {
-        isAdmin: false,
+        isAdmin: false, //FIXME: this should be 'is in admin table' OR 'is leader in the group'...
+        isMember: false,
         UID: 0,
         fname: "",
         lname: "",
@@ -715,7 +716,6 @@ function setTPENObjectData(data) {
         $("#lbText").html(unescape(tpen.project.remainingText));
         $("#linebreakTextContainer").show();
         $("#linebreakNoTextContainer").hide();
-
     }
 
     if (data.manifest) {
@@ -766,6 +766,7 @@ function setTPENObjectData(data) {
             if (this.openID) {
                 tpen.user.openID = this.openID;
             }
+            tpen.user.isMember = true;
             //Do we only want to fire this here?  It is fired if they are a leader too
             setTranscribingUser();
             return false;
@@ -778,7 +779,9 @@ function setTPENObjectData(data) {
 
     $.each(tpen.project.leaders, function(i) {
         if (this.UID === parseInt(data.cuser)) {
+            //Note, they can also be an admin if they are in the admins table...nothing takes that into account.  
             tpen.user.isAdmin = true;
+            tpen.user.isMember = tpen.user.isAdmin;
             if (this.fname) {
                 tpen.user.fname = this.fname;
             }
@@ -1281,7 +1284,7 @@ function loadTranscription(pid, tool) {
 function activateTool(tool) {
     // TODO: Include other tools here.
     if (tool === "parsing") {
-        if (tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing) {
+        if (tpen.user.isMember || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing) {
             $("#parsingBtn").click();
             tpen.screen.liveTool = "parsing";
         }
@@ -1302,7 +1305,7 @@ function activateUserTools(tools, permissions) {
             '</div>');
         // $('#'+name+"Split").show();
     };
-    if ((tpen.user.isAdmin || permissions.allow_public_modify || permissions.allow_public_modify_line_parsing) && $.inArray("parsing", tools) > -1) {
+    if ((tpen.user.isMember || permissions.allow_public_modify || permissions.allow_public_modify_line_parsing) && $.inArray("parsing", tools) > -1) {
         $("#parsingBtn").show();
     }
     if ($.inArray("page", tools) > -1) {
@@ -2481,7 +2484,7 @@ function adjustImgs(positions) {
 function loadTranscriptlet(lineid) {
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if ($('#transcriptlet_' + lineid).length > 0) {
-        if (tpen.user.UID || tpen.user.isAdmin) {
+        if (tpen.user.UID || tpen.user.isMember) {
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, true);
             updatePresentation($('#transcriptlet_' + lineid));
@@ -2515,7 +2518,7 @@ function nextTranscriptlet() {
     var nextID = thisLine;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if ($('#transcriptlet_' + nextID).length > 0) {
-        if (tpen.user.UID || tpen.user.isAdmin) {
+        if (tpen.user.UID || tpen.user.isMember) {
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, true);
             updatePresentation($('#transcriptlet_' + nextID));
@@ -2547,7 +2550,7 @@ function previousTranscriptlet() {
     var prevID = parseFloat(tpen.screen.focusItem[1].attr('lineID')) - 1;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if (prevID >= 0) {
-        if (tpen.user.UID || tpen.user.isAdmin) {
+        if (tpen.user.UID || tpen.user.isMember) {
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, false);
             updatePresentation($('#transcriptlet_' + prevID));
@@ -4111,7 +4114,7 @@ function pageJump(page, parsing) {
             redraw(parsing, true);
             //loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[canvasToJumpTo], parsing);
             setTimeout(function() {
-                if (tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing) {
+                if (tpen.user.isMember || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing) {
                     $("#canvasControls").click();
                     $("#parsingBtn").click();
                 }
@@ -5605,15 +5608,7 @@ var Linebreak = {
      * Used within T&#8209;PEN linebreaking tool.
      */
     useText: function() {
-        var isMember = (function(uid) {
-            for (var i = 0; i < tpen.project.user_list.length; i++) {
-                if (tpen.project.user_list[i].UID == uid) {
-                    return true;
-                }
-            }
-            return false;
-        })(tpen.user.UID);
-        if (!isMember && !tpen.project.permissions.allow_public_modify) return false;
+        if (!tpen.user.isMember && !tpen.project.permissions.allow_public_modify) return false;
         //Load all text into the focused on line and clear it from all others
         var cfrm = confirm("This will insert the text at the current location and clear all the following lines for linebreaking.\n\nOkay to continue?");
         if (cfrm) {
@@ -5631,15 +5626,8 @@ var Linebreak = {
      * Used within T&#8209;PEN linebreaking tool.
      */
     useLinebreakText: function() {
-        var isMember = (function(uid) {
-            for (var i = 0; i < tpen.project.user_list.length; i++) {
-                if (tpen.project.user_list[i].UID == uid) {
-                    return true;
-                }
-            }
-            return false;
-        })(tpen.user.UID);
-        if (!isMember && !tpen.project.permissions.allow_public_modify) return false;
+        
+        if (!tpen.user.isMember && !tpen.project.permissions.allow_public_modify) return false;
         var cfrm = confirm("This will insert the text at the current location and replace all the following lines automatically.\n\nOkay to continue?");
         if (cfrm) {
             var bTlength = tpen.screen.brokenText.length;
@@ -5664,15 +5652,7 @@ var Linebreak = {
      * @see Data.saveTranscription()
      */
     saveWholePage: function() {
-        var isMember = (function(uid) {
-            for (var i = 0; i < tpen.project.user_list.length; i++) {
-                if (tpen.project.user_list[i].UID == uid) {
-                    return true;
-                }
-            }
-            return false;
-        })(tpen.user.UID);
-        if (!isMember && !tpen.project.permissions.allow_public_modify) return false;
+        if (!tpen.user.isMember && !tpen.project.permissions.allow_public_modify) return false;
         $(".transcriptlet").addClass(".isUnsaved");
         Data.saveTranscription("");
     },
@@ -5683,15 +5663,7 @@ var Linebreak = {
      * @param leftovers text to record
      */
     saveLeftovers: function(leftovers) {
-        var isMember = (function(uid) {
-            for (var i = 0; i < tpen.project.user_list.length; i++) {
-                if (tpen.project.user_list[i].UID == uid) {
-                    return true;
-                }
-            }
-            return false;
-        })(tpen.user.UID);
-        if (!isMember && !tpen.project.permissions.allow_public_modify) return false;
+        if (!tpen.user.isMember && !tpen.project.permissions.allow_public_modify) return false;
         $('#savedChanges').html('Saving . . .').stop(true, true).css({
             "opacity": 0,
             "top": "35%"
@@ -5722,15 +5694,7 @@ var Linebreak = {
      * @return false to prevent Interaction.keyhandler() from propogating
      */
     moveTextToNextBox: function() {
-        var isMember = (function(uid) {
-            for (var i = 0; i < tpen.project.user_list.length; i++) {
-                if (tpen.project.user_list[i].UID == uid) {
-                    return true;
-                }
-            }
-            return false;
-        })(tpen.user.UID);
-        if (!isMember && !tpen.project.permissions.allow_public_modify) return false;
+        if (!tpen.user.isMember && !tpen.project.permissions.allow_public_modify) return false;
         var myfield = tpen.screen.focusItem[1].find(".theText")[0];
         tpen.screen.focusItem[1].addClass("isUnsaved");
         //IE support
@@ -6029,7 +5993,7 @@ var Preview = {
      *  @param focusFolio int id of folio in which the line has been changed
      */
     remoteSave: function(button, saveLineID, focusFolio) {
-        if (!isMember && !permitModify) return false;
+        if (!tpen.user.isMember && !permitModify) return false;
         var saveLine = $(".previewLineNumber[lineserverid='" + saveLineID + "']").parent(".previewLine");
         var saveText = saveLine.find(".previewText").text();
         var saveComment = saveLine.find(".previewNotes").text();
@@ -6913,7 +6877,7 @@ function checkParsingReroute() {
         setTimeout(function() {
             var replaceURL = replaceURLVariable("liveTool", "none");
             window.history.pushState("", "T&#8209;PEN 2.8 Transcription", replaceURL);
-            if (tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing) {
+            if (tpen.user.isMember || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing) {
                 $("#canvasControls").click();
                 $("#parsingBtn").click();
             }

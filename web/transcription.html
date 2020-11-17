@@ -1363,6 +1363,9 @@
                                         saveNewLine(null,columnIsLine);
                                         $("#imgTop").append(columnIsLine);
                                     }
+                                    else{
+                                        $("#parsingCover").hide();
+                                    }
                                     //adjustColumn(); //Do this so that the new column is adjustable.
                                     $("#createColumn").ajaxStop(function(){
                                         $(this).click()

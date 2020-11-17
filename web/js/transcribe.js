@@ -6183,7 +6183,7 @@ tpen.screen.peekZoom = function(cancel) {
             // Parsing tool is open
             return false;
         }
-        tpen.screen.focusItem[1].find(".theText").attr("disabled", "disabled");
+        //tpen.screen.focusItem[1].find(".theText").attr("disabled", "disabled");
         $("#canvasControls").attr("disabled", "disabled").addClass("peekZoomLockout");
         $("#pageJump").attr("disabled", "disabled").addClass("peekZoomLockout");
         $("#nextCanvas").attr("onclick", "").addClass("peekZoomLockout");

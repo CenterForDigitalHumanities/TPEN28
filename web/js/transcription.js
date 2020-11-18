@@ -2317,6 +2317,11 @@ var Interaction = {
                 return false;
             }
         }
+        if (pressedkey === 33 || pressedkey === 34){
+            //Page up and page down, ignore them.  The transcription interface DOES NOT SCROLL and uses phantom space.
+            event.preventDefault();
+            event.stopPropagation();
+        }
     },
     /**
      * @deprecated As of 2.0, prefer focusItem[0]
@@ -3730,6 +3735,11 @@ $(function() {
             }
             //ESC pressed
             if(event.which === 27) $("#fullscreenBtn").click();
+            if (event.which === 33 || event.which === 34){
+                //Page up and page down, ignore them.  The transcription interface DOES NOT SCROLL and uses phantom space.
+                event.preventDefault();
+                event.stopPropagation();
+            }
         })
         .keyup(function(event){
             if(!event)event=window.event;

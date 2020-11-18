@@ -1133,7 +1133,7 @@
             else if (event.which === 13 && (tpen.screen.liveTool !=="parsing")){ //enter
                 if (event.shiftKey || event.altKey || event.target.hasAttribute('data-answer')) return true; // cheap detect in .notes
                 event.preventDefault();
-                Linebreak.moveTextToNextBox();
+                //Linebreak.moveTextToNextBox();
                 return nextTranscriptlet();
             }
             else if (event.which === 9 && (tpen.screen.liveTool !=="parsing")){ // tab
@@ -1165,6 +1165,11 @@
                     // Peek-Zoom
                     tpen.screen.peekZoom(false);
                 }
+            }
+            else if (event.which === 33 || event.which === 34){
+                //Page up and page down, ignore them.  The transcription interface DOES NOT SCROLL and uses phantom space.
+                event.preventDefault();
+                event.stopPropagation();
             }
             else {
 

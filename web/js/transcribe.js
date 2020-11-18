@@ -2163,12 +2163,23 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
         console.warn("No lines found in a bad place...");
     }
     // we want automatic updating for the lines these texareas correspond to.
-    $("textarea")
+    $(".theText")
         .keydown(function(e) {
             //user has begun typing, clear the wait for an update
-            clearTimeout(typingTimer);
-            markLineUnsaved($(e.target).parent());
-
+            if (e.which === 13 && (tpen.screen.liveTool !=="parsing")){ //enter
+                event.preventDefault();
+                Linebreak.moveTextToNextBox();
+                return nextTranscriptlet();
+            }
+            else if (e.which === 33 || e.which === 34){
+                //Page up and page down, ignore them.  The transcription interface DOES NOT SCROLL and uses phantom space.
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            else{
+                clearTimeout(typingTimer);
+                markLineUnsaved($(e.target).parent());
+            }
         })
         .keyup(function(e) {
             //Preview.updateLine(this);

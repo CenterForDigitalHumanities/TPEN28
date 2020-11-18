@@ -6183,7 +6183,7 @@ tpen.screen.peekZoom = function(cancel) {
             // Parsing tool is open
             return false;
         }
-        //tpen.screen.focusItem[1].find(".theText").attr("disabled", "disabled");
+        tpen.screen.focusItem[1].find(".theText").attr("disabled", "disabled");
         $("#canvasControls").attr("disabled", "disabled").addClass("peekZoomLockout");
         $("#pageJump").attr("disabled", "disabled").addClass("peekZoomLockout");
         $("#nextCanvas").attr("onclick", "").addClass("peekZoomLockout");
@@ -6244,6 +6244,7 @@ tpen.screen.peekZoom = function(cancel) {
         $("#zoomLock").css("background-color", "#272727");
         $(".lineColIndicatorArea").fadeIn();
         tpen.screen.isPeeking = false;
+        tpen.screen.focusItem[1].find(".theText").focus();
     }
 };
 

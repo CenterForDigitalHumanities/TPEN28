@@ -6244,6 +6244,7 @@ tpen.screen.peekZoom = function(cancel) {
         $("#zoomLock").css("background-color", "#272727");
         $(".lineColIndicatorArea").fadeIn();
         tpen.screen.isPeeking = false;
+        tpen.screen.focusItem[1].find(".theText").focus();
     }
 };
 

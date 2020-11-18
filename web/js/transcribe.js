@@ -2369,6 +2369,7 @@ function swapTranscriptlet() {
     } else {
         $('#previousTranscriptlet').show();
     }
+    setCursorPosition(tpen.screen.focusItem[1].find(".theText")[0],0);
 }
 var Page = {
     /**
@@ -4050,26 +4051,26 @@ function addchar(theChar, closingTag) {
     }
 }
 
-//function setCursorPosition(e, position) {
-//    var pos = position;
-//    var wrapped = false;
-//    if (pos.toString().indexOf("wrapped") === 0) {
-//        pos = parseInt(pos.substr(7));
-//        wrapped = true;
-//    }
-//    e.focus();
-//    if (e.setSelectionRange) {
-//        e.setSelectionRange(pos, pos);
-//    }
-//    else if (e.createTextRange) {
-//        e = e.createTextRange();
-//        e.collapse(true);
-//        e.moveEnd('character', pos);
-//        e.moveStart('character', pos);
-//        e.select();
-//    }
-//    return wrapped;
-//}
+function setCursorPosition(e, position) {
+    var pos = position;
+    var wrapped = false;
+    if (pos.toString().indexOf("wrapped") === 0) {
+        pos = parseInt(pos.substr(7));
+        wrapped = true;
+    }
+    e.focus();
+    if (e.setSelectionRange) {
+        e.setSelectionRange(pos, pos);
+    }
+    else if (e.createTextRange) {
+        e = e.createTextRange();
+        e.collapse(true);
+        e.moveEnd('character', pos);
+        e.moveStart('character', pos);
+        e.select();
+    }
+    return wrapped;
+}
 
 
 function toggleCharacters() {

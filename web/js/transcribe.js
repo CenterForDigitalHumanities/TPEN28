@@ -4736,7 +4736,8 @@ function saveNewLine(lineBefore, newLine) {
                 tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
                 if (lineBefore !== undefined && lineBefore !== null && lineBefore.length > 0) {
                     updateLine(lineBefore, false, false); //This will update the line on the server.
-                } else {
+                } 
+                else {
                     $("#parsingCover").hide();
                 }
                 //                var url1 = "updateAnnoList";

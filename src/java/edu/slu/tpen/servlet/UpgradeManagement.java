@@ -53,22 +53,15 @@ public class UpgradeManagement extends HttpServlet {
         else{
             response.sendError(SC_UNAUTHORIZED);
         }
-        if (null != thisUser && thisUser.isAdmin()){
+        if (null != thisUser){
             //System.out.println("U1");
             String uDate = request.getParameter("upgradeDate");
             //String uTime = (String)request.getAttribute("upgradeTime");
             String uMessage = request.getParameter("upgradeMessage");
             String countdown = request.getParameter("countdown");
             //System.out.println("U2");
-            if(request.getParameter("cancelUpgrade").equals("true")){
-                //System.out.println("U3");
-                upgrader = new UpgradeManager();
-               // System.out.println("U4");
-                upgrader.deactivateUpgrade();
-                //System.out.println("U5");
-                out.println("Upgrade settings deactivated");
-            }
-            else if(request.getParameter("getSettings").equals("get")){
+            
+            if(request.getParameter("getSettings").equals("get")){
                 upgrader = new UpgradeManager();
                 //System.out.println("U6");
                 JSONObject jo_manager = new JSONObject();
@@ -82,29 +75,46 @@ public class UpgradeManagement extends HttpServlet {
                // System.out.println("U10");
                 out.print(jo_manager);
             }
+            else if(request.getParameter("cancelUpgrade").equals("true")){
+                if(thisUser.isAdmin()){
+                    //System.out.println("U3");
+                    upgrader = new UpgradeManager();
+                   // System.out.println("U4");
+                    upgrader.deactivateUpgrade();
+                    //System.out.println("U5");
+                    out.println("Upgrade settings deactivated");
+                }
+                else{
+                    response.sendError(SC_UNAUTHORIZED);
+                }
+            }
             else{
-               // System.out.println("U11");
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-               // System.out.println("Date to parse...");
-               // System.out.println(uDate);
-                try{
-                    Date parsedDate = sdf.parse(uDate);
-                  //  System.out.println("New date is ");
-                    //Timestamp upgradeTime = new Timestamp(uTime);
-                 //   System.out.println("countdown flag is "+countdown);
-                 //   System.out.println("U13");
-                    if(countdown.equals("1")){
-                        ucountdown = 1;
+                if(thisUser.isAdmin()){
+                    // System.out.println("U11");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+                   // System.out.println("Date to parse...");
+                   // System.out.println(uDate);
+                    try{
+                        Date parsedDate = sdf.parse(uDate);
+                      //  System.out.println("New date is ");
+                        //Timestamp upgradeTime = new Timestamp(uTime);
+                     //   System.out.println("countdown flag is "+countdown);
+                     //   System.out.println("U13");
+                        if(countdown.equals("1")){
+                            ucountdown = 1;
+                        }
+                        upgrader = new UpgradeManager(uDate, uMessage, ucountdown, 1);
+                      //  System.out.println("U14");
+                        out.println("Upgrade settings applied");
                     }
-                    upgrader = new UpgradeManager(uDate, uMessage, ucountdown, 1);
-                  //  System.out.println("U14");
-                    out.println("Upgrade settings applied");
+                    catch (Exception e){
+                        out.println("date parse error");
+                        out.println(e);
                 }
-                catch (Exception e){
-                    out.println("date parse error");
-                    out.println(e);
                 }
-               
+                else{
+                    response.sendError(SC_UNAUTHORIZED);
+                }
             }
         }
     }

@@ -61,7 +61,7 @@ public class UpgradeManagement extends HttpServlet {
             String countdown = request.getParameter("countdown");
             //System.out.println("U2");
             
-            if(request.getParameter("getSettings").equals("get")){
+            if(null!=request.getParameter("getSettings") && request.getParameter("getSettings").equals("get")){
                 upgrader = new UpgradeManager();
                 //System.out.println("U6");
                 JSONObject jo_manager = new JSONObject();
@@ -75,7 +75,7 @@ public class UpgradeManagement extends HttpServlet {
                // System.out.println("U10");
                 out.print(jo_manager);
             }
-            else if(request.getParameter("cancelUpgrade").equals("true")){
+            else if(null!=request.getParameter("cancelUpgrade") && request.getParameter("cancelUpgrade").equals("true")){
                 if(thisUser.isAdmin()){
                     //System.out.println("U3");
                     upgrader = new UpgradeManager();

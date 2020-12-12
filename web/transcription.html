@@ -1040,7 +1040,7 @@
                     stopMagnify();
                 }
         })
-            .keydown(function(event){
+        .keydown(function(event){
             var ctrlDown = false,
             ctrlKey = 17,
             cmdKey = 91;
@@ -1133,8 +1133,7 @@
             else if (event.which === 13 && (tpen.screen.liveTool !=="parsing")){ //enter
                 if (event.shiftKey || event.altKey || event.target.hasAttribute('data-answer')) return true; // cheap detect in .notes
                 event.preventDefault();
-                //Linebreak.moveTextToNextBox();
-                return nextTranscriptlet();
+                nextTranscriptlet();
             }
             else if (event.which === 9 && (tpen.screen.liveTool !=="parsing")){ // tab
             //TAB hijack to keep behavior as expected

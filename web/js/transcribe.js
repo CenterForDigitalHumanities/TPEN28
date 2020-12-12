@@ -2169,7 +2169,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
             if (e.which === 13 && (tpen.screen.liveTool !=="parsing")){ //enter
                 event.preventDefault();
                 Linebreak.moveTextToNextBox();
-                return nextTranscriptlet();
+                //return nextTranscriptlet();
             }
             else if (e.which === 33 || e.which === 34){
                 //Page up and page down, ignore them.  The transcription interface DOES NOT SCROLL and uses phantom space.

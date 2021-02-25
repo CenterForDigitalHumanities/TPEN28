@@ -130,9 +130,13 @@ public class TagButton {
    }
 
    /**
-    * Add a new button, tag is the tag name only, no brackets
+    * For when the user clicks Add a Tag on button.jsp.
+     * Make a default TagButton real quick, so it can be updated via "Save Changes" after they set it to be what they want it to be. 
+     * This is for the servlet /addTag - addTag.java
+     * Note that position will always be one greater than the max position in the column in SQL.
+     * 
     */
-   public TagButton(int projectID, int position, String tag, Boolean project, String description) throws SQLException {
+   public TagButton(int projectID, int position, String tag, String description, Boolean project) throws SQLException {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
@@ -1038,6 +1042,19 @@ public class TagButton {
             closePreparedStatement(stmt);
       }
    }
+   
+   public static int getMaxPosition(int projectID) throws SQLException{
+        String query = "select max(position) from projectbuttons where project=?";
+        Connection j = null;
+        PreparedStatement ps = j.prepareStatement(query);
+        ps.setInt(1, projectID);
+        ResultSet rs = ps.executeQuery();
+        int position = 1;
+        if(rs.first()) {
+            position = rs.getInt("position");
+        }
+        return position;
+    }
    
    private static final Logger LOG = getLogger(TagButton.class.getName());
 }

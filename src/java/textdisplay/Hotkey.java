@@ -35,7 +35,11 @@ public class Hotkey {
     }
     
     /**
-     * Create a new project Hotkey and store it
+     * For when the user clicks Add a Button on button.jsp.
+     * Make a default button real quick, so it can be updated via "Save Changes" after they set it to be what they want it to be. 
+     * This is for the servlet /addHotkey - addHotkey.java
+     * Note that position will always be one greater than the max position in the column in SQL.
+     * 
      * @param code the integer keycode for the character
      * @param projectID
      * @param position position this button falls in, used to order the output of all buttons
@@ -59,7 +63,7 @@ public class Hotkey {
         }
     }
 
-    /**
+    /*
      * Add a new Hotkey for use in on-the-fly transcription
      * @param code the integer keycode for the character
      * @param uid user unique id under which this should be stored
@@ -514,5 +518,18 @@ public class Hotkey {
                 closePreparedStatement(update);
             }
         }
+    }
+    
+    public static int getMaxPosition(int projectID) throws SQLException{
+        String query = "select max(position) from hotkeys where projectID=?";
+        Connection j = null;
+        PreparedStatement ps = j.prepareStatement(query);
+        ps.setInt(1, projectID);
+        ResultSet rs = ps.executeQuery();
+        int position = 1;
+        if(rs.first()) {
+            position = rs.getInt("position");
+        }
+        return position;
     }
 }

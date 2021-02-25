@@ -54,7 +54,7 @@ public class addHotkey extends HttpServlet {
             }
             if (request.getParameter("projectID") != null) {
                 int projectID=parseInt(request.getParameter("projectID"));
-                position = Hotkey.getMaxPosition(projectID);
+                position = Hotkey.getMaxPosition(projectID) + 1;
                 new Hotkey(42, projectID, position, true);
                 out.print(""+position);
                 return;

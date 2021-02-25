@@ -53,8 +53,9 @@ public class addTag extends HttpServlet {
                 return;
             }
             if (request.getParameter("projectID") != null) {
+                System.out.println("Servlet to add XML real quick.");
                 int projectID=parseInt(request.getParameter("projectID"));
-                position = TagButton.getMaxPosition(projectID);
+                position = TagButton.getMaxPosition(projectID) + 1;
                 new TagButton(projectID, position, "new", "description", false);
                 out.print(""+position);
                 return;

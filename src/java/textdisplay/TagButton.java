@@ -146,21 +146,14 @@ public class TagButton {
             getLogger(TagButton.class.getName()).log(SEVERE, null, e);
       }
       try {
-         String query = "insert into projectbuttons(project,position,text,description) values (?,?,?,?)";
+         String query = "insert into projectbuttons (project,position,text,description) values(?,?,?,?);";
          j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
          stmt.setInt(1, projectID);
          stmt.setInt(2, position);
-         stmt.setString(3, tag);
          stmt.setString(4, description);
          stmt.execute();
-
-         this.tag = tag;
-         this.position = position;
-         this.uid = -1;
-         this.projectID = projectID;
-         this.xmlColor = "";
       } catch (Exception e) {
             getLogger(TagButton.class.getName()).log(SEVERE, null, e);
       } finally {
@@ -176,7 +169,7 @@ public class TagButton {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
-         String query = "insert into buttons(uid,position,text,param1, param2, param3, param4, param5) values (?,?,?,?,?,?,?,?)";
+         String query = "insert into buttons (uid,position,text,param1, param2, param3, param4, param5) values (?,?,?,?,?,?,?,?)";
          j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
@@ -1044,14 +1037,15 @@ public class TagButton {
    }
    
    public static int getMaxPosition(int projectID) throws SQLException{
+        int position = -1;
         String query = "select max(position) from projectbuttons where project=?";
         Connection j = null;
+        j = getConnection();
         PreparedStatement ps = j.prepareStatement(query);
         ps.setInt(1, projectID);
         ResultSet rs = ps.executeQuery();
-        int position = 1;
-        if(rs.first()) {
-            position = rs.getInt("position");
+        if(rs.next()) {
+            position = rs.getInt(1);
         }
         return position;
     }

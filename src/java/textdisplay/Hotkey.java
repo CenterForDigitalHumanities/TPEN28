@@ -529,9 +529,7 @@ public class Hotkey {
         finally{
             closeDBConnection(j);
             closePreparedStatement(ps);
-        }
-        
-        
+        }  
     }
     
     public static int getMaxPosition(int projectID) throws SQLException{

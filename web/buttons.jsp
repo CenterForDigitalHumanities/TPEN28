@@ -242,7 +242,7 @@
                     }
                     entries[i] = entryObj
                 });
-                var allXMLData = {"projectID":projectID, "xml":entries;
+                var allXMLData = {"projectID":projectID, "xml":entries}
                 await fetch("updateSpecialCharacters", {
                     method: "POST",
                     mode: "cors",

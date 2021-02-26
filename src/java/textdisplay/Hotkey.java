@@ -539,8 +539,8 @@ public class Hotkey {
         String query = "select max(position) from hotkeys where projectID=?";
         Connection j = null;
         PreparedStatement ps = null;
-        j = getConnection();
         try{
+            j = getConnection();
             ps = j.prepareStatement(query);
             ps.setInt(1, projectID);
             ResultSet rs = ps.executeQuery();

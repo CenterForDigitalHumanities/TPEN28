@@ -516,6 +516,15 @@ public class Hotkey {
         }
     }
     
+    public static void removeAllProjectHotkeys(int projectID) throws SQLException{
+        String query = "delete from hotkeys where projectID=? and uid=0";
+        Connection j = null;
+        j = getConnection();
+        PreparedStatement ps = j.prepareStatement(query);
+        ps.setInt(1, projectID);
+        ps.executeQuery();
+    }
+    
     public static int getMaxPosition(int projectID) throws SQLException{
         int position = -1;
         String query = "select max(position) from hotkeys where projectID=?";

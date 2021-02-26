@@ -199,7 +199,7 @@ public class TagButton {
    /**
     * Add a new button, tag is the tag name only, no brackets. params needs to have a length of 5
     */
-   public TagButton(int projectID, int position, String tag, String[] params, Boolean isProject, String description) throws SQLException {
+   public TagButton(int projectID, int position, String tag, String[] params, String description, Boolean isProject) throws SQLException {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
@@ -1035,6 +1035,15 @@ public class TagButton {
             closePreparedStatement(stmt);
       }
    }
+   
+   public static void removeAllProjectXML(int projectID) throws SQLException{
+        String query = "delete from projectbuttons where project=? and uid=0";
+        Connection j = null;
+        j = getConnection();
+        PreparedStatement ps = j.prepareStatement(query);
+        ps.setInt(1, projectID);
+        ps.executeQuery();
+    }
    
    public static int getMaxPosition(int projectID) throws SQLException{
         int position = -1;

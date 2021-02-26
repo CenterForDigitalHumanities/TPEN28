@@ -519,27 +519,39 @@ public class Hotkey {
     public static void removeAllProjectHotkeys(int projectID) throws SQLException{
         String query = "delete from hotkeys where projectID=? and uid=0";
         Connection j = null;
-        j = getConnection();
-        PreparedStatement ps = j.prepareStatement(query);
-        ps.setInt(1, projectID);
-        ps.execute();
-        closeDBConnection(j);
-        closePreparedStatement(ps);
+        PreparedStatement ps = null;
+        try{
+            j = getConnection();
+            ps = j.prepareStatement(query);
+            ps.setInt(1, projectID);
+            ps.execute();
+        }
+        finally{
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+        }
+        
+        
     }
     
     public static int getMaxPosition(int projectID) throws SQLException{
         int position = -1;
         String query = "select max(position) from hotkeys where projectID=?";
         Connection j = null;
+        PreparedStatement ps = null;
         j = getConnection();
-        PreparedStatement ps = j.prepareStatement(query);
-        ps.setInt(1, projectID);
-        ResultSet rs = ps.executeQuery();
-        if(rs.next()) {
-            position = rs.getInt(1);
+        try{
+            ps = j.prepareStatement(query);
+            ps.setInt(1, projectID);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                position = rs.getInt(1);
+            }
+            return position;
         }
-        closeDBConnection(j);
-        closePreparedStatement(ps);
-        return position;
+        finally{
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+        }
     }
 }

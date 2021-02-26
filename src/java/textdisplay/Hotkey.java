@@ -23,7 +23,7 @@ import static textdisplay.DatabaseWrapper.closeDBConnection;
 import static textdisplay.DatabaseWrapper.closePreparedStatement;
 import static textdisplay.DatabaseWrapper.getConnection;
 
-/**customizable hotkeys for transcribing non enlgish texts*/
+/**customizable unicode character hotkeys for transcribing texts*/
 public class Hotkey {
 
     int uid;
@@ -110,7 +110,9 @@ public class Hotkey {
 
     }
 
-    /**Get an existing Hotkey based on the current user and the key position (1-10)*/
+    /**Get an existing Hotkey based on the current user and the key position (1-10)
+     * @deprecated Hotkeys are within projects only.
+     */
     public Hotkey(int uid, int position) throws SQLException {
         String query = "select * from hotkeys where uid=? and position=? and projectID=0";
         Connection j = null;
@@ -449,69 +451,23 @@ public class Hotkey {
         return toret;
     }
 
-    /**Remove this key*/
+    /**Remove this key
+     * @throws java.sql.SQLException
+     */
     public void delete() throws SQLException {
         if (this.projectID > 0) {
             String query = "delete from hotkeys where projectID=? and position=?";
             Connection j = null;
             PreparedStatement ps = null;
-            PreparedStatement update=null;
             try {
                 j = getConnection();
                 ps = j.prepareStatement(query);
                 ps.setInt(1, projectID);
                 ps.setInt(2, position);
                 ps.execute();
-                update = j.prepareStatement("update hotkeys set position=? where position=? and projectID=?");
-                //Adjust the position of all of the buttons with positions greater than this to be 1 less than they were
-                while (true) {
-                    Hotkey k = new Hotkey(projectID, position + 1, true);
-                    if (k.exists()) {
-                        update.setInt(1, position);
-                        update.setInt(2, position + 1);
-                        update.setInt(3, projectID);
-                        update.execute();
-                        position++;
-                    } else {
-                        break;
-                    }
-                }
-
             } finally {
                 closeDBConnection(j);
-                closePreparedStatement(ps);
-                closePreparedStatement(update);
-                
-            }
-        } else {
-            String query = "delete from hotkeys where uid=? and position=?";
-            Connection j = null;
-            PreparedStatement ps = null;
-            PreparedStatement update=null;
-            try {
-                j = getConnection();
-                ps = j.prepareStatement(query);
-                ps.setInt(1, uid);
-                ps.setInt(2, position);
-                ps.execute();
-                update = j.prepareStatement("update hotkeys set position=? where position=? and uid=?");
-                //Adjust the position of all of the buttons with positions greater than this to be 1 less than they were
-                while (true) {
-                    Hotkey k = new Hotkey(uid, position + 1);
-                    if (k.exists()) {
-                        update.setInt(1, position);
-                        update.setInt(2, position + 1);
-                        update.setInt(3, uid);
-                        update.execute();
-                        position++;
-                    } else {
-                        break;
-                    }
-                }
-            } finally {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-                closePreparedStatement(update);
+                closePreparedStatement(ps);                
             }
         }
     }

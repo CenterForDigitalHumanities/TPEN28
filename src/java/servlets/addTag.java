@@ -39,28 +39,26 @@ public class addTag extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        int position;
         try (PrintWriter out = response.getWriter()) {
             if (request.getParameter("UID") != null) {
-                        int ctr = 1;
-                        int UID=parseInt(request.getParameter("UID"));
-                        while (new TagButton(UID, ctr).exists()) {
-                            ctr++;
-                        }
-                        new TagButton(UID, ctr, "new", "description");
-                        out.print(""+ctr);
-                        return;
-                    }
+                //FIXME if this is actually used, it also does the position wrong.
+                int ctr = 1;
+                int UID=parseInt(request.getParameter("UID"));
+                while (new TagButton(UID, ctr).exists()) {
+                    ctr++;
+                }
+                new TagButton(UID, ctr, "new", "description");
+                out.print(""+ctr);
+                return;
+            }
             if (request.getParameter("projectID") != null) {
-                    int projectID=parseInt(request.getParameter("projectID"));
-                        int ctr = 1;
-                        while (new TagButton(projectID, ctr, true).exists()) {
-                            ctr++;
-                        }
-                        TagButton thisTag=new TagButton(projectID, ctr, "new", false, "description");
-                        out.print(""+ctr);
-                        return;
-
-                    }
+                int projectID=parseInt(request.getParameter("projectID"));
+                position = TagButton.getMaxPosition(projectID) + 1;
+                new TagButton(projectID, position, "new", "description", false);
+                out.print(""+position);
+                return;
+            }
         } catch (SQLException ex) {
             getLogger(addTag.class.getName()).log(SEVERE, null, ex);
         }

@@ -35,22 +35,22 @@ public class Hotkey {
     }
     
     /**
-     * Create a new project Hotkey and store it
-     * @param code the integer keycode for the character
-     * @param projectID
-     * @param position position this button falls in, used to order the output of all buttons
-     * @param isProject distinguishes this from a button intended for on-the-fly transcription
+     * For when the user clicks Add a Button on button.jsp.
+     * Make a default button real quick, so it can be updated via "Save Changes" after they set it to be what they want it to be. 
+     * This is for the servlet /addHotkey - addHotkey.java
+     * Note that position will always be one greater than the max position in the column in SQL.
      * @throws SQLException
      */
     public Hotkey(int code, int projectID, int position, Boolean isProject) throws SQLException {
-        String query = "insert into hotkeys(projectID,uid,position,`key`) values (?,0,?,?)";
+        String query = "insert into hotkeys (`key`,position,uid,projectID) values(?,?,?,?);";
         Connection j = null;
         PreparedStatement stmt = null;
         try {
             j = getConnection();
             stmt = j.prepareStatement(query);
-            stmt.setInt(3, code);
-            stmt.setInt(1, projectID);
+            stmt.setInt(1, code);
+            stmt.setInt(4, projectID);
+            stmt.setInt(3, 0);
             stmt.setInt(2, position);
             stmt.execute();
         } finally {
@@ -59,7 +59,7 @@ public class Hotkey {
         }
     }
 
-    /**
+    /*
      * Add a new Hotkey for use in on-the-fly transcription
      * @param code the integer keycode for the character
      * @param uid user unique id under which this should be stored
@@ -470,5 +470,19 @@ public class Hotkey {
                 closePreparedStatement(ps);                
             }
         }
+    }
+    
+    public static int getMaxPosition(int projectID) throws SQLException{
+        int position = -1;
+        String query = "select max(position) from hotkeys where projectID=?";
+        Connection j = null;
+        j = getConnection();
+        PreparedStatement ps = j.prepareStatement(query);
+        ps.setInt(1, projectID);
+        ResultSet rs = ps.executeQuery();
+        if(rs.next()) {
+            position = rs.getInt(1);
+        }
+        return position;
     }
 }

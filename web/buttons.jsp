@@ -206,8 +206,6 @@
                     chars[i] = parseInt($(li).children(".shrink")[0].value);
                 });
                 var allCharData = {"projectID":projectID, "chars":chars}
-                console.log("All Char Data");
-                console.log(allCharData);
                 await fetch("updateSpecialCharacters", {
                     method: "POST",
                     mode: "cors",
@@ -247,8 +245,6 @@
                     entries[i] = entryObj
                 });
                 var allXMLData = {"projectID":projectID, "xml":entries}
-                console.log("All XML Data");
-                console.log(allXMLData);
                 await fetch("updateXMLEntries", {
                     method: "POST",
                     mode: "cors",

@@ -215,7 +215,7 @@ public class TagButton {
                params[i] = "";
             }
          }
-         String query = "insert into projectbuttons(project,position,text,param1, param2, param3, param4, param5, description) values (?,?,?,?,?,?,?,?,?)";
+         String query = "insert into projectbuttons(project,position,text, param1, param2, param3, param4, param5, description) values (?,?,?,?,?,?,?,?,?)";
          j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
@@ -1037,12 +1037,14 @@ public class TagButton {
    }
    
    public static void removeAllProjectXML(int projectID) throws SQLException{
-        String query = "delete from projectbuttons where project=? and uid=0";
+        String query = "delete from projectbuttons where project=?";
         Connection j = null;
         j = getConnection();
         PreparedStatement ps = j.prepareStatement(query);
         ps.setInt(1, projectID);
-        ps.executeQuery();
+        ps.execute();
+        closeDBConnection(j);
+        closePreparedStatement(ps);
     }
    
    public static int getMaxPosition(int projectID) throws SQLException{
@@ -1056,6 +1058,8 @@ public class TagButton {
         if(rs.next()) {
             position = rs.getInt(1);
         }
+        closeDBConnection(j);
+        closePreparedStatement(ps);
         return position;
     }
    

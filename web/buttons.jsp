@@ -206,6 +206,8 @@
                     chars[i] = parseInt($(li).children(".shrink")[0].value);
                 });
                 var allCharData = {"projectID":projectID, "chars":chars}
+                console.log("All Char Data");
+                console.log(allCharData);
                 await fetch("updateSpecialCharacters", {
                     method: "POST",
                     mode: "cors",
@@ -216,7 +218,7 @@
                 })
                 .then(response => {
                     if(response.ok){
-                        document.location.reload()
+                        $("#buttonForm").submit();
                     }
                 })         
             });
@@ -228,12 +230,14 @@
                     var description = $(li).children(".description")[0].value
                     var $allParams = $(li).children(".xmlParams")
                     var tag = $allParams.children(".firstRow").children(".tag").children("input")[0].value
-                    var $params12 = $allParams.children(".secondRow").children("input[placeholder='parameter']");
-                    var $params34 = $allParams.children(".lastRow").children("input[placeholder='parameter']");
-                    var $params = $.merge( $.merge( [], $params12 ), $params34 );
+                    var $param1 = $allParams.children(".firstRow").children("input[placeholder='parameter']");
+                    var $params23 = $allParams.children(".secondRow").children("input[placeholder='parameter']");
+                    var $params45 = $allParams.children(".lastRow").children("input[placeholder='parameter']");
+                    var $params123 = $.merge( $.merge( [], $param1 ), $params23 );
+                    var $params = $.merge( $.merge( [], $params123 ), $params45 );
                     var params_arr = [];
-                    for(var i=0; i<$params.length; i++){
-                        params_arr[i] = $params[i].value
+                    for(var j=0; j<$params.length; j++){
+                        params_arr[j] = $params[j].value
                     }
                     var entryObj = {
                         "description" : description,
@@ -243,7 +247,9 @@
                     entries[i] = entryObj
                 });
                 var allXMLData = {"projectID":projectID, "xml":entries}
-                await fetch("updateSpecialCharacters", {
+                console.log("All XML Data");
+                console.log(allXMLData);
+                await fetch("updateXMLEntries", {
                     method: "POST",
                     mode: "cors",
                     headers: {
@@ -254,7 +260,7 @@
                 .then(response => {
                     if(response.ok){
                         document.getElementById('selecTab').value = 1;
-                        document.location.reload()
+                        $("#buttonForm").submit();
                     }
                 })         
             });
@@ -316,7 +322,6 @@ function equalWidth(){
             .find(".ui-icon-arrowstop-1-n").switchClass("ui-icon-arrowstop-1-n","ui-icon-arrow-4");
     }
     function updatea(obj) {
-        return false;
         var objValue = obj.value;
         var decimalTest =/^[0-9]+(\.[0-9]+)+$/;
         if (isNaN(objValue) || objValue < 32 || objValue > 65518){

@@ -64,7 +64,7 @@ public class updateSpecialCharacters extends HttpServlet {
             Hotkey.removeAllProjectHotkeys(projectID);
             for (int i=0; i<requestJSON.getJSONArray("chars").size(); i++){
                 int characterCode = requestJSON.getJSONArray("chars").getInt(i);
-                new Hotkey(characterCode, projectID, i, true);
+                new Hotkey(characterCode, projectID, (i+1), true);
             }
             response.setStatus(200);
             out.print("Special Characters Updated!");

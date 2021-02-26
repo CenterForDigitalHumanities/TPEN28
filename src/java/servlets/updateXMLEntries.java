@@ -15,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import textdisplay.TagButton;
 
@@ -35,7 +36,7 @@ public class updateXMLEntries extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException, SQLException {
-        response.setContentType("application/json;charset=UTF-8");
+        response.setContentType("application/json;xmlet=UTF-8");
         BufferedReader bodyReader = request.getReader();
         StringBuilder bodyString = new StringBuilder();
         JSONObject requestJSON = new JSONObject();
@@ -61,10 +62,14 @@ public class updateXMLEntries extends HttpServlet {
         if(moveOn){
             int projectID = requestJSON.getInt("projectID");
             TagButton.removeAllProjectXML(projectID);
-            for (int i=0; i<requestJSON.getJSONArray("chars").size(); i++){
-                String tagText = requestJSON.getJSONArray("chars").getJSONObject(i).getString("tagText");
-                String description = requestJSON.getJSONArray("chars").getJSONObject(i).getString("description");
-                String[] params = (String[]) requestJSON.getJSONArray("chars").getJSONObject(i).getJSONArray("params").toArray();
+            for (int i=0; i<requestJSON.getJSONArray("xml").size(); i++){
+                String tagText = requestJSON.getJSONArray("xml").getJSONObject(i).getString("tag");
+                String description = requestJSON.getJSONArray("xml").getJSONObject(i).getString("description");
+                JSONArray jparams = requestJSON.getJSONArray("xml").getJSONObject(i).getJSONArray("params");
+                String[] params = new String[jparams.size()];
+                for(int j=0; j<jparams.size(); j++) {
+                    params[j]=jparams.optString(j);
+                }
                 new TagButton(projectID, i, tagText, params, description, true);
             }
             response.setStatus(200);

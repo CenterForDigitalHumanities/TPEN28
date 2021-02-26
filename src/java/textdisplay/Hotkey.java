@@ -522,7 +522,9 @@ public class Hotkey {
         j = getConnection();
         PreparedStatement ps = j.prepareStatement(query);
         ps.setInt(1, projectID);
-        ps.executeQuery();
+        ps.execute();
+        closeDBConnection(j);
+        closePreparedStatement(ps);
     }
     
     public static int getMaxPosition(int projectID) throws SQLException{
@@ -536,6 +538,8 @@ public class Hotkey {
         if(rs.next()) {
             position = rs.getInt(1);
         }
+        closeDBConnection(j);
+        closePreparedStatement(ps);
         return position;
     }
 }

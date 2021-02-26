@@ -457,7 +457,7 @@ function equalWidth(){
                     while (new TagButton(projectID, ctr, true).exists()) {
                         ctr++;
                     }
-                    new TagButton(projectID, ctr, "new", false, "description");
+                    new TagButton(projectID, ctr, "new", "description", false);
                 }
                 if (request.getParameter("addH") != null) {
                     int ctr = 1;

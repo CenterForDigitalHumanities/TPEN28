@@ -20,6 +20,7 @@ import textdisplay.Hotkey;
 /**
  *
  * @author bhaberbe
+ * FIXME : This is for buttons.html, which has been abandoned.  Flagged for deletion.
  */
 public class SaveNewProjectCharacter extends HttpServlet {
 

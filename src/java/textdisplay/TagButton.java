@@ -130,9 +130,13 @@ public class TagButton {
    }
 
    /**
-    * Add a new button, tag is the tag name only, no brackets
+    * For when the user clicks Add a Tag on button.jsp.
+     * Make a default TagButton real quick, so it can be updated via "Save Changes" after they set it to be what they want it to be. 
+     * This is for the servlet /addTag - addTag.java
+     * Note that position will always be one greater than the max position in the column in SQL.
+     * 
     */
-   public TagButton(int projectID, int position, String tag, Boolean project, String description) throws SQLException {
+   public TagButton(int projectID, int position, String tag, String description, Boolean project) throws SQLException {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
@@ -142,21 +146,14 @@ public class TagButton {
             getLogger(TagButton.class.getName()).log(SEVERE, null, e);
       }
       try {
-         String query = "insert into projectbuttons(project,position,text,description) values (?,?,?,?)";
+         String query = "insert into projectbuttons (project,position,text,description) values(?,?,?,?);";
          j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
          stmt.setInt(1, projectID);
          stmt.setInt(2, position);
-         stmt.setString(3, tag);
          stmt.setString(4, description);
          stmt.execute();
-
-         this.tag = tag;
-         this.position = position;
-         this.uid = -1;
-         this.projectID = projectID;
-         this.xmlColor = "";
       } catch (Exception e) {
             getLogger(TagButton.class.getName()).log(SEVERE, null, e);
       } finally {
@@ -172,7 +169,7 @@ public class TagButton {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
-         String query = "insert into buttons(uid,position,text,param1, param2, param3, param4, param5) values (?,?,?,?,?,?,?,?)";
+         String query = "insert into buttons (uid,position,text,param1, param2, param3, param4, param5) values (?,?,?,?,?,?,?,?)";
          j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
@@ -1038,6 +1035,20 @@ public class TagButton {
             closePreparedStatement(stmt);
       }
    }
+   
+   public static int getMaxPosition(int projectID) throws SQLException{
+        int position = -1;
+        String query = "select max(position) from projectbuttons where project=?";
+        Connection j = null;
+        j = getConnection();
+        PreparedStatement ps = j.prepareStatement(query);
+        ps.setInt(1, projectID);
+        ResultSet rs = ps.executeQuery();
+        if(rs.next()) {
+            position = rs.getInt(1);
+        }
+        return position;
+    }
    
    private static final Logger LOG = getLogger(TagButton.class.getName());
 }

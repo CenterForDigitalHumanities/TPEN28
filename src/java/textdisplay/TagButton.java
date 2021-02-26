@@ -199,7 +199,7 @@ public class TagButton {
    /**
     * Add a new button, tag is the tag name only, no brackets. params needs to have a length of 5
     */
-   public TagButton(int projectID, int position, String tag, String[] params, Boolean isProject, String description) throws SQLException {
+   public TagButton(int projectID, int position, String tag, String[] params, String description, Boolean isProject) throws SQLException {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
@@ -215,7 +215,7 @@ public class TagButton {
                params[i] = "";
             }
          }
-         String query = "insert into projectbuttons(project,position,text,param1, param2, param3, param4, param5, description) values (?,?,?,?,?,?,?,?,?)";
+         String query = "insert into projectbuttons(project,position,text, param1, param2, param3, param4, param5, description) values (?,?,?,?,?,?,?,?,?)";
          j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
@@ -1036,18 +1036,41 @@ public class TagButton {
       }
    }
    
+   public static void removeAllProjectXML(int projectID) throws SQLException{
+        String query = "delete from projectbuttons where project=?";
+        Connection j = null;
+        PreparedStatement ps = null;
+        try{
+            j = getConnection();
+            ps = j.prepareStatement(query);
+            ps.setInt(1, projectID);
+            ps.execute();
+        }
+        finally{
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+        }    
+    }
+   
    public static int getMaxPosition(int projectID) throws SQLException{
         int position = -1;
         String query = "select max(position) from projectbuttons where project=?";
         Connection j = null;
-        j = getConnection();
-        PreparedStatement ps = j.prepareStatement(query);
-        ps.setInt(1, projectID);
-        ResultSet rs = ps.executeQuery();
-        if(rs.next()) {
-            position = rs.getInt(1);
+        PreparedStatement ps = null;
+        try{
+            j = getConnection();
+            ps = j.prepareStatement(query);
+            ps.setInt(1, projectID);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                position = rs.getInt(1);
+            } 
+            return position;
         }
-        return position;
+        finally{
+           closeDBConnection(j);
+           closePreparedStatement(ps); 
+        }
     }
    
    private static final Logger LOG = getLogger(TagButton.class.getName());

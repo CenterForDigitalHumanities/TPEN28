@@ -770,6 +770,7 @@ function setTPENObjectData(data) {
             if (this.openID) {
                 tpen.user.openID = this.openID;
             }
+            tpen.user.isMember = true;
             //Do we only want to fire this here?  It is fired if they are a leader too
             setTranscribingUser();
             return false;
@@ -783,6 +784,7 @@ function setTPENObjectData(data) {
     $.each(tpen.project.leaders, function (i) {
         if (this.UID === parseInt(data.cuser)) {
             tpen.user.isAdmin = true;
+            tpen.user.isMember = tpen.user.isAdmin;
             if (this.fname) {
                 tpen.user.fname = this.fname;
             }
@@ -1288,7 +1290,7 @@ function loadTranscription(pid, tool) {
 function activateTool(tool) {
     // TODO: Include other tools here.
     if (tool === "parsing") {
-        if (tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing) {
+        if (tpen.user.isMember || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing) {
             $("#parsingBtn").click();
             tpen.screen.liveTool = "parsing";
         }
@@ -1309,7 +1311,7 @@ function activateUserTools(tools, permissions) {
                 + '</div>');
         // $('#'+name+"Split").show();
     };
-    if ((tpen.user.isAdmin || permissions.allow_public_modify || permissions.allow_public_modify_line_parsing) && $.inArray("parsing", tools) > -1) {
+    if ((tpen.user.isMember || permissions.allow_public_modify || permissions.allow_public_modify_line_parsing) && $.inArray("parsing", tools) > -1) {
         $("#parsingBtn").show();
     }
     if ($.inArray("page", tools) > -1) {
@@ -1322,7 +1324,7 @@ function activateUserTools(tools, permissions) {
         $("#toggleChars").show();
     }
     if ($.inArray("inspector", tools) > -1) {
-        $("#magnify1").show();
+        $("#magnifyBtn").show();
     }
 }
 
@@ -1426,9 +1428,7 @@ function focusOnLastModified() {
     } else { //all the lines have been transcribed.  Load to the first line
         updatePresentation($(".transcriptlet[lineserverid='" + focusOn._tpen_line_id + "']"));
     }
-
-}
-;
+};
 
 /*
  * Load a canvas from the manifest to the transcription interface.
@@ -1466,7 +1466,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
         } else {
             //image = new Image();
         }
-        image.src = "";
+//        image.src = "";
         image.onload = function () {
             $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
             $("#imgTop img, #imgBottom img").css("width", "100%");
@@ -1511,34 +1511,9 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
                 $(".trexHead").show();
                 //handle the background
                 var image2 = new Image();
-                image2.src = "";
+//                image2.src = "";
                 image2
-                        .onload = function () {
-                            $("#noLineWarning").hide();
-                            $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
-                            $("#imgTop img, #imgBottom img").css("width", "100%");
-                            $('.transcriptionImage').attr('src', "images/missingImage.png");
-                            $("#fullPageImg").attr("src", "images/missingImage.png");
-                            $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
-                            $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
-                            $("#imgTop").css("height", "0%");
-                            $("#imgBottom img").css("top", "0px");
-                            $("#imgBottom").css("height", "inherit");
-                            $("#parsingButton").attr("disabled", "disabled");
-                            $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
-                            $("#parsingBtn").attr("disabled", "disabled");
-                            $("#transTemplateLoading").hide();
-                            resetImageTools();
-                        };
-                image2.src = "images/missingImage.png";
-            }
-            scrubNav();
-        }; // the extra () ensures this only runs once.
-        image.onerror = function () {
-            var image2 = new Image();
-            image2.src = "";
-            image2
-                    .onload = function () {
+                    .onload = function() {
                         $("#noLineWarning").hide();
                         $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
                         $("#imgTop img, #imgBottom img").css("width", "100%");
@@ -1554,13 +1529,38 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
                         $("#parsingBtn").attr("disabled", "disabled");
                         $("#transTemplateLoading").hide();
                         resetImageTools();
-                        alert("No image for this canvas or it could not be resolved.  Not drawing lines.");
                     };
+                image2.src = "images/missingImage.png";
+            }
+            scrubNav();
+        }; // the extra () ensures this only runs once.
+        image.onerror = function() {
+            var image2 = new Image();
+            // image2.src = "";
+            image2
+                .onload = function() {
+                    $("#noLineWarning").hide();
+                    $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
+                    $("#imgTop img, #imgBottom img").css("width", "100%");
+                    $('.transcriptionImage').attr('src', "images/missingImage.png");
+                    $("#fullPageImg").attr("src", "images/missingImage.png");
+                    $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
+                    $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
+                    $("#imgTop").css("height", "0%");
+                    $("#imgBottom img").css("top", "0px");
+                    $("#imgBottom").css("height", "inherit");
+                    $("#parsingButton").attr("disabled", "disabled");
+                    $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
+                    $("#parsingBtn").attr("disabled", "disabled");
+                    $("#transTemplateLoading").hide();
+                    resetImageTools();
+                    alert("No image for this canvas or it could not be resolved.  Not drawing lines.");
+                };
             image2.src = "images/missingImage.png";
         };
         if (noLines) {
             var url = "autoParse?projectID=" + tpen.project.id + "&folioNumber=" + tpen.project.folios[tpen.screen.currentFolio].folioNumber;
-            $.getJSON(url, function (list) {
+            $.getJSON(url, function(list) {
                 canvasObj.otherContent[0] = list;
                 image.src = canvasObj.images[0].resource['@id'].replace('amp;', '');
             });
@@ -1797,7 +1797,7 @@ function reorderLinesForRTL(lines, tool, preview) {
             return n
         }
         function t(n) {
-            return"string" == typeof n ? n.toLowerCase() : n
+            return "string" == typeof n ? n.toLowerCase() : n
         }
         function r(r, e) {
             if (e = "number" == typeof e ? {direction: e} : e || {}, "function" != typeof r)
@@ -1814,8 +1814,8 @@ function reorderLinesForRTL(lines, tool, preview) {
                     return o(i(n)) < o(i(t)) ? -1 : o(i(n)) > o(i(t)) ? 1 : 0
                 }
             }
-            return-1 === e.direction ? function (n, t) {
-                return-r(n, t)
+            return -1 === e.direction ? function (n, t) {
+                return -r(n, t)
             } : r
         }
         function e(n, t) {
@@ -1876,7 +1876,7 @@ function reorderLinesForLTR(lines) {
             return n
         }
         function t(n) {
-            return"string" == typeof n ? n.toLowerCase() : n
+            return "string" == typeof n ? n.toLowerCase() : n
         }
         function r(r, e) {
             if (e = "number" == typeof e ? {direction: e} : e || {}, "function" != typeof r)
@@ -1894,7 +1894,7 @@ function reorderLinesForLTR(lines) {
                 }
             }
             return-1 === e.direction ? function (n, t) {
-                return-r(n, t)
+                return -r(n, t)
             } : r
         }
         function e(n, t) {
@@ -2204,44 +2204,55 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
         console.warn("No lines found in a bad place...");
     }
     // we want automatic updating for the lines these texareas correspond to.
-    $("textarea")
-            .keydown(function (e) {
-                //user has begun typing, clear the wait for an update
+$(".theText")
+        .keydown(function(e) {
+            //user has begun typing, clear the wait for an update
+            if (e.which === 13 && (tpen.screen.liveTool !=="parsing")){ //enter
+                event.preventDefault();
+                Linebreak.moveTextToNextBox();
+                //return nextTranscriptlet();
+            }
+            else if (e.which === 33 || e.which === 34){
+                //Page up and page down, ignore them.  The transcription interface DOES NOT SCROLL and uses phantom space.
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            else{
                 clearTimeout(typingTimer);
                 markLineUnsaved($(e.target).parent());
+            }
+        })
+        .keyup(function(e) {
+            //Preview.updateLine(this);
+            var lineToUpdate = $(this).parent();
+            clearTimeout(typingTimer);
+            //when a user stops typing for 2 seconds, fire an update to get the new text.
+            if (e.which !== 18) {
+                typingTimer = setTimeout(function() {
+                    var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
+                    var idToCheckFor = lineToUpdate.attr("lineserverid").replace("line/", "");
+                    var newText = lineToUpdate.find(".theText").val();
+                    if (currentAnnoList !== "noList" && currentAnnoList !== "empty") {
+                        // if it IIIF, we need to update the list
+                        $.each(currentAnnoList, function(index, data) {
+                            var dataLineID = data._tpen_line_id.replace("line/", "");
+                            if (dataLineID == idToCheckFor) {
+                                currentAnnoList[index].resource["cnt:chars"] = newText;
+                                tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
+                                tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
+                                updateLine(lineToUpdate, false, true);
+                                return false;
+                            }
 
-            })
-            .keyup(function (e) {
-                //Preview.updateLine(this);
-                var lineToUpdate = $(this).parent();
-                clearTimeout(typingTimer);
-                //when a user stops typing for 2 seconds, fire an update to get the new text.
-                if (e.which !== 18) {
-                    typingTimer = setTimeout(function () {
-                        var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
-                        var idToCheckFor = lineToUpdate.attr("lineserverid").replace("line/", "");
-                        var newText = lineToUpdate.find(".theText").val();
-                        if (currentAnnoList !== "noList" && currentAnnoList !== "empty") {
-                            // if it IIIF, we need to update the list
-                            $.each(currentAnnoList, function (index, data) {
-                                var dataLineID = data._tpen_line_id.replace("line/", "");
-                                if (dataLineID == idToCheckFor) {
-                                    currentAnnoList[index].resource["cnt:chars"] = newText;
-                                    tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources = currentAnnoList;
-                                    tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio].otherContent[0].resources = currentAnnoList;
-                                    updateLine(lineToUpdate, false, true);
-                                    return false;
-                                }
+                        });
+                    }
+                }, 2000);
+            }
 
-                            });
-                        }
-                    }, 2000);
-                }
-
-            });
-//    if(tpen.screen.mode !== shift){
-//        performInterfaceShift(shift);
-//    }
+        });
+    //    if(tpen.screen.mode !== shift){
+    //        performInterfaceShift(shift);
+    //    }
     if (tpen.screen.mode === "RTL") {
         performInterfaceShift("RTL");
     }
@@ -2274,7 +2285,7 @@ function updatePresentation(transcriptlet) {
             var prevLineNote = unescape(transcriptletBefore.find(".notes").attr("data-answer"));
             $("#prevColLine").html(prevLineCol + "" + prevColLineNum).css("visibility", "");
             $("#captionsText").text((prevLineText.length && prevLineText) || "This line is not transcribed.").attr("title", prevLineText)
-                    .next().html(prevLineNote).attr("title", prevLineNote);
+                .next().html(prevLineNote).attr("title", prevLineNote);
         } else { //there is no previous line
             $("#prevColLine").html(prevLineCol + "" + prevColLineNum).css("visibility", "hidden");
             $("#captionsText").html("You are on the first line.").next().html("");
@@ -2285,8 +2296,8 @@ function updatePresentation(transcriptlet) {
     }
     tpen.screen.focusItem[0] = tpen.screen.focusItem[1];
     tpen.screen.focusItem[1] = transcriptlet;
-    if ((tpen.screen.focusItem[0] === null)
-            || (tpen.screen.focusItem[0].attr("id") !== tpen.screen.focusItem[1].attr("id"))) {
+    if ((tpen.screen.focusItem[0] === null) ||
+        (tpen.screen.focusItem[0].attr("id") !== tpen.screen.focusItem[1].attr("id"))) {
         adjustImgs(setPositions());
         swapTranscriptlet();
         History.contribution();
@@ -2301,7 +2312,7 @@ function updatePresentation(transcriptlet) {
     }
     // prevent textareas from going invisible and not moving out of the workspace
     tpen.screen.focusItem[1].removeClass("transcriptletBefore transcriptletAfter")
-            .find('.theText')[0].focus();
+        .find('.theText')[0].focus();
     // change prev/next at page edges
     if ($(".transcriptletBefore").size() === 0) {
 
@@ -2321,11 +2332,10 @@ function updatePresentation(transcriptlet) {
     if (tpen.screen.liveTool === "history") {
         History.showLine(transcriptlet.attr("lineserverid"));
     }
-    $.each($(".lineColOnLine"), function () {
+    $.each($(".lineColOnLine"), function() {
         $(this).css("line-height", $(this).height() + "px");
     });
-}
-;
+};
 
 /* Helper for position focus onto a specific transcriptlet.  Makes sure workspace stays on screen. */
 function setPositions() {
@@ -2415,6 +2425,7 @@ function swapTranscriptlet() {
     } else {
         $('#previousTranscriptlet').show();
     }
+    setCursorPosition(tpen.screen.focusItem[1].find(".theText")[0],0);
 }
 var Page = {
     /**
@@ -2528,7 +2539,7 @@ function adjustImgs(positions) {
 function loadTranscriptlet(lineid) {
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if ($('#transcriptlet_' + lineid).length > 0) {
-        if (tpen.user.UID || tpen.user.isAdmin) {
+        if (tpen.user.UID || tpen.user.isMember) {
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, true);
             updatePresentation($('#transcriptlet_' + lineid));
@@ -2574,7 +2585,7 @@ function nextTranscriptlet() {
     var nextID = thisLine;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if ($('#transcriptlet_' + nextID).length > 0) {
-        if (tpen.user.UID || tpen.user.isAdmin) {
+        if (tpen.user.UID || tpen.user.isMember) {
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, true);
             updatePresentation($('#transcriptlet_' + nextID));
@@ -2618,7 +2629,7 @@ function previousTranscriptlet() {
     var prevID = parseFloat(tpen.screen.focusItem[1].attr('lineID')) - 1;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
     if (prevID >= 0) {
-        if (tpen.user.UID || tpen.user.isAdmin) {
+        if (tpen.user.UID || tpen.user.isMember) {
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, false);
             updatePresentation($('#transcriptlet_' + prevID));

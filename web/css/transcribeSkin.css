@@ -222,7 +222,7 @@ textarea:focus{
     display: block !important;
     opacity: 1;
     border-radius: 2px;
-    background-position: top 0px left 0px;
+    background-position: top 0px left 0px !important;
 }
 .lookLikeButtons, button{
     font-family: "Open Sans","Helvetica Neue",sans-serif;

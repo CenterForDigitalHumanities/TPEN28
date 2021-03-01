@@ -2159,9 +2159,14 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
 
         //$("#transcriptletArea").append(newAnno);
         $(".xmlClosingTags").before(newAnno);
+        var hiResBackground = ""
+        if ($(".transcriptionImage").attr("src").includes('/full/full')) {
+            hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`) + ");";
+        }
+
         var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter
                 + "' lineserverid='" + lineID + "' lineID='" + counter + "' class='lineColIndicator' style='left:"
-                + left + "%; top:" + top + "%; width:" + width + "%; height:" + height + "%;'><div class='lineColOnLine' >"
+                + left + "%; top:" + top + "%; width:" + width + "%; height:" + height + "%;"+hiResBackground+"'><div class='lineColOnLine' >"
                 + col + "" + colCounter + "</div></div>");
         var fullPageLineColumnIndicator = $("<div pair='" + col + "" + colCounter + "' lineserverid='" + lineID
                 + "' lineID='" + counter + "' class='lineColIndicator fullP' onclick=\"updatePresentation($('#transcriptlet_" + counter + "'));\""
@@ -3199,12 +3204,9 @@ function makeOverlayDiv(thisLine, originalX, cnt) {
     if (thisLine.attr("data-answer") !== undefined && thisLine.attr("data-answer") !== "") {
         hasTrans = true;
     }
-    if ($(".transcriptionImage").attr("src").includes('/full/full')) {
-        hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${newX},${newY},${newW},${newH}/full`) + ");";
-    }
     var lineOverlay = "<div class='parsing' lineid='" + (parseInt(cnt) - 1) + "' style='top:"
             + newY + "%;left:" + newX + "%;height:"
-            + newH + "%;width:" + newW + "%;" + hiResBackground + "' lineserverid='"
+            + newH + "%;width:" + newW + "%;' lineserverid='"
             + thisLine.attr('lineserverid') + "'linetop='"
             + Y + "'lineleft='" + X + "'lineheight='"
             + H + "'linewidth='" + W + "' hastranscription='" + hasTrans + "'></div>";
@@ -6339,6 +6341,10 @@ tpen.screen.peekZoom = function(cancel) {
             "width": imgDims[1] * zoomRatio + "px",
             "max-width": imgDims[1] * zoomRatio / availableRoom[1] * 100 + "%"
         });
+
+        $("#imgTop").css("background-image", line.css("background-image"))
+        $("#imgTop").addClass("isZoomed");
+
         tpen.screen.isPeeking = true;
     } else {
         //zoom out
@@ -6369,6 +6375,9 @@ tpen.screen.peekZoom = function(cancel) {
         $("#magnify1").removeAttr("disabled").removeClass("peekZoomLockout");
         $("#zoomLock").css("background-color", "#272727");
         $(".lineColIndicatorArea").fadeIn();
+        
+        $("#imgTop").removeClass("isZoomed");
+
         tpen.screen.isPeeking = false;
         tpen.screen.focusItem[1].find(".theText").focus();
     }

@@ -414,7 +414,6 @@ textarea:focus{
     flex: 2 1;
     height: 2em;
     max-width: 9em;
-    display: block;
 }
 #captions {
     color: #002a5c;
@@ -2068,4 +2067,6 @@ button,.navigation, #contribution,
 .peekZoomLockout{
     background-color: red !important;
 }
-
+#toggleChars, #toggleXML, #canvasControls, .magnifyBtn{
+    display : none;
+}

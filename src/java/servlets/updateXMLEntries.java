@@ -70,7 +70,7 @@ public class updateXMLEntries extends HttpServlet {
                 for(int j=0; j<jparams.size(); j++) {
                     params[j]=jparams.optString(j);
                 }
-                new TagButton(projectID, i, tagText, params, description, true);
+                new TagButton(projectID, (i+1), tagText, params, description, true);
             }
             response.setStatus(200);
             out.print("Special Characters Updated!");

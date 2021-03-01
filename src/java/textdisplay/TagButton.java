@@ -1014,8 +1014,15 @@ public class TagButton {
         }    
     }
    
+    /**
+     * Get the highest position of all projectbuttons for a particular project.  
+     * Return 0 for empty sets (no projectbuttons exist for project).  
+     * @param projectID
+     * @return
+     * @throws SQLException 
+     */
    public static int getMaxPosition(int projectID) throws SQLException{
-        int position = -1;
+        int position = 0;
         String query = "select max(position) from projectbuttons where project=?";
         Connection j = null;
         PreparedStatement ps = null;

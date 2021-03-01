@@ -5787,25 +5787,16 @@ var Linebreak = {
      * Automatically breaks at each occurance of linebreakString.
      * Used within T&#8209;PEN linebreaking tool.
      */
-    useLinebreakText: function () {
-        var isMember = (function (uid) {
-            for (var i = 0; i < tpen.project.user_list.length; i++) {
-                if (tpen.project.user_list[i].UID == uid) {
-                    return true;
-                }
-            }
-            return false;
-        })(tpen.user.UID);
-        if (!isMember && !tpen.project.permissions.allow_public_modify)
-            return false;
+    useLinebreakText: function() {
+        
+        if (!tpen.user.isMember && !tpen.project.permissions.allow_public_modify) return false;
         var cfrm = confirm("This will insert the text at the current location and replace all the following lines automatically.\n\nOkay to continue?");
         if (cfrm) {
             var bTlength = tpen.screen.brokenText.length;
             var thoseFollowing = tpen.screen.focusItem[1].nextAll(".transcriptlet").find(".theText");
-            tpen.screen.focusItem[1].find('.theText').add(thoseFollowing).each(function (index) {
+            tpen.screen.focusItem[1].find('.theText').add(thoseFollowing).each(function(index) {
                 if (index < bTlength) {
-                    if (index < bTlength - 1)
-                        tpen.screen.brokenText[index] += tpen.screen.linebreakString;
+                    if (index < bTlength - 1) tpen.screen.brokenText[index] += tpen.screen.linebreakString;
                     $(this).val(unescape(tpen.screen.brokenText[index])).parent(".transcriptlet").addClass("isUnsaved");
                     Preview.updateLine(this);
                     if (index == thoseFollowing.length) {
@@ -5822,17 +5813,8 @@ var Linebreak = {
      *
      * @see Data.saveTranscription()
      */
-    saveWholePage: function () {
-        var isMember = (function (uid) {
-            for (var i = 0; i < tpen.project.user_list.length; i++) {
-                if (tpen.project.user_list[i].UID == uid) {
-                    return true;
-                }
-            }
-            return false;
-        })(tpen.user.UID);
-        if (!isMember && !tpen.project.permissions.allow_public_modify)
-            return false;
+    saveWholePage: function() {
+        if (!tpen.user.isMember && !tpen.project.permissions.allow_public_modify) return false;
         $(".transcriptlet").addClass(".isUnsaved");
         Data.saveTranscription("");
     },
@@ -5842,17 +5824,8 @@ var Linebreak = {
      *
      * @param leftovers text to record
      */
-    saveLeftovers: function (leftovers) {
-        var isMember = (function (uid) {
-            for (var i = 0; i < tpen.project.user_list.length; i++) {
-                if (tpen.project.user_list[i].UID == uid) {
-                    return true;
-                }
-            }
-            return false;
-        })(tpen.user.UID);
-        if (!isMember && !tpen.project.permissions.allow_public_modify)
-            return false;
+    saveLeftovers: function(leftovers) {
+        if (!tpen.user.isMember && !tpen.project.permissions.allow_public_modify) return false;
         $('#savedChanges').html('Saving . . .').stop(true, true).css({
             "opacity": 0,
             "top": "35%"
@@ -5863,12 +5836,12 @@ var Linebreak = {
         $.post("updateRemainingText", {
             transcriptionleftovers: unescape(tpen.project.remainingText),
             projectID: tpen.project.ID
-        }, function (data) {
+        }, function(data) {
             if (data == "success!") {
                 $('#savedChanges')
-                        .html('<span class="left ui-icon ui-icon-check"></span>Linebreak text updated.')
-                        .delay(3000)
-                        .fadeOut(1500);
+                    .html('<span class="left ui-icon ui-icon-check"></span>Linebreak text updated.')
+                    .delay(3000)
+                    .fadeOut(1500);
             } else {
                 //successful POST, but not an appropriate response
                 $('#savedChanges').html('<span class="left ui-icon ui-icon-alert"></span>Failed to save linebreak text.');
@@ -5882,17 +5855,8 @@ var Linebreak = {
      *
      * @return false to prevent Interaction.keyhandler() from propogating
      */
-    moveTextToNextBox: function () {
-        var isMember = (function (uid) {
-            for (var i = 0; i < tpen.project.user_list.length; i++) {
-                if (tpen.project.user_list[i].UID == uid) {
-                    return true;
-                }
-            }
-            return false;
-        })(tpen.user.UID);
-        if (!isMember && !tpen.project.permissions.allow_public_modify)
-            return false;
+    moveTextToNextBox: function() {
+        if (!tpen.user.isMember && !tpen.project.permissions.allow_public_modify) return false;
         var myfield = tpen.screen.focusItem[1].find(".theText")[0];
         tpen.screen.focusItem[1].addClass("isUnsaved");
         //IE support
@@ -5931,16 +5895,14 @@ var Linebreak = {
     }
 };
 
-$("#linebreakStringBtn").click(function (event) {
-    if (event.target != this) {
-        return true;
-    }
+$("#linebreakStringBtn").click(function(event) {
+    if (event.target != this) { return true; }
     if ($("#linebreakString").val().length > 0) {
         $("#useLinebreakText").fadeIn();
         tpen.screen.linebreakString = $("#linebreakString").val();
         tpen.screen.brokenText = $("<div/>").html(tpen.project.remainingText).text().split(tpen.screen.linebreakString);
         var btLength = tpen.screen.brokenText.length;
-        $("#lbText").html(function (index, html) {
+        $("#lbText").html(function(index, html) {
             return html.split(unescape(tpen.screen.linebreakString)).join(decodeURI(tpen.screen.linebreakString) + "<br/>");
         });
     } else {
@@ -5957,13 +5919,13 @@ var Help = {
     /**
      *  Shows the help interface.
      */
-    revealHelp: function (event) {
+    revealHelp: function(event) {
         splitPage(event, "help");
     },
     /**
      *  Adjusts the position of the help panels to reveal the selected section.
      */
-    select: function (contentSelect) {
+    select: function(contentSelect) {
         $(contentSelect).addClass("helpActive").siblings().removeClass("helpActive");
         $("#helpPanels").css("margin-left", -$("#help").width() * contentSelect.index() + "px");
     },
@@ -5973,25 +5935,25 @@ var Help = {
      *
      *  @param refIndex int index of help button clicked
      */
-    lightUp: function (refIndex) {
+    lightUp: function(refIndex) {
         if (refIndex.startsWith("#") || refIndex.startsWith(".")) {
             this.highlight($(refIndex));
             return true;
         }
         switch (refIndex) {
-            case 0  :   //Previous Line
+            case 0: //Previous Line
                 this.highlight($("#prevLine"));
                 break;
-            case 1  :   //Next Line
+            case 1: //Next Line
                 this.highlight($("#nextLine"));
                 break;
-            case 2  :   //Line Indicator
+            case 2: //Line Indicator
                 this.highlight($("#colLineWrapper"));
                 break;
-            case 3  :   //Special Characters
+            case 3: //Special Characters
                 this.highlight($("#toggleChars"));
                 break;
-            case 4  :   //XML Tags
+            case 4: //XML Tags
                 this.highlight($("#toggleXML"));
                 break;
             case 6:
@@ -6001,25 +5963,25 @@ var Help = {
             case 10:
                 this.highlight($("#parsingBtn"));
                 break;
-            case 5  :
-            case 7  :
-            case 9  :
-            case 11 :
+            case 5:
+            case 7:
+            case 9:
+            case 11:
                 this.highlight($("#splitScreenTools"));
                 break;
-            case 12 :   //Location Flag.
+            case 12: //Location Flag.
                 this.highlight($("#trimPage")); //This is the jump to page
                 break;
-            case 13 : //Page Jump widget
+            case 13: //Page Jump widget
                 this.highlight($("#pageJump")); //This is the jump to page
                 break;
-            case 14 : //Previous Page button
+            case 14: //Previous Page button
                 this.highlight($("#prevCanvas"));
                 break;
-            case 15 : //Next Page button
+            case 15: //Next Page button
                 this.highlight($("#nextCanvas"));
                 break;
-            default :
+            default:
                 console.warn("No element located for " + refIndex);
         }
     },
@@ -6028,27 +5990,26 @@ var Help = {
      *
      *  @param $element jQuery object to redraw
      */
-    highlight: function ($element) {
-        if ($element.length == 0)
-            $element = $("<div/>");
+    highlight: function($element) {
+        if ($element.length == 0) $element = $("<div/>");
         var look = $element.clone().attr('id', 'highlight');
         var position = $element.offset();
         $("#overlay").show().after(look);
         if ((position == null) || (position.top < 1)) {
-            position = {left: '39%', top: $("#transWorkspace").offset().top + 175};
+            position = { left: '39%', top: $("#transWorkspace").offset().top + 175 };
             look.css({
                 "height": "50px"
             });
             look.prepend("<div style='margin: 5px 0px;' id='offscreen' class='ui-corner-all ui-state-error'>This element is not currently displayed.</div>")
-                    .css({
-                        "left": position.left,
-                        "top": position.top,
-                        "background-color": "#005a8c"
-                    }).delay(2000).show("fade", 0, function () {
-                $(this).remove();
-                $("#overlay").hide("fade", 2000);
-                look.remove();
-            });
+                .css({
+                    "left": position.left,
+                    "top": position.top,
+                    "background-color": "#005a8c"
+                }).delay(2000).show("fade", 0, function() {
+                    $(this).remove();
+                    $("#overlay").hide("fade", 2000);
+                    look.remove();
+                });
         } else {
             $("#highlight").css({
                 "box-shadow": "0 0 5px 3px whitesmoke",
@@ -6058,12 +6019,11 @@ var Help = {
             }).show("scale", {
                 percent: 150,
                 direction: 'both',
-                easing: "easeOutExpo"}, 1000);
+                easing: "easeOutExpo"
+            }, 1000);
 
             $("#overlay").hide("fade", 2000);
-            setTimeout(function () {
-                $("#highlight").remove();
-            }, 1500);
+            setTimeout(function() { $("#highlight").remove(); }, 1500);
         }
     },
     /**
@@ -6071,64 +6031,64 @@ var Help = {
      *
      *  @param refIndex int index of help button clicked
      */
-    video: function (refIndex) {
+    video: function(refIndex) {
         var vidLink = '';
         switch (refIndex) {
-            case 0  :   //Previous Line
-            case 1  :   //Next Line
+            case 0: //Previous Line
+            case 1: //Next Line
                 vidLink = 'http://www.youtube.com/embed/gcDOP5XfiwM';
                 break;
-            case 2  :   //Line Indicator
+            case 2: //Line Indicator
                 vidLink = 'http://www.youtube.com/embed/rIfF9ksffnU';
                 break;
-            case 3  :   //View Full Page
-            case 7  :
+            case 3: //View Full Page
+            case 7:
                 vidLink = 'http://www.youtube.com/embed/6X-KlLpF6RQ';
                 break;
-            case 4  :   //Preview Tool
-            case 15 :
+            case 4: //Preview Tool
+            case 15:
                 vidLink = 'http://www.youtube.com/embed/dxS-BF3PJ_0';
                 break;
-            case 5  :   //Special Characters
+            case 5: //Special Characters
                 vidLink = 'http://www.youtube.com/embed/EJL_GRA-grA';
                 break;
-            case 6  :   //XML Tags
+            case 6: //XML Tags
                 vidLink = '';
                 break;
-            case 8  :   //Magnify Tool
+            case 8: //Magnify Tool
                 vidLink = '';
                 break;
-            case 9  :   //History
+            case 9: //History
                 vidLink = '';
                 break;
-            case 10 :   //Abbreviations
+            case 10: //Abbreviations
                 vidLink = '';
                 break;
-            case 11 :   //Compare Pages
+            case 11: //Compare Pages
                 vidLink = '';
                 break;
-            case 12 :   //Magnify Tool
+            case 12: //Magnify Tool
                 vidLink = '';
                 break;
-            case 13 :   //Linebreaking
+            case 13: //Linebreaking
                 vidLink = '';
                 break;
-            case 14 :   //Correct Parsing
+            case 14: //Correct Parsing
                 vidLink = '';
                 break;
-            case 16 :   //Location Flag
+            case 16: //Location Flag
                 vidLink = 'http://www.youtube.com/embed/8D3drB9MTA8';
                 break;
-            case 17 :   //Jump to Page
+            case 17: //Jump to Page
                 vidLink = 'http://www.youtube.com/embed/mv_W_3N_Sbo';
                 break;
-            case 18 :   //Previous Page
+            case 18: //Previous Page
                 vidLink = '';
                 break;
-            case 19 :   //Next Page
+            case 19: //Next Page
                 vidLink = '';
                 break;
-            default :
+            default:
                 console.log("No element located for " + refIndex);
         }
         var videoview = $("<iframe id=videoView class=popover allowfullscreen src=" + vidLink + " />");
@@ -6145,17 +6105,17 @@ var Help = {
  * Minimum is 13px and maximum is 18px.
  *
  */
-tpen.screen.textSize = function () {
+tpen.screen.textSize = function() {
     var wrapperWidth = $('#transcriptionCanvas').width();
     var textSize = Math.floor(wrapperWidth / 60),
-            resize = (textSize > 18) ? 18 : textSize,
-            resize = (resize < 13) ? 13 : resize;
+        resize = (textSize > 18) ? 18 : textSize,
+        resize = (resize < 13) ? 13 : resize;
     $(".theText,.notes,#previous span,#helpPanels ul").css("font-size", resize + "px");
-//        if (wrapperWidth < 550) {
-//            Interaction.shrinkButtons();
-//        } else {
-//            Interaction.expandButtons();
-//        }
+    //        if (wrapperWidth < 550) {
+    //            Interaction.shrinkButtons();
+    //        } else {
+    //            Interaction.expandButtons();
+    //        }
 };
 
 var Preview = {
@@ -6167,7 +6127,7 @@ var Preview = {
      *  @param line jQuery object, line edited in the preview tool
      */
     //UI effects for when a user decides to edit a line within the preview split tool.
-    edit: function (line) {
+    edit: function(line) {
         var focusLineID = $(line).siblings(".previewLineNumber").attr("lineserverid");
         var transcriptionText = ($(line).hasClass("previewText")) ? ".theText" : ".notes";
         var pair = $(".transcriptlet[lineserverid='" + focusLineID + "']").find(transcriptionText);
@@ -6177,7 +6137,7 @@ var Preview = {
                 updatePresentation(transcriptlet);
             }
             line.focus();
-            $(line).keyup(function () {
+            $(line).keyup(function() {
                 //Data.makeUnsaved();
                 pair.val($(this).text());
                 transcriptlet.find(".theText").keyup();
@@ -6194,9 +6154,8 @@ var Preview = {
      *  @param saveLineID int lineID of changed transcription object
      *  @param focusFolio int id of folio in which the line has been changed
      */
-    remoteSave: function (button, saveLineID, focusFolio) {
-        if (!isMember && !permitModify)
-            return false;
+    remoteSave: function(button, saveLineID, focusFolio) {
+        if (!tpen.user.isMember && !permitModify) return false;
         var saveLine = $(".previewLineNumber[lineserverid='" + saveLineID + "']").parent(".previewLine");
         var saveText = saveLine.find(".previewText").text();
         var saveComment = saveLine.find(".previewNotes").text();
@@ -6209,7 +6168,7 @@ var Preview = {
      *
      *  @param current element textarea in which change is made.
      */
-    updateLine: function (current) {
+    updateLine: function(current) {
         var lineid = $(current).parent(".transcriptlet").attr("lineserverid");
         var previewText = ($(current).hasClass("theText")) ? ".previewText" : ".previewNotes";
         $(".previewLineNumber[lineserverid='" + lineid + "']").siblings(previewText).html(Preview.scrub($(current).val()));
@@ -6219,7 +6178,7 @@ var Preview = {
      *  Rebuilds every line of the preview when changed by parsing.
      *
      */
-    rebuild: function () {
+    rebuild: function() {
         var allTrans = $(".transcriptlet");
         var columnValue = 65;
         var columnLineShift = 0;
@@ -6228,7 +6187,7 @@ var Preview = {
         var currentPreview = $("[data-pagenumber='" + tpen.screen.currentFolio + "']");
         currentPreview.find(".previewLine").remove();
         var newPage = new Array();
-        allTrans.each(function (index) {
+        allTrans.each(function(index) {
             var columnLeft = $(this).find(".lineLeft").val();
             if (columnLeft > oldLeftPreview) {
                 columnValue++;
@@ -6237,27 +6196,27 @@ var Preview = {
             }
             //all data-linenumber attributes can be removed here
             newPage.push("<div class='previewLine' data-linenumber='",
-                    (index + 1), "'>",
-                    "<span class='previewLineNumber' lineserverid='",
-                    $(this).attr("lineserverid"), "' data-linenumber='",
-                    (index + 1), "' data-linenumber='",
-                    String.fromCharCode(columnValue), "' data-lineofcolumn='",
-                    (index + 1 - columnLineShift), "'>",
-                    String.fromCharCode(columnValue), (index + 1 - columnLineShift),
-                    "</span>",
-                    "<span class='previewText currentPage' contenteditable=true>",
-                    Preview.scrub($(this).find(".theText").val()),
-                    "</span><span class='previewLinebreak'></span>",
-                    "<span class='previewNotes currentPage' contenteditable=true>",
-                    Preview.scrub($(this).find(".notes").val()), "</span></div>");
+                (index + 1), "'>",
+                "<span class='previewLineNumber' lineserverid='",
+                $(this).attr("lineserverid"), "' data-linenumber='",
+                (index + 1), "' data-linenumber='",
+                String.fromCharCode(columnValue), "' data-lineofcolumn='",
+                (index + 1 - columnLineShift), "'>",
+                String.fromCharCode(columnValue), (index + 1 - columnLineShift),
+                "</span>",
+                "<span class='previewText currentPage' contenteditable=true>",
+                Preview.scrub($(this).find(".theText").val()),
+                "</span><span class='previewLinebreak'></span>",
+                "<span class='previewNotes currentPage' contenteditable=true>",
+                Preview.scrub($(this).find(".notes").val()), "</span></div>");
         });
         currentPreview.find('.previewFolioNumber').after(newPage.join(""));
     },
     /**
      *  Cleans up the preview tool display.
      */
-    format: function () {
-        $(".previewText").each(function () {
+    format: function() {
+        $(".previewText").each(function() {
             $(this).html(Preview.scrub($(this).text()));
         });
     },
@@ -6267,7 +6226,7 @@ var Preview = {
      *
      *  @param thisText String loaded in the current line of the preview tool
      */
-    scrub: function (thisText) {
+    scrub: function(thisText) {
         var workingText = $("<div/>").text(thisText).html();
         var encodedText = [workingText];
         if (workingText.indexOf("&gt;") > -1) {
@@ -6292,14 +6251,13 @@ var Preview = {
             encodedText = [workingText.substring(0, beginTags[0])];
             for (i = 0; i < oeLen; i++) {
                 encodedText.push("<span class='previewTag'>",
-                        workingText.substring(beginTags[i], endTags[i]),
-                        "</span>");
+                    workingText.substring(beginTags[i], endTags[i]),
+                    "</span>");
                 if (i != oeLen - 1) {
                     encodedText.push(workingText.substring(endTags[i], beginTags[i + 1]));
                 }
             }
-            if (oeLen > 0)
-                encodedText.push(workingText.substring(endTags[oeLen - 1]));
+            if (oeLen > 0) encodedText.push(workingText.substring(endTags[oeLen - 1]));
         }
         return encodedText.join("");
     },
@@ -6307,39 +6265,37 @@ var Preview = {
      *  Animates scrolling to the current page (middle of 3 shown)
      *  in the Preview Tool. Also restores the intention of the selected options.
      */
-    scrollToCurrentPage: function () {
+    scrollToCurrentPage: function() {
         var pageOffset = $(".previewPage").filter(":first").height() + 20;
         $("#previewDiv").animate({
             scrollTop: pageOffset
         }, 500);
-        $("#previewNotes").filter(".ui-state-active").each(// pulled out #previewAnnotations
-                function () {
-                    if ($("." + this.id).is(":hidden")) {
-                        $("." + this.id).show();
-                        Preview.scrollToCurrentPage();
-                    }
-                });
+        $("#previewNotes").filter(".ui-state-active").each( // pulled out #previewAnnotations
+            function() {
+                if ($("." + this.id).is(":hidden")) {
+                    $("." + this.id).show();
+                    Preview.scrollToCurrentPage();
+                }
+            });
     }
 };
 $("#previewSplit")
-        .on("click", ".previewText,.previewNotes", function () {
-            Preview.edit(this);
-        })
-        .on("click", "#previewNotes", function () {
-            if ($(this).hasClass("ui-state-active")) {
-                $(".previewNotes").hide();
-                $("#previewNotes")
-                        .text("Show Notes")
-                        .removeClass("ui-state-active");
-            } else {
-                $(".previewNotes").show();
-                $("#previewNotes")
-                        .text("Hide Notes")
-                        .addClass("ui-state-active");
-            }
-            Preview.scrollToCurrentPage();
-        });
-tpen.screen.peekZoom = function (cancel) {
+    .on("click", ".previewText,.previewNotes", function() { Preview.edit(this); })
+    .on("click", "#previewNotes", function() {
+        if ($(this).hasClass("ui-state-active")) {
+            $(".previewNotes").hide();
+            $("#previewNotes")
+                .text("Show Notes")
+                .removeClass("ui-state-active");
+        } else {
+            $(".previewNotes").show();
+            $("#previewNotes")
+                .text("Hide Notes")
+                .addClass("ui-state-active");
+        }
+        Preview.scrollToCurrentPage();
+    });
+tpen.screen.peekZoom = function(cancel) {
     var topImg = $("#imgTop img");
     var btmImg = $("#imgBottom img");
     var availableRoom = new Array(Page.height() - $(".navigation").height(), $("#transcriptionCanvas").width());
@@ -6414,13 +6370,13 @@ tpen.screen.peekZoom = function (cancel) {
         $("#zoomLock").css("background-color", "#272727");
         $(".lineColIndicatorArea").fadeIn();
         tpen.screen.isPeeking = false;
+        tpen.screen.focusItem[1].find(".theText").focus();
     }
 };
 
 /* Clear the resize function attached to the window element. */
 function detachWindowResize() {
-    window.onresize = function (event, ui) {
-    };
+    window.onresize = function(event, ui) {};
 }
 
 function detachTemplateResize() {
@@ -6437,10 +6393,10 @@ function attachTemplateResize() {
         disabled: false,
         minWidth: window.innerWidth / 2,
         maxWidth: window.innerWidth * .75,
-        start: function (event, ui) {
+        start: function(event, ui) {
             detachWindowResize();
         },
-        resize: function (event, ui) {
+        resize: function(event, ui) {
             var width = ui.size.width;
             var height = 1 / originalRatio * width;
             $("#transcriptionCanvas").css("height", height + "px").css("width", width + "px");
@@ -6461,15 +6417,15 @@ function attachTemplateResize() {
             $("#imgTop img").css("top", newImgTopTop + "px");
             $("#imgTop .lineColIndicatorArea").css("top", newImgTopTop + "px");
         },
-        stop: function (event, ui) {
+        stop: function(event, ui) {
             attachWindowResize();
-            $.each($(".lineColOnLine"), function () {
+            $.each($(".lineColOnLine"), function() {
                 var height = $(this).height() + "px";
                 $(this).css("line-height", height);
             });
         }
     });
-    $("#transcriptionTemplate").on('resize', function (e) {
+    $("#transcriptionTemplate").on('resize', function(e) {
         e.stopPropagation();
     });
 }
@@ -6477,7 +6433,7 @@ function attachTemplateResize() {
 //Must explicitly set new height and width for percentages values in the DOM to take effect.
 //with resizing because the img top position puts it up off screen a little.
 function attachWindowResize() {
-    window.onresize = function (event, ui) {
+    window.onresize = function(event, ui) {
         detachTemplateResize();
         event.stopPropagation();
         var newImgBtmTop = "0px";
@@ -6582,7 +6538,7 @@ function attachWindowResize() {
             $("#transcriptionCanvas").css("height", newHeight + "px");
             $(".lineColIndicatorArea").css("height", newHeight + "px");
         }
-        $.each($(".lineColOnLine"), function () {
+        $.each($(".lineColOnLine"), function() {
             $(this).css("line-height", $(this).height() + "px");
         });
         tpen.screen.textSize();
@@ -6594,21 +6550,21 @@ function attachWindowResize() {
         }
 
     };
-//        $(window).on('resize', function (e) {
-//            e.stopPropagation();
-//        });
+    //        $(window).on('resize', function (e) {
+    //            e.stopPropagation();
+    //        });
 }
 
-tpen.screen.responsiveNavigation = function (severeCheck) {
+tpen.screen.responsiveNavigation = function(severeCheck) {
     if (!severeCheck && tpen.screen.navMemory > 0 && $('.collapsed.navigation').size()) {
         $('.collapsed.navigation').removeClass('collapsed severe');
         tpen.screen.navMemory = 0;
     }
     var width = Page.width();
     var trims = $(".trimSection:visible").length;
-    var contentWidth = (function () {
+    var contentWidth = (function() {
         var w = 0;
-        $('.trimSection').each(function () {
+        $('.trimSection').each(function() {
             w += $(this).width();
         });
         return w;
@@ -6637,33 +6593,33 @@ tpen.screen.responsiveNavigation = function (severeCheck) {
  * */
 function createProject(msID) {
     var url = "createProject";
-    var params = {ms: msID};
+    var params = { ms: msID };
     var projectID = 0;
     $.post(url, params)
-            .success(function (data) {
-                projectID = data;
-                window.location.href = "transcription.html?projectID=" + projectID;
-            })
-            .fail(function (data) {
-                alert("Could not create project");
-            });
+        .success(function(data) {
+            projectID = data;
+            window.location.href = "transcription.html?projectID=" + projectID;
+        })
+        .fail(function(data) {
+            alert("Could not create project");
+        });
 
 }
 /* Make call to sql to get lines and Java to build history.  See GetHistory.java */
 function getHistory() {
     var url = "getHistory";
     var folioNum = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
-    var params = {projectID: tpen.project.id, p: folioNum};
+    var params = { projectID: tpen.project.id, p: folioNum };
     $.post(url, params)
-            .success(function (data) {
-                $("#historyListing").empty();
-                var historyElem = $(data);
-                $("#historyListing").append(historyElem);
-            })
-            .fail(function (data) {
-                $("#historyListing").empty(); //? good nuf for now?
-                //TODO: Should we populate history with something informing failure?
-            });
+        .success(function(data) {
+            $("#historyListing").empty();
+            var historyElem = $(data);
+            $("#historyListing").append(historyElem);
+        })
+        .fail(function(data) {
+            $("#historyListing").empty(); //? good nuf for now?
+            //TODO: Should we populate history with something informing failure?
+        });
 }
 
 var History = {
@@ -6676,7 +6632,7 @@ var History = {
      *  @param w width of current .activeLine
      *  These are in percetange values, based off the height and width of the image being used as the transcription canvas.
      */
-    showImage: function (x, y, w, h) {
+    showImage: function(x, y, w, h) {
         var buffer = 30; //even is better
         var hView = $("#historyViewer");
         var hImg = hView.find("img");
@@ -6722,28 +6678,28 @@ var History = {
      *
      *  @param lineid int id of the targeted line
      */
-    showLine: function (lineid) {
+    showLine: function(lineid) {
         var lineidHist = lineid.replace("line/", "");
         $("#historyBookmark").empty();
-        $("#history" + lineidHist).show(0, function () {
+        $("#history" + lineidHist).show(0, function() {
             // persist history options
-            $("#historySplit .ui-state-active").each(function () {
+            $("#historySplit .ui-state-active").each(function() {
                 $(this).removeClass("ui-state-active").click();
             });
         }).siblings(".historyLine").hide();
         var refLine = $(".transcriptlet[lineserverid='" + lineid + "']");
         History.showImage(
-                parseFloat(refLine.attr("lineleft")),
-                parseFloat(refLine.attr("linetop")),
-                parseFloat(refLine.attr("linewidth")),
-                parseFloat(refLine.attr("lineheight"))
-                );
+            parseFloat(refLine.attr("lineleft")),
+            parseFloat(refLine.attr("linetop")),
+            parseFloat(refLine.attr("linewidth")),
+            parseFloat(refLine.attr("lineheight"))
+        );
     },
     /**
      *  Replaces empty entries with an indicator.
      */
-    scrubHistory: function () {
-        $(".historyText,.historyNote").html(function () {
+    scrubHistory: function() {
+        $(".historyText,.historyNote").html(function() {
             if ($(this).html().length === 0) {
                 return "<span style='color:silver;'> - empty - </span>";
             } else {
@@ -6755,7 +6711,7 @@ var History = {
      *  Shows the changes to parsing when hovering over a history entry.
      *
      */
-    adjustBookmark: function (archive) {
+    adjustBookmark: function(archive) {
         var buffer = 30; //even is better
         var hView = $("#historyViewer");
         var hImg = hView.find("img");
@@ -6801,14 +6757,10 @@ var History = {
             "border": "solid thin red"
         });
         //TODO: are these correct?
-        if (Math.abs(delta.x) > 1)
-            historyDims.push("left: ", Math.round(archiveDims.x / dims.x * 100), "%");
-        if (Math.abs(delta.y) > 1)
-            historyDims.push("top: ", Math.round(archiveDims.y / dims.y * 100), "%");
-        if (Math.abs(delta.w) > 1)
-            historyDims.push("width: ", Math.round(archiveDims.w / dims.w * 100), "%");
-        if (Math.abs(delta.h) > 1)
-            historyDims.push("height: ", Math.round(archiveDims.h / dims.h * 100), "%");
+        if (Math.abs(delta.x) > 1) historyDims.push("left: ", Math.round(archiveDims.x / dims.x * 100), "%");
+        if (Math.abs(delta.y) > 1) historyDims.push("top: ", Math.round(archiveDims.y / dims.y * 100), "%");
+        if (Math.abs(delta.w) > 1) historyDims.push("width: ", Math.round(archiveDims.w / dims.w * 100), "%");
+        if (Math.abs(delta.h) > 1) historyDims.push("height: ", Math.round(archiveDims.h / dims.h * 100), "%");
         archive.find(".historyDims").html(historyDims.join(" "));
     },
     /**
@@ -6816,14 +6768,14 @@ var History = {
      *
      *  @param button jQuery object, clicked button
      */
-    textOnly: function (button) {
+    textOnly: function(button) {
         //toggle
         if (button.hasClass("ui-state-active")) {
             button.removeClass("ui-state-active");
             $(".historyEntry").slideDown();
         } else {
             button.addClass("ui-state-active");
-            $(".historyText").each(function (index) {
+            $(".historyText").each(function(index) {
                 var collection = $(".historyText");
                 var thisOne = $(this).html();
                 var previousOne = (index > 0) ? collection.eq(index - 1).html() : "";
@@ -6840,14 +6792,14 @@ var History = {
      *
      *  @param button jQuery object, clicked button
      */
-    parsingOnly: function (button) {
+    parsingOnly: function(button) {
         //toggle
         if (button.hasClass("ui-state-active")) {
             button.removeClass("ui-state-active");
             $(".historyEntry").slideDown();
         } else {
             button.addClass("ui-state-active");
-            $(".historyEntry").each(function (index) {
+            $(".historyEntry").each(function(index) {
                 var collection = $(".historyEntry");
                 var thisOne = [$(this).attr("linewidth"), $(this).attr("lineheight"), $(this).attr("lineleft"), $(this).attr("linetop")];
                 var previousOne = (index > 0) ? [collection.eq(index - 1).attr("linewidth"), collection.eq(index - 1).attr("lineheight"), collection.eq(index - 1).attr("lineleft"), collection.eq(index - 1).attr("linetop")] : ["0", "0", "0", "0"];
@@ -6864,7 +6816,7 @@ var History = {
      *
      *  @param button jQuery object, clicked button
      */
-    showNotes: function (button) {
+    showNotes: function(button) {
         //toggle
         if (button.hasClass("ui-state-active")) {
             button.removeClass("ui-state-active").html("Show Notes");
@@ -6880,15 +6832,13 @@ var History = {
      *
      *  @param entry jQuery object, clicked history entry
      */
-    revertText: function (entry) {
+    revertText: function(entry) {
         //if(!isMember && !permitModify)return false;
         var historyText = entry.find(".historyText").text();
         var historyNotes = entry.find(".historyNote").text();
         //As long as it's actually the same dash
-        if (historyText.indexOf("- empty -") !== -1)
-            historyText = "";
-        if (historyNotes.indexOf("- empty -") !== -1)
-            historyNotes = "";
+        if (historyText.indexOf("- empty -") !== -1) historyText = "";
+        if (historyNotes.indexOf("- empty -") !== -1) historyNotes = "";
         var lineid = entry.parent(".historyLine").attr("id").substr(7);
         var pair = $(".transcriptlet[lineserverid='line/" + lineid + "']");
         pair.addClass("isUnsaved").find(".theText").val(historyText);
@@ -6900,7 +6850,7 @@ var History = {
      *
      *  @param entry jQuery object, clicked history entry
      */
-    revertParsing: function (entry) {
+    revertParsing: function(entry) {
         var lineid = entry.parent(".historyLine").attr("id").substr(7);
         var dims = {
             width: parseInt(entry.attr("linewidth")),
@@ -6915,22 +6865,22 @@ var History = {
             " linetop='", dims.top, "'",
             " linewidth='", dims.width, "'",
             " lineheight='", dims.height, "'",
-            "></div>"];
+            "></div>"
+        ];
         var dummy = dummyBuild.join("");
         if (thisTranscriptlet.find(".lineLeft").val() !== $(dummy).attr("lineleft")) {
             //moved out of column
             var cfrm = confirm("This revision will remove this line from the column it is in.\n\nConfirm or click 'Cancel' to leave the column intact and adjust other dimensions only.");
-            if (cfrm)
-                thisTranscriptlet.find(".lineLeft").val($(dummy).attr("lineleft")).end();
+            if (cfrm) thisTranscriptlet.find(".lineLeft").val($(dummy).attr("lineleft")).end();
             thisTranscriptlet
-                    .attr("lineTop", $(dummy).attr("linetop")).end()
-                    .attr("lineWidth", (dummy).attr("linewidth")).end()
-                    .attr("lineHeight", $(dummy).attr("lineheight"));
+                .attr("lineTop", $(dummy).attr("linetop")).end()
+                .attr("lineWidth", (dummy).attr("linewidth")).end()
+                .attr("lineHeight", $(dummy).attr("lineheight"));
         } else {
             thisTranscriptlet
-                    .attr("lineTop", $(dummy).attr("linetop")).end()
-                    .attr("lineWidth", $(dummy).attr("linewidth")).end()
-                    .attr("lineHeight", $(dummy).attr("lineheight"));
+                .attr("lineTop", $(dummy).attr("linetop")).end()
+                .attr("lineWidth", $(dummy).attr("linewidth")).end()
+                .attr("lineHeight", $(dummy).attr("lineheight"));
         }
         updateLine(dummy, false, false); //Not sure this will work...
     },
@@ -6939,7 +6889,7 @@ var History = {
      *
      *  @param entry jQuery object, clicked history entry
      */
-    revertAll: function (entry) {
+    revertAll: function(entry) {
         this.revertText(entry);
         this.revertParsing(entry);
     },
@@ -6948,7 +6898,7 @@ var History = {
      *
      *  @param h element, clicked history tool
      */
-    revert: function (h) {
+    revert: function(h) {
         var entry = $(h).parents(".historyEntry");
         // decide which was clicked
         if ($(h).hasClass("ui-icon-arrowreturnthick-1-n")) {
@@ -6970,7 +6920,7 @@ var History = {
      *
      *  @param lineid int unique id to attach to aded entry
      */
-    prependEntry: function (lineid) {
+    prependEntry: function(lineid) {
         var lineidHist = lineid;
         var updated = $(".transcriptlet[lineserverid='line/" + lineid + "']");
         var lineText = updated.find(".theText").val();
@@ -7007,23 +6957,21 @@ var History = {
             newEntry.insertBefore(firstEntry); //We could add to the bottom with append to the parent if we want.
         }
         newEntry.attr({
-            "linewidth": parseInt(parseFloat(updated.attr("lineWidth")) * (10 * ratio)),
-            "lineheight": parseInt(parseFloat(updated.attr("lineHeight")) * 10),
-            "lineleft": parseInt(parseFloat(updated.attr("lineLeft")) * (10 * ratio)),
-            "linetop": parseInt(parseFloat(updated.attr("lineTop"))) * 10
-        }).find(".historyDate").html("<span class='quiet' title='History will update when the page reloads'>Just Now</span>")
-                .siblings(".historyCreator").html("<span class='quiet' title='History will update when the page reloads'>" + historyMaker + "</span>")
-                .siblings(".historyText").html(lineText)
-                .siblings(".historyNote").html(lineNotes)
-                .siblings(".historyOptions").find("span").click(function () {
-            History.revert(this)
-        });
+                "linewidth": parseInt(parseFloat(updated.attr("lineWidth")) * (10 * ratio)),
+                "lineheight": parseInt(parseFloat(updated.attr("lineHeight")) * 10),
+                "lineleft": parseInt(parseFloat(updated.attr("lineLeft")) * (10 * ratio)),
+                "linetop": parseInt(parseFloat(updated.attr("lineTop"))) * 10
+            }).find(".historyDate").html("<span class='quiet' title='History will update when the page reloads'>Just Now</span>")
+            .siblings(".historyCreator").html("<span class='quiet' title='History will update when the page reloads'>" + historyMaker + "</span>")
+            .siblings(".historyText").html(lineText)
+            .siblings(".historyNote").html(lineNotes)
+            .siblings(".historyOptions").find("span").click(function() { History.revert(this) });
 
     },
     /**
      *  Attaches the credit for the most recent edit to the main interface.
      */
-    contribution: function () {
+    contribution: function() {
         var lineid = tpen.screen.focusItem[1].attr('lineserverid').split("/")[1];
         $("#contribution").html($("#history" + lineid).find('.historyCreator').eq(0).text());
         if ($("#contribution").html().length == 0) {
@@ -7089,10 +7037,10 @@ function setDirectionForElements() {
 
 function checkParsingReroute() {
     if (getURLVariable('liveTool') == "parsing") {
-        setTimeout(function () {
+        setTimeout(function() {
             var replaceURL = replaceURLVariable("liveTool", "none");
             window.history.pushState("", "T&#8209;PEN 2.8 Transcription", replaceURL);
-            if (tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing) {
+            if (tpen.user.isMember || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing) {
                 $("#canvasControls").click();
                 $("#parsingBtn").click();
             }
@@ -7119,40 +7067,22 @@ function closeHelpVideo() {
 /* Copyright 2013 Teun Duynstee Licensed under the Apache License, Version 2.0 */
 //This is a helper function for drawLinesDesignateColumns()
 function firstBy() {
-    function n(n) {
-        return n
-    }
-    function t(n) {
-        return"string" == typeof n ? n.toLowerCase() : n
-    }
+    function n(n) { return n }
+
+    function t(n) { return "string" == typeof n ? n.toLowerCase() : n }
+
     function r(r, e) {
-        if (e = "number" == typeof e ? {direction: e} : e || {}, "function" != typeof r)
-        {
-            var u = r;
-            r = function (n) {
-                return n[u] ? n[u] : ""
-            }
-        }
-        if (1 === r.length)
-        {
-            var i = r, o = e.ignoreCase ? t : n;
-            r = function (n, t) {
-                return o(i(n)) < o(i(t)) ? -1 : o(i(n)) > o(i(t)) ? 1 : 0
-            }
-        }
-        return-1 === e.direction ? function (n, t) {
-            return-r(n, t)
-        } : r
+        if (e = "number" == typeof e ? { direction: e } : e || {}, "function" != typeof r) { var u = r;
+            r = function(n) { return n[u] ? n[u] : "" } }
+        if (1 === r.length) { var i = r,
+                o = e.ignoreCase ? t : n;
+            r = function(n, t) { return o(i(n)) < o(i(t)) ? -1 : o(i(n)) > o(i(t)) ? 1 : 0 } }
+        return -1 === e.direction ? function(n, t) { return -r(n, t) } : r
     }
-    function e(n, t) {
-        return n = r(n, t), n.thenBy = u, n
-    }
-    function u(n, t) {
-        var u = this;
-        return n = r(n, t), e(function (t, r) {
-            return u(t, r) || n(t, r)
-        })
-    }
+
+    function e(n, t) { return n = r(n, t), n.thenBy = u, n }
+
+    function u(n, t) { var u = this; return n = r(n, t), e(function(t, r) { return u(t, r) || n(t, r) }) }
     return e;
 }
 
@@ -7163,17 +7093,17 @@ function firstBy() {
  * You get it.  This is for numbering columns in the preview tool and in the parsing interface, see letters.increment();  
  */
 //https://codepen.io/rhroyston/pen/LkoYXN
-var letters = (function () {
+var letters = (function() {
 
     // object to expose as public properties and methods such as clock.now
     var pub = {};
     var letterArray = [];
 
-    pub.increment = function (c) {
+    pub.increment = function(c) {
         letterArray = c.split("");
 
         if (isLetters(letterArray)) {
-            return(next(c));
+            return (next(c));
         } else {
             throw new Error('Letters Only');
         }
@@ -7181,8 +7111,7 @@ var letters = (function () {
 
     function isLetters(arr) {
         for (var i = 0; i < arr.length; i++) {
-            if (arr[i].toLowerCase() != arr[i].toUpperCase()) {
-            } else {
+            if (arr[i].toLowerCase() != arr[i].toUpperCase()) {} else {
                 return false;
             }
         }
@@ -7241,7 +7170,5 @@ var letters = (function () {
 
 
 // Shim console.log to avoid blowing up browsers without it - daQuoi?
-if (!window.console)
-    window.console = {};
-if (!window.console.log)
-    window.console.log = function () { };
+if (!window.console) window.console = {};
+if (!window.console.log) window.console.log = function() {};

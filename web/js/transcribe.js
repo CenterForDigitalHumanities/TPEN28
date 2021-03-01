@@ -3032,8 +3032,7 @@ function removeTransition() {
     $("#imgBottom").css("-moz-transition", "");
     $("#imgBottom").css("-o-transition", "");
     $("#imgBottom").css("transition", "");
-}
-;
+};
 
 function restoreTransition() {
     // TODO: objectify this
@@ -3053,8 +3052,7 @@ function restoreTransition() {
     $("#imgBottom").css("-moz-transition", "left .5s, top .5s, width .5s");
     $("#imgBottom").css("-o-transition", "left .5s, top .5s, width .5s");
     $("#imgBottom").css("transition", "left .5s, top .5s, width .5s");
-}
-;
+};
 
 /**
  * Sets screen for parsing tool use.
@@ -4169,26 +4167,26 @@ function addchar(theChar, closingTag) {
     }
 }
 
-//function setCursorPosition(e, position) {
-//    var pos = position;
-//    var wrapped = false;
-//    if (pos.toString().indexOf("wrapped") === 0) {
-//        pos = parseInt(pos.substr(7));
-//        wrapped = true;
-//    }
-//    e.focus();
-//    if (e.setSelectionRange) {
-//        e.setSelectionRange(pos, pos);
-//    }
-//    else if (e.createTextRange) {
-//        e = e.createTextRange();
-//        e.collapse(true);
-//        e.moveEnd('character', pos);
-//        e.moveStart('character', pos);
-//        e.select();
-//    }
-//    return wrapped;
-//}
+function setCursorPosition(e, position) {
+    var pos = position;
+    var wrapped = false;
+    if (pos.toString().indexOf("wrapped") === 0) {
+        pos = parseInt(pos.substr(7));
+        wrapped = true;
+    }
+    e.focus();
+    if (e.setSelectionRange) {
+        e.setSelectionRange(pos, pos);
+    }
+    else if (e.createTextRange) {
+        e = e.createTextRange();
+        e.collapse(true);
+        e.moveEnd('character', pos);
+        e.moveStart('character', pos);
+        e.select();
+    }
+    return wrapped;
+}
 
 
 function toggleCharacters() {
@@ -4217,8 +4215,7 @@ function togglePageJump() {
 
 /* Change the page to the specified page from the drop down selection. */
 function pageJump(page, parsing) {
-    var canvasToJumpTo = parseInt(page);
-    ; //0,1,2...
+    var canvasToJumpTo = parseInt(page);; //0,1,2...
     rememberControls();
     if (tpen.screen.currentFolio !== canvasToJumpTo && canvasToJumpTo >= 0) { //make sure the default option was not selected and that we are not jumping to the current folio
         //Data.saveTranscription("");
@@ -4231,7 +4228,7 @@ function pageJump(page, parsing) {
             redraw(parsing, true);
             //loadTranscriptionCanvas(tpen.manifest.sequences[0].canvases[canvasToJumpTo], parsing);
             setTimeout(function () {
-                if (tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing) {
+                if (tpen.user.isMember || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing) {
                     $("#canvasControls").click();
                     $("#parsingBtn").click();
                 }

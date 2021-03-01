@@ -66,6 +66,7 @@ var tpen = {
     },
     user: {
         isAdmin: false,
+        isMember: false,
         UID: 0,
         fname: "",
         lname: "",

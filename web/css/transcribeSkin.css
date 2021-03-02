@@ -353,6 +353,7 @@ textarea:focus{
     top: 0;
     left: 0;
     z-index: 0;
+    background-image: inherit;
     background-position: bottom 0px left 0px;
     background-size: cover;
 }
@@ -1636,6 +1637,7 @@ button.active {
     box-sizing: border-box;
     box-shadow: none;
     background-position: bottom -1000px left 0px;
+    background-size: cover;
 }
 .lineColIndicator:hover{
     opacity: 1;

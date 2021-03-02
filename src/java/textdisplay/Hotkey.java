@@ -23,7 +23,7 @@ import static textdisplay.DatabaseWrapper.closeDBConnection;
 import static textdisplay.DatabaseWrapper.closePreparedStatement;
 import static textdisplay.DatabaseWrapper.getConnection;
 
-/**customizable hotkeys for transcribing non enlgish texts*/
+/**customizable unicode character hotkeys for transcribing texts*/
 public class Hotkey {
 
     int uid;
@@ -35,22 +35,22 @@ public class Hotkey {
     }
     
     /**
-     * Create a new project Hotkey and store it
-     * @param code the integer keycode for the character
-     * @param projectID
-     * @param position position this button falls in, used to order the output of all buttons
-     * @param isProject distinguishes this from a button intended for on-the-fly transcription
+     * For when the user clicks Add a Button on button.jsp.
+     * Make a default button real quick, so it can be updated via "Save Changes" after they set it to be what they want it to be. 
+     * This is for the servlet /addHotkey - addHotkey.java
+     * Note that position will always be one greater than the max position in the column in SQL.
      * @throws SQLException
      */
     public Hotkey(int code, int projectID, int position, Boolean isProject) throws SQLException {
-        String query = "insert into hotkeys(projectID,uid,position,`key`) values (?,0,?,?)";
+        String query = "insert into hotkeys (`key`,position,uid,projectID) values(?,?,?,?);";
         Connection j = null;
         PreparedStatement stmt = null;
         try {
             j = getConnection();
             stmt = j.prepareStatement(query);
-            stmt.setInt(3, code);
-            stmt.setInt(1, projectID);
+            stmt.setInt(1, code);
+            stmt.setInt(4, projectID);
+            stmt.setInt(3, 0);
             stmt.setInt(2, position);
             stmt.execute();
         } finally {
@@ -59,7 +59,7 @@ public class Hotkey {
         }
     }
 
-    /**
+    /*
      * Add a new Hotkey for use in on-the-fly transcription
      * @param code the integer keycode for the character
      * @param uid user unique id under which this should be stored
@@ -110,7 +110,9 @@ public class Hotkey {
 
     }
 
-    /**Get an existing Hotkey based on the current user and the key position (1-10)*/
+    /**Get an existing Hotkey based on the current user and the key position (1-10)
+     * @deprecated Hotkeys are within projects only.
+     */
     public Hotkey(int uid, int position) throws SQLException {
         String query = "select * from hotkeys where uid=? and position=? and projectID=0";
         Connection j = null;
@@ -449,70 +451,68 @@ public class Hotkey {
         return toret;
     }
 
-    /**Remove this key*/
+    /**Remove this key
+     * @throws java.sql.SQLException
+     */
     public void delete() throws SQLException {
         if (this.projectID > 0) {
             String query = "delete from hotkeys where projectID=? and position=?";
             Connection j = null;
             PreparedStatement ps = null;
-            PreparedStatement update=null;
             try {
                 j = getConnection();
                 ps = j.prepareStatement(query);
                 ps.setInt(1, projectID);
                 ps.setInt(2, position);
                 ps.execute();
-                update = j.prepareStatement("update hotkeys set position=? where position=? and projectID=?");
-                //Adjust the position of all of the buttons with positions greater than this to be 1 less than they were
-                while (true) {
-                    Hotkey k = new Hotkey(projectID, position + 1, true);
-                    if (k.exists()) {
-                        update.setInt(1, position);
-                        update.setInt(2, position + 1);
-                        update.setInt(3, projectID);
-                        update.execute();
-                        position++;
-                    } else {
-                        break;
-                    }
-                }
-
             } finally {
                 closeDBConnection(j);
-                closePreparedStatement(ps);
-                closePreparedStatement(update);
-                
+                closePreparedStatement(ps);                
             }
-        } else {
-            String query = "delete from hotkeys where uid=? and position=?";
-            Connection j = null;
-            PreparedStatement ps = null;
-            PreparedStatement update=null;
-            try {
-                j = getConnection();
-                ps = j.prepareStatement(query);
-                ps.setInt(1, uid);
-                ps.setInt(2, position);
-                ps.execute();
-                update = j.prepareStatement("update hotkeys set position=? where position=? and uid=?");
-                //Adjust the position of all of the buttons with positions greater than this to be 1 less than they were
-                while (true) {
-                    Hotkey k = new Hotkey(uid, position + 1);
-                    if (k.exists()) {
-                        update.setInt(1, position);
-                        update.setInt(2, position + 1);
-                        update.setInt(3, uid);
-                        update.execute();
-                        position++;
-                    } else {
-                        break;
-                    }
-                }
-            } finally {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-                closePreparedStatement(update);
+        }
+    }
+    
+    public static void removeAllProjectHotkeys(int projectID) throws SQLException{
+        String query = "delete from hotkeys where projectID=? and uid=0";
+        Connection j = null;
+        PreparedStatement ps = null;
+        try{
+            j = getConnection();
+            ps = j.prepareStatement(query);
+            ps.setInt(1, projectID);
+            ps.execute();
+        }
+        finally{
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+        }  
+    }
+    
+    /**
+     * Get the highest position of all hotkeys for a particular project.  
+     * Return 0 for empty sets (no hotkeys exist for project).  
+     * @param projectID
+     * @return
+     * @throws SQLException 
+     */
+    public static int getMaxPosition(int projectID) throws SQLException{
+        int position = 0;
+        String query = "select max(position) from hotkeys where projectID=?";
+        Connection j = null;
+        PreparedStatement ps = null;
+        try{
+            j = getConnection();
+            ps = j.prepareStatement(query);
+            ps.setInt(1, projectID);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                position = rs.getInt(1);
             }
+            return position;
+        }
+        finally{
+            closeDBConnection(j);
+            closePreparedStatement(ps);
         }
     }
 }

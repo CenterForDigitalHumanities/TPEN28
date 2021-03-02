@@ -243,6 +243,14 @@
         <servlet-name>autoParse</servlet-name>
         <servlet-class>edu.slu.tpen.servlet.AutoParse</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>updateSpecialCharacters</servlet-name>
+        <servlet-class>servlets.updateSpecialCharacters</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>updateXMLEntries</servlet-name>
+        <servlet-class>servlets.updateXMLEntries</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>imageResize</servlet-name>
         <url-pattern>/imageResize</url-pattern>
@@ -689,6 +697,14 @@
     <servlet-mapping>
         <servlet-name>autoParse</servlet-name>
         <url-pattern>/autoParse</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>updateSpecialCharacters</servlet-name>
+        <url-pattern>/updateSpecialCharacters</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>updateXMLEntries</servlet-name>
+        <url-pattern>/updateXMLEntries</url-pattern>
     </servlet-mapping>
     <session-config>
         <!-- In minutes -->

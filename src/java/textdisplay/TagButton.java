@@ -103,6 +103,7 @@ public class TagButton {
    String xmlColor;
 
    /**
+    * @deprecated There is no use for UID-based XML tags
     * Add a new button, tag is the tag name only, no brackets
     */
    public TagButton(int uid, int position, String tag, String description) throws SQLException {
@@ -130,9 +131,13 @@ public class TagButton {
    }
 
    /**
-    * Add a new button, tag is the tag name only, no brackets
+    * For when the user clicks Add a Tag on button.jsp.
+     * Make a default TagButton real quick, so it can be updated via "Save Changes" after they set it to be what they want it to be. 
+     * This is for the servlet /addTag - addTag.java
+     * Note that position will always be one greater than the max position in the column in SQL.
+     * 
     */
-   public TagButton(int projectID, int position, String tag, Boolean project, String description) throws SQLException {
+   public TagButton(int projectID, int position, String tag, String description, Boolean project) throws SQLException {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
@@ -142,21 +147,14 @@ public class TagButton {
             getLogger(TagButton.class.getName()).log(SEVERE, null, e);
       }
       try {
-         String query = "insert into projectbuttons(project,position,text,description) values (?,?,?,?)";
+         String query = "insert into projectbuttons (project,position,text,description) values(?,?,?,?);";
          j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
          stmt.setInt(1, projectID);
          stmt.setInt(2, position);
-         stmt.setString(3, tag);
          stmt.setString(4, description);
          stmt.execute();
-
-         this.tag = tag;
-         this.position = position;
-         this.uid = -1;
-         this.projectID = projectID;
-         this.xmlColor = "";
       } catch (Exception e) {
             getLogger(TagButton.class.getName()).log(SEVERE, null, e);
       } finally {
@@ -166,13 +164,14 @@ public class TagButton {
    }
 
    /**
+    * @deprecated There is no use for UID-based XML tags
     * Add a new button, tag is the tag name only, no brackets. params needs to have a length of 5
     */
    public TagButton(int uid, int position, String tag, String[] params) throws SQLException {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
-         String query = "insert into buttons(uid,position,text,param1, param2, param3, param4, param5) values (?,?,?,?,?,?,?,?)";
+         String query = "insert into buttons (uid,position,text,param1, param2, param3, param4, param5) values (?,?,?,?,?,?,?,?)";
          j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
@@ -202,7 +201,7 @@ public class TagButton {
    /**
     * Add a new button, tag is the tag name only, no brackets. params needs to have a length of 5
     */
-   public TagButton(int projectID, int position, String tag, String[] params, Boolean isProject, String description) throws SQLException {
+   public TagButton(int projectID, int position, String tag, String[] params, String description, Boolean isProject) throws SQLException {
       Connection j = null;
       PreparedStatement stmt = null;
       try {
@@ -218,7 +217,7 @@ public class TagButton {
                params[i] = "";
             }
          }
-         String query = "insert into projectbuttons(project,position,text,param1, param2, param3, param4, param5, description) values (?,?,?,?,?,?,?,?,?)";
+         String query = "insert into projectbuttons(project,position,text, param1, param2, param3, param4, param5, description) values (?,?,?,?,?,?,?,?,?)";
          j = getConnection();
          stmt = j.prepareStatement(query);
          stmt.setString(3, tag);
@@ -245,7 +244,8 @@ public class TagButton {
    }
 
    /**
-    * Retrieve and existing button
+    * @deprecated There is no use for UID-based XML tags
+    * Retrieve an existing button
     */
    public TagButton(int uid, int position) throws SQLException {
       Connection j = null;
@@ -359,6 +359,7 @@ public class TagButton {
                   }
                }
             }
+            // TODO: no further check for more returned at same position!
          } else {
             this.uid = 0;
             this.position = 0;
@@ -431,7 +432,7 @@ public class TagButton {
    }
 
    /**
-    * Are there stored parameters for this button? Useful weh deciding the editing layout
+    * Are there stored parameters for this button? Useful when deciding the editing layout
     */
    public Boolean hasParameters() {
       if (parameters != null) {
@@ -841,88 +842,46 @@ public class TagButton {
     * @throws SQLException
     */
    public void updateDescription(String desc) throws SQLException {
-      String query = "update buttons set description=? where uid=? and position=?";
-      if (this.projectID > 0) {
-         query = "update projectbuttons set description=? where project=? and position=?";
-      }
-      Connection j = null;
-      PreparedStatement ps = null;
-      try {
-         j = getConnection();
-         ps = j.prepareStatement(query);
-         if (this.projectID > 0) {
-            ps.setInt(2, projectID);
-         } else {
-            ps.setInt(2, uid);
-         }
-         ps.setInt(3, position);
-         ps.setString(1, desc);
-         ps.execute();
-      } finally {
-            closeDBConnection(j);
-            closePreparedStatement(ps);
-      }
+       if (this.projectID > 0) {
+           String query = "update projectbuttons set description=? where project=? and position=?";
+           Connection j = null;
+           PreparedStatement ps = null;
+           try {
+               j = getConnection();
+               ps = j.prepareStatement(query);
+               ps.setString(1, desc);
+               ps.setInt(2, projectID);
+               ps.setInt(3, position);
+               ps.execute();
+           } finally {
+               closeDBConnection(j);
+               closePreparedStatement(ps);
+           }
+       }
    }
 
    /**
     * Deletes the tag button
-    *
+    * Redundant name discriminates it from Hotkey.delete()
     * @throws SQLException
     */
-   public void deleteTag() throws SQLException {
-      String query = "delete from buttons where uid=? and position=?";
-      if (this.projectID > 0) {
-         query = "delete from projectbuttons where project=? and position=?";
-      }
-      Connection j = null;
-      PreparedStatement ps = null;
-      PreparedStatement update = null;
-      String updateQuery = "update buttons set position=? where uid=? and position=?";
-      if (this.projectID > 0) {
-         updateQuery = "update projectbuttons set position=? where project=? and position=?";
-      }
-      try {
-         j = getConnection();
-         ps = j.prepareStatement(query);
-         if (this.projectID > 0) {
-            ps.setInt(1, projectID);
-         } else {
-            ps.setInt(1, uid);
-         }
-         ps.setInt(2, position);
-         ps.execute();
-         //now reorder them
-         update = j.prepareStatement(updateQuery);
-
-         TagButton t;
-         while (true) {
-            if (this.projectID > 0) {
-               t = new TagButton(projectID, position + 1, true);
-            } else {
-               t = new TagButton(uid, position + 1);
+    public void deleteTag() throws SQLException {
+        if (this.projectID > 0) {
+            String query = "delete from projectbuttons where project=? and position=?";
+            Connection j = null;
+            PreparedStatement ps = null;
+            try {
+                j = getConnection();
+                ps = j.prepareStatement(query);
+                ps.setInt(1, projectID);
+                ps.setInt(2, position);
+                ps.execute();
+            } finally {
+                closeDBConnection(j);
+                closePreparedStatement(ps);
             }
-            if (t.uid == 0 && t.projectID <= 0) {
-               break;
-            }
-            update.setInt(1, position);
-            if (projectID > 0) {
-               update.setInt(2, projectID);
-            } else {
-               update.setInt(2, uid);
-            }
-            update.setInt(3, position + 1);
-            update.execute();
-            position++;
-         }
-
-      } finally {
-            closeDBConnection(j);
-            closePreparedStatement(ps);
-            closePreparedStatement(update);
-      }
-
-
-   }
+        }
+    }
 
    /**
     * Update the text of the xml tag
@@ -1038,6 +997,50 @@ public class TagButton {
             closePreparedStatement(stmt);
       }
    }
+   
+   public static void removeAllProjectXML(int projectID) throws SQLException{
+        String query = "delete from projectbuttons where project=?";
+        Connection j = null;
+        PreparedStatement ps = null;
+        try{
+            j = getConnection();
+            ps = j.prepareStatement(query);
+            ps.setInt(1, projectID);
+            ps.execute();
+        }
+        finally{
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+        }    
+    }
+   
+    /**
+     * Get the highest position of all projectbuttons for a particular project.  
+     * Return 0 for empty sets (no projectbuttons exist for project).  
+     * @param projectID
+     * @return
+     * @throws SQLException 
+     */
+   public static int getMaxPosition(int projectID) throws SQLException{
+        int position = 0;
+        String query = "select max(position) from projectbuttons where project=?";
+        Connection j = null;
+        PreparedStatement ps = null;
+        try{
+            j = getConnection();
+            ps = j.prepareStatement(query);
+            ps.setInt(1, projectID);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                position = rs.getInt(1);
+            } 
+            return position;
+        }
+        finally{
+           closeDBConnection(j);
+           closePreparedStatement(ps); 
+        }
+    }
    
    private static final Logger LOG = getLogger(TagButton.class.getName());
 }

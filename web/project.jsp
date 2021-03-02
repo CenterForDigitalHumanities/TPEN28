@@ -691,10 +691,11 @@
                            <%}
                            if ((isMember || permitCopy) && !thisProject.containsUserUploadedManuscript()){
          %>                     <div class="hideWhileCopying">
+                                <!--
                                     <a id="copyProjectBtn" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create an Empty Copy</a>
                                     <p>Create a new project with the same set of images and buttons.  This copy will not include any transcription data, just project data.
                                         Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p><br>
-
+                                -->
                                     <a id="copyProjectAndAnnosBtn" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create a Copy</a>
                                     <p>Create a new project with the same set of images, transcriptions, and buttons. Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p>
                                 </div>
@@ -1507,11 +1508,11 @@ $("#samplePreview").hover(function(){
                                         $(".hideWhileCopying").hide();
                                         $("#copyingNotice").show();
                                         var url = "copyProject";
-                                        var withAnnos = "WithAnnotations";
+                                        //var withAnnos = "WithAnnotations";
                                         var params = {"projectID":projID};
-                                        if(transData){
-                                           url += withAnnos;
-                                        }
+                                        //if(transData){
+                                        //   url += withAnnos;
+                                        //}
                                         //Need to have a UI so the users knows a copy is taking place / completed / failed.
                                         $.post(url, params, function(data){
                                             $(".hideWhileCopying").show();

@@ -696,9 +696,7 @@
                                     <p>Create a new project with the same set of images and buttons.  This copy will not include any transcription data, just project data.
                                         Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p><br>
                                 -->
-                                    <a id="copyProjectAndAnnosBtn" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create a Copy</a>
-                                    <p>Create a new project with the same set of images, transcriptions, and buttons. Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p>
-                                <!--    OR    -->
+                                    <!--    OR    -->
                                     <a id="copyProjectAndAnnosBtn-other" href="index.jsp?projectID=<%out.print("" + projectID);%>&makeCopy=true" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create a Copy</a>
                                     <p>Create a new project with the same set of images, transcriptions, and buttons. Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p>
                                 

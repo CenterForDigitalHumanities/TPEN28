@@ -678,20 +678,26 @@ public class Project {
         //if (containsUserUploadedManuscript()) {
         //   throw new Exception("Cannot copy a project with user uploaded images!");
         //}
+        System.out.println("Hey, classic copy here.");
         Group g = new Group(conn, projectName, leaderUID);
+        System.out.println("Got a group "+g.getGroupID());
         Project p = new Project(conn, projectName, g.getGroupID());
+        System.out.println("Got a project "+p.getProjectID());
         p.setFolios(conn, getFolios());
+        System.out.println("Set the folios");
         p.copyButtonsFromProject(conn, this);
+        System.out.println("Copy buttons "+p.getProjectID());
         p.copyHotkeysFromProject(conn, this);
+        System.out.println("opy hotkeys "+p.getProjectID());
         p.setSchemaURL(conn, getSchemaURL());
-
+        System.out.println("Set the schema URL");
         try (PreparedStatement selectStmt = conn.prepareStatement("select * from transcription where projectID=?")) {
             selectStmt.setInt(1, projectID);
-
             ResultSet rs = selectStmt.executeQuery();
-
+            System.out.println("Move over all transcription info.");
             try (PreparedStatement insertStmt = conn.prepareStatement("insert into transcription(folio, line, comment, text, creator, projectID,x,y,height,width) values(?,?,?,?,?,?,?,?,?,?)")) {
                 while (rs.next()) {
+                    System.out.println("...");
                     insertStmt.setInt(1, rs.getInt("folio"));
                     insertStmt.setInt(2, rs.getInt("line"));
                     insertStmt.setString(3, rs.getString("comment"));
@@ -706,6 +712,7 @@ public class Project {
                 }
             }
         }
+        System.out.println("Great we did it.  Return this projectID: "+p.projectID);
         return p.projectID;
     }
 

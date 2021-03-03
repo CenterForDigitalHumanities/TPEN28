@@ -513,10 +513,6 @@
         <servlet-class>edu.slu.tpen.servlet.GetAnnotationByPropertiesServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>LoginHookServlet</servlet-name>
-        <servlet-class>edu.slu.tpen.servlet.LoginHookServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetSharedProjectsByUserServlet</servlet-name>
         <servlet-class>edu.slu.tpen.servlet.GetSharedProjectsByUserServlet</servlet-class>
     </servlet>
@@ -623,10 +619,6 @@
     <servlet-mapping>
         <servlet-name>GetAnnotationByPropertiesServlet</servlet-name>
         <url-pattern>/getAnno</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>LoginHookServlet</servlet-name>
-        <url-pattern>/loginHook</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetSharedProjectsByUserServlet</servlet-name>

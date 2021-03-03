@@ -240,11 +240,17 @@
                     int projectNumToDelete = Integer.parseInt(request.getParameter("projDelete"));
                     textdisplay.Project todel = new textdisplay.Project(projectNumToDelete);
                     user.Group projectGroup = new user.Group(todel.getGroupID());
-                    if (isAdmin) {
+                    if (projectGroup.isAdmin(UID)) {
                         if (todel.delete()) {
                             //redirect to first project
                             out.print("<script>document.location=\"project.jsp\";</script>");
                             return;
+                        } else {
+                            %>
+                            <script>
+                                alert("Unknown error prevented deletion.")
+                            </script>
+                            <% 
                         }
 
                         textdisplay.Project[] p = thisUser.getUserProjects();
@@ -257,6 +263,11 @@
         </script>
         <%                        
             } else {
+        %>
+        <script>
+            document.location = "project.jsp"; // crash out to first project
+        </script>
+        <% 
                 //couldnt delete, you arent the project creator. You can remove yourself from the group working on this project by visting ...
             }
         } else {
@@ -386,7 +397,7 @@
                 try {
                     if (request.getParameter("p") != null) {
                         pageno = Integer.parseInt(request.getParameter("p"));
-                    } else {
+                    } else if (projectID>0) {
                         pageno = thisProject.firstPage();
                     }
                 } catch (NumberFormatException e) {
@@ -513,10 +524,10 @@
                                             }
                                             out.print(leader[i].getFname() + " " + leader[i].getLname());
                                         }%><br />
-                                    <span class="label">Subject: </span><%out.print(m.getSubject());%>
-                                    <span class="label">Author: </span><%out.print(m.getAuthor());%>
-                                    <span class="label">Date: </span><%out.print(m.getDate());%>
-                                    <span class="label">Location: </span><%out.print(m.getLocation());%>
+                                    <span class="label">Subject: </span><%out.print(m.getSubject());%><br />
+                                    <span class="label">Author: </span><%out.print(m.getAuthor());%><br />
+                                    <span class="label">Date: </span><%out.print(m.getDate());%><br />
+                                    <span class="label">Location: </span><%out.print(m.getLocation());%><br />
                                     <span class="label">Language: </span><%out.print(m.getLanguage());%>
                                 </p>
                                 <%if(permitMetadata || isMember){%>

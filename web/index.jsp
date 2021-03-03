@@ -37,10 +37,12 @@
             thisProject = new Project(Integer.parseInt(request.getParameter("projectID")));
             try (Connection conn = ServletUtils.getDBConnection()) {
                conn.setAutoCommit(false);
-               thisProject.copyProject(conn, UID);
+               int newProjectID = thisProject.copyProject(conn, UID);
                conn.commit();
+               response.setHeader("Location", "project.jsp?projecID="+newProjectID); 
             }
         }
+        
     }
     %>
 <html itemscope itemtype="http://schema.org/Product">

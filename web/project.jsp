@@ -397,7 +397,7 @@
                 try {
                     if (request.getParameter("p") != null) {
                         pageno = Integer.parseInt(request.getParameter("p"));
-                    } else {
+                    } else if (projectID>0) {
                         pageno = thisProject.firstPage();
                     }
                 } catch (NumberFormatException e) {

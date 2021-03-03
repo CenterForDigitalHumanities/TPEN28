@@ -42,7 +42,6 @@
                response.setHeader("Location", "project.jsp?projecID="+newProjectID); 
             }
         }
-        
     }
     %>
 <html itemscope itemtype="http://schema.org/Product">

@@ -1499,11 +1499,7 @@ $("#samplePreview").hover(function(){
                                         $(".hideWhileCopying").hide();
                                         $("#copyingNotice").show();
                                         var url = "copyProject";
-                                        //var withAnnos = "WithAnnotations";
                                         var params = {"projectID":projID};
-                                        //if(transData){
-                                        //   url += withAnnos;
-                                        //}
                                         //Need to have a UI so the users knows a copy is taking place / completed / failed.
                                         $.post(url, params, function(data){
                                             $(".hideWhileCopying").show();

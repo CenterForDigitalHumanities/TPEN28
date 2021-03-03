@@ -119,7 +119,7 @@
                     if(tags[i]!=null) {
                         ctr++;
  //              out.print(tags[i]+", ");
-                        new textdisplay.TagButton(projectID, ctr, tags[i],true, tags[i]);
+                        new textdisplay.TagButton(projectID, ctr, tags[i], tags[i], true);
                     }
                }
                 out.print("<script>");

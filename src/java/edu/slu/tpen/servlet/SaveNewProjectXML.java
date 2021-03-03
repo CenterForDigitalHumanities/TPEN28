@@ -20,6 +20,7 @@ import textdisplay.TagButton;
 /**
  *
  * @author bhaberbe
+ * FIXME : This is for buttons.html, which has been abandoned.  Flagged for deletion.
  */
 public class SaveNewProjectXML extends HttpServlet {
 
@@ -54,7 +55,7 @@ public class SaveNewProjectXML extends HttpServlet {
         PrintWriter out = response.getWriter();
         String buttonToSendOut = "";
         try {
-            TagButton newButton = new TagButton(projectID, position, tag, true, description);
+            TagButton newButton = new TagButton(projectID, position, tag, description, true);
             buttonToSendOut = "<li class='projectTag' position='"+position+"' onclick=\"editxmlcnfrm("+position+", event);\">"+tag+"<span class='removechar' onclick=\"removetagcnfrm("+position+");\">X</span></li>";
             out.println(buttonToSendOut);
             out.close();

@@ -240,11 +240,17 @@
                     int projectNumToDelete = Integer.parseInt(request.getParameter("projDelete"));
                     textdisplay.Project todel = new textdisplay.Project(projectNumToDelete);
                     user.Group projectGroup = new user.Group(todel.getGroupID());
-                    if (isAdmin) {
+                    if (projectGroup.isAdmin(UID)) {
                         if (todel.delete()) {
                             //redirect to first project
                             out.print("<script>document.location=\"project.jsp\";</script>");
                             return;
+                        } else {
+                            %>
+                            <script>
+                                alert("Unknown error prevented deletion.")
+                            </script>
+                            <% 
                         }
 
                         textdisplay.Project[] p = thisUser.getUserProjects();
@@ -257,6 +263,11 @@
         </script>
         <%                        
             } else {
+        %>
+        <script>
+            document.location = "project.jsp"; // crash out to first project
+        </script>
+        <% 
                 //couldnt delete, you arent the project creator. You can remove yourself from the group working on this project by visting ...
             }
         } else {
@@ -386,7 +397,7 @@
                 try {
                     if (request.getParameter("p") != null) {
                         pageno = Integer.parseInt(request.getParameter("p"));
-                    } else {
+                    } else if (projectID>0) {
                         pageno = thisProject.firstPage();
                     }
                 } catch (NumberFormatException e) {
@@ -513,10 +524,10 @@
                                             }
                                             out.print(leader[i].getFname() + " " + leader[i].getLname());
                                         }%><br />
-                                    <span class="label">Subject: </span><%out.print(m.getSubject());%>
-                                    <span class="label">Author: </span><%out.print(m.getAuthor());%>
-                                    <span class="label">Date: </span><%out.print(m.getDate());%>
-                                    <span class="label">Location: </span><%out.print(m.getLocation());%>
+                                    <span class="label">Subject: </span><%out.print(m.getSubject());%><br />
+                                    <span class="label">Author: </span><%out.print(m.getAuthor());%><br />
+                                    <span class="label">Date: </span><%out.print(m.getDate());%><br />
+                                    <span class="label">Location: </span><%out.print(m.getLocation());%><br />
                                     <span class="label">Language: </span><%out.print(m.getLanguage());%>
                                 </p>
                                 <%if(permitMetadata || isMember){%>
@@ -691,12 +702,9 @@
                            <%}
                            if ((isMember || permitCopy) && !thisProject.containsUserUploadedManuscript()){
          %>                     <div class="hideWhileCopying">
-                                    <a id="copyProjectBtn" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create an Empty Copy</a>
-                                    <p>Create a new project with the same set of images and buttons.  This copy will not include any transcription data, just project data.
-                                        Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p><br>
-
-                                    <a id="copyProjectAndAnnosBtn" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create a Copy</a>
+                                    <a id="copyProjectAndAnnosBtn" href="index.jsp?projectID=<%out.print("" + projectID);%>&makeCopy=true" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create a Copy</a>
                                     <p>Create a new project with the same set of images, transcriptions, and buttons. Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p>
+                                
                                 </div>
                                 <%}%>
                                 <div id="copyingNotice">
@@ -1244,22 +1252,6 @@ if(request.getParameter("publicOptions")!=null && UID == thisGroup.getLeader()[0
         <%@include file="WEB-INF/includes/projectTitle.jspf" %>
                 <script type="text/javascript">
                                 $(function() {
-                                        $("#copyProjectBtn").click(function(){
-                                            var cfrm = confirm('All buttons and project information will be copied into a new project.\n\nContinue?');
-                                            if(cfrm){
-                                                var projID = $(this).attr("proj");
-                                                copyProject(projID, false);
-                                            }
-                                            return cfrm;
-                                        });
-                                        $("#copyProjectAndAnnosBtn").click(function(){
-                                            var cfrm = confirm('All transcriptions, parsings, and buttons will be copied into a new project.\n\nContinue?');
-                                            if(cfrm){
-                                                var projID = $(this).attr("proj");
-                                                copyProject(projID, true);
-                                            }
-                                            return cfrm;
-                                        });
                                         $("#xmlSelectAll").click(function(){
                                             if ($(this).attr('state') == "on"){
                                                 $(this).text("Select All").attr('state','off');
@@ -1507,11 +1499,7 @@ $("#samplePreview").hover(function(){
                                         $(".hideWhileCopying").hide();
                                         $("#copyingNotice").show();
                                         var url = "copyProject";
-                                        var withAnnos = "WithAnnotations";
                                         var params = {"projectID":projID};
-                                        if(transData){
-                                           url += withAnnos;
-                                        }
                                         //Need to have a UI so the users knows a copy is taking place / completed / failed.
                                         $.post(url, params, function(data){
                                             $(".hideWhileCopying").show();

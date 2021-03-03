@@ -185,7 +185,7 @@
                 var addHotkeyData = {projectID:projectID};
                 $.post("addHotkey", $.param(addHotkeyData),function(data){
                     var position = data;    //tag position from servlet
-                    var newCharHTML = $("<li class=\"ui-state-default\"><input readonly class=\"label hotkey\" name=\"a"+position+"a\" id=\"a"+position+"a\" value='42' tabindex=-5>\n\
+                    var newCharHTML = $("<li class=\"ui-state-default\"><input readonly class=\"label hotkey\" value='42' tabindex=-5>\n\
                     <input class=\"shrink\" onkeyup=\"updatea(this);\" name=\"a"+position+"\" id=\"a"+position+"\" type=\"text\" value='42'></input>\n\
                     <a class=\"ui-icon ui-icon-closethick right\" onclick=\"deleteHotkey(" + position + ");\">delete</a></li>");
                         
@@ -197,6 +197,68 @@
                     }).val("42").end()
                     .children("a").attr("onclick","deleteHotkey("+position+");");
                 },"html");           
+            });
+            
+            $("#updateChars").click(async function(){
+                var listItems = $("#sortable1 li");
+                var chars = [];
+                listItems.each(function(i, li) {
+                    chars[i] = parseInt($(li).children(".shrink")[0].value);
+                });
+                var allCharData = {"projectID":projectID, "chars":chars}
+                await fetch("updateSpecialCharacters", {
+                    method: "POST",
+                    mode: "cors",
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8'
+                    },
+                    body: JSON.stringify(allCharData)
+                })
+                .then(response => {
+                    if(response.ok){
+                        $("#buttonForm").submit();
+                    }
+                })         
+            });
+            
+            $("#updateXML").click(async function(){
+                var listItems = $("#sortable2 li");
+                var entries = [];
+                listItems.each(function(i, li) {
+                    var description = $(li).children(".description")[0].value
+                    var $allParams = $(li).children(".xmlParams")
+                    var tag = $allParams.children(".firstRow").children(".tag").children("input")[0].value
+                    var $param1 = $allParams.children(".firstRow").children("input[placeholder='parameter']");
+                    var $params23 = $allParams.children(".secondRow").children("input[placeholder='parameter']");
+                    var $params45 = $allParams.children(".lastRow").children("input[placeholder='parameter']");
+                    var $params123 = $.merge( $.merge( [], $param1 ), $params23 );
+                    var $params = $.merge( $.merge( [], $params123 ), $params45 );
+                    var params_arr = [];
+                    for(var j=0; j<$params.length; j++){
+                        params_arr[j] = $params[j].value
+                    }
+                    var entryObj = {
+                        "description" : description,
+                        "tag" : tag,
+                        "params":params_arr
+                    }
+                    entries[i] = entryObj
+                });
+                var allXMLData = {"projectID":projectID, "xml":entries}
+                await fetch("updateXMLEntries", {
+                    method: "POST",
+                    mode: "cors",
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8'
+                    },
+                    body: JSON.stringify(allXMLData)
+                })
+                .then(response => {
+                    if(response.ok){
+                        document.getElementById('selecTab').value = 1;
+                        $("#buttonForm").submit();
+                    }
+                })         
             });
             $('#tabs').tabs({
                 show:equalWidth,
@@ -395,53 +457,6 @@ function equalWidth(){
 </script>
     </head>
     <%
-                if (request.getParameter("update") != null) {
-                    for (int i = 1; i < 50; i++) {
-                        if (request.getParameter("a" + i) != null) {
-                            String val = request.getParameter("a" + i);
-                            int key = Integer.parseInt(val);
-                            Hotkey h;
-                            h = new Hotkey(projectID, i, true);
-                            h.setKey(key);
-                        }
-                    }
-                    for (int i = 1; i < 50; i++) {
-                        if (request.getParameter("b" + i) != null) {
-                            TagButton h;
-                            String val = request.getParameter("b" + i);
-                            String tag = val;
-                            h = new TagButton(projectID, i, true);
-                            h.updatePosition(i);
-                            h.updateTag(tag);
-                            String description=h.getTag();
-                            if(request.getParameter("description"+i)!=null)
-                                description=request.getParameter("description"+i);
-                            h.updateDescription(description);
-                            /*    String xmlColor="";
-                                if(request.getParameter("xmlColor"+i)!=null)
-                                    xmlColor=request.getParameter("xmlColor"+i);
-                                h.updateXmlColor(xmlColor);
-                            */
-                            if (request.getParameter("b" + i + "p1") != null) {
-                                String[] params = new String[5];
-                                for (int j = 0; j < 5; j++) {
-                                    if (request.getParameter("b" + i + "p" + (j + 1)) != null) {
-                                        params[j] = request.getParameter("b" + i + "p" + (j + 1));
-                                    }
-                                }
-                                h.updateParameters(params);
-                            } else {
-                            }
-                        }
-                    }
-           //         out.print("updated!<br>");
-//                    if (response.isCommitted() && session.getAttribute("ref") != null && !session.getAttribute("ref").toString().contains("login")) {
-//                        String toret = session.getAttribute("ref").toString();
-//                        session.setAttribute("ref", null);
-//                        response.sendRedirect(toret);
-//                        return;
-//                    }
-                }
                 if (request.getParameter("deletetag") != null) {
                     int pos = Integer.parseInt(request.getParameter("position"));
                     TagButton b = new TagButton(projectID, pos, true);
@@ -451,20 +466,6 @@ function equalWidth(){
                         int pos = Integer.parseInt(request.getParameter("position"));
                         Hotkey b = new Hotkey(projectID, pos, true);
                         b.delete();
-                }
-                if (request.getParameter("addT") != null) {
-                    int ctr = 1;
-                    while (new TagButton(projectID, ctr, true).exists()) {
-                        ctr++;
-                    }
-                    new TagButton(projectID, ctr, "new", false, "description");
-                }
-                if (request.getParameter("addH") != null) {
-                    int ctr = 1;
-                    while (new Hotkey(projectID, ctr, true).exists()) {
-                        ctr++;
-                    }
-                    new Hotkey(45, projectID, ctr, true);
                 }
     %>
     <body id="buttonPage">
@@ -513,22 +514,12 @@ function equalWidth(){
                         }
                     } catch (NullPointerException e) {
                         //They didnt get here from another page, maybe a bookmark. Not a big deal
-                    }
-                    
+                    }                   
                     out.print(Hotkey.javascriptToBuildEditableButtons(projectID));
-                    //some key positions are not in order and skip, like 1,2,3,5,6,8, and it breaks here when there is a skip. 
-//                    while (new Hotkey(projectID, ctr, true).exists()) {
-//                        ha = new Hotkey(projectID, ctr, true);
-//                        out.print("<li class=\"ui-state-default\"><input readonly class=\"label hotkey\" name=\"a"+ctr+"a\" id=\"a"+ctr+"a\" value=\""+(char)Integer.parseInt(ha.getButton())+"\" tabindex=-5>\n");
-//                        out.print("<input class=\"shrink\" onkeyup=\"updatea(this);\" name=\"a"+ctr+"\" id=\"a"+ctr+"\" type=\"text\" value=\""+ha.getButton()+"\"></input>");
-//                        out.print("<a class=\"ui-icon ui-icon-closethick right\" onclick=\"deleteHotkey(" + ctr + ");\">delete</a></li>");
-//                        out.print("\n");
-//                        ctr++;
-//                    }
             %>
                     </ul>
             <input type="button" id="addH" name="addH" class="tpenButton ui-button" value="Add a Button"/>
-            <input type="submit" id="updateChars" name="update" value="Save Changes" class="tpenButton ui-button"/>
+            <input type="button" id="updateChars" name="update" value="Save Changes" class="tpenButton ui-button"/>
             <input type="button" id="return" name="return" value="Return to Management" onclick="document.location.href='project.jsp?projectID=<%out.print(projectID);%>';" class="tpenButton ui-button"/><br><br>
                 </div>
                 <div id="tabs-2">
@@ -544,7 +535,7 @@ function equalWidth(){
                     %>
                     </ul>
                     <input type="button" id="addT" name="addT" value="Add a Tag" class="tpenButton ui-button" onclick="document.getElementById('selecTab').value = 1;" />
-                    <input type="submit" onclick="document.getElementById('selecTab').value = 1;" id="updateXML" name="update" value="Save Changes" class="tpenButton ui-button"/><br><br>
+                    <input type="button" id="updateXML" name="update" value="Save Changes" class="tpenButton ui-button"/><br><br>
                 </div>
                 <div class="right">
                     <a href="buttonProjectImport.jsp?a=1<%out.print(appendProject);%>" class="importButton tpenButton ui-button">Copy Buttons from Another Project</a>

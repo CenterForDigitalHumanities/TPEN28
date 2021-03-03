@@ -998,6 +998,12 @@ public class TagButton {
       }
    }
    
+   /**
+     * Remove all projectbuttons (XML) associated with a given project.
+     * It prepares for the "Save Changes" on buttons.jsp after reordering, adding, and removing XML entries.
+     * @param projectID
+     * @throws SQLException 
+     */
    public static void removeAllProjectXML(int projectID) throws SQLException{
         String query = "delete from projectbuttons where project=?";
         Connection j = null;

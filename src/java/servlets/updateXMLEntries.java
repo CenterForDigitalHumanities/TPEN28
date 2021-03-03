@@ -73,7 +73,6 @@ public class updateXMLEntries extends HttpServlet {
                 new TagButton(projectID, (i+1), tagText, params, description, true);
             }
             response.setStatus(200);
-            out.print("Special Characters Updated!");
         }
 
     }

@@ -691,13 +691,7 @@
                            <%}
                            if ((isMember || permitCopy) && !thisProject.containsUserUploadedManuscript()){
          %>                     <div class="hideWhileCopying">
-                                <!--
-                                    <a id="copyProjectBtn" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create an Empty Copy</a>
-                                    <p>Create a new project with the same set of images and buttons.  This copy will not include any transcription data, just project data.
-                                        Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p><br>
-                                -->
-                                    <!--    OR    -->
-                                    <a id="copyProjectAndAnnosBtn-other" href="index.jsp?projectID=<%out.print("" + projectID);%>&makeCopy=true" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create a Copy</a>
+                                    <a id="copyProjectAndAnnosBtn" href="index.jsp?projectID=<%out.print("" + projectID);%>&makeCopy=true" class="tpenButton" proj="<%out.print(projectID);%>"><span class="ui-icon ui-icon-copy right"></span>Create a Copy</a>
                                     <p>Create a new project with the same set of images, transcriptions, and buttons. Once copied, the projects will not synchronize cannot be recombined in T&#8209;PEN.</p>
                                 
                                 </div>
@@ -1247,22 +1241,6 @@ if(request.getParameter("publicOptions")!=null && UID == thisGroup.getLeader()[0
         <%@include file="WEB-INF/includes/projectTitle.jspf" %>
                 <script type="text/javascript">
                                 $(function() {
-                                        $("#copyProjectBtn").click(function(){
-                                            var cfrm = confirm('All buttons and project information will be copied into a new project.\n\nContinue?');
-                                            if(cfrm){
-                                                var projID = $(this).attr("proj");
-                                                copyProject(projID, false);
-                                            }
-                                            return cfrm;
-                                        });
-                                        $("#copyProjectAndAnnosBtn").click(function(){
-                                            var cfrm = confirm('All transcriptions, parsings, and buttons will be copied into a new project.\n\nContinue?');
-                                            if(cfrm){
-                                                var projID = $(this).attr("proj");
-                                                copyProject(projID, true);
-                                            }
-                                            return cfrm;
-                                        });
                                         $("#xmlSelectAll").click(function(){
                                             if ($(this).attr('state') == "on"){
                                                 $(this).text("Select All").attr('state','off');

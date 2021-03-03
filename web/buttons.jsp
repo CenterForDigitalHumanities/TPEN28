@@ -457,43 +457,6 @@ function equalWidth(){
 </script>
     </head>
     <%
-                if (request.getParameter("update") != null) {
-                    /*
-                    for (int i = 1; i < 50; i++) {
-                        if (request.getParameter("a" + i) != null) {
-                            String val = request.getParameter("a" + i);
-                            int key = Integer.parseInt(val);
-                            Hotkey h;
-                            h = new Hotkey(projectID, i, true);
-                            h.setKey(key);
-                        }
-                    }
-                    for (int i = 1; i < 50; i++) {
-                        if (request.getParameter("b" + i) != null) {
-                            TagButton h;
-                            String val = request.getParameter("b" + i);
-                            String tag = val;
-                            h = new TagButton(projectID, i, true);
-                            h.updatePosition(i);
-                            h.updateTag(tag);
-                            String description=h.getTag();
-                            if(request.getParameter("description"+i)!=null)
-                                description=request.getParameter("description"+i);
-                            h.updateDescription(description);
-                            if (request.getParameter("b" + i + "p1") != null) {
-                                String[] params = new String[5];
-                                for (int j = 0; j < 5; j++) {
-                                    if (request.getParameter("b" + i + "p" + (j + 1)) != null) {
-                                        params[j] = request.getParameter("b" + i + "p" + (j + 1));
-                                    }
-                                }
-                                h.updateParameters(params);
-                            } else {
-                            }
-                        }
-                    }
-                    */
-                }
                 if (request.getParameter("deletetag") != null) {
                     int pos = Integer.parseInt(request.getParameter("position"));
                     TagButton b = new TagButton(projectID, pos, true);
@@ -503,20 +466,6 @@ function equalWidth(){
                         int pos = Integer.parseInt(request.getParameter("position"));
                         Hotkey b = new Hotkey(projectID, pos, true);
                         b.delete();
-                }
-                if (request.getParameter("addT") != null) {
-                    int ctr = 1;
-                    while (new TagButton(projectID, ctr, true).exists()) {
-                        ctr++;
-                    }
-                    new TagButton(projectID, ctr, "new", "description", false);
-                }
-                if (request.getParameter("addH") != null) {
-                    int ctr = 1;
-                    while (new Hotkey(projectID, ctr, true).exists()) {
-                        ctr++;
-                    }
-                    new Hotkey(45, projectID, ctr, true);
                 }
     %>
     <body id="buttonPage">

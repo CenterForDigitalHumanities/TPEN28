@@ -684,12 +684,9 @@ public class Project {
         p.copyButtonsFromProject(conn, this);
         p.copyHotkeysFromProject(conn, this);
         p.setSchemaURL(conn, getSchemaURL());
-
         try (PreparedStatement selectStmt = conn.prepareStatement("select * from transcription where projectID=?")) {
             selectStmt.setInt(1, projectID);
-
             ResultSet rs = selectStmt.executeQuery();
-
             try (PreparedStatement insertStmt = conn.prepareStatement("insert into transcription(folio, line, comment, text, creator, projectID,x,y,height,width) values(?,?,?,?,?,?,?,?,?,?)")) {
                 while (rs.next()) {
                     insertStmt.setInt(1, rs.getInt("folio"));
@@ -706,7 +703,7 @@ public class Project {
                 }
             }
         }
-        return p.projectID;
+        return p.getProjectID();
     }
 
     /**
@@ -741,27 +738,6 @@ public class Project {
         p.copyHotkeysFromProject(conn, this);
         p.setSchemaURL(conn, getSchemaURL());
 
-        try (PreparedStatement selectStmt = conn.prepareStatement("select * from transcription where projectID=?")) {
-            selectStmt.setInt(1, projectID);
-
-            ResultSet rs = selectStmt.executeQuery();
-
-            try (PreparedStatement insertStmt = conn.prepareStatement("insert into transcription(folio, line, comment, text, creator, projectID,x,y,height,width) values(?,?,?,?,?,?,?,?,?,?)")) {
-                while (rs.next()) {
-                    insertStmt.setInt(1, rs.getInt("folio"));
-                    insertStmt.setInt(2, rs.getInt("line"));
-                    insertStmt.setString(3, "");
-                    insertStmt.setString(4, "");
-                    insertStmt.setInt(5, rs.getInt("creator"));
-                    insertStmt.setInt(6, p.projectID);
-                    insertStmt.setInt(7, rs.getInt("x"));
-                    insertStmt.setInt(8, rs.getInt("y"));
-                    insertStmt.setInt(9, rs.getInt("height"));
-                    insertStmt.setInt(10, rs.getInt("width"));
-                    insertStmt.execute();
-                }
-            }
-        }
         return p.projectID;
     }
 

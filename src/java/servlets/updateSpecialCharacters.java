@@ -67,7 +67,6 @@ public class updateSpecialCharacters extends HttpServlet {
                 new Hotkey(characterCode, projectID, (i+1), true);
             }
             response.setStatus(200);
-            out.print("Special Characters Updated!");
         }
 
     }

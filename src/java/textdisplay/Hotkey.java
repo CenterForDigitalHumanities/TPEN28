@@ -472,6 +472,12 @@ public class Hotkey {
         }
     }
     
+    /**
+     * Remove all hotkeys associated with a given project.
+     * It prepares for the "Save Changes" on buttons.jsp after reordering, adding, and removing hotkeys.
+     * @param projectID
+     * @throws SQLException 
+     */
     public static void removeAllProjectHotkeys(int projectID) throws SQLException{
         String query = "delete from hotkeys where projectID=? and uid=0";
         Connection j = null;

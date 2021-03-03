@@ -434,7 +434,7 @@
     </servlet>
     <servlet>
         <servlet-name>copyProject</servlet-name>
-        <servlet-class>edu.slu.tpen.servlet.CopyProjectForPracticerServlet</servlet-class>
+        <servlet-class>edu.slu.tpen.servlet.CopyProjectAndAnnosClassic</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>changeUserPermission</servlet-name>
@@ -513,25 +513,12 @@
         <servlet-class>edu.slu.tpen.servlet.GetAnnotationByPropertiesServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>LoginHookServlet</servlet-name>
-        <servlet-class>edu.slu.tpen.servlet.LoginHookServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetSharedProjectsByUserServlet</servlet-name>
         <servlet-class>edu.slu.tpen.servlet.GetSharedProjectsByUserServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>LogoutHookServlet</servlet-name>
         <servlet-class>edu.slu.tpen.servlet.LogoutHookServlet</servlet-class>
-    </servlet>
-    <!-- Depricated.  This turned in to CopyProjectAndAnnos    
-    <servlet>
-        <servlet-name>copyProjWithAnnoServlet</servlet-name>
-        <servlet-class>edu.slu.tpen.servlet.CopyProjWithAnnoServlet</servlet-class>
-    </servlet>-->
-    <servlet>
-        <servlet-name>CopyProjectAndAnnos</servlet-name>
-        <servlet-class>edu.slu.tpen.servlet.CopyProjectAndAnnos</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>imageParsing</servlet-name>
@@ -634,20 +621,12 @@
         <url-pattern>/getAnno</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>LoginHookServlet</servlet-name>
-        <url-pattern>/loginHook</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetSharedProjectsByUserServlet</servlet-name>
         <url-pattern>/getSharedProjectsByUser</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LogoutHookServlet</servlet-name>
         <url-pattern>/logoutHook</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CopyProjectAndAnnos</servlet-name>
-        <url-pattern>/copyProjectWithAnnotations</url-pattern>
     </servlet-mapping>
     <!-- tpen webservices for newberry ends -->
     <servlet-mapping>

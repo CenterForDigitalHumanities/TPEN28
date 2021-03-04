@@ -476,7 +476,7 @@
                                                 //  Get project Leader and offer a delete option.
                                                 textdisplay.Project iProject = new textdisplay.Project(userProjects[i].getProjectID());
                                                 user.Group projectGroup = new user.Group(iProject.getGroupID());
-                                                if (isAdmin) {
+                                                if (projectGroup.isAdmin(UID)) {
                                                     out.print("<span class=\"delete ui-icon ui-icon-closethick right\" onclick=\"deleteProject(" + UID + "," + userProjects[i].getProjectID() + "," + "'" + StringEscapeUtils.escapeJavaScript(mList.getTitle()) + "'" + ");\">delete</span></li>");
                                                 } else {
                                                     out.print("</li>");

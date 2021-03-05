@@ -1314,7 +1314,7 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     counter-increment: hotkey;
 }
 
-.character:nth-child(-n+10)::after, .editButtons:nth-child(-n+10)::after, .editXMLs:nth-child(-n+10)::after {
+.character:nth-child(-n+9)::after, .editButtons:nth-child(-n+9)::after, .editXMLs:nth-child(-n+9)::after {
     content: "CTRL+" counter(hotkey);
     position: absolute;
     color: #999;
@@ -1791,7 +1791,7 @@ a.navigation {
     position: relative;
     display: none;
     padding:.25em;
-    counter-reset: hotkey -1;
+    counter-reset: hotkey 0;
     flex-grow: 1;
 }
 .special-charactered {
@@ -1838,7 +1838,7 @@ a.navigation {
 .character {
     min-width: 2em;
 }
-.character:nth-child(-n+10)::after,.editButtons:nth-child(-n+10)::after {
+.character:nth-child(-n+9)::after,.editButtons:nth-child(-n+9)::after {
     content: "CTRL+" counter(hotkey);
     position: absolute;
     color: #999;
@@ -2070,6 +2070,8 @@ button,.navigation, #contribution,
 
 .peekZoomLockout{
     background-color: red !important;
+    opacity: 0.2;
+    cursor: not-allowed;
 }
 #toggleChars, #toggleXML, #canvasControls, .magnifyBtn{
     display : none;

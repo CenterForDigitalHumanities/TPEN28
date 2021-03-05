@@ -3243,10 +3243,8 @@ function hideWorkspaceToSeeImage(which) {
         var currentLineTop = parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
         var bottomImageHeight = $("#imgBottom img").height();
         //There has been a lot of bumping around to make things line up
-        //currentLineTop + currentLineHeight gets you where you want to be, but doesn't account for those bumps.
-        //The bumps are 1.5% plus a couple pixels, so we adjust by 1.6% here.  Things are off by a couple pixels here and there still depending on
-        //the dimensions of the image in the transcription view.  
-        var bottomImgPositionPx = -((currentLineTop + currentLineHeight + 1.6) * bottomImageHeight / 100);
+        //currentLineTop + currentLineHeight gets you where you want to be, I think 
+        var bottomImgPositionPx = -((currentLineTop + currentLineHeight) * bottomImageHeight / 100);
         $("#imgBottom").css({
             "height": "100%",
         });

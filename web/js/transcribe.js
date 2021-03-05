@@ -3238,17 +3238,17 @@ function restoreWorkspace() {
 function hideWorkspaceToSeeImage(which) {
     if (which === "trans") {
         $("#transWorkspace").hide();
-        //var imgBtmTop = $("#imgBottom img").css("top");
-        var currentLineHeight = parseFloat(tpen.screen.focusItem[1].attr("lineHeight"));
-        var currentLineTop = parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
-        var bottomImageHeight = $("#imgBottom img").height();
+        var imgBtmTop = $("#imgBottom img").css("top");
+//        var currentLineHeight = parseFloat(tpen.screen.focusItem[1].attr("lineHeight"));
+//        var currentLineTop = parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
+//        var bottomImageHeight = $("#imgBottom img").height();
         //There has been a lot of bumping around to make things line up
         //currentLineTop + currentLineHeight gets you where you want to be, I think 
-        var bottomImgPositionPx = -((currentLineTop + currentLineHeight) * bottomImageHeight / 100);
+        //var bottomImgPositionPx = -((currentLineTop + currentLineHeight) * bottomImageHeight / 100);
         $("#imgBottom").css({
             "height": "100%",
         });
-        $("#imgBottom img").css("top", bottomImgPositionPx + "px");
+        $("#imgBottom img").css("top", imgBtmTop + "px");
 //        $("#imgTop").hide();
         $(".hideMe").hide();
         $(".showMe2").show();

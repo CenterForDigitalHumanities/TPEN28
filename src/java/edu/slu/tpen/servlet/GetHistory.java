@@ -14,7 +14,6 @@ import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.getDateInstance;
 import static java.text.DateFormat.getTimeInstance;
 import java.util.Calendar;
-import static java.util.Calendar.DAY_OF_YEAR;
 import static java.util.Calendar.getInstance;
 import java.util.List;
 import java.util.Map;
@@ -64,8 +63,8 @@ public class GetHistory extends HttpServlet {
         //             m.set(Calendar.MINUTE, 0);
         //             m.set(Calendar.SECOND, 0);
         //             m.set(Calendar.MILLISECOND, 0);
-        int DOY = m.get(DAY_OF_YEAR);
-        int YEAR = m.get(Calendar.YEAR);
+        int today_DOY = m.get(Calendar.DAY_OF_YEAR);
+        int today_YEAR = m.get(Calendar.YEAR);
         Transcription[] thisText;
         int projectID = 0;
         int pageno = 0;
@@ -94,7 +93,7 @@ public class GetHistory extends HttpServlet {
                     DateFormat dfm;
                     Calendar historyDate = getInstance();
                     historyDate.setTimeInMillis(h.getDate().getTime());
-                    if ((YEAR == historyDate.get(YEAR)) && (DOY == historyDate.get(DAY_OF_YEAR))) { // not perfect, but other date comparisons were frustrating
+                    if ((today_YEAR == historyDate.get(Calendar.YEAR)) && (today_DOY == historyDate.get(Calendar.DAY_OF_YEAR))) { // not perfect, but other date comparisons were frustrating
                         dfm = getTimeInstance(MEDIUM);
                         dateString = "today";//DateFormat.getTimeInstance(DateFormat.SHORT).format(historyDate);
                     } else {

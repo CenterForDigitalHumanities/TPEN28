@@ -874,6 +874,7 @@ div#transcriptletArea {
     max-width:20em;
     min-width: 15em;
     overflow-y: auto;
+    background-color: white;
     /* either this */
     position: relative;
     float: right;
@@ -1312,7 +1313,8 @@ label {width:auto;padding: 0;float: none;}/*fixme should not have to overwrite*/
     margin: 0 .25em;
     counter-increment: hotkey;
 }
-.character::after, .editButtons::after, .editXMLs::after {
+
+.character:nth-child(-n+10)::after, .editButtons:nth-child(-n+10)::after, .editXMLs:nth-child(-n+10)::after {
     content: "CTRL+" counter(hotkey);
     position: absolute;
     color: #999;
@@ -1789,7 +1791,7 @@ a.navigation {
     position: relative;
     display: none;
     padding:.25em;
-    counter-reset: hotkey;
+    counter-reset: hotkey -1;
     flex-grow: 1;
 }
 .special-charactered {
@@ -1836,7 +1838,7 @@ a.navigation {
 .character {
     min-width: 2em;
 }
-.character::after,.editButtons::after {
+.character:nth-child(-n+10)::after,.editButtons:nth-child(-n+10)::after {
     content: "CTRL+" counter(hotkey);
     position: absolute;
     color: #999;

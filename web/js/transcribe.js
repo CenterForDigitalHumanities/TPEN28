@@ -1324,7 +1324,7 @@ function activateUserTools(tools, permissions) {
         $("#toggleChars").show();
     }
     if ($.inArray("inspector", tools) > -1) {
-        $("#magnifyBtn").show();
+        $(".magnifyBtn").show();
     }
 }
 
@@ -2810,12 +2810,13 @@ function magnify(imgFlag, event) {
     var container = ""; // #id of limit
     var img;
     if (imgFlag === "trans") {
-        img = $("#transcriptionTemplate");
+        img = $("#imgTop img");
         container = "transcriptionCanvas";
         $("#magnifyTools").fadeIn(800);
         $("button[magnifyimg='trans']").addClass("selected");
+        hideWorkspaceToSeeImage(imgFlag);
     } else if (imgFlag === "compare") {
-        img = $("#compareSplit");
+        img = $(".compareImage");
         container = "compareSplit";
         $("#magnifyTools").fadeIn(800).css({
             "left": $("#compareSplit").css("left"),
@@ -2823,7 +2824,7 @@ function magnify(imgFlag, event) {
         });
         $("button[magnifyimg='compare']").addClass("selected");
     } else if (imgFlag === "full") {
-        img = $("#fullpageSplitCanvas");
+        img = $("#fullPageImg");
         container = "fullpageSplitCanvas";
         $("#magnifyTools").fadeIn(800).css({
             "left": $("#fullpageSplit").css("left"),
@@ -2834,7 +2835,7 @@ function magnify(imgFlag, event) {
     $("#zoomDiv").show();
     $("#zoomat").text(Math.round(tpen.screen.zoomMultiplier * 10) / 10 + "x");
     $(".magnifyHelp").show();
-    hideWorkspaceToSeeImage(imgFlag);
+    
     $(".lineColIndicatorArea").hide();
     tpen.screen.liveTool = "image";
     mouseZoom(img, container, event);
@@ -2931,21 +2932,21 @@ function zoomBookmark(zoomOut) {
 function mouseZoom($img, container, event) {
     tpen.screen.isMagnifying = true;
     var contain = $("#" + container).offset();
-    var imgURL = $img.find("img:first").attr("src");
+    var imgURL = $img.attr("src");
     var page = $("#transcriptionTemplate");
     //collect information about the img
 
-    var imgTop = $img.find("img").css("top");
-    var imgLeft = $img.find("img").css("left");
+    var imgTop = $img.css("top");
+    var imgLeft = $img.css("left");
     if (imgTop === "auto") {
-        imgTop = $img.find("img").offset().top;
+        imgTop = $img.offset().top;
     }
 //    else{
 //        imgTop = parseFloat(imgTop) + 40;
 //    }
     if (imgLeft === "auto")
-        imgLeft = $img.find("img").offset().left;
-    var imgOffset = $img.find("img").offset().top;
+        imgLeft = $img.offset().left;
+    var imgOffset = $img.offset().top;
     var imgDims = new Array(parseInt(imgLeft), parseInt(imgTop), $img.width(), $img.height());
     //build the zoomed div
     var zoomSize = (page.height() / 3 < 120) ? 120 : page.height() / 3;
@@ -3126,16 +3127,14 @@ function hideWorkspaceForParsing() {
         'height': newCanvasHeight + "px"
     });
 
-    $("#prevCanvas").attr("onclick", "");
-    $("#nextCanvas").attr("onclick", "");
+    tpen.screen.lockNavigation();
     $("#imgTop").addClass("fixingParsing");
     var topImg = $("#imgTop img");
 
     $("#tools").children("[id$='Split']").hide();
     $("#parsingSplit")
             .css({
-                "display": "inline-block",
-                "height": window.innerHeight + "px"
+                "display": "inline-block"
             })
             .fadeIn();
 
@@ -3224,13 +3223,7 @@ function restoreWorkspace() {
     updatePresentation(tpen.screen.focusItem[1]);
     $(".hideMe").show();
     $(".showMe2").hide();
-//    var pageJumpIcons = $("#pageJump").parent().find("i");
-//    pageJumpIcons[0].setAttribute('onclick', 'firstFolio();');
-//    pageJumpIcons[1].setAttribute('onclick', 'previousFolio();');
-//    pageJumpIcons[2].setAttribute('onclick', 'nextFolio();');
-//    pageJumpIcons[3].setAttribute('onclick', 'lastFolio();');
-    $("#prevCanvas").attr("onclick", "previousFolio();");
-    $("#nextCanvas").attr("onclick", "nextFolio();");
+    tpen.screen.unlockNavigation();
     $("#pageJump").removeAttr("disabled");
 }
 
@@ -3238,7 +3231,12 @@ function hideWorkspaceToSeeImage(which) {
     if (which === "trans") {
         $("#transWorkspace").hide();
         var imgBtmTop = $("#imgBottom img").css("top");
-        imgBtmTop = parseFloat(imgBtmTop) - 53;
+//        var currentLineHeight = parseFloat(tpen.screen.focusItem[1].attr("lineHeight"));
+//        var currentLineTop = parseFloat(tpen.screen.focusItem[1].attr("lineTop"));
+//        var bottomImageHeight = $("#imgBottom img").height();
+        //There has been a lot of bumping around to make things line up
+        //currentLineTop + currentLineHeight gets you where you want to be, I think 
+        //var bottomImgPositionPx = -((currentLineTop + currentLineHeight) * bottomImageHeight / 100);
         $("#imgBottom").css({
             "height": "100%",
         });
@@ -6297,6 +6295,33 @@ $("#previewSplit")
         }
         Preview.scrollToCurrentPage();
     });
+
+tpen.screen.lockNavigation = function(){
+    tpen.screen.focusItem[1].find(".theText").attr("disabled", "disabled");
+    $("#canvasControls").attr("disabled", "disabled").addClass("peekZoomLockout");
+    $("#pageJump").attr("disabled", "disabled").addClass("peekZoomLockout");
+    $("#nextCanvas").attr("onclick", "").addClass("peekZoomLockout");
+    $("#prevCanvas").attr("onclick", "").addClass("peekZoomLockout");
+    $("#prevPage").attr("disabled", "disabled").addClass("peekZoomLockout");
+    $("#nextPage").attr("disabled", "disabled").addClass("peekZoomLockout");
+    $("#parsingBtn").attr("disabled", "disabled").addClass("peekZoomLockout");
+    $("#magnify1").attr("disabled", "disabled").addClass("peekZoomLockout");
+    $("#splitScreenTools").attr("disabled", "disabled").addClass("peekZoomLockout");
+}
+
+tpen.screen.unlockNavigation = function(){
+    tpen.screen.focusItem[1].find(".theText").removeAttr("disabled");
+    $("#canvasControls").removeAttr("disabled").removeClass("peekZoomLockout");
+    $("#pageJump").removeAttr("disabled").removeClass("peekZoomLockout");
+    $("#prevCanvas").attr("onclick", "previousFolio();").removeClass("peekZoomLockout");
+    $("#nextCanvas").attr("onclick", "nextFolio();").removeClass("peekZoomLockout");
+    $("#prevPage").removeAttr("disabled").removeClass("peekZoomLockout");
+    $("#nextPage").removeAttr("disabled").removeClass("peekZoomLockout");
+    $("#parsingBtn").removeAttr("disabled").removeClass("peekZoomLockout");
+    $("#splitScreenTools").removeAttr("disabled").removeClass("peekZoomLockout");
+    $("#magnify1").removeAttr("disabled").removeClass("peekZoomLockout");
+}
+
 tpen.screen.peekZoom = function(cancel) {
     var topImg = $("#imgTop img");
     var btmImg = $("#imgBottom img");
@@ -6311,21 +6336,10 @@ tpen.screen.peekZoom = function(cancel) {
             // Parsing tool is open
             return false;
         }
-        tpen.screen.focusItem[1].find(".theText").attr("disabled", "disabled");
-        $("#canvasControls").attr("disabled", "disabled").addClass("peekZoomLockout");
-        $("#pageJump").attr("disabled", "disabled").addClass("peekZoomLockout");
-        $("#nextCanvas").attr("onclick", "").addClass("peekZoomLockout");
-        $("#prevCanvas").attr("onclick", "").addClass("peekZoomLockout");
-        $("#prevPage").attr("disabled", "disabled").addClass("peekZoomLockout");
-        $("#nextPage").attr("disabled", "disabled").addClass("peekZoomLockout");
-        $("#parsingBtn").attr("disabled", "disabled").addClass("peekZoomLockout");
-        $("#magnify1").attr("disabled", "disabled").addClass("peekZoomLockout");
-        $("#splitScreenTools").attr("disabled", "disabled").addClass("peekZoomLockout");
+        tpen.screen.lockNavigation();
         $("#zoomLock").css("background-color", "#8198AA");
         $(".lineColIndicatorArea").fadeOut();
-
         tpen.screen.peekMemory = [parseFloat(topImg.css("top")), parseFloat(btmImg.css("top")), $("#imgTop").css("height")];
-        //For some reason, doing $("#imgTop").height() and getting the integer value causes the interface to be broken when restored in the else below, even though it is the same value.
         $("#imgTop").css({
             "height": line.height() * zoomRatio + "px"
         });
@@ -6335,51 +6349,27 @@ tpen.screen.peekZoom = function(cancel) {
             "top": imgDims[3] * zoomRatio,
             "max-width": imgDims[1] * zoomRatio / availableRoom[1] * 100 + "%"
         });
-        btmImg.css({
-            "left": -line.position().left * zoomRatio,
-            "top": (imgDims[3] - line.height()) * zoomRatio,
-            "width": imgDims[1] * zoomRatio + "px",
-            "max-width": imgDims[1] * zoomRatio / availableRoom[1] * 100 + "%"
-        });
-
-        $("#imgTop").css("background-image", line.css("background-image"))
         $("#imgTop").addClass("isZoomed");
-
         tpen.screen.isPeeking = true;
     } else {
         //zoom out
+        $("#imgTop,#imgBottom,#imgBottom img, #imgTop img").addClass('noTransition');
         topImg.css({
             "width": "100%",
             "left": 0,
             "top": tpen.screen.peekMemory[0],
             "max-width": "100%"
         });
-        btmImg.css({
-            "width": "100%",
-            "left": 0,
-            "top": tpen.screen.peekMemory[1],
-            "max-width": "100%"
-        });
         $("#imgTop").css({
             "height": tpen.screen.peekMemory[2]
         });
-        tpen.screen.focusItem[1].find(".theText").removeAttr("disabled");
-        $("#canvasControls").removeAttr("disabled").removeClass("peekZoomLockout");
-        $("#pageJump").removeAttr("disabled").removeClass("peekZoomLockout");
-        $("#prevCanvas").attr("onclick", "previousFolio();").removeClass("peekZoomLockout");
-        $("#nextCanvas").attr("onclick", "nextFolio();").removeClass("peekZoomLockout");
-        $("#prevPage").removeAttr("disabled").removeClass("peekZoomLockout");
-        $("#nextPage").removeAttr("disabled").removeClass("peekZoomLockout");
-        $("#parsingBtn").removeAttr("disabled").removeClass("peekZoomLockout");
-        $("#splitScreenTools").removeAttr("disabled").removeClass("peekZoomLockout");
-        $("#magnify1").removeAttr("disabled").removeClass("peekZoomLockout");
+        tpen.screen.unlockNavigation();
         $("#zoomLock").css("background-color", "#272727");
         $(".lineColIndicatorArea").fadeIn();
-        
         $("#imgTop").removeClass("isZoomed");
-
         tpen.screen.isPeeking = false;
         tpen.screen.focusItem[1].find(".theText").focus();
+        $("#imgTop,#imgBottom,#imgBottom img, #imgTop img").removeClass('noTransition');
     }
 };
 

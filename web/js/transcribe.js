@@ -3134,8 +3134,7 @@ function hideWorkspaceForParsing() {
     $("#tools").children("[id$='Split']").hide();
     $("#parsingSplit")
             .css({
-                "display": "inline-block",
-                "height": window.innerHeight + "px"
+                "display": "inline-block"
             })
             .fadeIn();
 

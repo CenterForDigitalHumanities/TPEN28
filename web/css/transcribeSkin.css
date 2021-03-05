@@ -878,6 +878,7 @@ div#transcriptletArea {
     /* either this */
     position: relative;
     float: right;
+    height: calc(100vh - 32px);
     /* OR this */
     /*position: absolute;*/
     /*height: 100%;*/

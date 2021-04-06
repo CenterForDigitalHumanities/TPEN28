@@ -60,75 +60,62 @@ public class UpdateLineServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         //System.out.println("The back says we should update a line's content");
-        try (PrintWriter out = response.getWriter()) {
-            if (request.getParameter("text") == null) {
-                response.sendError(SC_BAD_REQUEST);
-                response.setHeader("Access-Control-Allow-Origin", "*");
-                return;
-            }
-            String text = request.getParameter("text");
-            String comment = "";
-            if (request.getParameter("comment") != null) {
-                comment = request.getParameter("comment");
-            }
+        PrintWriter out = response.getWriter();
+        try{
             HttpSession session = request.getSession();
+            String comment, text, line;
+            int projectID, uid;
             if (session.getAttribute("UID") == null || request.getParameter("projectID") == null) {
-                response.sendError(SC_UNAUTHORIZED);
                 response.setHeader("Access-Control-Allow-Origin", "*");
-                return;
+                response.sendError(SC_UNAUTHORIZED);
             }
-            int uid = parseInt(session.getAttribute("UID").toString());
-            if (request.getParameter("line") == null) {
-                if (request.getParameter("projectID") != null) {
-                    int projectID = parseInt(request.getParameter("projectID"));
-                    try {
-                        Project thisProject = new Project(projectID);
-                        if (new Group(thisProject.getGroupID()).isMember(uid)) {
-                            thisProject.setLinebreakText(text);
+            else if (request.getParameter("text") == null) {
+                response.setHeader("Access-Control-Allow-Origin", "*");
+                response.sendError(SC_BAD_REQUEST);
+            }
+            else{
+                text = request.getParameter("text");
+                comment = request.getParameter("comment");
+                line = request.getParameter("line");
+                projectID = parseInt(request.getParameter("projectID"));
+                uid = parseInt(session.getAttribute("UID").toString());
+                Project thisProject = new Project(projectID);
+                ProjectPermissions pms = new ProjectPermissions(projectID);
+                if (request.getParameter("comment") != null) {
+                    comment = request.getParameter("comment");
+                }
+                if (request.getParameter("line") == null) {
+                    if (request.getParameter("projectID") != null) {
+                        try {
+                            if (new Group(thisProject.getGroupID()).isMember(uid)) {
+                                thisProject.setLinebreakText(text);
+                            }
+                        } catch (SQLException e) {
+                            //I guess ignore?
                         }
-                    } catch (SQLException e) {
                     }
                 }
-            }
-            if (request.getParameter("projectID") != null) {
-                int projectID = parseInt(request.getParameter("projectID"));
-                String line = request.getParameter("line");
-                try {
-                    Project thisProject = new Project(projectID);
-                    ProjectPermissions pms = new ProjectPermissions(projectID);
-                    if (new Group(thisProject.getGroupID()).isMember(uid) || (pms.getAllow_public_modify() || pms.getAllow_public_modify_annotation())) {
-                        Transcription t = new Transcription(line);
-                        t.archive(); //create an archived version before making changes
-                        t.setText(text);
-                        t.setComment(comment);
-                        t.setCreator(uid);
-                        out.print(encoder().decodeForHTML(new Transcription(line).getText() + "," + new Transcription(line).getComment()));
-                        return;
-                    } else {
-                        response.sendError(SC_FORBIDDEN);
-                        response.setHeader("Access-Control-Allow-Origin", "*");
-                        return;
-                    }
-                } catch (SQLException ex) {
-                    getLogger(UpdateLineServlet.class.getName()).log(SEVERE, null, ex);
-                    response.sendError(SC_INTERNAL_SERVER_ERROR);
-                    response.setHeader("Access-Control-Allow-Origin", "*");
-                }
-            } else {
-                String line = request.getParameter("line");
-                Transcription t;
-                try {
-                    t = new Transcription(line);
-
+                if (new Group(thisProject.getGroupID()).isMember(uid) || (pms.getAllow_public_modify() || pms.getAllow_public_modify_annotation())) {
+                    Transcription t = new Transcription(line);
+                    t.archive(); //create an archived version before making changes
                     t.setText(text);
                     t.setComment(comment);
-                    out.print("success");
-                    return;
-                } catch (SQLException ex) {
-                    getLogger(UpdateLineServlet.class.getName()).log(SEVERE, null, ex);
+                    t.setCreator(uid);
+                    out.print(encoder().decodeForHTML(new Transcription(line).getText() + "," + new Transcription(line).getComment()));
+                } 
+                else {
+                    response.setHeader("Access-Control-Allow-Origin", "*");
+                    response.sendError(SC_FORBIDDEN);
                 }
             }
+        }
+        catch(Exception e){
             out.print("failure");
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.sendError(SC_INTERNAL_SERVER_ERROR);
+        }
+        finally{
+            out.close();
         }
     }
 

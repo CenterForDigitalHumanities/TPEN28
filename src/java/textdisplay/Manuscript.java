@@ -78,10 +78,10 @@ public class Manuscript {
             this.id = 0;
          }
       } finally {
-         if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-         }
+        if (j != null) {
+            closeDBConnection(j);
+        }
+        closePreparedStatement(ps);
       }
    }
 
@@ -137,10 +137,10 @@ public class Manuscript {
             this.archive = rs.getString(4);
          }
       } finally {
-         if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-         }
+        if (j != null) {
+            closeDBConnection(j);
+        }
+        closePreparedStatement(ps);
       }
    }
 
@@ -170,10 +170,10 @@ public class Manuscript {
             }
          }
       } finally {
-         if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-         }
+        if (j != null) {
+            closeDBConnection(j);
+        }
+        closePreparedStatement(ps);
       }
    }
    
@@ -284,10 +284,10 @@ public class Manuscript {
          ps.setInt(4, id);
          ps.execute();
       } finally {
-         if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-         }
+        if (j != null) {
+            closeDBConnection(j);
+        }
+        closePreparedStatement(ps);
       }
    }
 
@@ -317,10 +317,10 @@ public class Manuscript {
             toret = tmp;
          }
       } finally {
-         if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-         }
+        if (j != null) {
+            closeDBConnection(j);
+        }
+        closePreparedStatement(ps);
       }
       return toret;
    }
@@ -349,10 +349,10 @@ public class Manuscript {
             toret = tmp;
          }
       } finally {
-         if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-         }
+        if (j != null) {
+            closeDBConnection(j);
+        }
+        closePreparedStatement(ps);
       }
       return toret;
    }
@@ -379,10 +379,10 @@ public class Manuscript {
             toret[toret.length - 1] = rs.getString(1);
          }
       } finally {
-         if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-         }
+        if (j != null) {
+            closeDBConnection(j);
+        }
+        closePreparedStatement(ps);
       }
       return toret;
    }
@@ -409,10 +409,10 @@ public class Manuscript {
             toret[toret.length - 1] = rs.getString(1);
          }
       } finally {
-         if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-         }
+        if (j != null) {
+            closeDBConnection(j);
+        }
+        closePreparedStatement(ps);
       }
       return toret;
    }
@@ -469,10 +469,10 @@ public class Manuscript {
             toret = tmp;
          }
       } finally {
-         if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-         }
+        if (j != null) {
+            closeDBConnection(j);
+        }
+        closePreparedStatement(ps);
       }
       return toret;
    }
@@ -500,10 +500,10 @@ public class Manuscript {
       } finally {
          long totalTime = currentTimeMillis() - startTime;
             out.print("Built a ms object in " + totalTime + "ms\n");
-         if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-         }
+        if (j != null) {
+            closeDBConnection(j);
+        }
+        closePreparedStatement(ps);
       }
    }
 
@@ -548,10 +548,10 @@ public class Manuscript {
          }
          return toret;
       } finally {
-         if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-         }
+        if (j != null) {
+            closeDBConnection(j);
+        }
+        closePreparedStatement(ps);
       }
    }
 
@@ -718,10 +718,10 @@ public class Manuscript {
          }
          return toret + endNotes;
       } finally {
-         if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(ps);
-         }
+        if (j != null) {
+            closeDBConnection(j);
+        }
+        closePreparedStatement(ps);
       }
    }
 

@@ -289,8 +289,8 @@ public class Project {
         } finally {
             if (j != null) {
                 closeDBConnection(j);
-                closePreparedStatement(qry);
             }
+            closePreparedStatement(qry);
         }
 
     }
@@ -321,8 +321,8 @@ public class Project {
         } finally {
             if (j != null) {
                 closeDBConnection(j);
-                closePreparedStatement(ps);
             }
+            closePreparedStatement(ps);
         }
     }
 
@@ -493,11 +493,9 @@ public class Project {
             }
         } finally {
             if (j != null) {
-                closeDBConnection(j);
-                closePreparedStatement(qry);
-            } else {
-                err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
+                closeDBConnection(j); 
             }
+            closePreparedStatement(qry);
         }
     }
 
@@ -524,10 +522,8 @@ public class Project {
         } finally {
             if (j != null) {
                 closeDBConnection(j);
-                closePreparedStatement(qry);
-            } else {
-                err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
             }
+            closePreparedStatement(qry);
         }
     }
 
@@ -791,10 +787,8 @@ public class Project {
         } finally {
             if (j != null) {
                 closeDBConnection(j);
-                closePreparedStatement(stmt);
-            } else {
-                err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
             }
+            closePreparedStatement(stmt);
         }
     }
 
@@ -925,8 +919,8 @@ public class Project {
         } finally {
             if (j != null) {
                 closeDBConnection(j);
-                closePreparedStatement(ps);
             }
+            closePreparedStatement(ps);
         }
     }
 
@@ -981,8 +975,8 @@ public class Project {
         } finally {
             if (j != null) {
                 closeDBConnection(j);
-                closePreparedStatement(ps);
             }
+            closePreparedStatement(ps);
         }
     }
 
@@ -1025,10 +1019,8 @@ public class Project {
         } finally {
             if (j != null) {
                 closeDBConnection(j);
-                closePreparedStatement(qry);
-            } else {
-                err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
             }
+            closePreparedStatement(qry);
         }
     }
 
@@ -1075,10 +1067,8 @@ public class Project {
         } finally {
             if (j != null) {
                 closeDBConnection(j);
-                closePreparedStatement(qry);
-            } else {
-                err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
             }
+            closePreparedStatement(qry);
         }
     }
 
@@ -1216,10 +1206,8 @@ public class Project {
         } finally {
             if (j != null) {
                 closeDBConnection(j);
-                closePreparedStatement(qry);
-            } else {
-                err.print("Attempt to close DB connection failed, connection was null" + this.getClass().getName() + "\n");
             }
+            closePreparedStatement(qry);
         }
     }
 

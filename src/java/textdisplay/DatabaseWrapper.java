@@ -30,7 +30,7 @@ public class DatabaseWrapper
 {
     
     static BasicDataSource d;
-    static BasicDataSource e;
+    //static BasicDataSource e;
     static
     {
 
@@ -48,26 +48,31 @@ public class DatabaseWrapper
     public synchronized static Connection getConnection()
     {
         try
-            {
+        {
             if(d==null)
             {
+                System.out.println("Defining BasicDataSource JDBC driver programmatically.");
                 d=new BasicDataSource();
-        d.setDriverClassName("com.mysql.jdbc.Driver");
-        d.setUrl("jdbc:mysql://"+getRbTok("DATABASE")+"?useUnicode=true&amp;characterEncoding=utf8&amp;max_allowed_packet=16M");
-        d.setUsername(getRbTok("DBUSER"));
-        d.setPassword(getRbTok("DBPASSWORD"));
-        d.setInitialSize(40);
-        d.setMaxActive(40);
-        d.setValidationQuery("select 1");
+                d.setDriverClassName("com.mysql.jdbc.Driver");
+                d.setUrl("jdbc:mysql://"+getRbTok("DATABASE")+"?useUnicode=true&amp;characterEncoding=utf8&amp;max_allowed_packet=16M");
+                d.setUsername(getRbTok("DBUSER"));
+                d.setPassword(getRbTok("DBPASSWORD"));
+                d.setInitialSize(800);
+                d.setMaxActive(700);
+                d.setMaxIdle(100);
+                d.setMaxWait(8000);
+                d.setValidationQuery("select 1");
             }
             StackTraceElement [] stack=currentThread().getStackTrace();
             String stackdump="";
             return d.getConnection();
-            } catch (SQLException ex)
-            {
+        } 
+        catch (SQLException ex)
+        {
             getLogger(DatabaseWrapper.class.getName()).log(SEVERE, null, ex);
+            //d.close();
             return null;
-            }
+        }
     }
     
     /**Close the db connection, catching a potentially useless error and ignoring nulls*/
@@ -82,7 +87,7 @@ public class DatabaseWrapper
         }
         catch(SQLException e)
         {
-            getLogger(DatabaseWrapper.class.getName()).log(INFO, "Failed to close db connection\n");
+            getLogger(DatabaseWrapper.class.getName()).log(INFO, "Failed to close db connection: null\n");
         }
     }
     /**Close a preparedstatement, ignoring the potential for a sql exception because there is nothing to be done about it*/
@@ -94,7 +99,7 @@ public class DatabaseWrapper
         }
         catch(SQLException e)
         {
-            getLogger(DatabaseWrapper.class.getName()).log(INFO, "Failed to close prepared statement\n");
+            getLogger(DatabaseWrapper.class.getName()).log(INFO, "Failed to close prepared statement: null\n");
         }
     }
     /**Close a resultset, ignoring the potential for a sql exception because there is nothing to be done about it*/
@@ -106,7 +111,7 @@ public class DatabaseWrapper
         }
         catch(SQLException e)
         {
-            getLogger(DatabaseWrapper.class.getName()).log(INFO, "Failed to close result set\n");
+            getLogger(DatabaseWrapper.class.getName()).log(INFO, "Failed to close result set: null\n");
         }
         
     }

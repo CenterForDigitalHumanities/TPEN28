@@ -32,7 +32,6 @@ import java.util.Stack;
 import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
-import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -93,6 +92,7 @@ public class UserImageCollection {
      * Unzip the images in the zip file, put them in the proper location, and
      * create folios records for them
      *
+     * @param conn MySQL connection
      * @param zippedFile name of the zip file without path
      * @param uploader uploading user
      * @param ms manuscript created to contain these images
@@ -205,7 +205,7 @@ public class UserImageCollection {
             if (currentEntry.endsWith(".jpg") && !entry.isDirectory()) {
 
                 // scrub filenames
-                currentEntry = currentEntry.replaceAll("(?ig)\\s|\\.(?!jpg)", "-");
+                currentEntry = currentEntry.replaceAll("(?i)\\s|\\.(?!jpg)", "-");
 
                 File destFile = new File(newPath, currentEntry);
                 File destinationParent = destFile.getParentFile();

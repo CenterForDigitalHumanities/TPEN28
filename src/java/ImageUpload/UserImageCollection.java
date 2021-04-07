@@ -218,11 +218,6 @@ public class UserImageCollection {
                }
             }
          }
-
-         if (currentEntry.endsWith(".zip")) {
-            // found a zip file, try to open
-            extractFolder(destFile.getAbsolutePath());
-         }
       }
    }
 

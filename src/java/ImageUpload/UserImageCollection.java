@@ -101,7 +101,6 @@ public class UserImageCollection {
       File dir = new File(directory + "/" + uploader.getLname() + "/" + ms.getID());
       if (!dir.exists()) {
          dir.mkdirs();
-
       }
 
       File newZippedFile = new File(dir.getAbsoluteFile() + "/" + zippedFile.getName());

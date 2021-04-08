@@ -189,6 +189,8 @@ public class UserImageCollection {
 
         ZipFile zip = new ZipFile(file);
         String newPath = zipFile.substring(0, zipFile.length() - 4);
+        // scrub dirname
+        newPath = newPath.replaceAll("\\s|\\.", "_");
 
         new File(newPath).mkdir();
         Enumeration zipFileEntries = zip.entries();

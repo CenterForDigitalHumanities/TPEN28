@@ -200,12 +200,12 @@ public class UserImageCollection {
             String currentEntry = entry.getName();
 
             // lets not get fooled by a true jpg
-            currentEntry = currentEntry.replaceAll("(?i)jpe?g", ".jpg");
+            currentEntry = currentEntry.replaceAll("(?i)\\.jpe?g\\b", ".jpg");
 
             if (currentEntry.endsWith(".jpg") && !entry.isDirectory()) {
 
                 // scrub filenames
-                currentEntry = currentEntry.replaceAll("(?i)\\s|\\.(?!jpg)", "-");
+                currentEntry = currentEntry.replaceAll("\\s|\\.(?!jpg)", "-");
 
                 File destFile = new File(newPath, currentEntry);
                 File destinationParent = destFile.getParentFile();

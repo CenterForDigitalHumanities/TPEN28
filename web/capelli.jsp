@@ -1,5 +1,5 @@
 <%-- 
-    Document   : cappelli
+    Document   : capelli
     Created on : Mar 4, 2011, 5:37:25 PM
     Author     : jdeerin1
 --%>
@@ -32,18 +32,18 @@
             }
         int imageNum=textdisplay.AbbreviationPage.getImageNeedingUpdate("french");
         textdisplay.AbbreviationPage abbrev=new textdisplay.AbbreviationPage(imageNum);
-        out.print("<form method=POST action=\"cappelli.jsp\">");
+        out.print("<form method=POST action=\"capelli.jsp\">");
         out.print("<input type=hidden value=\""+abbrev.getId()+"\" name=\"id\">");
         out.print("Page Label<input type=\"text\" value=\""+"\" name=\"label\"><br>");
         out.print("Page starting letter<input type=\"text\" value=\""+abbrev.getGroup()+"\" name=\"group\"><br>");
         out.print("<input type=submit value=\"Save\"></form>");
-        out.print("<form method=POST action=\"cappelli.jsp\">");
+        out.print("<form method=POST action=\"capelli.jsp\">");
         out.print("<input type=hidden value=\""+abbrev.getId()+"\" name=\"id\">");
         out.print("<input type=submit name=\"irrelevant page\" value=\"irrelevant page\"></form>");
 
 
 
-        out.print("<img src=\"images/cappelli/"+abbrev.getImageName()+"\" alt=\"cappelli image\">");
+        out.print("<img src=\"images/cappelli/"+abbrev.getImageName()+"\" alt=\"capelli image\">");
 
         %>
     </body>

@@ -227,18 +227,18 @@ CREATE TABLE `buttons` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `cappelli`
+-- Table structure for table `capelli`
 --
 
-DROP TABLE IF EXISTS `cappelli`;
+DROP TABLE IF EXISTS `capelli`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cappelli` (
+CREATE TABLE `capelli` (
   `image` varchar(512) NOT NULL,
   `label` varchar(512) NOT NULL DEFAULT 'none',
   `group` varchar(256) NOT NULL,
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `collection` varchar(512) NOT NULL DEFAULT 'cappelli',
+  `collection` varchar(512) NOT NULL DEFAULT 'capelli',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

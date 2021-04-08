@@ -242,7 +242,7 @@ public class UserImageCollection {
             BufferedImage img = readAsBufferedImage(f.getAbsolutePath());
             img = scale(img, 2000);
             write(img, "jpg", f);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.log(SEVERE, e.getMessage());
             return false;
         }

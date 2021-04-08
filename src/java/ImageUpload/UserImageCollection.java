@@ -147,7 +147,7 @@ public class UserImageCollection {
         Stack<File> res = new Stack();
         File[] allFiles = dir.listFiles();
         for (File allFile : allFiles) {
-            if (allFile.getName().toLowerCase().contains(".jpg")) {
+            if (allFile.getName().toLowerCase().endsWith(".jpg")) {
                 res.add(allFile);
             } else {
                 if (allFile.isDirectory()) {
@@ -189,6 +189,8 @@ public class UserImageCollection {
 
         ZipFile zip = new ZipFile(file);
         String newPath = zipFile.substring(0, zipFile.length() - 4);
+        // scrub dirname
+        newPath = newPath.trim().replaceAll("\\s|\\.", "_");
 
         new File(newPath).mkdir();
         Enumeration zipFileEntries = zip.entries();
@@ -200,12 +202,12 @@ public class UserImageCollection {
             String currentEntry = entry.getName();
 
             // lets not get fooled by a true jpg
-            currentEntry = currentEntry.replaceAll("(?i)jpe?g", ".jpg");
+            currentEntry = currentEntry.replaceAll("(?i)\\.jpe?g\\b", ".jpg");
 
-            if (currentEntry.endsWith(".jpg") && !entry.isDirectory()) {
+            if (currentEntry.endsWith(".jpg") && !entry.isDirectory() && (entry.getSize() > 2000)) {
 
                 // scrub filenames
-                currentEntry = currentEntry.replaceAll("(?i)\\s|\\.(?!jpg)", "-");
+                currentEntry = currentEntry.trim().replaceAll("\\s|\\.(?!jpg)", "-");
 
                 File destFile = new File(newPath, currentEntry);
                 File destinationParent = destFile.getParentFile();
@@ -240,7 +242,7 @@ public class UserImageCollection {
             BufferedImage img = readAsBufferedImage(f.getAbsolutePath());
             img = scale(img, 2000);
             write(img, "jpg", f);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.log(SEVERE, e.getMessage());
             return false;
         }

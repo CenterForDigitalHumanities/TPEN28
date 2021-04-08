@@ -190,7 +190,7 @@ public class UserImageCollection {
         ZipFile zip = new ZipFile(file);
         String newPath = zipFile.substring(0, zipFile.length() - 4);
         // scrub dirname
-        newPath = newPath.replaceAll("\\s|\\.", "_");
+        newPath = newPath.trim().replaceAll("\\s|\\.", "_");
 
         new File(newPath).mkdir();
         Enumeration zipFileEntries = zip.entries();
@@ -207,7 +207,7 @@ public class UserImageCollection {
             if (currentEntry.endsWith(".jpg") && !entry.isDirectory()) {
 
                 // scrub filenames
-                currentEntry = currentEntry.replaceAll("\\s|\\.(?!jpg)", "-");
+                currentEntry = currentEntry.trim().replaceAll("\\s|\\.(?!jpg)", "-");
 
                 File destFile = new File(newPath, currentEntry);
                 File destinationParent = destFile.getParentFile();

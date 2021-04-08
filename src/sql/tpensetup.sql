@@ -292,20 +292,20 @@ CREATE TABLE IF NOT EXISTS `buttons` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `capelli`
+-- Table structure for table `cappelli`
 --
 
-CREATE TABLE IF NOT EXISTS `capelli` (
+CREATE TABLE IF NOT EXISTS `cappelli` (
   `image` varchar(512) NOT NULL,
   `label` varchar(512) NOT NULL DEFAULT 'none',
   `group` varchar(256) NOT NULL,
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `collection` varchar(512) NOT NULL DEFAULT 'capelli',
+  `collection` varchar(512) NOT NULL DEFAULT 'cappelli',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=811 ;
 
 --
--- Dumping data for table `capelli`
+-- Dumping data for table `cappelli`
 --
 
 

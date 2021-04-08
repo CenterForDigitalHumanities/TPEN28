@@ -53,7 +53,7 @@ public class AbbreviationPage {
      * @throws SQLException 
      */
     public AbbreviationPage(int id) throws SQLException {
-        String query = "select * from capelli where id=?";
+        String query = "select * from cappelli where id=?";
         Connection j = null;
         PreparedStatement ps = null;
         try {
@@ -76,7 +76,7 @@ public class AbbreviationPage {
     /**Get all of the groupings of pages. Most will be single letters.*/
     public static String[] getGroups(String collection) throws SQLException {
         String[] toret = new String[0];
-        String query = "select distinct(`group`) from capelli where label!='irrelevant' and collection=? order by `label`";
+        String query = "select distinct(`group`) from cappelli where label!='irrelevant' and collection=? order by `label`";
         Connection j = null;
         PreparedStatement ps = null;
         try {
@@ -112,7 +112,7 @@ public class AbbreviationPage {
 
     /**Save the label and group values for this page*/
     public static void update(int id, String label, String group) throws SQLException {
-        String query = "update capelli set label=? , `group`=? where id=?";
+        String query = "update cappelli set label=? , `group`=? where id=?";
         Connection j = null;
         PreparedStatement ps = null;
         try {
@@ -132,7 +132,7 @@ public class AbbreviationPage {
 
     /**Mark a page as irrelevant for future display*/
     public static void setIrrelevant(int id) throws SQLException {
-        String query = "update capelli set label='irrelevant' where id=?";
+        String query = "update cappelli set label='irrelevant' where id=?";
         Connection j = null;
         PreparedStatement ps = null;
         try {
@@ -149,7 +149,7 @@ public class AbbreviationPage {
     /**If there are any images that havent had the page label set, this will choose a random one and give the
     unique ID for it*/
     public static int getImageNeedingUpdate(String collection) throws SQLException {
-        String query = "select id from capelli where label='none' and collection=? ORDER BY RAND() limit 1";
+        String query = "select id from cappelli where label='none' and collection=? ORDER BY RAND() limit 1";
         Connection j = null;
         PreparedStatement ps = null;
         try {
@@ -170,7 +170,7 @@ public class AbbreviationPage {
     /**Get a list of html option elements representing each image in the specified group.*/
     public static AbbreviationPage[] getLabels(String group, String collection) throws SQLException {
         AbbreviationPage[] toret = new AbbreviationPage[0];
-        String query = "select * from capelli where `group`=? and collection=? order by label";
+        String query = "select * from cappelli where `group`=? and collection=? order by label";
         Connection j = null;
         PreparedStatement ps = null;
         try {

@@ -47,7 +47,7 @@ UNUSED FILE
         <form action="abbreviations.jsp" method="POST">
         <select name="group">
         <%
-        String [] groups=textdisplay.AbbreviationPage.getGroups("capelli");
+        String [] groups=textdisplay.AbbreviationPage.getGroups("cappelli");
         for(int i=0;i<groups.length;i++)
             {
             out.print("<option  value=\""+groups[i]+"\">"+groups[i]+"</option>");
@@ -60,7 +60,7 @@ UNUSED FILE
         if(request.getParameter("group")!=null)
             {
             String group=request.getParameter("group");
-           textdisplay.AbbreviationPage[] a= textdisplay.AbbreviationPage.getLabels(group,"capelli");
+           textdisplay.AbbreviationPage[] a= textdisplay.AbbreviationPage.getLabels(group,"cappelli");
            for(int i=0;i<a.length;i++)
                {
                out.print("<a href=abbreviations.jsp?id="+a[i].getId()+"&group="+group+">"+a[i].getLabel()+"</a><br>");

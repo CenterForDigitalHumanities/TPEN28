@@ -204,7 +204,7 @@ public class UserImageCollection {
             // lets not get fooled by a true jpg
             currentEntry = currentEntry.replaceAll("(?i)\\.jpe?g\\b", ".jpg");
 
-            if (currentEntry.endsWith(".jpg") && !entry.isDirectory()) {
+            if (currentEntry.endsWith(".jpg") && !entry.isDirectory() && (entry.getSize() > 2000)) {
 
                 // scrub filenames
                 currentEntry = currentEntry.trim().replaceAll("\\s|\\.(?!jpg)", "-");

@@ -147,7 +147,7 @@ public class UserImageCollection {
         Stack<File> res = new Stack();
         File[] allFiles = dir.listFiles();
         for (File allFile : allFiles) {
-            if (allFile.getName().toLowerCase().contains(".jpg")) {
+            if (allFile.getName().toLowerCase().endsWith(".jpg")) {
                 res.add(allFile);
             } else {
                 if (allFile.isDirectory()) {

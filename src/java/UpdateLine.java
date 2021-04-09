@@ -39,84 +39,59 @@ public class UpdateLine extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            
-            
-
-            if (request.getParameter("text") == null) {
-
-                response.sendError(SC_BAD_REQUEST);
-                return;
-            }
-            String text = request.getParameter("text");
-            String comment = "";
-            if (request.getParameter("comment") != null) {
-                comment = request.getParameter("comment");
-            }
             HttpSession session = request.getSession();
-
-            if (session.getAttribute("UID") == null ||request.getParameter("projectID") == null) {
+            if (session.getAttribute("UID") == null) {
                 response.sendError(SC_FORBIDDEN);
-               return;
             }
-            int uid = parseInt(session.getAttribute("UID").toString());
-            if (request.getParameter("line") == null) {
-
-                if (request.getParameter("projectID") != null) {
-                    int projectID = parseInt(request.getParameter("projectID"));
-                    try {
-                        Project thisProject = new Project(projectID);
-                        if (new Group(thisProject.getGroupID()).isMember(uid)) {
-                            thisProject.setLinebreakText(text);
-                        }
-                    } catch (Exception e) {
-                    }
-                }
+            else if (request.getParameter("text") == null) {
+                getLogger(UpdateLine.class.getName()).log(SEVERE, null, "'text' was not provided.");
+                response.sendError(SC_BAD_REQUEST);
             }
-
-            if (request.getParameter("projectID") != null) {
+            else if (request.getParameter("projectID") == null) {
+                getLogger(UpdateLine.class.getName()).log(SEVERE, null, "'projectID' was not provided.");
+                response.sendError(SC_BAD_REQUEST);
+            }
+            else{
+                String text = request.getParameter("text");
+                String comment = "";
                 int projectID = parseInt(request.getParameter("projectID"));
+                int uid = parseInt(session.getAttribute("UID").toString());
                 String line = request.getParameter("line");
-                try {
+                try{
                     Project thisProject = new Project(projectID);
+                    if (request.getParameter("comment") != null) {
+                        comment = request.getParameter("comment");
+                    }
+                    if (line == null) {
+                        if (request.getParameter("projectID") != null) {
+                            if (new Group(thisProject.getGroupID()).isMember(uid)) {
+                                thisProject.setLinebreakText(text);
+                            }
+                        }
+                    }
                     if (new Group(thisProject.getGroupID()).isMember(uid)) {
                         Transcription t = new Transcription(line);
                         t.archive(); //create an archived version before making changes
                         t.setText(text);
                         t.setComment(comment);
                         t.setCreator(uid);
-                        
                         out.print(encoder().decodeForHTML(new Transcription(line).getText()));
-                        return;
-                    } else {
+                    } 
+                    else {
                         response.sendError(SC_FORBIDDEN);
-                        return;
                     }
-                } catch (SQLException ex) {
-                    getLogger(UpdateLine.class.getName()).log(SEVERE, null, ex);
+                }
+                catch(SQLException e){
+                    System.out.println("UpdateLine SQL failure");
+                    getLogger(UpdateLine.class.getName()).log(SEVERE, null, e);
                     response.sendError(SC_INTERNAL_SERVER_ERROR);
                 }
             }
-            else
-            {
-                String line = request.getParameter("line");
-                        Transcription t;
-                try {
-                    t = new Transcription(line);
-
-                        t.setText(text);
-                        t.setComment(comment);
-                        out.print("success");
-                        return;
-                        } catch (SQLException ex) {
-                    getLogger(UpdateLine.class.getName()).log(SEVERE, null, ex);
-                }
-
-            }
-
-
-            out.print("failure");
-
-
+        }
+        catch(Exception e){
+            System.out.println("UpdateLine generic failure");
+            getLogger(UpdateLine.class.getName()).log(SEVERE, null, e);
+            response.sendError(SC_INTERNAL_SERVER_ERROR);
         }
     }
 

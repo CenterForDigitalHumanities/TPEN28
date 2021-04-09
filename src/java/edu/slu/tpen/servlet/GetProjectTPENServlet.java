@@ -222,23 +222,28 @@ public class GetProjectTPENServlet extends HttpServlet {
                             out.close();
                         } else {
                             response.setStatus(SC_NOT_MODIFIED);
+                            out.close();
                         }
                         gc(); //Force garbage cleaning to remove null pointers, empty variables, and new Whatevers that were destroyed by return statements.
                     } else {
                         response.sendError(SC_FORBIDDEN);
+                        out.close();
                         gc();
                     }
                 } else {
                     response.sendError(SC_NOT_FOUND);
+                    out.close();
                     gc();
                 }
             } catch (NumberFormatException | SQLException | IOException ex) {
                 gc();
+                out.close();
                 getLogger(GetProjectTPENServlet.class.getName()).log(SEVERE, null, ex);
                 throw new ServletException(ex);
             }
         } else {
             gc();
+            out.close();
             response.sendError(SC_UNAUTHORIZED);
         }
     }

@@ -579,6 +579,10 @@ function populateXML() {
 
 function setTPENObjectData(data) {
     if (data.project) {
+        if(data.isTPENAdmin && data.isTPENAdmin === "true"){
+            tpen.user.isAdmin = true;
+            tpen.user.isMember = tpen.user.isAdmin;
+        }
         if (data.projectTool) {
             try {
                 tpen.project.tools = JSON.parse(data.projectTool);

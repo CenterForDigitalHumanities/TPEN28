@@ -198,6 +198,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                                 }
                             }
                             jsonMap.put("ls_leader", gson.toJson(leaders));
+                            jsonMap.put("isTPENAdmin", isTPENAdmin+"");
                             //get project permission
                             //get project buttons
                             Hotkey hk = new Hotkey();

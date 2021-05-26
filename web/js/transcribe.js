@@ -1082,6 +1082,10 @@ function loadTranscription(pid, tool) {
     } else if (userTranscription.indexOf("http://") >= 0 || userTranscription.indexOf("https://") >= 0) {
         //TODO: allow users to include the p variable and load a page?
         var localProject = false;
+        projectID = 0
+        /*
+         * Taking out this localProject detection for now.  Let's always treat this like a third party Manifest.  
+         
         if (userTranscription.indexOf("/TPEN/project") > -1 || userTranscription.indexOf("/TPEN/manifest") > -1) {
             localProject = true;
             if (userTranscription.indexOf("/TPEN/project") > -1) {
@@ -1089,12 +1093,11 @@ function loadTranscription(pid, tool) {
             } else if (userTranscription.indexOf("/TPEN/manifest") > -1) {
                 projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/manifest/') + 10).replace("/manifest.json", ""));
             }
-
-            // }
         } else {
             projectID = 0;
         }
-
+        */
+        
         if (localProject) {
             //get project info first, get manifest out of it, populate
             updateURL("");

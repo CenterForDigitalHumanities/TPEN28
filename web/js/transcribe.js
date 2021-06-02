@@ -1517,7 +1517,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
                     $('#iprAccept').show();
                     $(".trexHead").show();
                 }
-                if (tpen.project.folioImages.length > 0 && !tpen.project.folioImages[tpen.screen.currentFolio].preloaded) {
+                if (tpen.project.folioImages.length > 0 && tpen.project.folioImages[tpen.screen.currentFolio] !== undefined && !tpen.project.folioImages[tpen.screen.currentFolio].preloaded) {
                     tpen.project.folioImages[tpen.screen.currentFolio].image = image;
                     tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //It is now preloaded.
                 }

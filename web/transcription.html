@@ -847,56 +847,59 @@
 
     //Page load event triggers and attached here.
     $(window).on('load',function(){
-        dailyTip();
-        maintenanceDate(); //Now handles attachWindowResize()
-        //attachWindowResize();
+        var loadOnly = getURLVariable("projectID") ? false : true;
         $("#imgTop, #imgBottom").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("width", "auto");
-       // $('.transcriptionImage').attr('src', "images/loading2.gif"); //background loader if there is a hang time waiting for image
-        //check if logged in
-        var url = "geti";
-        $.ajax({
-            url: url,
-            type: "GET",
-            dataType: "json",
-            success: function(data){
-                //tpen.user.UID = JSON.parse(data);
-                if(data.uname && data.uname !== ""){
-                    var theURL = window.location.href;
-                    if (theURL.indexOf("projectID=") > -1){
-                        var projID = getURLVariable("projectID");
-                        if(theURL.indexOf("parsing=true") > -1){
-                            loadTranscription(projID, "parsing");
+        if(loadOnly){
+            tpen.user.UID = 0;
+            $('#transcriptionTemplate').hide();
+            $('#setTranscriptionObjectArea').show();
+            $(".instructions").show();
+            $(".hideme").show();
+            attachWindowResize();
+        }
+        else{
+            dailyTip();
+            maintenanceDate(); //Now handles attachWindowResize()
+            //attachWindowResize();
+            //check if logged in
+            var url = "geti";
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                success: function(data){
+                    if(data.uname && data.uname !== ""){
+                        var theURL = window.location.href;
+                        if (theURL.indexOf("projectID=") > -1){
+                            var projID = getURLVariable("projectID");
+                            if(theURL.indexOf("parsing=true") > -1){
+                                loadTranscription(projID, "parsing");
+                            }
+                            else{
+                                loadTranscription(projID, "");
+                            }
                         }
                         else{
-                            loadTranscription(projID, "");
+                            //There is nothing to load
                         }
+                        tpen.user.fname = data.uname;
+                        setTranscribingUser(); //sets current tpen.user.UID
                     }
                     else {
-                        $('#transcriptionTemplate').hide();
-                        $('#setTranscriptionObjectArea').show();
-                        $(".instructions").show();
-                        $(".hideme").show();
+                        tpen.user.UID = 0;
+                        var theURL = window.location.href;
+                        return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                     }
-                    tpen.user.fname = data.uname;
-                    setTranscribingUser();
-                }
-                else {
+                },
+                error: function(jqXHR,error, errorThrown) {
                     tpen.user.UID = 0;
                     var theURL = window.location.href;
                     return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
                 }
-                //only get iframes after confirmed user authentication
-            },
-            error: function(jqXHR,error, errorThrown) {
-                tpen.user.UID = 0;
-                var theURL = window.location.href;
-                return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
-            }
-        });
-
-
+            });
+        }
         //get all project metadata so that we can get the project and user tools.
         //$(".split").find('iframe').css("height", window.innerHeight-125+"px");
         $('select').find('option:eq(0)').prop("selected",true); //stops certain bugs caused by previously selected dropdown options.

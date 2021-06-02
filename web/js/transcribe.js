@@ -1342,25 +1342,32 @@ function activateUserTools(tools, permissions) {
 function checkManuscriptPermissions(id) {
     var permitted = false;
     var manID = -1;
-    for (var i = 0; i < tpen.project.folios.length; i++) {
-        if (id == tpen.project.folios[i].folioNumber) {
-            manID = tpen.project.folios[i].manuscript;
-            tpen.screen.currentManuscriptID = manID;
-            $("input[name='ms']").val(manID);
-            $("input[name='projectID']").val(tpen.project.id);
-            for (var j = 0; j < tpen.user.authorizedManuscripts.length; j++) {
-                if (parseInt(tpen.user.authorizedManuscripts[j].manID) === manID) {
-                    if (tpen.user.authorizedManuscripts[j].auth === "true") {
-                        permitted = true;
+    var loadOnly = getURLVariable("projectID") ? false : true;
+    if(loadOnly){
+        permitted = true;
+    }
+    else{
+        for (var i = 0; i < tpen.project.folios.length; i++) {
+            if (id == tpen.project.folios[i].folioNumber) {
+                manID = tpen.project.folios[i].manuscript;
+                tpen.screen.currentManuscriptID = manID;
+                $("input[name='ms']").val(manID);
+                $("input[name='projectID']").val(tpen.project.id);
+                for (var j = 0; j < tpen.user.authorizedManuscripts.length; j++) {
+                    if (parseInt(tpen.user.authorizedManuscripts[j].manID) === manID) {
+                        if (tpen.user.authorizedManuscripts[j].auth === "true") {
+                            permitted = true;
+                        }
+                        if (tpen.user.authorizedManuscripts[j].controller) {
+                            $(".manController").attr("title", "The controlling user is " + tpen.user.authorizedManuscripts[j].controller);
+                        }
+                        break;
                     }
-                    if (tpen.user.authorizedManuscripts[j].controller) {
-                        $(".manController").attr("title", "The controlling user is " + tpen.user.authorizedManuscripts[j].controller);
-                    }
-                    break;
                 }
             }
         }
     }
+
     return permitted;
 }
 
@@ -1385,14 +1392,20 @@ function acceptIPR(folio) {
  * */
 function checkIPRagreement(id) {
     var agreed = false;
-    for (var i = 0; i < tpen.project.folios.length; i++) {
-        if (id == tpen.project.folios[i].folioNumber) {
-            agreed = tpen.project.folios[i].ipr;
-            $("#ipr_who").html(tpen.project.folios[i].archive);
-            $("#iprAgreement").html(tpen.project.folios[i].ipr_agreement);
-            $("#accept_ipr").attr("onclick", "acceptIPR(" + id + ")");
-            //$("#ipr_user") is set in transcription.html
-            break;
+    var loadOnly = getURLVariable("projectID") ? false : true;
+    if(loadOnly){
+        agreed = true;
+    }
+    else{
+        for (var i = 0; i < tpen.project.folios.length; i++) {
+            if (id == tpen.project.folios[i].folioNumber) {
+                agreed = tpen.project.folios[i].ipr;
+                $("#ipr_who").html(tpen.project.folios[i].archive);
+                $("#iprAgreement").html(tpen.project.folios[i].ipr_agreement);
+                $("#accept_ipr").attr("onclick", "acceptIPR(" + id + ")");
+                //$("#ipr_user") is set in transcription.html
+                break;
+            }
         }
     }
     return agreed;
@@ -1446,6 +1459,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
     var folioID = canvasURI.substring(lastslashindex + 1).replace(".png", "");
     var permissionForImage = checkManuscriptPermissions(folioID);
     var ipr_agreement = checkIPRagreement(folioID);
+    var loadOnly = false;
     $("#imgTop, #imgBottom").css("height", "400px");
     $("#imgTop img, #imgBottom img").css("height", "400px");
     $("#imgTop img, #imgBottom img").css("width", "auto");

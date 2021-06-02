@@ -1045,7 +1045,7 @@ function loadTranscription(pid, tool) {
         {
             var transcriptionFolios = userTranscription.sequences[0].canvases;
             scrubFolios();
-            var count = 1;
+            var count = 0;
             $.each(transcriptionFolios, function () {
                 $("#pageJump").append("<option folioNum='" + count
                         + "' class='folioJump' val='" + this.label + "'>"
@@ -1135,7 +1135,7 @@ function loadTranscription(pid, tool) {
 //                            });
 //                        }
                         scrubFolios();
-                        var count = 1;
+                        var count = 0;
                         $.each(transcriptionFolios, function () {
                             $("#pageJump").append("<option folioNum='" + count
                                     + "' class='folioJump' val='" + this.label + "'>"
@@ -1241,7 +1241,7 @@ function loadTranscription(pid, tool) {
                         tpen.manifest = presi2Manifest;
                         transcriptionFolios = presi2Manifest.sequences[0].canvases;
                         scrubFolios();
-                        var count = 1;
+                        var count = 0;
                         $.each(transcriptionFolios, function () {
                             $("#pageJump").append("<option folioNum='" + count
                                     + "' class='folioJump' val='" + this.label + "'>"
@@ -1478,7 +1478,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
     if (canvasObj.images[0].resource['@id'] !== undefined && canvasObj.images[0].resource['@id'] !== "") { //Only one image
         var image = new Image();
         //Check to see if we can use a preloaded image...
-        if (tpen.project.folioImages.length > 0 && tpen.project.folioImages[tpen.screen.currentFolio].image) {
+        if (tpen.project.folioImages.length > 0 && tpen.project.folioImages[tpen.screen.currentFolio] !== undefined && tpen.project.folioImages[tpen.screen.currentFolio].image !== null) {
             image = tpen.project.folioImages[tpen.screen.currentFolio].image;
             tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //We know it is preloaded, ensure the flag is correct.
         } else {

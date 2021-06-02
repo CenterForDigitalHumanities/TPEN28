@@ -847,12 +847,13 @@
 
     //Page load event triggers and attached here.
     $(window).on('load',function(){
-        var loadOnly = getURLVariable("projectID") ? false : true;
+        var readOnly = getURLVariable("projectID") ? false : true;
         $("#imgTop, #imgBottom").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("width", "auto");
-        if(loadOnly){
+        if(readOnly){
             tpen.user.UID = 0;
+            tpen.project.id = -1; //This means it is not a T-PEN projec5t, but rather a manifest from another source.
             $('#transcriptionTemplate').hide();
             $('#setTranscriptionObjectArea').show();
             $(".instructions").show();

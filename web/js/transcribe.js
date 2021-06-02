@@ -1234,12 +1234,12 @@ function loadTranscription(pid, tool) {
             tpen.project.id = -1; //This means it is not a T-PEN projec5t, but rather a manifest from another source.
             $.ajax({
                 url: url,
-                success: function (projectData) {
-                    if (projectData.sequences[0] !== undefined
-                            && projectData.sequences[0].canvases !== undefined
-                            && projectData.sequences[0].canvases.length > 0) {
-                        tpen.manifest = projectData;
-                        transcriptionFolios = projectData.sequences[0].canvases;
+                success: function (presi2Manifest) {
+                    if (presi2Manifest.sequences[0] !== undefined
+                            && presi2Manifest.sequences[0].canvases !== undefined
+                            && presi2Manifest.sequences[0].canvases.length > 0) {
+                        tpen.manifest = presi2Manifest;
+                        transcriptionFolios = presi2Manifest.sequences[0].canvases;
                         scrubFolios();
                         var count = 1;
                         $.each(transcriptionFolios, function () {
@@ -1263,7 +1263,7 @@ function loadTranscription(pid, tool) {
                             }
                         });
                         loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool, false);
-                        var projectTitle = projectData.label;
+                        var projectTitle = presi2Manifest.label;
                         $("#trimTitle").html(projectTitle);
                         $("#trimTitle").attr("title", projectTitle);
                         $('#transcriptionTemplate').css("display", "inline-block");
@@ -1342,8 +1342,8 @@ function activateUserTools(tools, permissions) {
 function checkManuscriptPermissions(id) {
     var permitted = false;
     var manID = -1;
-    var loadOnly = getURLVariable("projectID") ? false : true;
-    if(loadOnly){
+    var readOnly = getURLVariable("projectID") ? false : true;
+    if(readOnly){
         permitted = true;
     }
     else{
@@ -1392,8 +1392,8 @@ function acceptIPR(folio) {
  * */
 function checkIPRagreement(id) {
     var agreed = false;
-    var loadOnly = getURLVariable("projectID") ? false : true;
-    if(loadOnly){
+    var readOnly = getURLVariable("projectID") ? false : true;
+    if(readOnly){
         agreed = true;
     }
     else{
@@ -1459,7 +1459,6 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
     var folioID = canvasURI.substring(lastslashindex + 1).replace(".png", "");
     var permissionForImage = checkManuscriptPermissions(folioID);
     var ipr_agreement = checkIPRagreement(folioID);
-    var loadOnly = false;
     $("#imgTop, #imgBottom").css("height", "400px");
     $("#imgTop img, #imgBottom img").css("height", "400px");
     $("#imgTop img, #imgBottom img").css("width", "auto");
@@ -1504,7 +1503,11 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
                 tpen.screen.originalCanvasHeight = $("#imgTop img").height();
                 tpen.screen.originalCanvasWidth = $("#imgTop img").width();
                 drawLinesToCanvas(canvasObj, parsing, tool, restore);
-                getHistory(); //Do we need to call this later down the stack?  It could be moved into drawLinesToCanvas()
+                //Can maybe just get rid of this, not sure.  Did it to stop a "Cannot read property 'folioNumber' of undefined" error downstream in getHistory()
+                var readOnly = getURLVariable("projectID") ? false : true;
+                if(!readOnly){
+                    getHistory(); //Do we need to call this later down the stack?  It could be moved into drawLinesToCanvas()
+                }
                 $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
                 $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
                 $("#parseOptions").find(".tpenButton").removeAttr("disabled");
@@ -1514,7 +1517,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
                     $('#iprAccept').show();
                     $(".trexHead").show();
                 }
-                if (!tpen.project.folioImages[tpen.screen.currentFolio].preloaded) {
+                if (tpen.project.folioImages.length > 0 && !tpen.project.folioImages[tpen.screen.currentFolio].preloaded) {
                     tpen.project.folioImages[tpen.screen.currentFolio].image = image;
                     tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //It is now preloaded.
                 }
@@ -1681,7 +1684,11 @@ function drawLinesToCanvas(canvasObj, parsing, tool, restore) {
                 }
                 window.history.pushState("Object", "Title", currentURL);
                 updateURL("attempts", attempts);
-                updateURL("p");
+                //Can maybe just get rid of this, not sure.  Did it to stop a "Cannot read property 'folioNumber' of undefined" error downstream in updateURL()
+                var readOnly = getURLVariable("projectID") ? false : true;
+                if(!readOnly){
+                    updateURL("p");
+                }
                 if (attempts > 3) {
                     //do not try to reload again, just leave the user in the parsing page...
                 } else {
@@ -2562,8 +2569,9 @@ function adjustImgs(positions) {
 /* Update the line information of the line currently focused on, then load the focus to a line that was clicked on */
 function loadTranscriptlet(lineid) {
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
+    var readOnly = getURLVariable("projectID") ? false : true;
     if ($('#transcriptlet_' + lineid).length > 0) {
-        if (tpen.user.UID || tpen.user.isMember) {
+        if (tpen.user.UID || tpen.user.isMember || readOnly) {
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, true);
             updatePresentation($('#transcriptlet_' + lineid));
@@ -2608,8 +2616,9 @@ function nextTranscriptlet() {
     thisLine++;
     var nextID = thisLine;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
+    var readOnly = getURLVariable("projectID") ? false : true;
     if ($('#transcriptlet_' + nextID).length > 0) {
-        if (tpen.user.UID || tpen.user.isMember) {
+        if (tpen.user.UID || tpen.user.isMember || readOnly) {
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, true);
             updatePresentation($('#transcriptlet_' + nextID));
@@ -2652,8 +2661,9 @@ function nextTranscriptlet() {
 function previousTranscriptlet() {
     var prevID = parseFloat(tpen.screen.focusItem[1].attr('lineID')) - 1;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
+    var readOnly = getURLVariable("projectID") ? false : true;
     if (prevID >= 0) {
-        if (tpen.user.UID || tpen.user.isMember) {
+        if (tpen.user.UID || tpen.user.isMember || readOnly) {
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, false);
             updatePresentation($('#transcriptlet_' + prevID));
@@ -4469,7 +4479,11 @@ function drawLinesOnCanvas(lines, parsing, tool, restore) {
         $("#parsingBtn").css("box-shadow", "0px 0px 6px 5px yellow");
         resetImageTools();
     }
-    updateURL("p");
+    //Can maybe just get rid of this, not sure.  Did it to stop a "Cannot read property 'folioNumber' of undefined" error downstream in updateURL()
+    var readOnly = getURLVariable("projectID") ? false : true;
+    if(!readOnly){
+        updateURL("p");
+    }
 }
 
 function getList(canvas, drawFlag, parsing, preview) { //this could be the @id of the annoList or the canvas that we need to find the @id of the list for.
@@ -4492,12 +4506,14 @@ function getList(canvas, drawFlag, parsing, preview) { //this could be the @id o
             drawLinesOnCanvas(annos, parsing, tpen.screen.liveTool, restore);
         }
         return annos;
-    } else {
+    } 
+    else {
         if (canvas.otherContent) {
             lists = canvas.otherContent;
-        } else {
+        } 
+        else {
             console.warn("canvas to get anno list for does not have otherContent");
-            lists = "noList";
+            lists = [];
         }
         for (var i = 0; i < lists.length; i++) {
             var list = lists[i];
@@ -4521,14 +4537,14 @@ function getList(canvas, drawFlag, parsing, preview) { //this could be the @id o
                 if (drawFlag) {
                     drawLinesOnCanvas(annos, parsing, tpen.screen.liveTool, restore);
                 }
-                return annos;
+                break;
             }
             //               });
         }
+        return annos;
     }
 
-}
-;
+};
 
 /*
  * Update line information for a particular line. Until we fix the data schema, this also forces us to update the annotation list for any change to a line.
@@ -4537,6 +4553,11 @@ function getList(canvas, drawFlag, parsing, preview) { //this could be the @id o
  *
  * */
 function updateLine(line, cleanup, updateList) {
+    //Did this so we could load transcriptlets in the interface (previousTranscriptlet(), nextTranscriptlet(), loadTranscriptlet()).
+    var readOnly = getURLVariable("projectID") ? false : true;
+    if(readOnly){
+        return false;
+    }
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
@@ -5390,21 +5411,18 @@ function preloadFolioImages() {
         endFolio = currentFolio + 1;
     }
     for (var i = startFolio; i <= endFolio; i++) {
-        //for(var i=0; i<tpen.manifest.sequences[0].canvases.length; i++){
-        var folioImageToGet = tpen.manifest.sequences[0].canvases[i].images[0].resource["@id"];
-        if (tpen.project.folioImages[i].image === null || !tpen.project.folioImages[i].preloaded) {
+        if (tpen.project.folioImages[i] === undefined){
+            var preloadObj = {
+                "preloaded": false,
+                "image": null
+            };
+            tpen.project.folioImages[i] = preloadObj;
+        }
+        var folioImageToGet = tpen.manifest.sequences[0].canvases[i].images[0].resource["@id"];      
+        if (!tpen.project.folioImages[i].preloaded) {
             tpen.project.folioImages[i].image = new Image();
-//            tpen.project.folioImages[i].image.onload = function() {
-//                //the problem here is that we cannot rely on i, so we cannot set the preloaded flag here.  This is done during loadTranscriptionCanvas() instead.
-//                try{
-//                    //tpen.project.folioImages[i].preloaded = true;
-//                    //console.log("Finished preloading an image");
-//                }
-//                catch(err){
-//                    console.warn("Could not load an image during preload.");
-//                }
-//            };
             tpen.project.folioImages[i].image.src = folioImageToGet;
+            tpen.project.folioImages[i].preloaded = true;
         } else {
             //console.log("Folio "+i+" already preloaded");
         }

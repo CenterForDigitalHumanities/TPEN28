@@ -1230,6 +1230,7 @@ function loadTranscription(pid, tool) {
             });
         } else {
             //it is not a local project, so just grab the url that was input and request the manifest.
+            //Note that tools are deeply connected to the project, so even basic tools will be unavailable.
             var url = userTranscription;
             tpen.project.id = -1; //This means it is not a T-PEN projec5t, but rather a manifest from another source.
             $.ajax({
@@ -1342,6 +1343,7 @@ function activateUserTools(tools, permissions) {
 function checkManuscriptPermissions(id) {
     var permitted = false;
     var manID = -1;
+    //Did this to stop the "you do not have permission
     var readOnly = getURLVariable("projectID") ? false : true;
     if(readOnly){
         permitted = true;
@@ -4553,7 +4555,7 @@ function getList(canvas, drawFlag, parsing, preview) { //this could be the @id o
  *
  * */
 function updateLine(line, cleanup, updateList) {
-    //Did this so we could load transcriptlets in the interface (previousTranscriptlet(), nextTranscriptlet(), loadTranscriptlet()).
+    //Did this so we could navigate transcriptlets in the interface (previousTranscriptlet(), nextTranscriptlet(), loadTranscriptlet()).
     var readOnly = getURLVariable("projectID") ? false : true;
     if(readOnly){
         return false;

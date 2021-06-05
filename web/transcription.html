@@ -121,10 +121,14 @@
         <div class="instructions">
             <!-- TODO: Arc we logged in to see this? -->
             <p>
-                The area below accepts a local project ID number, a project or IIIF manifest url, or a valid T&#8209;PEN or IIIF manifest JSON object as valid input.
+                If you are logged in, the area below accepts a local project ID number.  Provide the project number and click 'Load Transcription'.
+                If you are not logged in, you can provide your project URI and click 'Load Transcription'.  This will give you the ability to browse
+                the images and transcription of your project.  Tools will not be available and transcription changes will not be saved.
             </p>
             <p>
-                Once you have decided what to put into the area, click 'Load Transcription' to have the input created into the transcription interface.
+                You may provide the URI of any IIIF Presentation API 2.1 Manifest.  However, the software expects that all resources and Annotations are resolved and embedded.
+                If they are instead referenced, then you will not see them load here.  We are working to provide a standalone transcription viewer with TPEN3. 
+                Likewise, you may paste the entire resolved Manifest object here.  The TPEN software has the same expectation of embedded resources.
             </p>
         </div>
 
@@ -847,11 +851,12 @@
 
     //Page load event triggers and attached here.
     $(window).on('load',function(){
-        var readOnly = getURLVariable("projectID") ? false : true;
         $("#imgTop, #imgBottom").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("height", "400px");
         $("#imgTop img, #imgBottom img").css("width", "auto");
+        var readOnly = getURLVariable("projectID") ? false : true;
         if(readOnly){
+            //Did this so the page loads and show the manifest for navigational purposes.
             tpen.user.UID = 0;
             tpen.project.id = -1; //This means it is not a T-PEN projec5t, but rather a manifest from another source.
             $('#transcriptionTemplate').hide();

@@ -579,115 +579,7 @@ function populateXML() {
 
 function setTPENObjectData(data) {
     if (data.project) {
-        if (data.projectTool) {
-            try {
-                tpen.project.tools = JSON.parse(data.projectTool);
-            } catch (e) {
-                clearTimeout(longLoadingProject);
-                $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
-                return false;
-            }
-        }
-        if (data.userTool) {
-            try {
-                tpen.project.userTools = JSON.parse(data.userTool);
-            } catch (e) {
-                clearTimeout(longLoadingProject);
-                $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
-                return false;
-            }
-        }
-        if (data.ls_u) {
-            try {
-                tpen.project.user_list = JSON.parse(data.ls_u);
-            } catch (e) {
-                clearTimeout(longLoadingProject);
-                $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
-                return false;
-            }
-        }
-        if (data.ls_leader) {
-            try {
-                tpen.project.leaders = JSON.parse(data.ls_leader);
-            } catch (e) {
-                clearTimeout(longLoadingProject);
-                $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
-                return false;
-            }
-        }
-        if (data.projectButtons) {
-            try {
-                tpen.project.specialChars = JSON.parse(data.projectButtons);
-            } catch (e) {
-                clearTimeout(longLoadingProject);
-                $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
-                return false;
-            }
-        }
-        if (data.ls_hk) {
-            try {
-                tpen.project.hotkeys = JSON.parse(data.ls_hk);
-            } catch (e) {
-                clearTimeout(longLoadingProject);
-                $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
-                return false;
-            }
-        }
-        if (data.xml) {
-            try {
-                tpen.project.xml = JSON.parse(data.xml);
-            } catch (e) {
-                clearTimeout(longLoadingProject);
-                $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
-                return false;
-            }
-        }
-        if (data.projper) {
-            try {
-                tpen.project.permissions = JSON.parse(data.projper);
-            } catch (e) {
-                clearTimeout(longLoadingProject);
-                $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
-                return false;
-            }
-        }
-        if (data.metadata) {
-            try {
-                tpen.project.metadata = JSON.parse(data.metadata);
-            } catch (e) {
-                clearTimeout(longLoadingProject);
-                $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
-                return false;
-            }
-        }
-        if (data.ls_fs) {
-            try {
-                tpen.project.folios = JSON.parse(data.ls_fs);
-            } catch (e) {
-                clearTimeout(longLoadingProject);
-                $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
-                $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
-                return false;
-            }
-            for (var i = 0; i < tpen.project.folios.length; i++) {
-                var preloadObj = {
-                    "preloaded": false,
-                    "folioNum": tpen.project.folios[i].folioNumber,
-                    "image": null
-                };
-                tpen.project.folioImages[i] = preloadObj;
-            }
-        }
-        if (data.projectName) {
+        if (data.project.projectName) {
             tpen.project.projectName = data.projectName;
         }
         if (data.project.projectID) {
@@ -705,59 +597,168 @@ function setTPENObjectData(data) {
         if (data.project.linebreakCharacterLimit) {
             tpen.project.linebreakCharacterLimit = parseInt(data.project.linebreakCharacterLimit);
         }
-
-        if (data.remainingText) {
-            tpen.project.remainingText = data.remainingText;
-        }
-        // update the uploadLocation for linebreaking tool
-        var uploadLocation = "";
-        if (tpen.project.folios.length > 0) {
-            uploadLocation = "uploadText.jsp?p=" + tpen.project.folios[tpen.screen.currentFolio || 0].folioNumber
-                    + "&projectID=" + tpen.project.id;
-        }
-        $("#uploadText").add("#newText").attr("href", uploadLocation);
-        $("#lbText").html(unescape(tpen.project.remainingText));
-        $("#linebreakTextContainer").show();
-        $("#linebreakNoTextContainer").hide();
-
     }
-
-    if (data.manifest) {
+    else{
+        clearTimeout(longLoadingProject);
+        $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+        $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+        return false;
+    }
+    if (data.projectTool) {
         try {
-            tpen.project.projectName = data.projectName;
+            tpen.project.tools = JSON.parse(data.projectTool);
         } catch (e) {
             clearTimeout(longLoadingProject);
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
         }
-        tpen.manifest = JSON.parse(data.manifest);
+    }
+    if (data.userTool) {
+        try {
+            tpen.project.userTools = JSON.parse(data.userTool);
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }
+    }
+    if (data.ls_u) {
+        try {
+            tpen.project.user_list = JSON.parse(data.ls_u);
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }
+    }
+    if (data.ls_leader) {
+        try {
+            tpen.project.leaders = JSON.parse(data.ls_leader);
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }
+    }
+    if (data.projectButtons) {
+        try {
+            tpen.project.specialChars = JSON.parse(data.projectButtons);
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }
+    }
+    if (data.ls_hk) {
+        try {
+            tpen.project.hotkeys = JSON.parse(data.ls_hk);
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }
+    }
+    if (data.xml) {
+        try {
+            tpen.project.xml = JSON.parse(data.xml);
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }
+    }
+    if (data.projper) {
+        try {
+            tpen.project.permissions = JSON.parse(data.projper);
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }
+    }
+    if (data.metadata) {
+        try {
+            tpen.project.metadata = JSON.parse(data.metadata);
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }
+    }
+    if (data.ls_fs) {
+        try {
+            tpen.project.folios = JSON.parse(data.ls_fs);
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }
+        for (var i = 0; i < tpen.project.folios.length; i++) {
+            var preloadObj = {
+                "preloaded": false,
+                "folioNum": tpen.project.folios[i].folioNumber,
+                "image": null
+            };
+            tpen.project.folioImages[i] = preloadObj;
+        }
+    }
+
+    if (data.remainingText) {
+        tpen.project.remainingText = data.remainingText;
+    }
+    // update the uploadLocation for linebreaking tool
+    var uploadLocation = "";
+    if (tpen.project.folios.length > 0) {
+        uploadLocation = "uploadText.jsp?p=" + tpen.project.folios[tpen.screen.currentFolio || 0].folioNumber
+                + "&projectID=" + tpen.project.id;
+    }
+    $("#uploadText").add("#newText").attr("href", uploadLocation);
+    $("#lbText").html(unescape(tpen.project.remainingText));
+    $("#linebreakTextContainer").show();
+    $("#linebreakNoTextContainer").hide();
+
+    if (data.manifest) {
+        try {
+            tpen.manifest = JSON.parse(data.manifest);
+        } catch (e) {
+            clearTimeout(longLoadingProject);
+            $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
+            $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+            return false;
+        }        
     }
 
     if (data.cuser) {
         try {
-            tpen.project.projectName = data.projectName;
+            tpen.user.UID = parseInt(data.cuser);
         } catch (e) {
             clearTimeout(longLoadingProject);
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
-        }
-        tpen.user.UID = parseInt(data.cuser);
+        }      
     }
 
     if (data.user_mans_auth) {
         try {
-            tpen.project.projectName = data.projectName;
+            tpen.user.authorizedManuscripts = JSON.parse(data.user_mans_auth);
         } catch (e) {
             clearTimeout(longLoadingProject);
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
         }
-        tpen.user.authorizedManuscripts = JSON.parse(data.user_mans_auth);
     }
-
 
     $.each(tpen.project.user_list, function (i) {
         if (this.UID === parseInt(data.cuser)) {
@@ -1044,7 +1045,7 @@ function loadTranscription(pid, tool) {
         {
             var transcriptionFolios = userTranscription.sequences[0].canvases;
             scrubFolios();
-            var count = 1;
+            var count = 0;
             $.each(transcriptionFolios, function () {
                 $("#pageJump").append("<option folioNum='" + count
                         + "' class='folioJump' val='" + this.label + "'>"
@@ -1082,6 +1083,10 @@ function loadTranscription(pid, tool) {
     } else if (userTranscription.indexOf("http://") >= 0 || userTranscription.indexOf("https://") >= 0) {
         //TODO: allow users to include the p variable and load a page?
         var localProject = false;
+        projectID = 0
+        /*
+         * Taking out this localProject detection for now.  Let's always treat this like a third party Manifest.  
+         
         if (userTranscription.indexOf("/TPEN/project") > -1 || userTranscription.indexOf("/TPEN/manifest") > -1) {
             localProject = true;
             if (userTranscription.indexOf("/TPEN/project") > -1) {
@@ -1089,12 +1094,11 @@ function loadTranscription(pid, tool) {
             } else if (userTranscription.indexOf("/TPEN/manifest") > -1) {
                 projectID = parseInt(userTranscription.substring(userTranscription.lastIndexOf('/manifest/') + 10).replace("/manifest.json", ""));
             }
-
-            // }
         } else {
             projectID = 0;
         }
-
+        */
+        
         if (localProject) {
             //get project info first, get manifest out of it, populate
             updateURL("");
@@ -1131,7 +1135,7 @@ function loadTranscription(pid, tool) {
 //                            });
 //                        }
                         scrubFolios();
-                        var count = 1;
+                        var count = 0;
                         $.each(transcriptionFolios, function () {
                             $("#pageJump").append("<option folioNum='" + count
                                     + "' class='folioJump' val='" + this.label + "'>"
@@ -1226,17 +1230,19 @@ function loadTranscription(pid, tool) {
             });
         } else {
             //it is not a local project, so just grab the url that was input and request the manifest.
+            //Note that tools are deeply connected to the project, so even basic tools will be unavailable.
             var url = userTranscription;
             tpen.project.id = -1; //This means it is not a T-PEN projec5t, but rather a manifest from another source.
             $.ajax({
                 url: url,
-                success: function (projectData) {
-                    if (projectData.sequences[0] !== undefined
-                            && projectData.sequences[0].canvases !== undefined
-                            && projectData.sequences[0].canvases.length > 0) {
-                        transcriptionFolios = projectData.sequences[0].canvases;
+                success: function (presi2Manifest) {
+                    if (presi2Manifest.sequences[0] !== undefined
+                            && presi2Manifest.sequences[0].canvases !== undefined
+                            && presi2Manifest.sequences[0].canvases.length > 0) {
+                        tpen.manifest = presi2Manifest;
+                        transcriptionFolios = presi2Manifest.sequences[0].canvases;
                         scrubFolios();
-                        var count = 1;
+                        var count = 0;
                         $.each(transcriptionFolios, function () {
                             $("#pageJump").append("<option folioNum='" + count
                                     + "' class='folioJump' val='" + this.label + "'>"
@@ -1258,7 +1264,7 @@ function loadTranscription(pid, tool) {
                             }
                         });
                         loadTranscriptionCanvas(transcriptionFolios[canvasIndex], "", tool, false);
-                        var projectTitle = projectData.label;
+                        var projectTitle = presi2Manifest.label;
                         $("#trimTitle").html(projectTitle);
                         $("#trimTitle").attr("title", projectTitle);
                         $('#transcriptionTemplate').css("display", "inline-block");
@@ -1266,7 +1272,7 @@ function loadTranscription(pid, tool) {
                         $(".instructions").hide();
                         $(".hideme").hide();
                     } else {
-                        throw new Error("Malformed transcription object. There is no canvas sequence defined.");
+                        throw new Error("Malformed transcription object. There is no canvas sequence defined.  Make sure it is a IIIF Presentation API 2.1 Manifest.");
                     }
                     //load Iframes after user check and project information data call
                     loadIframes();
@@ -1337,25 +1343,33 @@ function activateUserTools(tools, permissions) {
 function checkManuscriptPermissions(id) {
     var permitted = false;
     var manID = -1;
-    for (var i = 0; i < tpen.project.folios.length; i++) {
-        if (id == tpen.project.folios[i].folioNumber) {
-            manID = tpen.project.folios[i].manuscript;
-            tpen.screen.currentManuscriptID = manID;
-            $("input[name='ms']").val(manID);
-            $("input[name='projectID']").val(tpen.project.id);
-            for (var j = 0; j < tpen.user.authorizedManuscripts.length; j++) {
-                if (parseInt(tpen.user.authorizedManuscripts[j].manID) === manID) {
-                    if (tpen.user.authorizedManuscripts[j].auth === "true") {
-                        permitted = true;
+    //Did this to stop the "you do not have permission
+    var readOnly = getURLVariable("projectID") ? false : true;
+    if(readOnly){
+        permitted = true;
+    }
+    else{
+        for (var i = 0; i < tpen.project.folios.length; i++) {
+            if (id == tpen.project.folios[i].folioNumber) {
+                manID = tpen.project.folios[i].manuscript;
+                tpen.screen.currentManuscriptID = manID;
+                $("input[name='ms']").val(manID);
+                $("input[name='projectID']").val(tpen.project.id);
+                for (var j = 0; j < tpen.user.authorizedManuscripts.length; j++) {
+                    if (parseInt(tpen.user.authorizedManuscripts[j].manID) === manID) {
+                        if (tpen.user.authorizedManuscripts[j].auth === "true") {
+                            permitted = true;
+                        }
+                        if (tpen.user.authorizedManuscripts[j].controller) {
+                            $(".manController").attr("title", "The controlling user is " + tpen.user.authorizedManuscripts[j].controller);
+                        }
+                        break;
                     }
-                    if (tpen.user.authorizedManuscripts[j].controller) {
-                        $(".manController").attr("title", "The controlling user is " + tpen.user.authorizedManuscripts[j].controller);
-                    }
-                    break;
                 }
             }
         }
     }
+
     return permitted;
 }
 
@@ -1380,14 +1394,20 @@ function acceptIPR(folio) {
  * */
 function checkIPRagreement(id) {
     var agreed = false;
-    for (var i = 0; i < tpen.project.folios.length; i++) {
-        if (id == tpen.project.folios[i].folioNumber) {
-            agreed = tpen.project.folios[i].ipr;
-            $("#ipr_who").html(tpen.project.folios[i].archive);
-            $("#iprAgreement").html(tpen.project.folios[i].ipr_agreement);
-            $("#accept_ipr").attr("onclick", "acceptIPR(" + id + ")");
-            //$("#ipr_user") is set in transcription.html
-            break;
+    var readOnly = getURLVariable("projectID") ? false : true;
+    if(readOnly){
+        agreed = true;
+    }
+    else{
+        for (var i = 0; i < tpen.project.folios.length; i++) {
+            if (id == tpen.project.folios[i].folioNumber) {
+                agreed = tpen.project.folios[i].ipr;
+                $("#ipr_who").html(tpen.project.folios[i].archive);
+                $("#iprAgreement").html(tpen.project.folios[i].ipr_agreement);
+                $("#accept_ipr").attr("onclick", "acceptIPR(" + id + ")");
+                //$("#ipr_user") is set in transcription.html
+                break;
+            }
         }
     }
     return agreed;
@@ -1460,7 +1480,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
     if (canvasObj.images[0].resource['@id'] !== undefined && canvasObj.images[0].resource['@id'] !== "") { //Only one image
         var image = new Image();
         //Check to see if we can use a preloaded image...
-        if (tpen.project.folioImages.length > 0 && tpen.project.folioImages[tpen.screen.currentFolio].image) {
+        if (tpen.project.folioImages.length > 0 && tpen.project.folioImages[tpen.screen.currentFolio] !== undefined && tpen.project.folioImages[tpen.screen.currentFolio].image !== null) {
             image = tpen.project.folioImages[tpen.screen.currentFolio].image;
             tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //We know it is preloaded, ensure the flag is correct.
         } else {
@@ -1485,7 +1505,11 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
                 tpen.screen.originalCanvasHeight = $("#imgTop img").height();
                 tpen.screen.originalCanvasWidth = $("#imgTop img").width();
                 drawLinesToCanvas(canvasObj, parsing, tool, restore);
-                getHistory(); //Do we need to call this later down the stack?  It could be moved into drawLinesToCanvas()
+                //Can maybe just get rid of this, not sure.  Did it to stop a "Cannot read property 'folioNumber' of undefined" error downstream in getHistory()
+                var readOnly = getURLVariable("projectID") ? false : true;
+                if(!readOnly){
+                    getHistory(); //Do we need to call this later down the stack?  It could be moved into drawLinesToCanvas()
+                }
                 $("#transcriptionCanvas").attr("canvasid", canvasObj["@id"]);
                 $("#transcriptionCanvas").attr("annoList", canvasAnnoList);
                 $("#parseOptions").find(".tpenButton").removeAttr("disabled");
@@ -1495,7 +1519,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
                     $('#iprAccept').show();
                     $(".trexHead").show();
                 }
-                if (!tpen.project.folioImages[tpen.screen.currentFolio].preloaded) {
+                if (tpen.project.folioImages.length > 0 && tpen.project.folioImages[tpen.screen.currentFolio] !== undefined && !tpen.project.folioImages[tpen.screen.currentFolio].preloaded) {
                     tpen.project.folioImages[tpen.screen.currentFolio].image = image;
                     tpen.project.folioImages[tpen.screen.currentFolio].preloaded = true; //It is now preloaded.
                 }
@@ -1662,7 +1686,11 @@ function drawLinesToCanvas(canvasObj, parsing, tool, restore) {
                 }
                 window.history.pushState("Object", "Title", currentURL);
                 updateURL("attempts", attempts);
-                updateURL("p");
+                //Can maybe just get rid of this, not sure.  Did it to stop a "Cannot read property 'folioNumber' of undefined" error downstream in updateURL()
+                var readOnly = getURLVariable("projectID") ? false : true;
+                if(!readOnly){
+                    updateURL("p");
+                }
                 if (attempts > 3) {
                     //do not try to reload again, just leave the user in the parsing page...
                 } else {
@@ -2543,8 +2571,9 @@ function adjustImgs(positions) {
 /* Update the line information of the line currently focused on, then load the focus to a line that was clicked on */
 function loadTranscriptlet(lineid) {
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
+    var readOnly = getURLVariable("projectID") ? false : true;
     if ($('#transcriptlet_' + lineid).length > 0) {
-        if (tpen.user.UID || tpen.user.isMember) {
+        if (tpen.user.UID || tpen.user.isMember || readOnly) {
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, true);
             updatePresentation($('#transcriptlet_' + lineid));
@@ -2589,8 +2618,9 @@ function nextTranscriptlet() {
     thisLine++;
     var nextID = thisLine;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
+    var readOnly = getURLVariable("projectID") ? false : true;
     if ($('#transcriptlet_' + nextID).length > 0) {
-        if (tpen.user.UID || tpen.user.isMember) {
+        if (tpen.user.UID || tpen.user.isMember || readOnly) {
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, true);
             updatePresentation($('#transcriptlet_' + nextID));
@@ -2633,8 +2663,9 @@ function nextTranscriptlet() {
 function previousTranscriptlet() {
     var prevID = parseFloat(tpen.screen.focusItem[1].attr('lineID')) - 1;
     var currentLineServerID = tpen.screen.focusItem[1].attr("lineserverid");
+    var readOnly = getURLVariable("projectID") ? false : true;
     if (prevID >= 0) {
-        if (tpen.user.UID || tpen.user.isMember) {
+        if (tpen.user.UID || tpen.user.isMember || readOnly) {
             var lineToUpdate = $(".transcriptlet[lineserverid='" + currentLineServerID + "']");
             updateLine(lineToUpdate, false, false);
             updatePresentation($('#transcriptlet_' + prevID));
@@ -4450,7 +4481,11 @@ function drawLinesOnCanvas(lines, parsing, tool, restore) {
         $("#parsingBtn").css("box-shadow", "0px 0px 6px 5px yellow");
         resetImageTools();
     }
-    updateURL("p");
+    //Can maybe just get rid of this, not sure.  Did it to stop a "Cannot read property 'folioNumber' of undefined" error downstream in updateURL()
+    var readOnly = getURLVariable("projectID") ? false : true;
+    if(!readOnly){
+        updateURL("p");
+    }
 }
 
 function getList(canvas, drawFlag, parsing, preview) { //this could be the @id of the annoList or the canvas that we need to find the @id of the list for.
@@ -4473,12 +4508,14 @@ function getList(canvas, drawFlag, parsing, preview) { //this could be the @id o
             drawLinesOnCanvas(annos, parsing, tpen.screen.liveTool, restore);
         }
         return annos;
-    } else {
+    } 
+    else {
         if (canvas.otherContent) {
             lists = canvas.otherContent;
-        } else {
+        } 
+        else {
             console.warn("canvas to get anno list for does not have otherContent");
-            lists = "noList";
+            lists = [];
         }
         for (var i = 0; i < lists.length; i++) {
             var list = lists[i];
@@ -4502,14 +4539,14 @@ function getList(canvas, drawFlag, parsing, preview) { //this could be the @id o
                 if (drawFlag) {
                     drawLinesOnCanvas(annos, parsing, tpen.screen.liveTool, restore);
                 }
-                return annos;
+                break;
             }
             //               });
         }
+        return annos;
     }
 
-}
-;
+};
 
 /*
  * Update line information for a particular line. Until we fix the data schema, this also forces us to update the annotation list for any change to a line.
@@ -4518,6 +4555,11 @@ function getList(canvas, drawFlag, parsing, preview) { //this could be the @id o
  *
  * */
 function updateLine(line, cleanup, updateList) {
+    //Did this so we could navigate transcriptlets in the interface (previousTranscriptlet(), nextTranscriptlet(), loadTranscriptlet()).
+    var readOnly = getURLVariable("projectID") ? false : true;
+    if(readOnly){
+        return false;
+    }
     var onCanvas = $("#transcriptionCanvas").attr("canvasid");
     var currentAnnoList = getList(tpen.manifest.sequences[0].canvases[tpen.screen.currentFolio], false, false, false);
     var lineTop, lineLeft, lineWidth, lineHeight = 0;
@@ -5371,21 +5413,18 @@ function preloadFolioImages() {
         endFolio = currentFolio + 1;
     }
     for (var i = startFolio; i <= endFolio; i++) {
-        //for(var i=0; i<tpen.manifest.sequences[0].canvases.length; i++){
-        var folioImageToGet = tpen.manifest.sequences[0].canvases[i].images[0].resource["@id"];
-        if (tpen.project.folioImages[i].image === null || !tpen.project.folioImages[i].preloaded) {
+        if (tpen.project.folioImages[i] === undefined){
+            var preloadObj = {
+                "preloaded": false,
+                "image": null
+            };
+            tpen.project.folioImages[i] = preloadObj;
+        }
+        var folioImageToGet = tpen.manifest.sequences[0].canvases[i].images[0].resource["@id"];      
+        if (!tpen.project.folioImages[i].preloaded) {
             tpen.project.folioImages[i].image = new Image();
-//            tpen.project.folioImages[i].image.onload = function() {
-//                //the problem here is that we cannot rely on i, so we cannot set the preloaded flag here.  This is done during loadTranscriptionCanvas() instead.
-//                try{
-//                    //tpen.project.folioImages[i].preloaded = true;
-//                    //console.log("Finished preloading an image");
-//                }
-//                catch(err){
-//                    console.warn("Could not load an image during preload.");
-//                }
-//            };
             tpen.project.folioImages[i].image.src = folioImageToGet;
+            tpen.project.folioImages[i].preloaded = true;
         } else {
             //console.log("Folio "+i+" already preloaded");
         }

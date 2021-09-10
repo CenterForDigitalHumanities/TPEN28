@@ -1207,13 +1207,13 @@
             });
 
             $("#parsingBtn").click(function(){
-                if(tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing){
+                // if(tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing){
                     if(tpen.screen.isFullscreen)tpen.screen.isUnadjusted = true;
                     tpen.screen.isFullscreen = false;
                     hideWorkspaceForParsing();
                     $("#confirmParsingInst").show();
                     $("#parsingBtn").css("box-shadow", "");
-                }
+                // }
             });
 
            $(".workspaceHandle").mousedown(function(event){moveWorkspace(event);})

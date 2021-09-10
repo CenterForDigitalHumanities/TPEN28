@@ -3098,6 +3098,13 @@ function restoreTransition() {
  * for the selected tool.
  */
 function hideWorkspaceForParsing() {
+    if(!(tpen.user.isAdmin 
+        || tpen.user.isMember 
+        || tpen.project.permissions.allow_public_modify 
+        || tpen.project.permissions.allow_public_modify_line_parsing)) {
+            alert("You do not have appropriate permissions to modify lines.")
+            return false
+        }
     rememberControls();
     tpen.screen.liveTool = "parsing";
     $("#parsingBtn").css("box-shadow: none;");

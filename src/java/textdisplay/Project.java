@@ -615,12 +615,12 @@ public class Project {
      * @throws java.sql.SQLException
      */
     public static Project[] getAllDunbarProjects() throws SQLException {
-        String query = "select distinct(project.id) from project where project.name "
-                + "like 'F-%' or "
-                + "like '%letter%' or "
-                + "like '%telegram%' or "
-                + "like '%envelope%' or "
-                + "like '%poem%' "
+        String query = "select distinct(project.id) from project where "
+                + "project.name like 'F-%' or "
+                + "project.name like '%letter%' or "
+                + "project.name like '%telegram%' or "
+                + "project.name like '%envelope%' or "
+                + "project.name like '%poem%' "
                 + "order by project.name desc";
         Connection j = null;
         PreparedStatement ps = null;

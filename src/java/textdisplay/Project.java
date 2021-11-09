@@ -606,6 +606,45 @@ public class Project {
             closePreparedStatement(ps);
         }
     }
+    
+    /**
+     * Get all Projects that are connected with the DLA projects.
+     * They should all have titles like 
+     *
+     * @return
+     * @throws java.sql.SQLException
+     */
+    public static Project[] getAllDunbarProjects() throws SQLException {
+        String query = "select distinct(project.id) from project where project.name "
+                + "like 'F-%' or "
+                + "like '%letter%' or "
+                + "like '%telegram%' or"
+                + "like '%envelope%' or"
+                + "like '%poem%' or"
+                + "order by project.name desc";
+        Connection j = null;
+        PreparedStatement ps = null;
+        try {
+            j = getConnection();
+            ps = j.prepareStatement(query);
+
+            ResultSet rs = ps.executeQuery();
+            Stack<Integer> projectIDs = new Stack();
+            while (rs.next()) {
+                projectIDs.push(rs.getInt("project.id"));
+            }
+            Project[] toret = new Project[projectIDs.size()];
+            int ctr = 0;
+            while (!projectIDs.empty()) {
+                toret[ctr] = new Project(projectIDs.pop());
+                ctr++;
+            }
+            return toret;
+        } finally {
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+        }
+    }
 
     /**
      * Get all projects ordered by project name

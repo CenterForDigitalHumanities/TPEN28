@@ -618,9 +618,9 @@ public class Project {
         String query = "select distinct(project.id) from project where project.name "
                 + "like 'F-%' or "
                 + "like '%letter%' or "
-                + "like '%telegram%' or"
-                + "like '%envelope%' or"
-                + "like '%poem%' or"
+                + "like '%telegram%' or "
+                + "like '%envelope%' or "
+                + "like '%poem%' or "
                 + "order by project.name desc";
         Connection j = null;
         PreparedStatement ps = null;

@@ -620,7 +620,7 @@ public class Project {
                 + "like '%letter%' or "
                 + "like '%telegram%' or "
                 + "like '%envelope%' or "
-                + "like '%poem%' or "
+                + "like '%poem%' "
                 + "order by project.name desc";
         Connection j = null;
         PreparedStatement ps = null;

@@ -14,6 +14,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import textdisplay.Project;
+import textdisplay.Folio;
 import user.User;
 
 /**
@@ -48,8 +51,29 @@ public class GetDunbarProjectsList extends HttpServlet {
               User u = new User(uid);
               Project[] projs = Project.getAllDunbarProjects();
               List<Map<String, Object>> result = new ArrayList<>();
+              //image name/page name contains Fsomething that is folder number.  Add this change.
               for (Project p: projs) {
-                 result.add(buildQuickMap("id", ""+p.getProjectID(), "name", p.getProjectName()));
+                    Folio fp = new Folio(p.firstPage());
+                    String pattern1 = "_F";
+                    String pattern2 = "_";
+                    String pattern3 = ".jpg";
+                    String regexString1 = Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern2);
+                    String regexString2 = Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern3);
+                    Pattern patternA = Pattern.compile(regexString1);
+                    Pattern patternB = Pattern.compile(regexString2);
+                    Matcher matcherA = patternA.matcher(fp.getPageName());
+                    Matcher matcherB = patternB.matcher(fp.getPageName());
+                    String shortCode = "";
+                    String longCode = "";
+                    if (matcherA.find()) {
+                        shortCode = matcherA.group(1); // Since (.*?) is capturing group 1
+                    }
+                    if (matcherB.find()) {
+                        longCode = matcherB.group(1); // Since (.*?) is capturing group 1
+                    }
+                    String delShort = "F"+shortCode;
+                    String delLong = "F"+longCode;
+                    result.add(buildQuickMap("id", ""+p.getProjectID(), "name", p.getProjectName(), "short", delShort, "long", delLong));
               }
               ObjectMapper mapper = new ObjectMapper();
               mapper.writeValue(response.getOutputStream(), result);

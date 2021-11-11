@@ -58,22 +58,15 @@ public class GetDunbarProjectsList extends HttpServlet {
                     String pattern2 = "_";
                     String pattern3 = ".jpg";
                     String regexString1 = Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern2);
-                    String regexString2 = Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern3);
                     Pattern patternA = Pattern.compile(regexString1);
-                    Pattern patternB = Pattern.compile(regexString2);
                     Matcher matcherA = patternA.matcher(fp.getPageName());
-                    Matcher matcherB = patternB.matcher(fp.getPageName());
                     String shortCode = "";
                     String longCode = "";
                     if (matcherA.find()) {
                         shortCode = matcherA.group(1); // Since (.*?) is capturing group 1
                     }
-                    if (matcherB.find()) {
-                        longCode = matcherB.group(1); // Since (.*?) is capturing group 1
-                    }
                     String delShort = "F"+shortCode;
-                    String delLong = "F"+longCode;
-                    result.add(buildQuickMap("id", ""+p.getProjectID(), "name", p.getProjectName(), "short", delShort, "long", delLong));
+                    result.add(buildQuickMap("id", ""+p.getProjectID(), "project_name", p.getName(), "metadata_name", p.getProjectName(), "code", delShort));
               }
               ObjectMapper mapper = new ObjectMapper();
               mapper.writeValue(response.getOutputStream(), result);

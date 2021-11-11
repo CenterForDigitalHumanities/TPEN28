@@ -264,6 +264,10 @@ public class Project {
     public int getProjectID() {
         return projectID;
     }
+    
+    public String getName() {
+        return projectName;
+    }
 
     /**
      * Update the Project image sequence

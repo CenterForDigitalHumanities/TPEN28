@@ -117,6 +117,25 @@ public class GetDunbarProjectsList extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
+    
+    /**
+     * Handles the HTTP <code>OPTIONS</code> preflight method.
+     * Pre-flight support.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        //These headers must be present to pass browser preflight for CORS
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Allow-Methods", "*");
+        response.setStatus(200);
+    }
 
     /**
      * Returns a short description of the servlet.

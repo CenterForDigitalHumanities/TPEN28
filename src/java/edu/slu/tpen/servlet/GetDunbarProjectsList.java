@@ -44,11 +44,11 @@ public class GetDunbarProjectsList extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        response.setHeader("Access-Control-Allow-Origin", "*"); //To use this as an API, it must contain CORS headers
+        response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
         int uid = getUID(request, response);
-        if (uid > 0) {
-           response.setContentType("application/json; charset=utf-8");
-           response.setHeader("Access-Control-Allow-Origin", "*"); //To use this as an API, it must contain CORS headers
-           response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+        response.setContentType("application/json; charset=utf-8");
+        //if (uid > 0) {
            try {
               User u = new User(uid);
               Project[] projs = Project.getAllDunbarProjects();
@@ -83,10 +83,10 @@ public class GetDunbarProjectsList extends HttpServlet {
               reportInternalError(response, ex);
               response.sendError(SC_INTERNAL_SERVER_ERROR, ex.getMessage());
            }
-        } 
-        else {
-            response.sendError(SC_UNAUTHORIZED);
-        }
+        //} 
+        //else {
+        //    response.sendError(SC_UNAUTHORIZED);
+        //}
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

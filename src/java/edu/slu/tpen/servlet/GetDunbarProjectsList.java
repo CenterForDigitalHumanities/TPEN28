@@ -65,7 +65,6 @@ public class GetDunbarProjectsList extends HttpServlet {
                     if (matcherB.find()) {
                         longCode = matcherB.group(1); // Since (.*?) is capturing group 1
                     }
-                    //String delShort = "F"+shortCode;
                     String delShort = "F"+longCode.split("_")[0];
                     String longPiece = longCode.split("_")[1];
                     String longNum = "";

@@ -46,7 +46,9 @@ public class GetDunbarProjectsList extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         int uid = getUID(request, response);
         if (uid > 0) {
-           response.setContentType("application/json");
+           response.setContentType("application/json; charset=utf-8");
+           response.setHeader("Access-Control-Allow-Origin", "*"); //To use this as an API, it must contain CORS headers
+           response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
            try {
               User u = new User(uid);
               Project[] projs = Project.getAllDunbarProjects();
@@ -55,18 +57,25 @@ public class GetDunbarProjectsList extends HttpServlet {
               for (Project p: projs) {
                     Folio fp = new Folio(p.firstPage());
                     String pattern1 = "_F";
-                    String pattern2 = "_";
                     String pattern3 = ".jpg";
-                    String regexString1 = Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern2);
-                    Pattern patternA = Pattern.compile(regexString1);
-                    Matcher matcherA = patternA.matcher(fp.getPageName());
-                    String shortCode = "";
+                    String regexString2 = Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern3);
+                    Pattern patternB = Pattern.compile(regexString2);
+                    Matcher matcherB = patternB.matcher(fp.getPageName());
                     String longCode = "";
-                    if (matcherA.find()) {
-                        shortCode = matcherA.group(1); // Since (.*?) is capturing group 1
+                    if (matcherB.find()) {
+                        longCode = matcherB.group(1); // Since (.*?) is capturing group 1
                     }
-                    String delShort = "F"+shortCode;
-                    result.add(buildQuickMap("id", ""+p.getProjectID(), "project_name", p.getName(), "metadata_name", p.getProjectName(), "code", delShort));
+                    String delShort = "F"+longCode.split("_")[0];
+                    String longPiece = longCode.split("_")[1];
+                    String longNum = "";
+                    
+                    //Just want the numbers
+                    Pattern patterNum = Pattern.compile("\\d+");
+                    Matcher m = patterNum.matcher(longPiece);
+                    if(m.find()) {
+                        longNum = m.group();
+                    }
+                    result.add(buildQuickMap("id", ""+p.getProjectID(), "project_name", p.getName(), "metadata_name", p.getProjectName(), "collection_code", longNum, "entry_code", delShort));
               }
               ObjectMapper mapper = new ObjectMapper();
               mapper.writeValue(response.getOutputStream(), result);

@@ -76,7 +76,7 @@ public class GetDunbarProjectsList extends HttpServlet {
                     if(m.find()) {
                         longNum = m.group();
                     }
-                    result.add(buildQuickMap("id", ""+p.getProjectID(), "project_name", p.getName(), "metadata_name", p.getProjectName(), "collection_code", delShort, "entry_code", longNum));
+                    result.add(buildQuickMap("id", ""+p.getProjectID(), "project_name", p.getName(), "metadata_name", p.getProjectName(), "collection_code", longNum, "entry_code", delShort));
               }
               ObjectMapper mapper = new ObjectMapper();
               mapper.writeValue(response.getOutputStream(), result);

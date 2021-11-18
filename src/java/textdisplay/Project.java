@@ -1069,6 +1069,98 @@ public class Project {
             closePreparedStatement(qry);
         }
     }
+    
+    /**
+     * Get the parsed lines for this Folio that are specific to this Project
+     *
+     * @param folio
+     * @return
+     * @throws java.sql.SQLException
+     * @throws java.io.IOException
+     */
+    public int getNumImagePositionLines(int folio) throws SQLException, IOException {
+        Connection j = null;
+        PreparedStatement qry = null;
+        try {
+            String query = "select count(id) from imagepositions where folio=? and width>0";
+            j = getConnection();
+            qry = j.prepareStatement(query);
+            qry.setInt(1, folio);
+            ResultSet rs = qry.executeQuery();
+            int linecount = 0;
+            if (rs.next()) {
+                linecount = rs.getInt(1);
+            }
+            return linecount;
+        } finally {
+            if (j != null) {
+                closeDBConnection(j);
+            }
+            closePreparedStatement(qry);
+        }
+    }
+    
+     /**
+     * Get the parsed lines for this Folio that are specific to this Project
+     *
+     * @param folio
+     * @return
+     * @throws java.sql.SQLException
+     * @throws java.io.IOException
+     */
+    public int getNumTranscriptionLines(int folio) throws SQLException, IOException {
+        Connection j = null;
+        PreparedStatement qry = null;
+        try {
+            String query = "select count(id) from transcription where folio=? and projectID=? and width>0";
+            j = getConnection();
+            qry = j.prepareStatement(query);
+            qry.setInt(1, folio);
+            qry.setInt(2, this.projectID);
+            ResultSet rs = qry.executeQuery();
+            int linecount = 0;
+            if (rs.next()) {
+                linecount = rs.getInt(1);
+            }
+            return linecount;
+        } finally {
+            if (j != null) {
+                closeDBConnection(j);
+            }
+            closePreparedStatement(qry);
+        }
+    }
+    
+    /**
+     * Get the parsed lines for this Folio that are specific to this Project
+     *
+     * @param folio
+     * @return
+     * @throws java.sql.SQLException
+     * @throws java.io.IOException
+     */
+    public int getNumTranscriptionLinesWithText(int folio) throws SQLException, IOException {
+        Connection j = null;
+        PreparedStatement qry = null;
+        try {
+            String query = "select count(id) from transcription where folio=? and projectID=? and text is not null and text !='' and width>0";
+            j = getConnection();
+            qry = j.prepareStatement(query);
+            qry.setInt(1, folio);
+            qry.setInt(2, this.projectID);
+            ResultSet rs = qry.executeQuery();
+            int linecount = 0;
+            if (rs.next()) {
+                linecount = rs.getInt(1);
+            }
+            return linecount;
+        } finally {
+            if (j != null) {
+                closeDBConnection(j);
+            }
+            closePreparedStatement(qry);
+        }
+    }
 
     /**
      * Build a string of option elements, one for each Folio element in the

@@ -22,8 +22,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import textdisplay.Project;
 import textdisplay.Folio;
+import textdisplay.Line;
+import user.Group;
 import user.User;
 
 /**
@@ -48,14 +52,34 @@ public class GetDunbarProjectsList extends HttpServlet {
         response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
         int uid = getUID(request, response);
         response.setContentType("application/json; charset=utf-8");
+        JSONArray result = new JSONArray();
         //if (uid > 0) {
            try {
               User u = new User(uid);
               Project[] projs = Project.getAllDunbarProjects();
-              List<Map<String, Object>> result = new ArrayList<>();
               //image name/page name contains Fsomething that is folder number.  Add this change.
               for (Project p: projs) {
+                    JSONObject ro = new JSONObject();
+                    JSONArray folios = new JSONArray();
                     Folio fp = new Folio(p.firstPage());
+                    Folio[] projectfolios = p.getFolios();
+                    boolean finalized = true;
+                    for(int i=0; i<projectfolios.length; i++){
+                        Folio f = projectfolios[i];
+                        JSONObject fo = new JSONObject();
+                        int numParsedLines = p.getNumTranscriptionLines(f.folioNumber);
+                        int numTranscribedLines = p.getNumTranscriptionLinesWithText(f.folioNumber);
+                        fo.element("page_name", f.getPageName());
+                        fo.element("numParsedLines", numParsedLines);
+                        fo.element("numTranscribedLines", numTranscribedLines);
+                        //Naive, just spitballing to give this a value.  This may end up being a flag that a human sets.  
+                        if(finalized){
+                            if(numTranscribedLines == 0 || numParsedLines != numTranscribedLines){
+                                finalized = false;
+                            }
+                        }
+                        folios.add(fo);
+                    }
                     String pattern1 = "_F";
                     String pattern3 = ".jpg";
                     String regexString2 = Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern3);
@@ -75,7 +99,21 @@ public class GetDunbarProjectsList extends HttpServlet {
                     if(m.find()) {
                         longNum = m.group();
                     }
-                    result.add(buildQuickMap("id", ""+p.getProjectID(), "project_name", p.getName(), "metadata_name", p.getProjectName(), "collection_code", delShort, "entry_code", longNum ));
+                    Group group = new Group(p.getGroupID());
+                    User[] users = group.getMembers();
+                    int[] userids = new int[users.length];
+                    for(int i=0; i<users.length; i++){
+                        userids[i] = users[i].getUID();
+                    }
+                    ro.element("id", ""+p.getProjectID());
+                    ro.element("project_name", p.getName());
+                    ro.element("metadata_name", p.getProjectName());
+                    ro.element("collection_code", delShort);
+                    ro.element("entry_code", longNum);
+                    ro.element("pages", folios);
+                    ro.element("assignees", userids);
+                    ro.element("finalized", ""+finalized);
+                    result.add(ro);
               }
               ObjectMapper mapper = new ObjectMapper();
               mapper.writeValue(response.getOutputStream(), result);

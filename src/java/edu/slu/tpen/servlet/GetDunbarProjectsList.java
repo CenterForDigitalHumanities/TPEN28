@@ -74,7 +74,7 @@ public class GetDunbarProjectsList extends HttpServlet {
                         fo.element("numTranscribedLines", numTranscribedLines);
                         //Naive, just spitballing to give this a value.  This may end up being a flag that a human sets.  
                         if(finalized){
-                            if(numTranscribedLines == 0 || numParsedLines != numTranscribedLines){
+                            if(numTranscribedLines <= 5 || numParsedLines != numTranscribedLines){
                                 finalized = false;
                             }
                         }

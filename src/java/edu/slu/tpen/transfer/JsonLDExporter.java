@@ -71,6 +71,7 @@ public class JsonLDExporter {
          manifestData.put("@context", "http://www.shared-canvas.org/ns/context.json");
          manifestData.put("@id", projName + "/manifest.json");
          manifestData.put("@type", "sc:Manifest");
+         //Remember that this is a Metadata title, not project name...
          manifestData.put("label", proj.getProjectName());
          manifestData.put("metadata", getMetadataAsJSON(projID));
 

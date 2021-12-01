@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -57,11 +58,13 @@ public class GetDunbarProjectsList extends HttpServlet {
            try {
               User u = new User(uid);
               Project[] projs = Project.getAllDunbarProjects();
+              boolean skipProj = false;
               //image name/page name contains Fsomething that is folder number.  Add this change.
               for (Project p: projs) {
                     JSONObject ro = new JSONObject();
                     JSONArray folios = new JSONArray();
                     Folio fp = new Folio(p.firstPage());
+                    String thumbnailURI = fp.getImageURL();
                     Folio[] projectfolios = p.getFolios();
                     boolean finalized = true;
                     for(int i=0; i<projectfolios.length; i++){
@@ -69,6 +72,13 @@ public class GetDunbarProjectsList extends HttpServlet {
                         JSONObject fo = new JSONObject();
                         int numParsedLines = p.getNumTranscriptionLines(f.folioNumber);
                         int numTranscribedLines = p.getNumTranscriptionLinesWithText(f.folioNumber);
+                        if(!f.getPageName().contains("_F")){
+                            System.out.println("Trouble processing folios for project.id ' "+p.getProjectID()+" ' project.name ' "+p.getProjectName()+" '");
+                            System.out.println("Cannot get F-code from image name: ' "+fp.getPageName()+" '");
+                            skipProj = true;
+                            break;
+                            //Or we can continue and just skip this folio, and not skip the project later.
+                        }
                         fo.element("page_name", f.getPageName());
                         fo.element("numParsedLines", numParsedLines);
                         fo.element("numTranscribedLines", numTranscribedLines);
@@ -80,19 +90,25 @@ public class GetDunbarProjectsList extends HttpServlet {
                         }
                         folios.add(fo);
                     }
+                    if(skipProj){
+                        //There was an image name that led us to believe this project is not a Dunbar project. skip it.
+                        continue;
+                    }
                     String pattern1 = "_F";
                     String pattern3 = ".jpg";
+                    String delShort = "";
+                    String longPiece = "";
+                    String longNum = "";
                     String regexString2 = Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern3);
                     Pattern patternB = Pattern.compile(regexString2);
                     Matcher matcherB = patternB.matcher(fp.getPageName());
                     String longCode = "";
+                    //image names like /MSS0113_S01_B02_F053_01_page_0001.jpg
                     if (matcherB.find()) {
                         longCode = matcherB.group(1); // Since (.*?) is capturing group 1
                     }
-                    String delShort = "F"+longCode.split("_")[0];
-                    String longPiece = longCode.split("_")[1];
-                    String longNum = "";
-                    
+                    delShort = "F"+longCode.split("_")[0];
+                    longPiece = longCode.split("_")[1];
                     //Just want the numbers
                     Pattern patterNum = Pattern.compile("\\d+");
                     Matcher m = patterNum.matcher(longPiece);
@@ -102,8 +118,12 @@ public class GetDunbarProjectsList extends HttpServlet {
                     Group group = new Group(p.getGroupID());
                     User[] users = group.getMembers();
                     int[] userids = new int[users.length];
+                    JSONArray userArr = new JSONArray();
                     for(int i=0; i<users.length; i++){
-                        userids[i] = users[i].getUID();
+                        JSONObject tpenuser = new JSONObject();
+                        tpenuser.element("userid", users[i].getUID());
+                        tpenuser.element("username", users[i].getUname());
+                        userArr.add(tpenuser);
                     }
                     ro.element("id", ""+p.getProjectID());
                     ro.element("project_name", p.getName());
@@ -111,8 +131,9 @@ public class GetDunbarProjectsList extends HttpServlet {
                     ro.element("collection_code", delShort);
                     ro.element("entry_code", longNum);
                     ro.element("pages", folios);
-                    ro.element("assignees", userids);
+                    ro.element("assignees", userArr);
                     ro.element("finalized", ""+finalized);
+                    ro.element("thumbnail", thumbnailURI);
                     result.add(ro);
               }
               ObjectMapper mapper = new ObjectMapper();

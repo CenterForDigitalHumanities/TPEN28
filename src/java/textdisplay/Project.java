@@ -620,14 +620,14 @@ public class Project {
      */
     public static Project[] getAllDunbarProjects() throws SQLException {
         String query = "select distinct(project.id) from project where "
-                + "project.name like '% DLA %' "
+                + "project.name like '% DLA %' or "
                 //+ "project.name like 'F-_%-_% ' or " //F-ne-nenbsp;blah
                 //+ "project.name like 'F-%' or " //F followed by hyphen then anything
                 //+ "project.name like 'F#%' or " //F followed by a number then anything
-                //+ "project.name like '%letter%' or "
-                //+ "project.name like '%telegram%' or "
-                //+ "project.name like '%envelope%' or "
-                //+ "project.name like '%poem%' "
+                + "project.name like '%letter%' or "
+                + "project.name like '%telegram%' or "
+                + "project.name like '%envelope%' or "
+                + "project.name like '%poem%' "
                 + "order by project.name desc";
         Connection j = null;
         PreparedStatement ps = null;

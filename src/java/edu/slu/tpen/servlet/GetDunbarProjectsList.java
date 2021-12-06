@@ -5,16 +5,10 @@
 package edu.slu.tpen.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static edu.slu.util.LangUtils.buildQuickMap;
 import static edu.slu.util.ServletUtils.getUID;
 import static edu.slu.util.ServletUtils.reportInternalError;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
@@ -22,12 +16,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import textdisplay.Project;
 import textdisplay.Folio;
-import textdisplay.Line;
 import user.Group;
 import user.User;
 
@@ -64,7 +56,8 @@ public class GetDunbarProjectsList extends HttpServlet {
                     JSONObject ro = new JSONObject();
                     JSONArray folios = new JSONArray();
                     Folio fp = new Folio(p.firstPage());
-                    String thumbnailURI = fp.getImageURL();
+                    //String thumbnailURI = fp.getImageURL(); //Hmm this doesn't work all of the sudden
+                    String thumbnailURI = "http://t-pen.org/TPEN/pageImage?folio="+fp.getFolioNumber();
                     Folio[] projectfolios = p.getFolios();
                     boolean finalized = true;
                     for(int i=0; i<projectfolios.length; i++){

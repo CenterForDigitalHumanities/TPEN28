@@ -5,15 +5,10 @@
 package edu.slu.tpen.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static edu.slu.util.LangUtils.buildQuickMap;
 import static edu.slu.util.ServletUtils.getUID;
 import static edu.slu.util.ServletUtils.reportInternalError;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
@@ -21,9 +16,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import textdisplay.Project;
 import textdisplay.Folio;
+import user.Group;
 import user.User;
 
 /**
@@ -48,34 +45,89 @@ public class GetDunbarProjectsList extends HttpServlet {
         response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
         int uid = getUID(request, response);
         response.setContentType("application/json; charset=utf-8");
+        JSONArray result = new JSONArray();
         //if (uid > 0) {
            try {
               User u = new User(uid);
               Project[] projs = Project.getAllDunbarProjects();
-              List<Map<String, Object>> result = new ArrayList<>();
+              boolean skipProj = false;
               //image name/page name contains Fsomething that is folder number.  Add this change.
               for (Project p: projs) {
+                    JSONObject ro = new JSONObject();
+                    JSONArray folios = new JSONArray();
                     Folio fp = new Folio(p.firstPage());
+                    //String thumbnailURI = fp.getImageURL(); //Hmm this doesn't work
+                    String thumbnailURI = "http://t-pen.org/TPEN/pageImage?folio="+fp.getFolioNumber();
+                    Folio[] projectfolios = p.getFolios();
+                    boolean finalized = true;
+                    for(int i=0; i<projectfolios.length; i++){
+                        Folio f = projectfolios[i];
+                        JSONObject fo = new JSONObject();
+                        int numParsedLines = p.getNumTranscriptionLines(f.folioNumber);
+                        int numTranscribedLines = p.getNumTranscriptionLinesWithText(f.folioNumber);
+                        if(!f.getPageName().contains("_F")){
+                            System.out.println("Trouble processing folios for project.id ' "+p.getProjectID()+" ' project.name ' "+p.getProjectName()+" '");
+                            System.out.println("Cannot get F-code from image name: ' "+fp.getPageName()+" '");
+                            skipProj = true;
+                            break;
+                            //Or we can continue and just skip this folio, and not skip the project later.
+                        }
+                        fo.element("page_name", f.getPageName());
+                        fo.element("numParsedLines", numParsedLines);
+                        fo.element("numTranscribedLines", numTranscribedLines);
+                        //Naive, just spitballing to give this a value.  This may end up being a flag that a human sets.  
+                        if(finalized){
+                            if(numTranscribedLines <= 5 || numParsedLines != numTranscribedLines){
+                                finalized = false;
+                            }
+                        }
+                        folios.add(fo);
+                    }
+                    if(skipProj){
+                        //There was an image name that led us to believe this project is not a Dunbar project. skip it.
+                        continue;
+                    }
                     String pattern1 = "_F";
                     String pattern3 = ".jpg";
+                    String delShort = "";
+                    String longPiece = "";
+                    String longNum = "";
                     String regexString2 = Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern3);
                     Pattern patternB = Pattern.compile(regexString2);
                     Matcher matcherB = patternB.matcher(fp.getPageName());
                     String longCode = "";
+                    //image names like /MSS0113_S01_B02_F053_01_page_0001.jpg
                     if (matcherB.find()) {
                         longCode = matcherB.group(1); // Since (.*?) is capturing group 1
                     }
-                    String delShort = "F"+longCode.split("_")[0];
-                    String longPiece = longCode.split("_")[1];
-                    String longNum = "";
-                    
+                    delShort = "F"+longCode.split("_")[0];
+                    longPiece = longCode.split("_")[1];
                     //Just want the numbers
                     Pattern patterNum = Pattern.compile("\\d+");
                     Matcher m = patterNum.matcher(longPiece);
                     if(m.find()) {
                         longNum = m.group();
                     }
-                    result.add(buildQuickMap("id", ""+p.getProjectID(), "project_name", p.getName(), "metadata_name", p.getProjectName(), "collection_code", delShort, "entry_code", longNum ));
+                    Group group = new Group(p.getGroupID());
+                    User[] users = group.getMembers();
+                    int[] userids = new int[users.length];
+                    JSONArray userArr = new JSONArray();
+                    for(int i=0; i<users.length; i++){
+                        JSONObject tpenuser = new JSONObject();
+                        tpenuser.element("userid", users[i].getUID());
+                        tpenuser.element("username", users[i].getUname());
+                        userArr.add(tpenuser);
+                    }
+                    ro.element("id", ""+p.getProjectID());
+                    ro.element("project_name", p.getName());
+                    ro.element("metadata_name", p.getProjectName());
+                    ro.element("collection_code", delShort);
+                    ro.element("entry_code", longNum);
+                    ro.element("pages", folios);
+                    ro.element("assignees", userArr);
+                    ro.element("finalized", ""+finalized);
+                    ro.element("thumbnail", thumbnailURI);
+                    result.add(ro);
               }
               ObjectMapper mapper = new ObjectMapper();
               mapper.writeValue(response.getOutputStream(), result);

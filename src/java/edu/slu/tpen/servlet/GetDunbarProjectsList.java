@@ -55,9 +55,9 @@ public class GetDunbarProjectsList extends HttpServlet {
            try {
               User u = new User(uid);
               Project[] projs = Project.getAllDunbarProjects();
-              boolean skipProj = false;
               //image name/page name contains Fsomething that is folder number.  Add this change.
               for (Project p: projs) {
+                    boolean skipProj = false;
                     JSONObject ro = new JSONObject();
                     JSONArray folios = new JSONArray();
                     Folio fp = new Folio(p.firstPage());
@@ -65,6 +65,7 @@ public class GetDunbarProjectsList extends HttpServlet {
                     String thumbnailURI = "http://t-pen.org/TPEN/pageImage?folio="+fp.getFolioNumber();
                     Folio[] projectfolios = p.getFolios();
                     boolean finalized = true;
+                    boolean extralog = false;
                     for(int i=0; i<projectfolios.length; i++){
                         Folio f = projectfolios[i];
                         JSONObject fo = new JSONObject();
@@ -90,6 +91,7 @@ public class GetDunbarProjectsList extends HttpServlet {
                     }
                     if(skipProj){
                         //There was an image name that led us to believe this project is not a Dunbar project. skip it.
+                        System.out.println("DO NOT add project "+p.getProjectID()+" to the result");
                         continue;
                     }
                     String pattern1 = "_F";

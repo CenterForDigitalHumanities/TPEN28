@@ -9,6 +9,7 @@ import static edu.slu.util.ServletUtils.getUID;
 import static edu.slu.util.ServletUtils.reportInternalError;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
@@ -44,6 +45,7 @@ public class GetDunbarProjectsList extends HttpServlet {
         response.setHeader("Access-Control-Allow-Origin", "*"); //To use this as an API, it must contain CORS headers
         response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
         response.setHeader("Cache-Control", "max-age=60, must-revalidate");
+        //response.setHeader("Etag", request.getContextPath() + "/getDunbarProjects/");
         int uid = getUID(request, response);
         response.setContentType("application/json; charset=utf-8");
         JSONArray result = new JSONArray();

@@ -59,6 +59,10 @@ public class ProjectServlet extends HttpServlet {
         boolean skip = true;
         String url_piece = req.getRequestURI() + req.getPathInfo().substring(1).replace("/", "").replace("manifest.json","");
         String skip_uid_check = "manifest";
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Headers", "*");
+        resp.setHeader("Access-Control-Allow-Methods", "GET");
+        resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
         //System.out.println(url_piece);
 //        if(url_piece.contains(skip_uid_check)){
 //            System.out.println("We wanna skip");
@@ -68,13 +72,6 @@ public class ProjectServlet extends HttpServlet {
 //        else{
 //            uid = getUID(req, resp);
 //        }     
-        
-        if(!resp.containsHeader("Access-Control-Allow-Origin")){
-            //System.out.println("Allow origin header in project servlet");
-            resp.addHeader("Access-Control-Allow-Origin", "*");
-            resp.addHeader("Access-Control-Allow-Headers", "Content-Type");
-            resp.addHeader("Access-Control-Allow-Methods", "GET");
-        }
         if (uid >= 0) {
             try {
                 //System.out.println("Project 1");
@@ -96,9 +93,10 @@ public class ProjectServlet extends HttpServlet {
                             if (checkModified(req, proj)) {
                                // System.out.println("Project 5");
                                 resp.setContentType("application/ld+json; charset=UTF-8");
-                                resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
-                                resp.addHeader("Access-Control-Allow-Origin", "*");
+                                System.out.println("CC header in /project");
+                                resp.setHeader("Etag", req.getContextPath() + "/manifest/"+proj.getProjectID());
                                 resp.setHeader("Cache-Control", "max-age=60, must-revalidate");
+                                resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
                                 resp.setStatus(SC_OK);
                             } else {
                                 resp.setStatus(SC_NOT_MODIFIED);
@@ -174,6 +172,7 @@ public class ProjectServlet extends HttpServlet {
             Date projMod = proj.getModification();
             result = projMod.after(new Date(modSince));
         }
+        System.out.println("Check modified for project servlet says "+result);
         return result;
     }
 }

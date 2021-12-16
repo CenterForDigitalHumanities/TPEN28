@@ -43,6 +43,7 @@ public class GetDunbarProjectsList extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         response.setHeader("Access-Control-Allow-Origin", "*"); //To use this as an API, it must contain CORS headers
         response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+        response.setHeader("Cache-Control", "max-age=60, must-revalidate");
         int uid = getUID(request, response);
         response.setContentType("application/json; charset=utf-8");
         JSONArray result = new JSONArray();

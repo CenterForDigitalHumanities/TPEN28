@@ -217,6 +217,7 @@ public class GetProjectTPENServlet extends HttpServlet {
                             jsonMap.put("xml", allProjectButtons);
                             //get special characters
                             jsonMap.put("projectButtons", hk.javascriptToAddProjectButtonsRawData(projectID));
+                            response.setHeader("Cache-Control", "max-age=60, must-revalidate");
                             response.setStatus(SC_OK);
                             out.println(fromObject(jsonMap));
                             out.close();

@@ -97,6 +97,8 @@ public class ProjectServlet extends HttpServlet {
                                // System.out.println("Project 5");
                                 resp.setContentType("application/ld+json; charset=UTF-8");
                                 resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
+                                resp.addHeader("Access-Control-Allow-Origin", "*");
+                                resp.setHeader("Cache-Control", "max-age=60, must-revalidate");
                                 resp.setStatus(SC_OK);
                             } else {
                                 resp.setStatus(SC_NOT_MODIFIED);

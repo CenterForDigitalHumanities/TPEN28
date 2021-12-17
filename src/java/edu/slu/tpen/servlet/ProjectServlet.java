@@ -95,7 +95,7 @@ public class ProjectServlet extends HttpServlet {
                                 resp.setContentType("application/ld+json; charset=UTF-8");
                                 System.out.println("CC header in /project");
                                 resp.setHeader("Etag", req.getContextPath() + "/manifest/"+proj.getProjectID());
-                                resp.setHeader("Cache-Control", "max-age=60, must-revalidate");
+                                resp.setHeader("Cache-Control", "max-age=600, must-revalidate"); //Meh let's say 10 minutes
                                 resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
                                 resp.setStatus(SC_OK);
                             } else {
@@ -128,6 +128,26 @@ public class ProjectServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         receiveJsonLD(getUID(req, resp), req, resp);
+    }
+    
+    /**
+     * Handles the HTTP <code>OPTIONS</code> preflight method.
+     * Pre-flight support.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        //These headers must be present to pass browser preflight for CORS
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Allow-Methods", "*");
+        response.setHeader("Access-Control-Max-Age", "600"); //Cache preflight responses for 10 minutes.
+        response.setStatus(200);
     }
 
     /**

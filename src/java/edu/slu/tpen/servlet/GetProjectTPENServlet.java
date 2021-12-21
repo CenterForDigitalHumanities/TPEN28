@@ -26,6 +26,10 @@ import java.io.PrintWriter;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.gc;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import static java.util.Arrays.asList;
 import java.util.Date;
@@ -218,8 +222,11 @@ public class GetProjectTPENServlet extends HttpServlet {
                             //get special characters
                             jsonMap.put("projectButtons", hk.javascriptToAddProjectButtonsRawData(projectID));
                             response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
-                            response.setHeader("Etag", request.getContextPath() + "/getProjectTPENServlet/project/"+proj.getProjectID());
-                            response.setHeader("Cache-Control", "max-age=60, must-revalidate");
+                            //response.setHeader("Etag", request.getContextPath() + "/getProjectTPENServlet/project/"+proj.getProjectID());
+                            response.setHeader("Cache-Control", "max-age=8, must-revalidate");
+                            ZonedDateTime z = ZonedDateTime.parse(proj.getModification().toString());
+                            String formattedLastModifiedDate = z.format(DateTimeFormatter.RFC_1123_DATE_TIME); // Magic Make it an RFC date
+                            response.setHeader("Last-Modified", formattedLastModifiedDate);
                             response.setStatus(SC_OK);
                             out.println(fromObject(jsonMap));
                             out.close();
@@ -321,12 +328,29 @@ public class GetProjectTPENServlet extends HttpServlet {
     }
 
     private boolean checkModified(HttpServletRequest request, Project proj) throws SQLException {
-        boolean result = true;
-        long modSince = request.getDateHeader("If-Modified-Since");
-        if (modSince > 0) {
-            Date projMod = proj.getModification();
-            result = projMod.after(new Date(modSince));
+        if(request.getHeader("If-Modified-Since") != null && !request.getHeader("If-Modified-Since").equals("")){
+            String lastModifiedDateHeader = request.getHeader("If-Modified-Since");
+            String lastModifiedDateProj = proj.getModification().toString().replace(" ", "T");
+            //Note that dates like 2021-05-26T10:39:19.328 have been rounded to 2021-05-26T10:39:19.328 in browser headers.  Account for that here.
+            if(lastModifiedDateProj.contains(".")){
+                //If-Modified-Since and Last-Modified headers are rounded.  Wed, 26 May 2021 10:39:19.629 GMT becomes Wed, 26 May 2021 10:39:19 GMT.
+                lastModifiedDateProj = lastModifiedDateProj.split("\\.")[0];
+            }
+            LocalDateTime ldt = LocalDateTime.parse(lastModifiedDateProj, DateTimeFormatter.ISO_DATE_TIME);
+            ZonedDateTime fromProject = ldt.atZone(ZoneId.of("GMT"));
+            ZonedDateTime fromHeader = ZonedDateTime.parse(lastModifiedDateHeader, DateTimeFormatter.RFC_1123_DATE_TIME);
+            if(fromHeader.isEqual(fromProject)){
+                System.out.println("TPEN says not modified");
+                return false;
+            }
+            else{
+                return fromHeader.isBefore(fromProject);
+            }
         }
-        return result;
+        else{
+            //There was no header, so consider this modified.
+            System.out.println("No 'If-Modified-Since' Header present for project request, consider it modified");
+            return true;
+        }
     }
 }

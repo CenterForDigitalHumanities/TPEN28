@@ -854,6 +854,7 @@ function loadTranscription(pid, tool) {
         $.ajax({
             url: url,
             type: "GET",
+            cache: "default",
             success: function (activeProject) {
                 var url = "";
                 //If it is most definitely not an object AND it is a string
@@ -1106,6 +1107,7 @@ function loadTranscription(pid, tool) {
             $.ajax({
                 url: url,
                 type: "GET",
+                cache: "default",
                 success: function (activeProject) {
                     tpen.project.id = projectID; //this must be set or the canvas won't draw
                     setTPENObjectData(activeProject);

@@ -46,7 +46,7 @@ public class GetDunbarProjectsList extends HttpServlet {
         response.setHeader("Access-Control-Allow-Headers", "*");
         response.setHeader("Access-Control-Allow-Methods", "GET");
         response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
-        response.setHeader("Cache-Control", "max-age="+86400/2+", must-revalidate"); //This is updated on a day to day basis.  Let it cache for 12 hours.
+        response.setHeader("Cache-Control", "max-age=86400, must-revalidate"); //This is updated on a day to day basis.  Let it cache for 24 hours.
         int uid = getUID(request, response);
         response.setContentType("application/json; charset=utf-8");
         JSONArray result = new JSONArray();

@@ -58,6 +58,9 @@ public class CanvasServlet extends HttpServlet{
                 if (folioID > 0) {
                     Folio f = new Folio(folioID);
                     resp.setContentType("application/json; charset=UTF-8");
+                    resp.setHeader("Access-Control-Allow-Headers", "*");
+                    resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+                    resp.setHeader("Cache-Control", "max-age=15, must-revalidate"); 
                     resp.getWriter().write(export(buildPage(f)));
                     resp.setStatus(SC_OK);
                 } else {

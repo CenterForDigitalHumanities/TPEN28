@@ -221,9 +221,10 @@ public class GetProjectTPENServlet extends HttpServlet {
                             jsonMap.put("xml", allProjectButtons);
                             //get special characters
                             jsonMap.put("projectButtons", hk.javascriptToAddProjectButtonsRawData(projectID));
+                            response.setHeader("Access-Control-Allow-Headers", "*");
                             response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                             //response.setHeader("Etag", request.getContextPath() + "/getProjectTPENServlet/project/"+proj.getProjectID());
-                            response.setHeader("Cache-Control", "max-age=8, must-revalidate");
+                            response.setHeader("Cache-Control", "max-age=15, must-revalidate");
                             ZonedDateTime z = ZonedDateTime.parse(proj.getModification().toString());
                             String formattedLastModifiedDate = z.format(DateTimeFormatter.RFC_1123_DATE_TIME); // Magic Make it an RFC date
                             response.setHeader("Last-Modified", formattedLastModifiedDate);

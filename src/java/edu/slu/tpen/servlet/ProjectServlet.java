@@ -22,6 +22,10 @@ import static edu.slu.util.ServletUtils.reportInternalError;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -59,6 +63,10 @@ public class ProjectServlet extends HttpServlet {
         boolean skip = true;
         String url_piece = req.getRequestURI() + req.getPathInfo().substring(1).replace("/", "").replace("manifest.json","");
         String skip_uid_check = "manifest";
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Headers", "*");
+        resp.setHeader("Access-Control-Allow-Methods", "GET");
+        resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
         //System.out.println(url_piece);
 //        if(url_piece.contains(skip_uid_check)){
 //            System.out.println("We wanna skip");
@@ -68,13 +76,6 @@ public class ProjectServlet extends HttpServlet {
 //        else{
 //            uid = getUID(req, resp);
 //        }     
-        
-        if(!resp.containsHeader("Access-Control-Allow-Origin")){
-            //System.out.println("Allow origin header in project servlet");
-            resp.addHeader("Access-Control-Allow-Origin", "*");
-            resp.addHeader("Access-Control-Allow-Headers", "Content-Type");
-            resp.addHeader("Access-Control-Allow-Methods", "GET");
-        }
         if (uid >= 0) {
             try {
                 //System.out.println("Project 1");
@@ -96,9 +97,20 @@ public class ProjectServlet extends HttpServlet {
                             if (checkModified(req, proj)) {
                                // System.out.println("Project 5");
                                 resp.setContentType("application/ld+json; charset=UTF-8");
+                                //resp.setHeader("Etag", req.getContextPath() + "/manifest/"+proj.getProjectID());
+                                //We expect projects to change, often.  Let's just help quick page refresh.
+                                String lastModifiedDate = proj.getModification().toString().replace(" ", "T");
+                                LocalDateTime ldt = LocalDateTime.parse(lastModifiedDate, DateTimeFormatter.ISO_DATE_TIME);
+                                ZonedDateTime fromObject = ldt.atZone(ZoneId.of("GMT"));
+                                resp.setHeader("Last-Modified", fromObject.format(DateTimeFormatter.RFC_1123_DATE_TIME));
+                                resp.setHeader("Access-Control-Allow-Headers", "*");
+                                resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+                                resp.setHeader("Cache-Control", "max-age=15, must-revalidate"); 
                                 resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
                                 resp.setStatus(SC_OK);
                             } else {
+                                //FIXME we seem to make it here, but the response is still 200 with the object in the body...doesn't seem to save any time.
+                                //No work necessary, send out the 304.
                                 resp.setStatus(SC_NOT_MODIFIED);
                             }
                         } else {
@@ -128,6 +140,26 @@ public class ProjectServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         receiveJsonLD(getUID(req, resp), req, resp);
+    }
+    
+    /**
+     * Handles the HTTP <code>OPTIONS</code> preflight method.
+     * Pre-flight support.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        //These headers must be present to pass browser preflight for CORS
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Allow-Methods", "*");
+        response.setHeader("Access-Control-Max-Age", "600"); //Cache preflight responses for 10 minutes.
+        response.setStatus(200);
     }
 
     /**
@@ -165,13 +197,29 @@ public class ProjectServlet extends HttpServlet {
         }
     }
 
-    private boolean checkModified(HttpServletRequest req, Project proj) throws SQLException {
-        boolean result = true;
-        long modSince = req.getDateHeader("If-Modified-Since");
-        if (modSince > 0) {
-            Date projMod = proj.getModification();
-            result = projMod.after(new Date(modSince));
+    private boolean checkModified(HttpServletRequest request, Project proj) throws SQLException {
+        if(request.getHeader("If-Modified-Since") != null && !request.getHeader("If-Modified-Since").equals("")){
+            String lastModifiedDateHeader = request.getHeader("If-Modified-Since");
+            String lastModifiedDateProj = proj.getModification().toString().replace(" ", "T");
+            //Note that dates like 2021-05-26T10:39:19.328 have been rounded to 2021-05-26T10:39:19.328 in browser headers.  Account for that here.
+            if(lastModifiedDateProj.contains(".")){
+                //If-Modified-Since and Last-Modified headers are rounded.  Wed, 26 May 2021 10:39:19.629 GMT becomes Wed, 26 May 2021 10:39:19 GMT.
+                lastModifiedDateProj = lastModifiedDateProj.split("\\.")[0];
+            }
+            LocalDateTime ldt = LocalDateTime.parse(lastModifiedDateProj, DateTimeFormatter.ISO_DATE_TIME);
+            ZonedDateTime fromProject = ldt.atZone(ZoneId.of("GMT"));
+            ZonedDateTime fromHeader = ZonedDateTime.parse(lastModifiedDateHeader, DateTimeFormatter.RFC_1123_DATE_TIME);
+            if(fromHeader.isEqual(fromProject)){
+                return false;
+            }
+            else{
+                return fromHeader.isBefore(fromProject);
+            }
         }
-        return result;
+        else{
+            //There was no header, so consider this modified.
+            System.out.println("No 'If-Modified-Since' Header present for project request, consider it modified");
+            return true;
+        }
     }
 }

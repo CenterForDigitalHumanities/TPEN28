@@ -9,6 +9,7 @@ import static edu.slu.util.ServletUtils.getUID;
 import static edu.slu.util.ServletUtils.reportInternalError;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
@@ -41,8 +42,11 @@ public class GetDunbarProjectsList extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        response.setHeader("Access-Control-Allow-Origin", "*"); //To use this as an API, it must contain CORS headers
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Allow-Methods", "GET");
         response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+        response.setHeader("Cache-Control", "max-age=86400, must-revalidate"); //This is updated on a day to day basis.  Let it cache for 24 hours.
         int uid = getUID(request, response);
         response.setContentType("application/json; charset=utf-8");
         JSONArray result = new JSONArray();
@@ -50,9 +54,9 @@ public class GetDunbarProjectsList extends HttpServlet {
            try {
               User u = new User(uid);
               Project[] projs = Project.getAllDunbarProjects();
-              boolean skipProj = false;
               //image name/page name contains Fsomething that is folder number.  Add this change.
               for (Project p: projs) {
+                    boolean skipProj = false;
                     JSONObject ro = new JSONObject();
                     JSONArray folios = new JSONArray();
                     Folio fp = new Folio(p.firstPage());
@@ -60,6 +64,7 @@ public class GetDunbarProjectsList extends HttpServlet {
                     String thumbnailURI = "http://t-pen.org/TPEN/pageImage?folio="+fp.getFolioNumber();
                     Folio[] projectfolios = p.getFolios();
                     boolean finalized = true;
+                    boolean extralog = false;
                     for(int i=0; i<projectfolios.length; i++){
                         Folio f = projectfolios[i];
                         JSONObject fo = new JSONObject();
@@ -85,6 +90,7 @@ public class GetDunbarProjectsList extends HttpServlet {
                     }
                     if(skipProj){
                         //There was an image name that led us to believe this project is not a Dunbar project. skip it.
+                        System.out.println("DO NOT add project "+p.getProjectID()+" to the result");
                         continue;
                     }
                     String pattern1 = "_F";
@@ -186,6 +192,7 @@ public class GetDunbarProjectsList extends HttpServlet {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Headers", "*");
         response.setHeader("Access-Control-Allow-Methods", "*");
+        response.setHeader("Access-Control-Max-Age", "600"); //Cache preflight responses for 10 minutes.
         response.setStatus(200);
     }
 

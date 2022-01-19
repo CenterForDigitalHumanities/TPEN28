@@ -226,13 +226,13 @@ public class GetProjectTPENServlet extends HttpServlet {
                             response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                             //response.setHeader("Etag", request.getContextPath() + "/getProjectTPENServlet/project/"+proj.getProjectID());
                             response.setHeader("Cache-Control", "max-age=15, must-revalidate");
-                            String lastModifiedDateProj = proj.getModification().toString().replace(" ", "T");
-                            //Note that dates like 2021-05-26T10:39:19.328 have been rounded to 2021-05-26T10:39:19.328 in browser headers.  Account for that here.
-                            if(lastModifiedDateProj.contains(".")){
-                                //If-Modified-Since and Last-Modified headers are rounded.  Wed, 26 May 2021 10:39:19.629 GMT becomes Wed, 26 May 2021 10:39:19 GMT.
-                                lastModifiedDateProj = lastModifiedDateProj.split("\\.")[0];
-                            }
                             try{
+                                String lastModifiedDateProj = proj.getModification().toString().replace(" ", "T");
+                                //Note that dates like 2021-05-26T10:39:19.328 have been rounded to 2021-05-26T10:39:19.328 in browser headers.  Account for that here.
+                                if(lastModifiedDateProj.contains(".")){
+                                    //If-Modified-Since and Last-Modified headers are rounded.  Wed, 26 May 2021 10:39:19.629 GMT becomes Wed, 26 May 2021 10:39:19 GMT.
+                                    lastModifiedDateProj = lastModifiedDateProj.split("\\.")[0];
+                                }
                                 LocalDateTime ldt = LocalDateTime.parse(lastModifiedDateProj, DateTimeFormatter.ISO_DATE_TIME);
                                 ZonedDateTime z = ldt.atZone(ZoneId.of("GMT"));
                                 String formattedLastModifiedDate = z.format(DateTimeFormatter.RFC_1123_DATE_TIME); // Magic Make it an RFC date
@@ -240,6 +240,9 @@ public class GetProjectTPENServlet extends HttpServlet {
                             }
                             catch(DateTimeParseException ex){
                                 System.out.println("Last-Modified Header could not be formed.  Bad date value for project "+proj.getProjectID());
+                            }
+                            catch(Exception e){
+                                
                             }
                             response.setStatus(SC_OK);
                             out.println(fromObject(jsonMap));

@@ -100,10 +100,15 @@ public class ProjectServlet extends HttpServlet {
                                 resp.setContentType("application/ld+json; charset=UTF-8");
                                 //resp.setHeader("Etag", req.getContextPath() + "/manifest/"+proj.getProjectID());
                                 //We expect projects to change, often.  Let's just help quick page refresh.
-                                String lastModifiedDate = proj.getModification().toString().replace(" ", "T");
-                                LocalDateTime ldt = LocalDateTime.parse(lastModifiedDate, DateTimeFormatter.ISO_DATE_TIME);
-                                ZonedDateTime fromObject = ldt.atZone(ZoneId.of("GMT"));
-                                resp.setHeader("Last-Modified", fromObject.format(DateTimeFormatter.RFC_1123_DATE_TIME));
+                                try{
+                                    String lastModifiedDate = proj.getModification().toString().replace(" ", "T");
+                                    LocalDateTime ldt = LocalDateTime.parse(lastModifiedDate, DateTimeFormatter.ISO_DATE_TIME);
+                                    ZonedDateTime fromObject = ldt.atZone(ZoneId.of("GMT"));
+                                    resp.setHeader("Last-Modified", fromObject.format(DateTimeFormatter.RFC_1123_DATE_TIME));
+                                }
+                                catch(DateTimeParseException ex){
+                                    System.out.println("Last-Modified Header could not be formed.  Bad date value for project "+proj.getProjectID());
+                                }
                                 resp.setHeader("Access-Control-Allow-Headers", "*");
                                 resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                                 resp.setHeader("Cache-Control", "max-age=15, must-revalidate"); 

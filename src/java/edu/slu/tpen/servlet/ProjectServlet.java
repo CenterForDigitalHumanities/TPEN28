@@ -109,6 +109,9 @@ public class ProjectServlet extends HttpServlet {
                                 catch(DateTimeParseException ex){
                                     System.out.println("Last-Modified Header could not be formed.  Bad date value for project "+proj.getProjectID());
                                 }
+                                catch(Exception e){
+                                
+                                }
                                 resp.setHeader("Access-Control-Allow-Headers", "*");
                                 resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                                 resp.setHeader("Cache-Control", "max-age=15, must-revalidate"); 

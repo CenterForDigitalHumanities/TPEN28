@@ -348,7 +348,7 @@ public class GetProjectTPENServlet extends HttpServlet {
             ZonedDateTime fromProject = ldt.atZone(ZoneId.of("GMT"));
             ZonedDateTime fromHeader = ZonedDateTime.parse(lastModifiedDateHeader, DateTimeFormatter.RFC_1123_DATE_TIME);
             if(fromHeader.isEqual(fromProject)){
-                System.out.println("TPEN says not modified");
+                //System.out.println("TPEN says not modified");
                 return false;
             }
             else{
@@ -357,7 +357,7 @@ public class GetProjectTPENServlet extends HttpServlet {
         }
         else{
             //There was no header, so consider this modified.
-            System.out.println("No 'If-Modified-Since' Header present for project request, consider it modified");
+            //System.out.println("No 'If-Modified-Since' Header present for project request, consider it modified");
             return true;
         }
     }

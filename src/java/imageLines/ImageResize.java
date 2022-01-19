@@ -96,7 +96,11 @@ public class ImageResize extends HttpServlet {
                return;
             }
          }
-         response.addHeader("Cache-Control", "max-age=3600");
+         response.setHeader("Access-Control-Allow-Origin", "*");
+         response.setHeader("Access-Control-Allow-Headers", "*");
+         response.setHeader("Access-Control-Allow-Methods", "GET");
+         response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+         response.setHeader("Cache-Control", "max-age=31536000, must-revalidate"); //This is immutable (or at least there is no plan for it to change).  Let it be fresh for a year.
          long relExpiresInMillis = currentTimeMillis() + (1000 * 2600);
          response.addHeader("Expires", getGMTTimeString(relExpiresInMillis));
          response.setContentType("image/jpeg");
@@ -151,12 +155,6 @@ public class ImageResize extends HttpServlet {
                int height = parseInt(request.getParameter("height"));
                int width = (int) ((height / (double)toResize.getHeight()) * toResize.getWidth());
                toResize = scale(toResize, height, width);
-               
-               response.setHeader("Access-Control-Allow-Origin", "*");
-               response.setHeader("Access-Control-Allow-Headers", "*");
-               response.setHeader("Access-Control-Allow-Methods", "GET");
-               response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
-               response.setHeader("Cache-Control", "max-age=31536000, must-revalidate"); //This is immutable (or at least there is no plan for it to change).  Let it be fresh for a year.
                OutputStream os = response.getOutputStream();
                IIOImage image = new IIOImage(toResize, null, null);
                writer.setOutput(createImageOutputStream(os));

@@ -218,7 +218,7 @@ public class ProjectServlet extends HttpServlet {
         }
         else{
             //There was no header, so consider this modified.
-            System.out.println("No 'If-Modified-Since' Header present for project request, consider it modified");
+            //System.out.println("No 'If-Modified-Since' Header present for project request, consider it modified");
             return true;
         }
     }

@@ -102,6 +102,11 @@ public class ProjectServlet extends HttpServlet {
                                 //We expect projects to change, often.  Let's just help quick page refresh.
                                 try{
                                     String lastModifiedDate = proj.getModification().toString().replace(" ", "T");
+                                    //Note that dates like 2021-05-26T10:39:19.328 have been rounded to 2021-05-26T10:39:19.328 in browser headers.  Account for that here.
+                                    if(lastModifiedDate.contains(".")){
+                                        //If-Modified-Since and Last-Modified headers are rounded.  Wed, 26 May 2021 10:39:19.629 GMT becomes Wed, 26 May 2021 10:39:19 GMT.
+                                        lastModifiedDate = lastModifiedDate.split("\\.")[0];
+                                    }
                                     LocalDateTime ldt = LocalDateTime.parse(lastModifiedDate, DateTimeFormatter.ISO_DATE_TIME);
                                     ZonedDateTime fromObject = ldt.atZone(ZoneId.of("GMT"));
                                     resp.setHeader("Last-Modified", fromObject.format(DateTimeFormatter.RFC_1123_DATE_TIME));

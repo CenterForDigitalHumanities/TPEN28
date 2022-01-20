@@ -115,7 +115,7 @@
                             <dl>                                
                                 <dt>Patrick Cuba, I.T. Architect</dt>
                                 <dd>Research Computing Group, Saint Louis University</dd>
-                                <dt>Bryan Haberberger, Full Stack Developerr</dt>
+                                <dt>Bryan Haberberger, Full Stack Developer</dt>
                                 <dd>Research Computing Group, Saint Louis University</dd>
                             </dl>
                         </li>

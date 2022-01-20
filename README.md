@@ -3,7 +3,7 @@
 
 The Transcription for Paleographical and Editorial Notation (T‑PEN) project was coordinated by the Center for Digital Theology at Saint Louis University (SLU) and funded by the Andrew W. Mellon Foundation and the NEH. The Electronic Norman Anonymous Project developed several abilities at the core of this project's functionality.
 
-T-PEN is currently (2022) maintained by the Research Computing Group at Saint Louis University.  T-PEN is no longer funded.
+T-PEN is currently (2022) maintained by the Research Computing Group at Saint Louis University.
 
 T‑PEN is released under ECL v.2.0 as free and open-source software (git), the primary instance of which is maintained by SLU at T‑PEN.org.
 

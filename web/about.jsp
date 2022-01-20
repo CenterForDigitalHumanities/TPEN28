@@ -113,18 +113,10 @@
                         <li class="gui-tab-section">
                             <h3>Support/Maintenance Team <br> T-PEN 2.0-2.8</h3>
                             <dl>                                
-                                <dt>Dr. Jim Ginther, Principal Investigator</dt>
-                                <dd>Director, Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
-                                <dt>Dr. Thomas Finan, Principal Investigator (2016-present)</dt>
-                                <dd>Director, Walter J. Ong S.J. Center for Digital Humanities, Saint Louis University</dd>
-                                <dt>Donal Hegarty, Project Manager/UX Designer</dt>
-                                <dd>Walter J. Ong S.J. Center for Digital Humanities, Saint Louis University</dd>
-                                <dt>Patrick Cuba, Lead Developer</dt>
-                                <dd>Walter J. Ong S.J. Center for Digital Humanities, Saint Louis University</dd>
-                                <dt>Bryan Haberberger, Web Developer</dt>
-                                <dd>Walter J. Ong S.J. Center for Digital Humanities, Saint Louis University</dd>
-                                <dt>Han Yan, Web Developer</dt>
-                                <dd>Walter J. Ong S.J. Center for Digital Humanities, Saint Louis University</dd>
+                                <dt>Patrick Cuba, I.T. Architect</dt>
+                                <dd>Research Computing Group, Saint Louis University</dd>
+                                <dt>Bryan Haberberger, Full Stack Developerr</dt>
+                                <dd>Research Computing Group, Saint Louis University</dd>
                             </dl>
                         </li>
                         <li class="gui-tab-section">
@@ -144,8 +136,8 @@
                                 <dd>University&nbsp;of&nbsp;Kentucky</dd>
                                 <dt>Jon Deering, Senior Developer</dt>
                                 <dd>Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
-                                <dt>Patrick Cuba, Web Developer</dt>
-                                <dd>Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
+                                <dt>Patrick Cuba, I.T. Architect</dt>
+                                <dd>Research Computing Group, Saint Louis University</dd>
                             </dl>
                         </li>
                         <li class="gui-tab-section">

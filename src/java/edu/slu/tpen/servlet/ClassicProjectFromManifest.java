@@ -144,8 +144,8 @@ public class ClassicProjectFromManifest extends HttpServlet {
                 if(projectID<1 && theManifest.size() > 0) {
                     //create a project for them
                     String tmpProjName = mss.getShelfMark()+" project";
-                    if (request.getParameter("title") != null) {
-                        tmpProjName = request.getParameter("title");
+                    if (theManifest.has("label")) {
+                        tmpProjName = theManifest.getString("label");
                     }
                     try (Connection conn = getDBConnection()) {
                        conn.setAutoCommit(false);

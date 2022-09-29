@@ -52,4 +52,11 @@ public class JsonHelper {
         return body;
     }
 
+    public static JSONObject buildAnnotationBody(String type, String value, String purpose) throws NoSuchElementException
+    {
+        JSONObject body = buildAnnotationBody(type, value);
+        body.put("purpose", purpose);
+        return body;
+    }
+
 }

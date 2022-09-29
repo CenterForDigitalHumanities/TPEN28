@@ -47,7 +47,7 @@ public class JsonHelper {
         {
             throw new NoSuchElementException(type + " was not found among supported types: " + buildBodyMap().keySet().toString());
         }
-        body.put("language", "none");
+        body.put("language", new String[] {"none"});
         body.put("value", value);
         return body;
     }

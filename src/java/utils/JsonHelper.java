@@ -22,7 +22,7 @@ public class JsonHelper {
     *  Make a hashmap with old @type from v2 API being keys and new type and format fields being values
      *  to use in buildAnnotationResource
     * */
-    private static HashMap buildBodyMap()
+    private static HashMap formatTextualBody()
     {
         HashMap<String, JSONObject> map = new HashMap();
         
@@ -37,15 +37,15 @@ public class JsonHelper {
 
     /**
      * Make a body property for annotations according to IIIF v3 API using @type and value from v2
-     * works based on map build by buildResourceMap() and throws NoSuchElementException if type was not found among keys
+     * works based on map build by formatTextualBody() and throws NoSuchElementException if type was not found among keys
      * */
     public static JSONObject buildAnnotationBody(String type, String value) throws NoSuchElementException
     {
         // since jsonobject extends object, casting should be safe
-        JSONObject body = (JSONObject) buildBodyMap().get(type);
+        JSONObject body = (JSONObject) formatTextualBody().get(type);
         if (body == null)
         {
-            throw new NoSuchElementException(type + " was not found among supported types: " + buildBodyMap().keySet().toString());
+            throw new NoSuchElementException(type + " was not found among supported types: " + formatTextualBody().keySet().toString());
         }
         body.put("language", new String[] {"none"});
         body.put("value", value);

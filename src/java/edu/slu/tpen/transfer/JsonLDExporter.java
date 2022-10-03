@@ -34,6 +34,7 @@ import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
 import textdisplay.FolioDims;
@@ -72,7 +73,13 @@ public class JsonLDExporter {
          manifestData.put("@id", projName + "/manifest.json");
          manifestData.put("@type", "sc:Manifest");
          //Remember that this is a Metadata title, not project name...
-         manifestData.put("label", proj.getProjectName());
+         
+        JSONObject jsonhelper = new JSONObject();
+        String[] noneMap = new String[] {};
+        jsonhelper.put("none", noneMap);
+         //WORK HERE TO MAKE A LANGUAGE MAP
+         manifestData.put("label", jsonhelper);
+         
          manifestData.put("metadata", getMetadataAsJSON(projID));
 
            Map<String, Object> service = new LinkedHashMap<>();
@@ -81,7 +88,7 @@ public class JsonLDExporter {
          service.put("profile", "http://iiif.io/api/auth/1/login");
          service.put("label", "T-PEN Login");
          service.put("header", "Login for image access");
-         service.put("description", "Agreement requires an open T-PEN session to view images");
+         service.put("Summary", "Agreement requires an open T-PEN session to view images");
          service.put("confirmLabel", "Login");
          service.put("failureHeader", "T-PEN Login Failed");
          service.put("failureDescription", "<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");

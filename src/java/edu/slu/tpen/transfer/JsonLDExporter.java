@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static edu.slu.tpen.entity.Image.Canvas.getLinesForProject;
 import static edu.slu.util.LangUtils.buildQuickMap;
+import static utils.JsonHelper.buildNoneLanguageMap;      ///////////////////////////////////////////////////////////////////////
 import static imageLines.ImageCache.getImageDimension;
 import java.awt.Dimension;
 import java.io.IOException;
@@ -34,7 +35,6 @@ import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
 import textdisplay.FolioDims;
@@ -74,12 +74,13 @@ public class JsonLDExporter {
          manifestData.put("@type", "sc:Manifest");
          //Remember that this is a Metadata title, not project name...
          
-        JSONObject jsonhelper = new JSONObject();
-        String[] noneMap = new String[] {};
-        jsonhelper.put("none", noneMap);
+        //JSONObject jsonhelper = new JSONObject();
+        //String[] noneMap = new String[] {};
+        //jsonhelper.put("none", noneMap);
+          /////////////////////////
          //WORK HERE TO MAKE A LANGUAGE MAP
-         manifestData.put("label", jsonhelper);
-         
+         manifestData.put("label", buildNoneLanguageMap("hello"));
+      
          manifestData.put("metadata", getMetadataAsJSON(projID));
 
            Map<String, Object> service = new LinkedHashMap<>();

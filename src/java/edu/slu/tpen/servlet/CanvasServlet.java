@@ -65,7 +65,7 @@ public class CanvasServlet extends HttpServlet{
                     resp.setHeader("Access-Control-Allow-Headers", "*");
                     resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                     resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
-   
+        //sdfsf
                     resp.getWriter().write(export(buildPage(folioID,"canvas", f, u)));
                     resp.setStatus(SC_OK);
                 } else {

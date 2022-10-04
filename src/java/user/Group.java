@@ -20,16 +20,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Logger.getLogger;
-import static textdisplay.DatabaseWrapper.closeDBConnection;
-import static textdisplay.DatabaseWrapper.closePreparedStatement;
-import static textdisplay.DatabaseWrapper.getConnection;
-import static user.Group.roles.Contributor;
-import static user.Group.roles.Leader;
-import static user.Group.roles.None;
-import static user.Group.roles.values;
+import static textdisplay.DatabaseWrapper.*;
+import static user.Group.roles.*;
 
 /**
  * Represents a single group of users.

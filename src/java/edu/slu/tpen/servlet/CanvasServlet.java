@@ -7,6 +7,7 @@ package edu.slu.tpen.servlet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import static edu.slu.tpen.entity.Image.Canvas.getLinesForProject;
 import static edu.slu.util.LangUtils.buildQuickMap;
 import static imageLines.ImageCache.getImageDimension;
@@ -34,7 +35,9 @@ import static textdisplay.Folio.getRbTok;
 import textdisplay.FolioDims;
 import static textdisplay.FolioDims.createFolioDimsRecord;
 import static textdisplay.Transcription.LOG;
+import java.util.Map;
 import user.User;
+
 
 
 /**
@@ -65,8 +68,8 @@ public class CanvasServlet extends HttpServlet{
                     resp.setHeader("Access-Control-Allow-Headers", "*");
                     resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                     resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
-        //sdfsf
-                    resp.getWriter().write(export(buildPage(folioID,"canvas", f, u)));
+
+                    resp.getWriter().write((buildPage(folioID,"canvas", f, u)));
                     resp.setStatus(SC_OK);
                 } else {
                     getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
@@ -104,7 +107,7 @@ public class CanvasServlet extends HttpServlet{
         build the JSON representation of a canvas and return it.  It will not know about the project, so otherContent will contains all annotation lists this canvas
         has across all projects.  It will ignore all user checks so as to be open.  
     */
-    private Map<String, Object> buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
+    private String buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
 
         try{
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
@@ -173,14 +176,19 @@ public class CanvasServlet extends HttpServlet{
             result.put("otherContent", otherContent);
             result.put("images", images);
             //System.out.println("Return");
-            return result;
+            Gson gson = new Gson();
+            String json = gson.toJson(result,Map.class);
+            return json;
         }
         catch(Exception e){
             Map<String, Object> empty = new LinkedHashMap<>();
             LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
-            return empty;
+            return "";
         }
    }
+
+    public CanvasServlet() {
+    }
     
     private String export(JSONObject data) throws JsonProcessingException {
       ObjectMapper mapper = new ObjectMapper();

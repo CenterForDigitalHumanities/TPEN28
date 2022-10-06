@@ -7,6 +7,7 @@ package edu.slu.tpen.servlet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 import static edu.slu.tpen.entity.Image.Canvas.getLinesForProject;
 import static edu.slu.util.LangUtils.buildQuickMap;
@@ -176,14 +177,18 @@ public class CanvasServlet extends HttpServlet{
             result.put("otherContent", otherContent);
             result.put("images", images);
             //System.out.println("Return");
-            Gson gson = new Gson();
-            String json = gson.toJson(result,Map.class);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            String json = mapper.writeValueAsString(result);
             return json;
         }
         catch(Exception e){
             Map<String, Object> empty = new LinkedHashMap<>();
             LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
-            return "";
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            String json = mapper.writeValueAsString(empty);
+            return json;
         }
    }
 

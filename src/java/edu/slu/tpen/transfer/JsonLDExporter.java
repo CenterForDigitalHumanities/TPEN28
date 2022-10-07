@@ -51,6 +51,7 @@ import user.User;
  */
 public class JsonLDExporter {
 
+   
    /**
     * Holds data which will be serialised to JSON.
     */
@@ -60,8 +61,76 @@ public class JsonLDExporter {
     * Populate a map which will contain all the relevant project information.
     *
     * @param proj the project to be exported.
+     * @param u  ? why'd it make me add these?
+     * @param profile  <--
     * @throws SQLException
+     * @throws IOException <--
     */
+   public void JsonLDExporter3(Project proj, User u, String profile) throws SQLException, IOException 
+   {
+       Folio[] folios = proj.getFolios();
+       int projID = proj.getProjectID();
+      // if !profile.contains("3"){   //<-why?
+       if !profile.isDigit(profile, "3"){ // To see if index of 3 is even in correct position or just manifest number in url?
+           System.out.println("This doesn't work");
+       }
+       else{
+           try {           
+               System.out.println("This is Presi 3!");
+               manifestData = new LinkedHashMap<>();
+               String projName = getRbTok("SERVERURL") + "manifest/"+projID;
+               
+               manifestData.put("@context", "http://www.shared-canvas.org/ns/context.json");
+               manifestData.put("id", projName + "/manifest.json");
+               manifestData.put("type", "sc:Manifest");
+               //Remember that this is a Metadata title, not project name...
+               
+               //manifestData.put("label", proj.getProjectName()); <- old ver
+               manifestData.put("label",buildNoneLanguageMap(proj.getProjectName()));
+               
+               manifestData.put("metadata", getMetadataAsJSON(projID));
+               
+               Map<String, Object> service = new LinkedHashMap<>();
+               service.put("@context", "http://iiif.io/api/auth/1/context.json");
+               service.put("@Hid","http://t-pen.org/TPEN/login.jsp");
+               service.put("profile", "http://iiif.io/api/auth/1/login");
+               service.put("label", "T-PEN Login");
+               service.put("header", "Login for image access");
+               service.put("description", "Agreement requires an open T-PEN session to view images");
+               service.put("confirmLabel", "Login");
+               service.put("failureHeader", "T-PEN Login Failed");
+               service.put("failureDescription", "<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
+               Map<String, Object> logout = new LinkedHashMap<>();
+               logout.put("@id", "http://t-pen.org/TPEN/login.jsp");
+               logout.put("profile", "http://iiif.io/api/auth/1/logout");
+               logout.put("label", "End T-PEN Session");
+               service.put("service",new Object[] { logout });
+               
+               manifestData.put("service",new Object[] { service });
+               
+               
+               Map<String, Object> pages = new LinkedHashMap<>();
+               pages.put("@id", getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
+               pages.put("@type", "sc:Sequence");
+               pages.put("label", "Current Page Order");
+               
+               List<Map<String, Object>> pageList = new ArrayList<>();
+               //System.out.println("I found "+folios.length+" pages");
+               int index = 0;
+               for (Folio f : folios) {
+                   index++;
+                   //System.out.println("Build page "+index);
+                   pageList.add(buildPage(proj.getProjectID(), projName, f, u));
+               }
+               //System.out.println("Put all canvas together");
+               pages.put("canvases", pageList);
+               manifestData.put("sequences", new Object[] { pages });
+           }
+           catch (UnsupportedEncodingException ignored) {
+           }
+       }
+                
+   }
    public JsonLDExporter(Project proj, User u) throws SQLException, IOException {
       Folio[] folios = proj.getFolios();
       int projID = proj.getProjectID();
@@ -73,14 +142,7 @@ public class JsonLDExporter {
          manifestData.put("@id", projName + "/manifest.json");
          manifestData.put("@type", "sc:Manifest");
          //Remember that this is a Metadata title, not project name...
-         
-        //JSONObject jsonhelper = new JSONObject();
-        //String[] noneMap = new String[] {};
-        //jsonhelper.put("none", noneMap);
-          /////////////////////////
-         //WORK HERE TO MAKE A LANGUAGE MAP
-         manifestData.put("label", buildNoneLanguageMap("hello"));
-      
+         manifestData.put("label", proj.getProjectName());
          manifestData.put("metadata", getMetadataAsJSON(projID));
 
            Map<String, Object> service = new LinkedHashMap<>();
@@ -89,7 +151,7 @@ public class JsonLDExporter {
          service.put("profile", "http://iiif.io/api/auth/1/login");
          service.put("label", "T-PEN Login");
          service.put("header", "Login for image access");
-         service.put("Summary", "Agreement requires an open T-PEN session to view images");
+         service.put("description", "Agreement requires an open T-PEN session to view images");
          service.put("confirmLabel", "Login");
          service.put("failureHeader", "T-PEN Login Failed");
          service.put("failureDescription", "<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");

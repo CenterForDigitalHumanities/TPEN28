@@ -55,7 +55,7 @@ public class CanvasServlet extends HttpServlet{
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp,User u) throws ServletException, IOException {
         //System.out.println("Get a canvas");
             int folioID = 0;
             try {
@@ -68,7 +68,6 @@ public class CanvasServlet extends HttpServlet{
                     resp.setHeader("Access-Control-Allow-Headers", "*");
                     resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                     resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
-                    User u = new User("asd");
                     resp.getWriter().write(export(buildPage(folioID,"canvas", f, u)));
                     resp.setStatus(SC_OK);
                 } else {

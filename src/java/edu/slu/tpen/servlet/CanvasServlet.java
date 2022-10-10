@@ -68,7 +68,7 @@ public class CanvasServlet extends HttpServlet{
                     resp.setHeader("Access-Control-Allow-Headers", "*");
                     resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                     resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
-                    resp.getWriter().write(export(buildPage(folioID,"canvas", f)));
+                    resp.getWriter().write(export(buildPage(folioID, f)));
                     resp.setStatus(SC_OK);
                 } else {
                     getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
@@ -107,7 +107,7 @@ public class CanvasServlet extends HttpServlet{
         build the JSON representation of a canvas and return it.  It will not know about the project, so otherContent will contains all annotation lists this canvas
         has across all projects.  It will ignore all user checks so as to be open.  
     */
-     private JSONObject buildPage(int projID, String projName, Folio f) throws SQLException, IOException {
+     private JSONObject buildPage(int projID, Folio f) throws SQLException, IOException {
 
      try{
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
@@ -124,10 +124,10 @@ public class CanvasServlet extends HttpServlet{
                }
             }
 
-           // LOG.log(INFO, "pageDim={0}", pageDim);
+            LOG.log(INFO, "pageDim={0}", pageDim);
             //Map<String, Object> result = new LinkedHashMap<>();
             JSONObject result  = new JSONObject();
-            result.put("@id", canvasID);
+            result.put("@wid", canvasID);
             result.put("@type", "sc:Canvas");
             result.put("label", f.getPageName());
             int canvasHeight = pageDim.getCanvasHeight();
@@ -184,10 +184,11 @@ public class CanvasServlet extends HttpServlet{
         catch(Exception e){
             //Map<String, Object> empty = new LinkedHashMap<>();
             JSONObject empty = new JSONObject();
-            //LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
+            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
             return empty;
         }
    }
+    private static final Logger LOG = getLogger(CanvasServlet.class.getName());
     
     private String export(JSONObject data) throws JsonProcessingException {
       ObjectMapper mapper = new ObjectMapper();

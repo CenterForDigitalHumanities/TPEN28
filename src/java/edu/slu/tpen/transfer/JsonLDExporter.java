@@ -56,25 +56,12 @@ public class JsonLDExporter {
     * Holds data which will be serialised to JSON.
     */
    Map<String, Object> manifestData;
-
-   /**
-    * Populate a map which will contain all the relevant project information.
-    *
-    * @param proj the project to be exported.
-     * @param u  ? why'd it make me add these?
-     * @param profile  <--
-    * @throws SQLException
-     * @throws IOException <--
-    */
-   public void JsonLDExporter3(Project proj, User u, String profile) throws SQLException, IOException 
-   {
+public JsonLDExporter(Project proj, User u, String profile) throws SQLException, IOException
+{   
+   
        Folio[] folios = proj.getFolios();
        int projID = proj.getProjectID();
-      // if !profile.contains("3"){   //<-why?
-       if !profile.isDigit(profile, "3"){ // To see if index of 3 is even in correct position or just manifest number in url?
-           System.out.println("This doesn't work");
-       }
-       else{
+       if (profile.contains("3")){
            try {           
                System.out.println("This is Presi 3!");
                manifestData = new LinkedHashMap<>();
@@ -92,7 +79,7 @@ public class JsonLDExporter {
                
                Map<String, Object> service = new LinkedHashMap<>();
                service.put("@context", "http://iiif.io/api/auth/1/context.json");
-               service.put("@Hid","http://t-pen.org/TPEN/login.jsp");
+               service.put("@id","http://t-pen.org/TPEN/login.jsp");
                service.put("profile", "http://iiif.io/api/auth/1/login");
                service.put("label", "T-PEN Login");
                service.put("header", "Login for image access");
@@ -110,8 +97,8 @@ public class JsonLDExporter {
                
                
                Map<String, Object> pages = new LinkedHashMap<>();
-               pages.put("@id", getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
-               pages.put("@type", "sc:Sequence");
+               pages.put("id", getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
+               pages.put("type", "sc:Sequence");
                pages.put("label", "Current Page Order");
                
                List<Map<String, Object>> pageList = new ArrayList<>();
@@ -120,7 +107,7 @@ public class JsonLDExporter {
                for (Folio f : folios) {
                    index++;
                    //System.out.println("Build page "+index);
-                   pageList.add(buildPage(proj.getProjectID(), projName, f, u));
+                   pageList.add(buildPage(proj.getProjectID(), projName, f, u)); // I didn't understand the comment you made here
                }
                //System.out.println("Put all canvas together");
                pages.put("canvases", pageList);
@@ -129,8 +116,19 @@ public class JsonLDExporter {
            catch (UnsupportedEncodingException ignored) {
            }
        }
-                
-   }
+       else{ //<-why?
+           //  if (!profile.isDigit(profile, "3")){ // To see if index of 3 is even in correct position or just manifest number in url?
+           System.out.println("This doesn't work");
+       }
+}
+   /**
+    * Populate a map which will contain all the relevant project information.
+    *
+    * @param proj the project to be exported.
+     * @param u  ? why'd it make me add these?
+    * @throws SQLException
+     * @throws IOException <--
+    */
    public JsonLDExporter(Project proj, User u) throws SQLException, IOException {
       Folio[] folios = proj.getFolios();
       int projID = proj.getProjectID();

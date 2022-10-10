@@ -55,7 +55,7 @@ public class CanvasServlet extends HttpServlet{
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp,User u) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //System.out.println("Get a canvas");
             int folioID = 0;
             try {
@@ -68,7 +68,7 @@ public class CanvasServlet extends HttpServlet{
                     resp.setHeader("Access-Control-Allow-Headers", "*");
                     resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                     resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
-                    resp.getWriter().write(export(buildPage(folioID,"canvas", f, u)));
+                    resp.getWriter().write(export(buildPage(folioID,"canvas", f)));
                     resp.setStatus(SC_OK);
                 } else {
                     getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
@@ -107,14 +107,15 @@ public class CanvasServlet extends HttpServlet{
         build the JSON representation of a canvas and return it.  It will not know about the project, so otherContent will contains all annotation lists this canvas
         has across all projects.  It will ignore all user checks so as to be open.  
     */
-     private JSONObject buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
+     private JSONObject buildPage(int projID, String projName, Folio f) throws SQLException, IOException {
 
      try{
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
             Dimension storedDims = null;
 
-            JSONArray otherContent;
+//            JSONArray otherContent;
+            String[] otherContent;
             if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
                storedDims = getImageDimension(f.getFolioNumber());
                if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
@@ -123,7 +124,7 @@ public class CanvasServlet extends HttpServlet{
                }
             }
 
-            LOG.log(INFO, "pageDim={0}", pageDim);
+           // LOG.log(INFO, "pageDim={0}", pageDim);
             //Map<String, Object> result = new LinkedHashMap<>();
             JSONObject result  = new JSONObject();
             result.put("@id", canvasID);
@@ -172,7 +173,8 @@ public class CanvasServlet extends HttpServlet{
             //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
             //System.out.println("Get otherContent");
             //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
-            otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
+            otherContent = getAnnotationListsForProject(-1, canvasID, 0);
+            //otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
             //System.out.println("Finalize result");
             result.put("otherContent", otherContent);
             result.put("images", images);
@@ -182,7 +184,7 @@ public class CanvasServlet extends HttpServlet{
         catch(Exception e){
             //Map<String, Object> empty = new LinkedHashMap<>();
             JSONObject empty = new JSONObject();
-            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
+            //LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
             return empty;
         }
    }

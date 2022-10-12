@@ -56,7 +56,7 @@ public class CanvasServlet extends HttpServlet{
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //System.out.println("Get a canvas");
+
             int folioID = 0;
             try {
                 folioID = parseInt(req.getPathInfo().substring(1).replace("/", ""));
@@ -108,14 +108,15 @@ public class CanvasServlet extends HttpServlet{
         has across all projects.  It will ignore all user checks so as to be open.  
     */
      private JSONObject buildPage(int projID, Folio f) throws SQLException, IOException {
-
+         
      try{
+            System.out.println("Get a canvas");
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
             Dimension storedDims = null;
-
-//            JSONArray otherContent;
-            String[] otherContent;
+            System.out.println("Get a canvas2");
+            JSONArray otherContent;
+            //String[] otherContent;
             if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
                storedDims = getImageDimension(f.getFolioNumber());
                if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
@@ -123,7 +124,7 @@ public class CanvasServlet extends HttpServlet{
                   storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
                }
             }
-
+            System.out.println("Get a canvas3");
             LOG.log(INFO, "pageDim={0}", pageDim);
             //Map<String, Object> result = new LinkedHashMap<>();
             JSONObject result  = new JSONObject();
@@ -132,6 +133,7 @@ public class CanvasServlet extends HttpServlet{
             result.put("label", f.getPageName());
             int canvasHeight = pageDim.getCanvasHeight();
             int canvasWidth = pageDim.getCanvasWidth();
+            System.out.println("Get a canvas4");
             if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
                   if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
                       if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.
@@ -150,6 +152,7 @@ public class CanvasServlet extends HttpServlet{
             else{ //define a 0, 0 storedDims
                 storedDims = new Dimension(0,0);
             }
+            System.out.println("Get a canvas5");
             result.put("width", canvasWidth);
             result.put("height", canvasHeight);
             List<Object> images = new ArrayList<>();
@@ -160,6 +163,7 @@ public class CanvasServlet extends HttpServlet{
             if (imageURL.startsWith("/")) {
                 imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
             }
+            System.out.println("Get a canvas6");
             Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
 
             if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
@@ -167,18 +171,25 @@ public class CanvasServlet extends HttpServlet{
                imageResource.put("height", storedDims.height ); 
                imageResource.put("width", storedDims.width ); 
             }
+            System.out.println("Get a canvas7");
             imageAnnot.put("resource", imageResource);
             imageAnnot.put("on", canvasID);
             images.add(imageAnnot);
+            System.out.println("Get a canvas8");
             //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
             //System.out.println("Get otherContent");
             //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
-            otherContent = getAnnotationListsForProject(-1, canvasID, 0);
-            //otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
+            System.out.println("Get a canvas9");
+            //otherContent = getAnnotationListsForProject(-, canvasID, 0);
+            otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), 0); //Can be an empty array now.
             //System.out.println("Finalize result");
+            System.out.println("Get a canvas10");
             result.put("otherContent", otherContent);
             result.put("images", images);
             //System.out.println("Return");
+            System.out.println("___________________");
+            System.out.println(result);
+            System.out.println("___________________");
             return result;
         }
         catch(Exception e){

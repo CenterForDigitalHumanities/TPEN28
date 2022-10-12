@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="99bcc42e-9c28-4f26-873d-be03e9253da8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPEN28.iml" beforeDir="false" afterPath="$PROJECT_DIR$/TPEN28.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/edu/slu/tpen/servlet/CanvasServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/edu/slu/tpen/servlet/CanvasServlet.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -15,6 +14,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="2FuroVFt6i58midUsRc4nFI8ecR" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -23,6 +23,17 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.0" />
+  </component>
+  <component name="RunManager">
+    <configuration name="dist/war" type="AntRunConfiguration">
+      <antsettings antfile="file://$PROJECT_DIR$/build.xml" target="do-dist" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -33,6 +44,8 @@
       <option name="presentableId" value="Default" />
       <updated>1665352987952</updated>
       <workItem from="1665352990798" duration="3213000" />
+      <workItem from="1665429889873" duration="598000" />
+      <workItem from="1665440053269" duration="781000" />
     </task>
     <servers />
   </component>

@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>T&#8209;PEN 2.8 Transcription</title>
+        <link type="text/css" href="css/custom-theme/jQuery.css" rel="Stylesheet" />
+        <link type="text/css" href="css/transcribeSkin.css" rel="Stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
+        <script type="text/javascript" src="js/transcribe.js"></script>
+        <script src="https://use.fontawesome.com/4ae676603d.js"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+        <style>
+        p{
+            padding: 0px 10px;
+        }
+        #topTrim{
+            position: relative;
+            display: block;
+            width: 100%;
+        }
+        #topTrim span{
+            display: inline-block;
+            border-right: 2px solid black;
+        }
+        .magnifyHelp{
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            margin: 0 auto;
+            background-color: rgb(255,252,227);
+            padding: 0;
+            color: #666;
+            text-align: center;
+            z-index: 3;
+            display: none;
+            box-shadow: 0 0 5px rgba(0,0,0,0.34);
+            opacity: .85;
+        }
+        .magnifyHelp p {
+            white-space: nowrap;
+            margin: 0;
+            padding: .25em;
+        }
+        #zoomat {
+            box-shadow: inset -1px -1px 6px rgba(0,0,0,.34);
+            border-radius: 50%;
+            height: 2rem;
+            width: 2rem;
+            display: inline-block;
+            line-height: 2rem;
+            text-align: center;
+            font-size: small;
+            background: #e0e9ef;
+        }
+        .parsingHdr{
+            margin-left: 20px;
+        }
+
+        #countdown{
+            color: white;
+            margin-left: 0px;
+        }
+
+
+    </style>
+    </head>
+    <body>
+        <div class="pageTurnCover">
+            <div class="turnMsg">Please wait while we load the page...</div>
+            <div class="turnLoader"><img src="images/loading2.gif" /></div>
+        </div>
+        <div class="topTrim navigation">
+            <span class="trimSection" id="titleSection"><span id="trimTitle"></span>
+            </span>
+            <span class="trimSection">
+                <span id="trimPage"></span>
+                <!-- DO NOT add class exitPage.  It will try to fire the bulk update, which is not needed and will break the interface. -->
+                <a class="" id="prevCanvas" onclick="previousFolio();" title="Previous Page">
+                    <i class="fa fa-caret-left fa-2x"></i>
+                </a>
+                <select title="Jump to new page" id="pageJump">
+                    <option id="activePage" folioNum="0">Jump to Page</option>
+                </select>
+                <!-- DO NOT add class exitPage.  It will try to fire the bulk update, which is not needed and will break the interface. -->
+                <a class="" id="nextCanvas" title="Next Page" onclick="nextFolio();">
+                    <i class="fa fa-caret-right fa-2x"></i>
+                </a>
+            </span>
+            <span class="trimSection" id="currentUser">
+                <i class="fa fa-user"></i>
+                <span id="trimCurrentUser"></span>
+
+            </span>
+            <span id="maintenance" class="trimSection">
+                <span class="fa fa-wrench"></span>
+                 <span id="schedmaintenance"></span>
+                <span id="countdown"></span> <br>
+            </span>
+            <div style="position:absolute;right:0;top:0;z-index: 1;">
+                <span class="trimSection">
+                    <a id="videoBtn_trans" class="videoBtn wBtn ui-state-default ui-button" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/bbEeeFLta7Q');"><span class="vInvert"></span></a>
+                </span>
+                <span class="trimSection">
+                    <a id="homeBtn" class="exitPage wBtn ui-state-default ui-button" title="T-PEN Home" href="index.jsp"><span class="fa fa-home"></span></a>
+                    <a id="projectsBtn" class="exitPage wBtn ui-state-default ui-button" title="My Projects" href="project.jsp"><span class="fa fa-book"></span></a>
+                </span>
+                <span class="trimSection" id="contactSection">
+                    <a title="Contact the Team" id="helpContact" href="admin.jsp#aboutTab" target="_blank" class="wBtn ui-state-default ui-button"><span class="fa fa-comment"></span></a>
+                </span>
+                <span class="trimSection">
+                    <a id="helpMe" title="Open Help <F1>" class="ui-state-default ui-button"><i class="fa fa-question" aria-hidden="true"></i></a>
+                </span>
+                <span class="trimSection" id="classicSection">
+                    <a id="classicSwitch" title="Switch back to the old interface" onclick="switchToClassicTranscription();" class="ui-state-default ui-button exitPage"><img src="images/classictpen.svg" alt="classic TPEN" aria-hidden="true" height="18" style="top: .3em;position: relative;"></a>
+                </span>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <!-- TODO: Arc we logged in to see this? -->
+            <p>
+                If you are logged in, the area below accepts a local project ID number.  Provide the project number and click 'Load Transcription'.
+                If you are not logged in, you can provide your project URI and click 'Load Transcription'.  This will give you the ability to browse
+                the images and transcription of your project.  Tools will not be available and transcription changes will not be saved.
+            </p>
+            <p>
+                You may provide the URI of any IIIF Presentation API 2.1 Manifest.  However, the software expects that all resources and Annotations are resolved and embedded.
+                If they are instead referenced, then you will not see them load here.  We are working to provide a standalone transcription viewer with TPEN3. 
+                Likewise, you may paste the entire resolved Manifest object here.  The TPEN software has the same expectation of embedded resources.
+            </p>
+        </div>
+
+        <div id="setTranscriptionObjectArea">
+            <textarea id="transcriptionText" placeholder="Input project or manifest here"></textarea>
+        </div>
+
+        <button id="loadBtn" class="hideme" onclick="loadTranscription();"> Load Transcription </button>
+        <div id="transTemplateLoading">
+            <p>
+                <i class="fa fa-info-circle"></i>
+                <span id="tip">
+                    <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>
+                    Use Peek-Zoom to get a closer look at the line you are on.
+                </span>
+            </p>
+            <p class="turnMsg">Please wait while we load the transcription interface.</p>
+            <div class="turnLoader transLoader"><img src="images/loading2.gif" /></div>
+        </div>
+        <div class="centerInterface">
+        <div id="transcriptionTemplate">
+            <div class="magnifyHelp">
+                <p>Return to Transcribing: <kbd>ESC</kbd> or double-click</p>
+                <p>
+                    <span id="zoomat"></span>
+                    Zoom in: <kbd>+</kbd> Zoom out: <kbd>-</kbd> </p>
+            </div>
+            <div id="templateResizeBar"></div>
+            <div id="parsingCover"></div>
+            <div id="transcriptionCanvas">
+                <div id="imgTop">
+                    <img class="transcriptionImage"/>
+                  <div class="lineColIndicatorArea">
+                  </div>
+                </div>
+                <div id="transWorkspace">
+                    <div title="Slide Workspace" class="workspaceHandle slideHandleLeft"><i class="fa fa-bars"></i><i class="fa fa-arrows-v"></i></div><div title="Slide Workspace" class="workspaceHandle slideHandleRight"><i class="fa fa-arrows-v"></i><i class="fa fa-bars"></i></div>
+                    <div class="flex-container flex-stretch">
+                        <div class="flex-bookend">
+                        </div>
+                        <div class="flex-wide" style="position:relative;height:1em;">
+                            <div id="contribution"></div>
+                            <div id="saveReport"></div>
+                        </div>
+                        <div class="flex-bookend">
+                        </div>
+                    </div>
+                    <div class="flex-container flex-stretch">
+                        <div class="flex-bookend">
+                        </div>
+                        <div id="captions" class="flex-wide">
+                            <div title="Previous Line" class="pull-right" id="prevColLine"></div>
+                            <div id="captionsText"></div>
+                            <span id="notes" class="quiet">&nbsp;</span>
+                        </div>
+                        <div class="flex-bookend">
+                        </div>
+                    </div>
+                    <div class="flex-container flex-stretch">
+                        <div class="flex-bookend navigation">
+                            <button id="prevLine" class="pull-right" title="Prev" onclick="previousTranscriptlet();">
+                                <i class="fa fa-chevron-left"></i>
+                                <!--Prev-->
+                            </button>
+                            <button id="prevPage" title="Previous Page" onclick="previousFolio();">
+                                <i class="fa fa-caret-left fa-2x"></i>
+                                <!--Previous Page-->
+                            </button>
+                        </div>
+                        <div id="transcriptletArea" class="flex-wide">
+                            <div title="Current Line" id="currentColLine"></div>
+                            <div class="xmlClosingTags"></div>
+                        </div>
+
+                        <div class="flex-bookend navigation">
+                            <button class="pull-left" id="nextLine" title="Next Line" onclick="nextTranscriptlet();">
+                                <!--Next-->
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                            <button id="nextPage" title="Next Page" onclick="nextFolio();">
+                                <!--Next Page-->
+                                <i class="fa fa-forward fa-2x"></i>
+                            </button>
+                            <button id="toggleNotes" class="pull-left clear-left" role="button" onclick="$('.notes').fadeToggle('slow')" title="Toggle Notes">
+                                <!--Notes-->
+                                <i class="fa fa-comment"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-container flex-stretch buttons navigation">
+                        <select id="splitScreenTools" class="let">
+                            <option selected>Splitscreen Tools</option>
+                        </select>
+                        <button id="canvasControls" title="Page Tools">
+                            <!--Page Tools-->
+                            <i class="fa fa-file-image-o"></i>
+                        </button>
+<!--                        <button style="display:inline-block;" id="ltrSwitch" title="Change Interface">
+                            LTR
+                            <i class="fa fa-beer"></i>
+                        </button>
+                        <button style="display:inline-block;" id="rtlSwitch" title="Change Interface">
+                            RTL
+                            <i class="fa fa-file-image-o"></i>
+                        </button>-->
+                        <button id="magnify1" class="magnifyBtn let" magnifyImg="trans" title="Inspect Transcription Image" >
+                            <!--Inspect-->
+                            <i class="fa fa-search-plus"></i>
+                        </button> <!--Page event on the listener for this class in js.-->
+                        <button id="toggleChars" title="Move Transcription Image" onclick="toggleSpecialChars(event);">
+                            <!--Characters-->
+                            <i class="fa fa-keyboard-o"></i>
+                        </button>
+                        <button id="toggleXML" class="let" title="Move Transcription Image" onclick="toggleXMLTags(event);">
+                            <!--XML Tags-->
+                            <i class="fa fa-code"></i>
+                        </button>
+                    </div>
+                    <div class="flex-container flex-stretch" style="flex-wrap: wrap; justify-content: space-around;">
+                        <div id="specialCharsFloat" class="flex-container special-charactered">
+                            <div id="charactersPopin" class="specialCharacters"  title="Special Characters" >
+                            </div>
+                            <a title="Edit Special Characters" class="lookLikeButtons editButtons exitPage" href="buttons.jsp">
+                                Edit <i class="fa fa-edit"></i>
+                            </a>
+                        </div>
+                        <div id="xmlTagFloat" class="flex-container xml-tagged">
+                            <div id="xmlTagPopin" class="xmlTags" title="Custom XML Tags">
+                            </div>
+                            <a title="Edit XML Tags" class="lookLikeButtons editButtons exitPage" href="buttons.jsp">
+                                Edit <i class="fa fa-edit"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div id="imgBottom">
+                    <img class="transcriptionImage" />
+                    <div class="lineColIndicatorArea"></div>
+                </div><br>
+            </div>
+        </div>
+        <div id="parsingSplit" class="split" >
+            <div class="videoBtnWrapper">
+                <div class="fullScreenTrans">
+                    <i class="fa fa-share fa-flip-vertical"></i>
+                </div>
+                <a id="videoBtn_parse" class="videoBtn" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/knrKXRg6HTY');"><span class="videoLink"></span></a>
+            </div>
+             <div class="toolLinks icon-panel">
+                 <div class="icon-panel">
+                    <button title="Create Column" onclick='$("#createColumn").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/create_column_md.png" alt="reparse" height="30px" from="createColumn" />
+                    </button>
+                     <button title="Adjust Column" onclick='$("#adjustColumn").click(); toggleSelected($(this).children("img"), true);'>
+                         <img src="css/custom-theme/images/adjust_column_md.png" alt="reparse" from="adjustColumn" />
+                    </button>
+                    <button title="Destroy Column" onclick='$("#destroyColumn").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/destroy_column_md.png" alt="reparse" height="30px" from="destroyColumn" />
+                    </button>
+                    <button title="Re-Parse Page" onclick='$("#clearColumns").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/reparse_md.png" alt="reparse" from="clearColumns" />
+                    </button>
+                 </div>
+                 <div class="icon-panel">
+                     <button title="Add Line" onclick='$("#addLines").click(); toggleSelected($(this).children("img"), true);'>
+                         <img src="css/custom-theme/images/add_line_md.png" alt="reparse" height="30px" from="addLines"/>
+                     </button>
+                     <button title="Adjust Lines" onclick='$("#adjustLines").click(); toggleSelected($(this).children("img"), true);'>
+                        <img src="css/custom-theme/images/adjust_lines_md.png" alt="reparse" from="adjustLines"/>
+                     </button>
+                     <button title="Merge Lines" onclick='$("#mergeLines").click(); toggleSelected($(this).children("img"), true);'>
+                         <img src="css/custom-theme/images/merge_lines_md.png" alt="reparse" from="mergeLines"/>
+                     </button>
+                     <button title="Delete Last Lines" onclick='$("#removeLine").click(); toggleSelected($(this).children("img"), true);'>
+                         <img src="css/custom-theme/images/delete_line_md.png" alt="reparse" from="removeLine"/>
+                     </button>
+                 </div>
+             </div>
+
+                <div id="parsingDiv" class="">
+                    <div id="parseOptions">
+                        <header id="ctrlColumns" title="Make adjustments at the column level">Edit Columns</header>
+                        <div class="splitBlock">
+                            <button id="createColumn" class="tpenButton" title="Create new columns by clicking and dragging">
+                                Create Column
+                                <img src="css/custom-theme/images/create_column_sm.png" alt="reparse" />
+                            </button>
+                            <small>Click and drag to place</small>
+                        </div>
+                        <div class="splitBlock">
+                            <button id="adjustColumn" class="tpenButton" title="Adjust the size of the columns by dragging the sides or edges.">
+                                Adjust Columns
+                                <img src="css/custom-theme/images/adjust_column_sm.png" alt="reparse" />
+                            </button>
+                            <small>Drag the edges of an existing column.</small>
+                        </div>
+                        <div class="splitBlock danger">
+                            <button id="destroyColumn" class="tpenButton" title="Remove an entire column and its data with a click">
+                                Destroy Column
+                                <img src="css/custom-theme/images/destroy_column_sm.png" alt="reparse" />
+                            </button>
+                            <small>Click a column to remove all its lines and transcription data.</small>
+                            <small class="danger"><i class="fa fa-warning"></i> This is a destructive process and cannot be undone.</small>
+                        </div>
+                        <div class="splitBlock danger">
+                            <button id="clearColumns" class="tpenButton" title="Remove all columns and let the autoparser reparse the page">
+                                Re-parse Page
+                                <img src="css/custom-theme/images/reparse_sm.png" alt="reparse" />
+                            </button>
+                            <small class="danger">
+                                <i class="fa fa-warning"></i>
+                                Click to remove all transcription data and lines from this page.
+                                The page will then be automatically re-parsed, which will create new columns.
+                            </small>
+                        </div>
+                        <header id="ctrlLines" title="Make adjustments at the line level">Edit Lines</header>
+                        <div class="splitBlock">
+                            <button id="addLines" class="tpenButton" title="Split lines to create new ones in a column">
+                                Add Line
+                                <img src="css/custom-theme/images/add_line_sm.png" alt="reparse" />
+                            </button>
+                                <small>Click within the shaded area to define the bottom of the new line.</small>
+                                <br>
+                                <small class="customRulerArea">
+                                    Trouble seeing the ruler? Change the color below.
+                                    <br>
+                                    <span id="sampleRuler"></span>
+                                    <label for="black"><input onclick="rulerColor('black');" CHECKED type="radio" value="black" name="rulerColor"/>Black</label>
+                                    <label for="white"><input onclick='rulerColor("white");' id="white" type="radio" value="white" name="rulerColor"/>White</label>
+
+                                    <label style="margin-left: 10px; margin-right: 3px;" for="customRuler">
+                                        Custom
+                                        <input style="width:80px;" title="Type the name of any valid HTML color or code. If the code is invalid, a default color will be shown."
+                                            type="text" id="customRuler" onfocus="$('input[name=\'rulerColor\']').removeAttr('checked');" onkeyup="rulerColor('custom');" placeholder="transparent" value="transparent"/>
+                                    </label>
+                                </small>
+
+                            </div>
+                            <div class="splitBlock">
+                                <button id="adjustLines" class="tpenButton" title="Simple adjustments to individual lines">
+                                    Adjust Lines
+                                    <img src="css/custom-theme/images/adjust_lines_sm.png" alt="reparse" />
+                                </button>
+                                <small>Click and drag the right side of the line to contain the line accurately.</small>
+                            </div>
+                            <div class="splitBlock">
+                                <button id="mergeLines" class="tpenButton" title="Merge two lines in a column">
+                                    Merge Lines
+                                    <img src="css/custom-theme/images/merge_lines_sm.png" alt="reparse" />
+                                </button>
+                                <small>Click within the shaded area to merge the highlighted lines.</small>
+                            </div>
+                             <div class="splitBlock danger">
+                                <button id="removeLine" class="tpenButton" title="Delete the last line of a column.">
+                                    Delete Last Line
+                                    <img src="css/custom-theme/images/delete_line_sm.png" alt="reparse" />
+                                </button>
+                                <small>Click within the shaded area to delete the <b>last line</b> of a column.</small>
+                                <small><i class="fa fa-info-circle"></i> Deleting a line also removes its associated transcription information..</small>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <div id="helpSplit" class="split">
+                <div class="fullScreenTrans">
+                    <i class="fa fa-share fa-flip-vertical"></i>
+                </div>
+                <div id="helpHeaders">
+                    <a href='#helpGlossary'> glossary </a>
+                    <a href='#helpShortcuts'> shortcuts </a>
+                    <a href='#helpTools'> tools </a>
+                    <a href='#helpNavigation'> navigation </a>
+                    <!--<a href='#helpDirectNavigation'> advanced </a>-->
+                </div>
+                <div id="helpContainer">
+                    <div id="helpGlossary" class="helpSection">
+                    <div class="helpSubsection">Glossary</div>
+                    <p>Commonly used terms in this application include</p>
+                    <dl>
+                        <dt>Page</dt>
+                        <dd>A single image and supporting interface. Some source images may contain partial or multiple folios.</dd>
+
+                        <dt>Project</dt>
+                        <dd>Collection of images designated for a specific group of users. Defaults to all images within a selected manuscript, but may be altered.</dd>
+
+                        <dt>Manuscript</dt>
+                        <dd>Collection of images on a repository. Often, but not necessarily exemplary of the artifact document.</dd>
+
+                        <dt>Group</dt>
+                        <dd>Collection of users associated with a single project. Group membership is controlled by a Group Leader.</dd>
+
+                        <dt>User</dt>
+                        <dd>Entity intended to represent the human connected to a T‑PEN account.
+                            Users login with the e-mail address associated with the T‑PEN account and are displayed to others by a first initial and last name.
+
+                        <dt>Transcription</dt>
+                        <dd>Usually referring to the textual data associated with an image region. Transcription metadata include specific location,
+                            date of creation, and associated image data.</dd>
+
+                        <dt>Transcription Area</dt>
+                        <dd>Refers to the white textarea region where the user enters transcription text.</dd>
+
+                        <dt>Parsing/Column Editing</dt>
+                        <dd>Describes the automatic or manual process of logically splitting a page into rectangular regions to
+                            designate individual lines for transcribing. Changes to parsing are saved in the history of a transcription.</dd>
+
+                        <dt>History</dt>
+                        <dd>Previous versions of transcriptions. Changes made to textual and parsing data are recorded.</dd>
+
+                        <dt>Special Characters</dt>
+                        <dd>Custom-coded buttons that automatically enter a unicode character
+                            (typically one not included on the user's keyboard) into the transcription area.
+
+                        <dt>Buttons</dt>
+                        <dd>Typically refers to XML Tag objects customized on the Button Management page.
+                            May also refer to Special Character objects in the same location.
+                            "Buttons" may also used in the generic sense to refer to a graphically distinct, clickable region which invokes an expected action.
+                        </dd>
+                        </dl>
+                    </div>
+                    <div id="helpShortcuts" class="helpSection">
+                        <div class="helpSubsection">Keyboard Shortcuts</div>
+                        <p>Support for most browsers includes the following simple shortcuts:</p>
+                        <dl>
+
+                            <dt>Insert the corresponding special character at the cursor location.</dt>
+                            <dd><kbd>CTRL</kbd>+<kbd>1-9</kbd></dd>
+
+                            <dt>Jump to the first line of the current page.</dt>
+                            <dd><kbd>CTRL</kbd>+<kbd>HOME</kbd></dd>
+
+                            <dt>Move forward through lines of transcription.</dt>
+                            <dd><kbd>TAB</kbd></dd>
+                            <dd><kbd>ALT</kbd>+<kbd>&dArr;</kbd></dd>
+
+                            <dt>Move backward through lines of transcription.</dt>
+                            <dd><kbd>SHIFT</kbd>+<kbd>TAB</kbd></dd>
+                            <dd><kbd>ALT</kbd>+<kbd>&uArr;</kbd></dd>
+
+                            <dt>Top of Page</dt>
+                            <dd><kbd>CTRL</kbd>+<kbd>HOME</kbd></dd>
+                            <dd>Quickly jump to the first line of the current page.</dd>
+
+                            <dt>Close any open tool & return to fullscreen transcription.</dt>
+                            <dd><kbd>ESC</kbd></dd>
+
+                            <dt>Peek-Zoom</dt>
+                            <dd><kbd>ALT</kbd>+<kbd>CTRL</kbd></dd>
+                            <dd>Hold both to use the peek-zoom, which scales the bounded area to fill the screen.</dd>
+
+                            <dt>While Inspecting</dt>
+                            <dd>+ or -</dd>
+                            <dd>Each keystroke will adjust the magnification of the tool by .4x to fine tune the image result.</dd>
+
+                            <dt>Help</dt>
+                            <dd><kbd>F1</kbd></dd>
+
+                            <dt>Browser Fullscreen</dt>
+                            <dd><kbd>F11</kbd></dd>
+                            <dd>Toggle fullscreen, eliminating browser and desktop toolbars.</dd>
+                        </dl>
+                    </div>
+                    <div id="helpTools" class="helpSection">
+                        <div class="helpSubsection">custom characters and XML tags</div>
+                        <dl>
+                            <dt>Custom Character Entry </dt>
+                            <dd>To use Custom Characters
+                                <ol>
+                                    <li>Expand the Characters tray <button type="button" onclick="Help.lightUp('#toggleChars')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></li>
+                                    <li>Click on the desired character to insert it on the text field.</li>
+                                </ol>
+                            </dd>
+
+                            <dt>Edit the Custom Characters </dt>
+                            <dd>Click the Edit button on the expanded Custom Characters drawer <button type="button" onclick="Help.lightUp('.editButtons:first')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </dd>
+
+                            <dt>XML Tag Entry </dt>
+                            <dd>XML tags can always be hand-encoded by the user as they transcribe but XML Tags can be set up for ease of insertion. </dd>
+
+                            <dt>To use XML Tags </dt>
+
+                            <dd>Expand the XML Tag drawer <button type="button" onclick="Help.lightUp('#toggleXML')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </dd>
+                            <dd>Highlight the text and click the desired XML tag button in the XML Tag tray to wrap the tag around the selection.</dd>
+                            <dd>Insert as you type by clicking the XML tag button, adding the opening tag at the cursor
+                                and put a closing tag <span class="tags ui-corner-all right ui-state-error no-point">reminder</span>
+                                in the bottom right of the transcription text entry box.
+                            </dd>
+                            <dd>
+                                To close the tag, place the cursor at the desired end point and click the reminder. Use the "x" to dismiss unwanted reminders.
+                            </dd>
+                        </dl>
+                        <div class="helpSubsection">viewing options <button type="button" onclick="Help.lightUp('.buttons')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></div>
+                        <dl>
+                            <dt>View the page image </dt>
+                            <dd>To hide the work space to see the image hold <kbd>ALT</kbd>+<kbd>CTRL</kbd>.
+                                While viewing, you can drag the image around with your mouse.
+                                Release the keys to restore the screen. </dd>
+                            <dt>Inspect</dt>
+                            <dd>To view parts of the image under magnification click the Inspect button. <button type="button" onclick="Help.lightUp('#magnify1')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button>
+                                Once in the inspect view you can use <kbd>+</kbd> and <kbd>-</kbd> to change the magnification.
+                                Press <kbd>ESC</kbd> to return to the transcription view.</dd>
+                            <dt>Peek-Zoom</dt>
+                            <dd>To quickly fill the screen with the line being transcribed hold <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>.
+                                This will enlarge the line being transcribed to fill the viewing window above the tool bar.
+                                Release the keys to restore the screen. </dd>
+                        </dl>
+
+                        <div class="helpSubsection"> split screen tools </div>
+
+                        <dl>
+                            <dt>Import Text </dt>
+                            <dd>Upload a file for manual or automatic linebreaking. </dd>
+
+                            <dt>Line History </dt>
+                            <dd>Lists the previous saved versions of the line boundaries and transcription text.
+                                Mouseover the history entries to reveal options to revert to a previous version.
+                            </dd>
+
+                            <dt>Preview Transcription </dt>
+                            <dd>Reveal the transcription text on the previous, current, and following pages.
+                                Edit text in the transcription workspace or within the tool. </dd>
+
+                            <dt>Compare Pages </dt>
+                            <dd>View other pages from this project. Use the inspection tool to take a closer look. </dd>
+
+                            <dt>Cappelli Abbreviations </dt>
+                            <dd>A. Cappelli's <cite>Lexicon Abbreviaturarum</cite> for Latin and Italian abbreviations. </dd>
+                        </dl>
+
+                        <div class="helpSubsection">page tools <button type="button" onclick="Help.lightUp('#canvasControls')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button> </div>
+                        <dl>
+                            <dt>Image Controls </dt>
+                            <dd>These tools are designed to allow the user to manipulate the image to facilitate legibility.
+                                All these adjustments are superficial and will not persist.</dd>
+
+                            <dt>Grayscale </dt>
+                            <dd>Presents the image as a grayscale image </dd>
+
+                            <dt>Invert </dt>
+                            <dd>Presents the image with its color inverted. </dd>
+
+                            <dt>Brightness </dt>
+                            <dd>A slider tool to raise and lower the brightness of the image.
+                                <small>Note: not supported by Safari.</small> </dd>
+
+                            <dt>Contrast </dt>
+                            <dd>A slider tool to raise and lower the contrast of the image.
+                                <small>Note: not supported by Safari.</small> </dd>
+                        </dl>
+                        <div class="helpSubsection">column controls</div>
+                            <dl>
+                                <dt>Show Lines </dt>
+                                <dd>Toggle the text column lines on and off. </dd>
+
+                                <dt>Show Labels </dt>
+                                <dd>Toggle the text letter/number labels next to each line on and off. </dd>
+
+                                <dt>Change Line Color </dt>
+                                <dd>Click to change the color of the lines and labels to improve visibility. </dd>
+
+                                <dt>Edit Columns </dt>
+                                <dd>Open the column editing/parsing interface to adjust and edit the columns and lines. </dd>
+                            </dl>
+
+                    </div>
+                    <div class="helpSubsection"> navigation </div>
+                    <div id="helpNavigation" class="helpSection">
+                        <dl>
+                            <dt>Location Flag <button type="button" onclick="Help.lightUp('#trimPage')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
+                            <dd>Shows the label for the current page.</dd>
+                            <dt>Jump to page <button type="button" onclick="Help.lightUp('#pageJump')" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
+                            <dd>Select any page in the current project.</dd>
+                            <dt>Previous Page <button type="button" onclick="Help.lightUp('#prevPage'); Help.lightUp('#prevCanvas');" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
+                            <dt>Next Page <button type="button" onclick="Help.lightUp('#nextPage'); Help.lighUp('#nextCanvas');" class="reveal">Reveal on Screen <i class="fa fa-location-arrow"></i></button></dt>
+                            <dd>Step through the project one page at a time.</dd>
+                        </dl>
+                    </div>
+                    <div id="helpDirectNavigation" class="helpSection">
+                        <div class="helpSubsection"> advanced </div>
+                        <dl>
+                            <dt>http://t-pen.org/TPEN/manifest/{projectID}</dt>
+                            <dd>Shows the SharedCanvas Manifest for this project.</dd>
+                            <dt>http://t-pen.org/TPEN/project/{projectID}</dt>
+                            <dd>Shows the SharedCanvas Manifest for this project.</dd>
+                            <dt>http://t-pen.org/TPEN/project.jsp?projectID={projectID}</dt>
+                            <dd>Go directly to project management for this project.</dd>
+                            <dt>http://t-pen.org/TPEN/transcription.html?projectID={projectID}</dt>
+                            <dd>Go directly to the transcription interface for this project.</dd>
+                            <dt>http://t-pen.org/TPEN/groups.jsp?projectID={projectID}</dt>
+                            <dd>View or Manipulate the users associated with this project.</dd>
+                        </dl>
+                    </div>
+                    <div id="helpVideoLinks" class="helpSection">
+                        <div class="helpSubsection"> help videos </div>
+                        <dl>
+                            <dt><a onclick="openHelpVideo('http://www.youtube.com/embed/0S5ilvLM9fw');">https://www.youtube.com/watch?v=0S5ilvLM9fw</a></dt>
+                            <dd>How to get started</dd>
+                            <dt><a onclick="openHelpVideo('http://www.youtube.com/embed/bbEeeFLta7Q');">https://www.youtube.com/watch?v=bbEeeFLta7Q</a></dt>
+                            <dd>New transcription interface</dd>
+                            <dt><a onclick="openHelpVideo('http://www.youtube.com/embed/knrKXRg6HTY');">https://www.youtube.com/watch?v=knrKXRg6HTY</a></dt>
+                            <dd>New parsing interface</dd>
+                            <dt><a onclick="openHelpVideo('http://www.youtube.com/embed/2ot-nGSZP2g');">https://www.youtube.com/watch?v=2ot-nGSZP2g</a></dt>
+                            <dd>Project management</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div id="linebreakSplit" class="split">
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
+                <h3>Linebreak Existing Transcription</h3>
+                <div id="linebreakTextContainer">
+                    <!-- visible if text is saved -->
+                    <div>
+                        This project has text stored for linebreaking:
+                        <div id="linebreakText">
+                            <span id="lbText"> no text stored </span>
+                            <!--                   <div id='charLimit' class='ui-corner-all ui-state-error-text small clear'>More characters stored than shown here
+                                                 If thisProject.getLinebreakCharacterLimit() is available in the project object, this can be more specific
+                                               </div>-->
+                        </div>
+                        <div id="linebreakOptions">
+                            <div id="useText" onclick="Linebreak.useText()" class="tpenButton block" title="Insert this text at the current line">Insert Text Here</div>
+                            <a id="newText" class="tpenButton block" title="Upload a new file to linebreak">Upload New File</a>
+                            <div id="linebreakStringBtn" class="tpenButton block" title="Attempt linebreaking using this string">Preview Automatic Linebreaks
+                                <!--                   TODO replace value with stored value once it is stored-->
+                                <input name="linebreakString" id="linebreakString" type="text" placeholder="<lb />" value="" />
+                            </div>
+                            <div id="useLinebreakText" onclick="Linebreak.useLinebreakText()" class="tpenButton block" style="display:none;" title="Automatically linebreak this page">Use Automatic Linebreaking
+                                <span id="linesDetected"></span>
+                            </div>
+                        </div>
+                            <ol class="pull-left">
+                                <li>Navigate to a line to start;</li>
+                                <li><span class="loud">Insert Text</span> as a block; or</li>
+                                <li>Enter a linebreak string to attempt automatic linebreaking; and</li>
+                                <li>Press Enter to move all text following the cursor down to the next line.</li>
+                            </ol>
+                            <span class="small">*At the end of the page, the remaining text will be saved for use on the next page.</span>
+                    </div>
+                </div>
+                <div id="linebreakNoTextContainer">
+                <!-- no text saved -->
+                    Begin by <a id="uploadText" class="btn btn-default">uploading some text</a> to linebreak
+                </div>
+            </div>
+            <div id="compareSplit" class="split">
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
+                <div class="toolLinks">
+                    <select id="compareJump" class="">
+                        <option folioNum="0">Compare To</option>
+                    </select>
+                    <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
+                    <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
+                    <button class="magnifyBtn" magnifyImg="compare" >Inspect <i class="fa fa-search-plus"></i></button>
+                </div>
+                <img class="compareImage" folioNum="1"></img>
+            </div>
+            <div id='controlsSplit' class='split' style="width:200px;max-width:200px;overflow:auto;">
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
+                <div style="padding:0 15px;">
+                    <button style="margin-bottom: 8px;" class="block" onclick="resetImageTools(false);" title="Reset Tools">
+                    Reset to Defaults
+                    </button>
+                    <header> Image Controls </header>
+                    <button which="grayscale" class="block" onclick="toggleFilter('grayscale');" title="Grayscale">
+                        Grayscale
+                        <i class="fa fa-picture-o" style="color: #999;background: #DDD;border-radius: 2px;"></i></button>
+                    <button which="invert" class="block" onclick="toggleFilter('invert');">
+                        Invert
+                        <i class="fa fa-picture-o" style="background: #FFF;border-radius: 2px;color: #000;"></i>
+                    </button>
+                    <div id="imageToolSliders" class="imgTool">
+                        Brightness  <i class="fa fa-sun-o"></i>
+                        <div id="brightnessSlider"></div>
+                        Contrast  <i class="fa fa-adjust"></i>
+                        <div id="contrastSlider"></div>
+                    </div>
+                    <header> Column Controls</header>
+                    <button id="showTheLines" role="button" class="block selected" onclick="toggleLineMarkers();">
+                        Lines
+                    </button>
+                    <button id="showTheLabels" role="button" class="block selected" onclick="toggleLineCol();">
+                        Labels
+                    </button>
+                    <button role="button" id="markerColors" class="block" onclick="markerColors();">Change Line Color</button>
+                    <button role="button" id="parsingBtn" title="Redraw the lines on this page" class='block'>
+                        Edit Columns
+                        <i class="fa fa-barcode fa-rotate-90"></i>
+                    </button>
+
+                    <header>
+                        Keyboard Shortcuts
+                    </header>
+                    <div>
+                        <strong>View/Move Image</strong>
+                        <kbd>CTRL</kbd>+<kbd>ALT</kbd>: hold to temporarily hide the workspace and drag around your page image
+                    </div>
+                    <div>
+                        <strong>Peek-Zoom</strong>
+                        <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>: peek-zoom into the current line of transcription
+                    </div>
+                </div>
+            </div>
+            <div id="previewSplit" class="split">
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
+                <div class="toolLinks">
+                    <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
+                    <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
+                </div>
+                <div id="previewDiv">
+
+                </div>
+            </div>
+            <div id="fullpageSplit" class="split">
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
+                <div class="toolLinks">
+                    <button class="showMe2" onclick="restoreWorkspace();">Show Workspace</button>
+                    <button class="hideMe" style="position: relative;" onclick="hideWorkspaceToSeeImage();" >Hide Workspace</button>
+                    <button class="magnifyBtn" style="position: relative;" magnifyImg="full" >Inspect</button>
+                </div>
+                <div id="fullpageSplitCanvas"><img id="fullPageImg" src="" /></div>
+            </div>
+            <div id="historySplit" class="split" class="ui-widget">
+                <div class="fullScreenTrans"><i class="fa fa-share fa-flip-vertical"></i></div>
+                <div class="toolLinks">
+                    <a href="#" >Parsing Only</a>
+                    <a href="#" >Text Only</a>
+                    <a href="#" >Show Notes</a>
+                </div>
+                <div id="historyDiv" class="ui-corner-all ui-widget-content">
+                    <div id="historyWrapper" style="position:relative;">
+                        <div id="historyBookmark" class="historyBookmark"></div>
+                        <div id="historyViewer">
+                            <img alt="historyViewerImg" class="preloadImage" src="css/custom-theme/images/loadingImg.gif" />
+                        </div>
+                        <div id="historyListing">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        <div id="zoomDiv" class="ui-corner-all"></div>
+        <div id="ruler1"></div><div id="ruler2"></div>
+        <div id="requestAccessContainer" style="display: none;">
+            <div id="requestAccess" class="ui-widget ui-corner-all ui-widget-content">
+                <h2 class="ui-widget-header ui-corner-all ui-state-error">Restricted Access</h2>
+                <div class="ui-state-error-text" style="text-align: center;"><span style="display: inline-block;" class="ui-icon ui-icon-alert"></span>You do not have permission to view this manuscript!</div>
+                <br />
+                <form action="requestAccess.jsp" method="POST">
+                    <p title="">Request access for from the <span class="manController" title="">TPEN user who controls access</span> to this document.</P
+                    <textarea name="reason" placeholder="Add any additional request details."></textarea>
+                    <input type="hidden" name="ms" value="">
+                    <input type="hidden" name="projectID" value="">
+                    <input class="ui-button tpenButton clear right" type="submit" name="submitted" value="Send Request"/>
+                </form>
+                <a class="returnButton exitPage" href="index.jsp">Return Home</a>
+            </div>
+        </div>
+        <div id="genericIssue" class="ui-widget ui-corner-all ui-widget-content">
+            <h2 class="ui-widget-header ui-corner-all">Data Error</h2>
+            <p id="issueMessage">
+                There was an issue saving some of your data.  Please refresh the page to resume your activity.  If you continue to see this error
+                please contact the T&#8209;PEN Admin.
+            </p>
+            <div class="clear right buttons">
+                <button id="issueBtn" class="ui-button tpenButton" onclick="document.location.reload();">OK</button>
+            </div>
+        </div>
+        <div id="iprAccept" class="ui-widget ui-corner-all ui-widget-content">
+            <h2 class="ui-widget-header ui-corner-all">Accept IPR Agreement</h2>
+            <p>Please read and accept the IPR agreement below to access <span id="ipr_who" class="loud"></span>. You only need to do this once.</p>
+            <div id="iprAgreement" class="notice"></div>
+                <span id="ipr_user" class="right small"></span>
+                <div class="clear right buttons">
+                <button id="accept_ipr" class="ui-button tpenButton" onclick="">I Agree</button>
+                <button class="ui-button tpenButton" onclick="document.location='index.jsp'">I do not agree</button>
+            </div>
+        </div>
+        <div id="overlay" class="ui-widget-overlay">
+            <div id="overlayNote">Click the page to return</div>
+        </div>
+        <div id="location" class="ui-widget-content ui-corner-tr">
+        </div>
+        <div class="trexHead"></div>
+        <div class="shadow_overlay"></div>
+        <div id="helpVideoArea"  class="ui-widget ui-corner-all ui-widget-content">
+            <div id="closeHelpVideo" onclick="closeHelpVideo();"> X </div>
+            <h2 class="ui-widget-header ui-corner-all" style="margin: 0; margin-bottom: .75em;">Help Video Player</h2>
+            <div style="text-align: center;">
+                <iframe width="800" height="600" id="helpVideo" src="" frameborder="0" allowfullscreen> </iframe>
+            </div>
+        </div>
+        <script>
+    if(!Date.prototype.format){Date.prototype.format=(function(){var a={d:function(){var b=this.getDate().toString();return b.length===1?"0"+b:b},D:function(){return a.l.call(this).slice(0,3)},j:function(){return this.getDate()},l:function(){switch(this.getDay()){case 0:return"Sunday";case 1:return"Monday";case 2:return"Tuesday";case 3:return"Wednesday";case 4:return"Thursday";case 5:return"Friday";case 6:return"Saturday"}},N:function(){return this.getDay()===0?7:this.getDay()},S:function(){if(this.getDate()>3&&this.getDate()<21){return"th"}switch(this.getDate().toString().slice(-1)){case"1":return"st";case"2":return"nd";case"3":return"rd";default:return"th"}},w:function(){return this.getDay()},z:function(){return Math.floor(((this-new Date(this.getFullYear(),0,1))/86400000),0)},W:function(){var b=new Date(this.getFullYear(),0,1);return Math.ceil((((this-b)/86400000)+b.getDay()+1)/7)},F:function(){switch(this.getMonth()){case 0:return"January";case 1:return"February";case 2:return"March";case 3:return"April";case 4:return"May";case 5:return"June";case 6:return"July";case 7:return"August";case 8:return"September";case 9:return"October";case 10:return"November";case 11:return"December"}},m:function(){var b=(this.getMonth()+1).toString();return b.length===1?"0"+b:b},M:function(){return a.F.call(this).slice(0,3)},n:function(){return this.getMonth()+1},t:function(){return 32-new Date(this.getFullYear(),this.getMonth(),32).getDate()},L:function(){return new Date(this.getFullYear(),1,29).getDate()===29?1:0},o:function(){return null},Y:function(){return this.getFullYear()},y:function(){return this.getFullYear().toString().slice(-2)},a:function(){return this.getHours()<12?"am":"pm"},A:function(){return this.getHours()<12?"AM":"PM"},B:function(){return null},g:function(){var b=this.getHours();return b>12?b-12:b},G:function(){return this.getHours()},h:function(){var b=a.g.call(this).toString();return b.length===1?"0"+b:b},H:function(){var b=a.G.call(this).toString();return b.length===1?"0"+b:b},i:function(){return this.getMinutes()<10?"0"+this.getMinutes():this.getMinutes()},s:function(){return this.getSeconds()<10?"0"+this.getSeconds():this.getSeconds()},u:function(){return this.getMilliseconds()},e:function(){return null},I:function(){return null},O:function(){var b=this.getTimezoneOffset()/60;return(b<0?"":"+")+(b<10?"0"+b.toString():b.toString())+"00"},P:function(){var b=a.O.call(this);return b.slice(0,3)+":"+b.slice(-2)},T:function(){return null},Z:function(){return parseInt(a.O.call(this),10)*60},c:function(){function c(d){return d<10?"0"+d.toString():d.toString()}var b="";b+=this.getUTCFullYear()+"-";b+=c(this.getUTCMonth()+1)+"-";b+=c(this.getUTCDate())+"T";b+=c(this.getUTCHours())+":";b+=c(this.getUTCMinutes())+":";b+=c(this.getUTCSeconds())+"Z";return b},r:function(){return this.toUTCString()},U:function(){return this.getTime()}};return function(b){var c="",e="",d;for(d=0;d<=b.length;d+=1){e=b.charAt(d);if(a.hasOwnProperty(e)){c+=a[e].call(this).toString()}else{c+=e}}return c}}())};
+    var leftovers = tpen.project.remainingText;
+        // get from StringEscapeUtils.escapeJavaScript(thisProject.getLinebreakText())
+    if(leftovers && leftovers.length){
+        $("#lbText").html(unescape(leftovers));
+        $("#linebreakNoTextContainer").hide();
+    } else {
+        $("#linebreakTextContainer").hide();
+        $("#linebreakNoTextContainer").show();
+    }
+    function initLinks(){
+        var uploadLocation = "uploadText.jsp?p="+tpen.project.folios[tpen.screen.currentFolio].folioNumber
+        +"&projectID="+tpen.project.id;
+        $("#uploadText").addClass("exitPage").add("#newText").attr("href",uploadLocation);
+
+        // add projectID to buttons.jsp links
+        $(".editButtons").addClass("exitPage").attr("href","buttons.jsp?p="
+            + tpen.project.folios[tpen.screen.currentFolio].folioNumber
+            + "&projectID=" + tpen.project.id+"#tabs-1");
+        $(".editXMLs").addClass("exitPage").attr("href","buttons.jsp?p="
+            + tpen.project.folios[tpen.screen.currentFolio].folioNumber
+            + "&projectID=" + tpen.project.id+"#tabs-2");
+        $("#projectsBtn").attr("href", "project.jsp?projectID="+tpen.project.id);
+    }
+
+    //Page load event triggers and attached here.
+    $(window).on('load',function(){
+        $("#imgTop, #imgBottom").css("height", "400px");
+        $("#imgTop img, #imgBottom img").css("height", "400px");
+        $("#imgTop img, #imgBottom img").css("width", "auto");
+        var readOnly = getURLVariable("projectID") ? false : true;
+        if(readOnly){
+            //Did this so the page loads and show the manifest for navigational purposes.
+            tpen.user.UID = 0;
+            tpen.project.id = -1; //This means it is not a T-PEN projec5t, but rather a manifest from another source.
+            $('#transcriptionTemplate').hide();
+            $('#setTranscriptionObjectArea').show();
+            $(".instructions").show();
+            $(".hideme").show();
+            attachWindowResize();
+        }
+        else{
+            dailyTip();
+            maintenanceDate(); //Now handles attachWindowResize()
+            //attachWindowResize();
+            //check if logged in
+            var url = "geti";
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                success: function(data){
+                    if(data.uname && data.uname !== ""){
+                        var theURL = window.location.href;
+                        if (theURL.indexOf("projectID=") > -1){
+                            var projID = getURLVariable("projectID");
+                            if(theURL.indexOf("parsing=true") > -1){
+                                loadTranscription(projID, "parsing");
+                            }
+                            else{
+                                loadTranscription(projID, "");
+                            }
+                        }
+                        else{
+                            //There is nothing to load
+                        }
+                        tpen.user.fname = data.uname;
+                        setTranscribingUser(); //sets current tpen.user.UID
+                    }
+                    else {
+                        tpen.user.UID = 0;
+                        var theURL = window.location.href;
+                        return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
+                    }
+                },
+                error: function(jqXHR,error, errorThrown) {
+                    tpen.user.UID = 0;
+                    var theURL = window.location.href;
+                    return window.location.href = "index.jsp?ref="+encodeURIComponent(theURL);
+                }
+            });
+        }
+        //get all project metadata so that we can get the project and user tools.
+        //$(".split").find('iframe').css("height", window.innerHeight-125+"px");
+        $('select').find('option:eq(0)').prop("selected",true); //stops certain bugs caused by previously selected dropdown options.
+        $('select').removeAttr("disabled");
+        $("#pageJump").on("change",function(){
+            var parsing = "";
+            if($("#parsingDiv").is(":visible")){
+                parsing = "parsing";
+            }
+            var a = $(this).find("option:selected");
+            var b = a.attr("folioNum");
+            pageJump(b, parsing);
+        });
+         $("#compareJump").on("change",function(){
+            var a = $(this).find("option:selected");
+            var b = a.attr("folioNum");
+            compareJump(b);
+        });
+         $("#splitScreenTools").on("change",function(event){
+            var a = $(this).find("option:selected");
+            var b = a.attr("splitter");
+            fullPage();
+            splitPage(event,b);
+        });
+
+        $('#transcriptionFile').on("change", function(event){;
+            var selectedFile = event.target.files[0];
+            var reader = new FileReader();
+            var result = $('#transcriptionText')
+            reader.onload = function(event){
+              var fileContent = event.target.result;
+              result.html(fileContent);
+              $('#transcriptionTemplate').hide();
+            };
+            reader.readAsText(selectedFile);
+        });
+
+        $(document).on("click",".fullScreenTrans",fullPage);
+
+//        $("#closeHelp").click(function(){
+//            //fullPage();
+//            $("#help").css({"left":"100%"}).fadeOut(1000);
+//        });
+
+        $("#helpMe").click(function(event){
+            if(tpen.screen.liveTool === "none"){
+                Help.revealHelp(event);
+            }
+        });
+
+        $("#charactersPopin").on("change", function(event){
+            var val = $("#charactersPopin").val();
+            addchar(val, "");
+        });
+
+        $("#xmlTagPopin").on("change", function(event){
+            var val = escape($("#xmlTagPopin").val());
+            var fullTag = $("#xmlTagPopin option:selected").attr("title");
+            var closingTag = "";
+            insertAtCursor(val, closingTag, fullTag, false);
+
+        });
+
+        $(".magnifyBtn").click(function(event){
+            if ($(this).hasClass("ui-state-active")){
+                $('#zoomDiv').hide();
+                restoreWorkspace();
+                tpen.screen.isMagnifying = false;
+                $(document).off("mousemove");
+                $(this).removeClass("ui-state-active");
+            } else {
+                if(tpen.screen.liveTool == "none" || tpen.screen.liveTool == "fullpage" || tpen.screen.liveTool == "compare"){
+                    $(this).addClass("ui-state-active");
+                    tpen.screen.isMagnifying=true;
+                    magnify($(this).attr("magnifyImg"),event);
+                }
+            }
+        });
+
+        $("#canvasControls").click(function(event){
+            splitPage(event,"controls");
+        });
+
+        $("#rtlSwitch").click(function(event){
+            //we will already have the lines dereferenced at this point, always.
+            var annos = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
+            drawLinesDesignateColumns(annos, tpen.screen.liveTool, true);
+        });
+
+        $("#ltrSwitch").click(function(event){
+            var annos = tpen.screen.dereferencedLists[tpen.screen.currentFolio].resources;
+            reorderLinesForLTR(annos);
+        });
+
+//        var lineColor = tpen.screen.colorThisTime.replace(".4", ".9");
+//        $("#imgTop").hover(
+//            function(){
+//                $('.activeLine').css('box-shadow', '0 0 15px 1em rgba(0,0,0,.4)');
+//                $('.activeLine').css('opacity', '1');
+//            },
+//            function(){
+//                $('.activeLine').css('box-shadow', '0 0 15px .5em rgba(0,0,0,1)');
+//                $('.activeLine').css('opacity', '.6');
+//            }
+//        );
+
+//        $("#imgBottom").hover(
+//            function(){
+//                $('.activeLine').css('box-shadow', '0 0 15px 1em rgba(0,0,0,.4)');
+//                $('.activeLine').css('opacity', '1');
+//            },
+//            function(){
+//                $('.activeLine').css('box-shadow', '0 0 15px .5em rgba(0,0,0,1)');
+//                $('.activeLine').css('opacity', '.6');
+//            }
+//        );
+
+        document.addEventListener("mousewheel", function(e){
+            if(tpen.screen.isMagnifying){
+                event.preventDefault();
+                var wDelta = e.wheelDelta < 0 ? 'down' : 'up';
+                if(wDelta === "up"){
+                    if(tpen.screen.zoomMultiplier < 10){
+                        tpen.screen.zoomMultiplier += .4;
+                        $(document).trigger('mousemove');
+                    }
+                }
+                else{
+                    if(tpen.screen.zoomMultiplier > .5){
+                        tpen.screen.zoomMultiplier -= .4;
+                        $(document).trigger('mousemove');
+                    }
+                }
+                $("#zoomat").text(Math.round(tpen.screen.zoomMultiplier*10)/10+"x");
+            }
+        });
+
+        $(document)
+            .dblclick(function(){
+                if(tpen.screen.isMagnifying){
+                    stopMagnify();
+                }
+        })
+        .keydown(function(event){
+            var ctrlDown = false,
+            ctrlKey = 17,
+            cmdKey = 91;
+            if(tpen.screen.isMagnifying){
+                //back out
+                if ((event.which === 109) || (event.which === 189) || (event.which === 173) ){ //173  = - in firefox
+                    if(tpen.screen.zoomMultiplier > .5){
+                        tpen.screen.zoomMultiplier -= .4;
+                        $(document).trigger('mousemove');
+                    }
+                }
+                //ease in
+                else if ((event.which === 107) || (event.which === 187) || (event.which === 61)){ // 61 = + in firefox
+                    if(tpen.screen.zoomMultiplier < 10){
+                        tpen.screen.zoomMultiplier += .4;
+                        $(document).trigger('mousemove');
+                    }
+                }
+                //esc
+                else if(event.which === 27){
+                    stopMagnify();
+                }
+                else {
+
+                }
+                $("#zoomat").text(Math.round(tpen.screen.zoomMultiplier*10)/10+"x");
+            }
+            else if (event.which == 112) { //F1 for help
+                event.preventDefault();
+                //DO NOT pull up the help if the user is using another tool that is taking up the screen.  It breaks the interface..
+                if(tpen.screen.liveTool === "none"){
+                    Help.revealHelp(event);
+                }
+                //$("#helpMe").click();
+            }
+            else if (event.which == 18 || event.altKey && (tpen.screen.liveTool !=="parsing")){
+               //console.log('ALT KEY');
+               var lineForEditing = $(".activeLine");
+               lineForEditing.resizable();
+
+//               lineForEditing.resizable({
+//                    create: function (event, ui) {
+//                        $(this).parent().on('resize', function (e) {
+//                            e.stopPropagation();
+//                        });
+//                    }
+//                });
+               if(event.altKey&&event.ctrlKey || event.altKey&&event.metaKey){
+                   // hide workspace and move image
+                   tpen.screen.toggleMoveImage(event);
+               }
+               else if(event.which === 38){ //up.  Go to prev line
+                   previousTranscriptlet();
+               }
+               else if(event.which === 40){ //down. Go to next line.
+                   nextTranscriptlet();
+               }
+            }
+            else if (event.which === 27){
+                //Esc during any active tool means stop the tool.  In this case, our only worry is moving the image around.  We may add others later.
+                $("#imgTop, #imgBottom").unbind("mousemove");
+                $("#imgTop, #imgBottom").unbind("mousedown");
+                $("#imgTop, #imgBottom").unbind("mouseup");
+                //still need hover event on imgTop
+                $("#imgTop").css("cursor", "default");
+                $("#imgBottom").css("cursor", "default");
+                $(".magnifyBtn").removeClass("selected");
+                $("#moveImage").removeClass("selected");
+                $(".transcriptlet").children("textarea").removeClass("imageMove").removeAttr("disabled");
+
+
+                if(tpen.screen.liveTool && tpen.screen.liveTool !== "none" && tpen.screen.liveTool !== "parsing"){
+                    fullPage();
+                }
+                else{ //this stuff needs to happen when tpen.screen.liveTool="parsing"
+                    //Make sure all the parsing stuff is unselected.  The function that does this is toggleSelected(), but it doesn't work quite right here...
+                    $("#addLines").click() //resets the lines UI to their default state
+                    $(".splitBlock.selected").children(".tpenButton.selected").removeClass("selected");
+                    $(".splitBlock.selected").children(".tpenButton.selected").removeClass("active"); //not 100% sure we need this
+                    $(".splitBlock.selected").removeClass("selected");
+                    $(".icon-panel").find(".selected").removeClass("selected");
+                    //This is from fullPage() since it is conditional whether or not you fire it.
+                    $(document).unbind("mousemove");
+                    $(document).unbind("mousedown");
+                    $(document).unbind("mouseup");
+                    $(".parsing").unbind();
+                }
+
+            }
+            else if (event.which === 13 && (tpen.screen.liveTool !=="parsing")){ //enter
+                if (event.shiftKey || event.altKey || event.target.hasAttribute('data-answer')) return true; // cheap detect in .notes
+                event.preventDefault();
+                nextTranscriptlet();
+            }
+            else if (event.which === 9 && (tpen.screen.liveTool !=="parsing")){ // tab
+            //TAB hijack to keep behavior as expected
+                var inForm = $(document.activeElement).is('input,textarea') && !$(document.activeElement).parent().is('.transcriptlet');
+                if(event.which === 9 && !inForm){
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if(event.shiftKey) $("#prevLine").click();
+                    else $("#nextLine").click();
+                }
+            }
+            else if (event.ctrlKey || event.metaKey && (tpen.screen.liveTool !=="parsing")) { //ctrl
+                //This is also how you select a new tab in the browser.
+                if(event.which >= 49 && event.which <= 57){ //insert a special char
+                    event.preventDefault();
+                    event.stopPropagation();
+                    //find the index in the special chars field and insert it.
+                    var hotkey = $("#charactersPopin").children().eq(String.fromCharCode(event.which)-1);
+                    hotkey.click(); //populating to the text field fires in onclick to this element, we have to register the change.
+                }
+                else if(event.ctrlKey && event.which === 36){ //HOME key.  Jump to first line.
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if($("div[pair='A1']").length){
+                        $("div[pair='A1']").click();
+                    }
+                } else if (event.shiftKey && !tpen.screen.isPeeking && !tpen.screen.isMagnifying) {
+                    // Peek-Zoom
+                    tpen.screen.peekZoom(false);
+                }
+            }
+            else if (event.which === 33 || event.which === 34){
+                //Page up and page down, ignore them.  The transcription interface DOES NOT SCROLL and uses phantom space.
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            else {
+
+            }
+            })
+            .keyup(function(event){
+                if(tpen.screen.isMagnifying){
+                    return event;
+                }
+//                if(event.which == 18){
+//                    $("#imgTop, #imgBottom").css("cursor", "default");
+//                    $("#imgTop, #imgBottom").unbind("mousemove");
+//                    $("#imgTop, #imgBottom").unbind("mousedown");
+//                    $("#imgTop, #imgBottom").unbind("mouseup");
+//                    var lineForEditing = $(".transcriptlet[lineserverid='" + $(".activeLine").attr("lineserverid") + "']");
+//                    updateLine(lineForEditing, false, true); //update the active line in case it was bumped.
+//                }
+                if(tpen.screen.isPeeking && (!event.shiftKey || !(event.ctrlKey||event.metaKey))){
+                    // cancel Peek-Zoom
+                    tpen.screen.peekZoom(true);
+                }
+                else if(tpen.screen.toggleMove && (!event.altKey || !event.ctrlKey || !event.metaKey)){
+                    //cancel show and/or move image.  Must do this here because it is possible the user never moves the image and moveImg() won't handle the cancel case.
+                    //Do not check against tpen.screen.isMoving, just make sure we are not peeking (they share the ctrlKey or metaKey, so they both tend to want to fire).
+                    tpen.screen.toggleMoveImage(false);
+                }
+            });
+
+            $("#parsingBtn").click(function(){
+                // if(tpen.user.isAdmin || tpen.project.permissions.allow_public_modify || tpen.project.permissions.allow_public_modify_line_parsing){
+                    if(tpen.screen.isFullscreen)tpen.screen.isUnadjusted = true;
+                    tpen.screen.isFullscreen = false;
+                    hideWorkspaceForParsing();
+                    $("#confirmParsingInst").show();
+                    $("#parsingBtn").css("box-shadow", "");
+                // }
+            });
+
+           $(".workspaceHandle").mousedown(function(event){moveWorkspace(event);})
+            .css("cursor","n-resize");
+
+
+
+            $("#parseOptions .tpenButton").click(function(event){
+                var show = $(this).attr("show");
+                $(document).unbind("mousemove");
+                $(document).unbind("mousedown");
+                $(document).unbind("mouseup");
+                $("#imgTop").css("cursor", "default");
+                $("#imgBottom").css("cursor", "default");
+                $(".parsing").removeClass("adjustable");
+                $(".parsing").unbind('mousemove');
+                $("#ruler1").hide();
+                $("#ruler2").hide();
+                var thisID = $(this).attr("id");
+                toggleSelected($(this).parent(), true);
+                toggleIcon($(this).attr("id"));
+                if (thisID == "createColumn" || thisID == "destroyColumn" || thisID == "clearColumns" || thisID == "adjustColumn") {
+                    $("#addLines").removeClass("active");
+                    $("#mergeLines").removeClass("active");
+                    $("#removeLine").removeClass("active");
+                    $("#ctrlColumnsInst").find(".startHide").hide();
+                    $("#"+show).fadeIn(800);
+                    $("#ctrlColumnsInst").find(".activeParsingTool").fadeIn(800);
+                    $("#ctrlLinesInst").find(".activeParsingTool").fadeOut(800);
+                    $(".parsing").unbind();
+                    linesToColumns();
+                    if(thisID == "adjustColumn"){
+                        adjustColumn(event);
+                    }
+                    if (thisID == "createColumn"){
+                        $.each($(".parsingColumn"), function(){
+                            $(this).removeClass("parsingColumnSelected");
+                        });
+
+                        var isCreating = true;
+                        //adjustColumn(event);
+                        ////console.log("New or reparse column");
+                        var offset = $('#imgTop').offset();
+                        var point = {};
+                        var deltaPoint = {x:0,y:0};
+                        $(".parsingColumn").off();
+                        $(".parsingColumn").unbind();
+                        $(document).bind({
+                                mousedown: function(event){
+                                    //This bit of mouse down ensures it only fires on left mouse click.
+                                    event = event || window.event;
+                                    if(event.pageY <= offset.top || event.pageX <= offset.left || event.pageX >= (offset.left + $("#imgTop").width())){ //If you try to draw off of imgTop....
+                                        return false;
+                                    }
+                                    if ("buttons" in event) {
+                                        if(!event.buttons === 1){
+                                            return false;
+                                        }
+                                    }
+                                    else{
+                                        var check = event.which || event.button;
+                                        if(check!==1){
+                                            return false;
+                                        }
+                                    }
+// Why this? It stops it from working when overlapping an existing column 3-9-17
+//                                    if ((event.target.className.indexOf("transcriptionImage") === -1 )){
+//                                        isCreating = false;
+//                                        return true;
+//                                    }
+                                    //else{
+                                    event.preventDefault();
+                                    var newCol = "<div id='newCol' class='parsingColumn ui-resizable' style='z-index:1000; background-color: yellow;'></div>";
+                                    point = {x:event.pageX - offset.left,y:event.pageY - offset.top};
+                                    $(newCol).insertBefore($("#imgTop img")).css({
+                                        'position'  : 'absolute',
+                                        'top': point.y,
+                                        'left': point.x,
+                                        'min-width' : "5px",
+                                        'min-height': "5px"
+                                    });
+                                    //}
+
+                                },
+                                mousemove:  function(event){
+                                    event.preventDefault();
+                                    deltaPoint = {
+                                        x: event.pageX-offset.left-point.x,
+                                        y: event.pageY-(point.y)
+                                    };
+                                    if (deltaPoint.x < 0) {
+                                      // right to left drawing
+                                      $("#newCol").css("left", point.x + deltaPoint.x);
+                                    }
+                                    if (deltaPoint.y < 0) {
+                                      // bottom to top drawing
+                                      $("#newCol").css("top", point.y  + deltaPoint.y);
+                                    }
+                                    $("#newCol").css({
+                                      "width": Math.abs(deltaPoint.x),
+                                      "height": Math.abs(deltaPoint.y) - 25 //header (.topTrim)
+                                    });
+                                },
+                                mouseup:    function(event){
+                                    event.preventDefault();
+                                    var $newCol = $("#newCol");
+                                    if(event.pageY <= offset.top || event.pageX <= offset.left || event.pageX >= (offset.left + $("#imgTop").width())){ //If you try to draw off of imgTop....
+                                        $newCol.remove();
+                                        return false;
+                                    }
+                                    $("#parsingCover").show();
+                                    if (!isCreating){
+                                        $(document).unbind("mousemove");
+                                        $(document).unbind("mousedown");
+                                        $(document).unbind("mouseup");
+                                        $("#imgTop").css("cursor", "default");
+                                        $("#imgBottom").css("cursor", "default");
+                                        return true;
+                                    }
+
+                                    $newCol.attr({
+                                        "lineserverid"   : "-1",
+                                        "newline"       : true,
+                                        "newcol"        : true,
+                                        "linetop"       : parseFloat($newCol.css("top")) / $("#imgTop").height() * 100,
+                                        "lineleft"      : parseFloat($newCol.css("left")) / $("#imgTop").width() * 100,
+                                        "linewidth"     : $newCol.width() / $("#imgTop").width() * 100,
+                                        "lineheight"    : $newCol.height() / $("#imgTop").height() * 100,
+                                        "id"            : "",
+                                        "hastranscription": false
+                                    });
+                                    $newCol.css("background-color","transparent");
+                                    // Prevent tiny columns on accident
+                                    if (parseInt($newCol.attr('linewidth'))+parseInt($newCol.attr('lineheight')) < 12) {
+                                        $newCol.remove();
+                                        $("#parsingCover").hide();
+                                        return true;
+                                    }
+                                    tpen.screen.isAddingLines = true;
+                                    var newY = parseFloat($newCol.css("top")) / $("#imgTop").height() * 100;
+                                    var newX = parseFloat($newCol.css("left")) / $("#imgTop").width() * 100;
+                                    var newH = $newCol.height() / $("#imgTop").height()* 100;
+                                    var newW = $newCol.width() / $("#imgTop").width() * 100;
+
+                                    //The column is now a line, so put that into the UI and save it to the DB.
+                                    var columnIsLine =$(
+                                    "<div class='parsing newColumn' style='\n\
+                                        top:"+newY+"%; \n\
+                                        left:"+newX+"%; \n\
+                                        height:"+newH+"%; \n\
+                                        width:"+newW+"%; \n\
+                                        z-index : -10;\n\
+                                        ' lineserverid=''\n\
+                                        linetop='"+newY+"'\n\
+                                        lineleft='"+newX+"'\n\
+                                        lineheight='"+newH+"'\n\
+                                        linewidth='"+newW+"'>\n\
+                                    </div>");
+                                    if(isCreating){
+                                        saveNewLine(null,columnIsLine);
+                                        $("#imgTop").append(columnIsLine);
+                                    }
+                                    else{
+                                        $("#parsingCover").hide();
+                                    }
+                                    //adjustColumn(); //Do this so that the new column is adjustable.
+                                    $("#createColumn").ajaxStop(function(){
+                                        $(this).click()
+                                        .unbind("ajaxStop");
+                                        isCreating = false;
+                                    });
+                                    //$("#imgTop").unbind("mousemove");
+                                    //$("#imgTop").unbind("mousedown");
+                                    //$("#imgTop").unbind("mouseup");
+                                    $("#imgTop").css("cursor", "default");
+                                    $("#imgBottom").css("cursor", "default");
+                                }
+
+                        });
+//                                .children()
+//                        .bind({
+//                            mousedown: function(event){ //Stop propogation on the children of #imgTop
+//                                event.stopImmediatePropagation();
+//                                $(this).parent().trigger('mousedown');
+//                            },
+//                            mousemove: function(event){
+//                                event.stopImmediatePropagation();
+//                                $(this).parent().trigger('mousemove');
+//                            },
+//                            mouseup: function(event){
+//                                event.stopImmediatePropagation();
+//                                $(this).parent().trigger('mouseup');
+//                            }
+//                        });
+                    }
+                    if (thisID === "destroyColumn") {
+                      //prep for column adjustment
+                      $.each($(".parsingColumn"), function(){
+                            $(this).removeClass("parsingColumnSelected");
+                        });
+                      $(".parsingColumn").bind({
+                        mouseenter: function(pe){
+                          $(pe.target).addClass("parsingColumnSelected");
+                        },
+                        mouseleave: function(pe){
+                          $(pe.target).removeClass("parsingColumnSelected");
+                        },
+                        click: function(pe){
+                          removeColumn($(pe.target));
+                        }
+                      });
+                    }
+                    if (thisID === "clearColumns") {
+                            //prep for column adjustment
+                            var columnSet = $(".parsingColumn");
+                            columnSet.addClass("parsingColumnSelected");
+                            //var iconToUse = $('<span class="pull-left fa fa-circle"></span>');
+                            var columnText = (columnSet.size() === 1) ? "Destroy This Column" : "Destroy "+columnSet.size()+" Columns";
+                            setTimeout(function(){
+                                var cfrm = confirm("Destroy "+columnSet.size()+" Column(s)?  The transcription data will be lost.\n\nContinue?");
+                                if (!cfrm){
+                                    return false;
+                                }
+                                else{
+                                    destroyPage();
+                                }
+                            }, 400);
+
+//                            $(".destroyPage").html('<span class="pull-left fa fa-circle"></span>'+columnText+'')
+//                            .bind('click', function(){destroyPage();})
+                    }
+                }
+                else if (thisID == "addLines" || thisID == "mergeLines" || thisID==="removeLine" || thisID == "adjustLines") {
+                    $("#ctrlLinesInst").find(".startHide").hide();
+                    $("#"+show).fadeIn(800);
+                    $("#ctrlColumnsInst").find(".activeParsingTool").fadeOut(800);
+                    $("#ctrlLinesInst").find(".activeParsingTool").fadeIn(800);
+                    $("#imgTop").children(".line").addClass("parsing").removeClass("line");
+                    $(".parsing").css("z-index", "5");
+                    $('.parsing').unbind();
+                    $(".parsing").css('cursor','default');
+                    $(".parsingColumn").remove();
+                    if (thisID == "adjustLines") {
+                        $("#adjustLine").addClass("active");
+                        $("#addLines").removeClass("active");
+                        $("#mergeLines").removeClass("active");
+                        $("#removeLine").removeClass("active");
+                        //prep for adjustment
+                        $("#ruler1").hide();
+                        $("#ruler2").hide();
+                        var thisLineID = -1;
+                        var originalW = 1;
+                        var thisLine;
+                        $(".parsing").addClass("adjustable").removeClass("line");
+                        if($(".adjustable").hasClass("ui-resizable")){
+                            $(".adjustable").has(".ui-resizable").resizable("enable");
+                        }
+                        //else {
+                          $(".adjustable").resizable({
+                            handles: "e",
+                            containment: 'parent',
+                            start: function(event, ui) {
+                              originalW = ui.originalSize.width;
+                              newW = ui.size.width;
+                              $("#progress").html("Resizing Line").fadeIn();
+                              $("#lineResizing").show();
+                              $("#originalLine").html(originalW);
+                              $("#newLine").html(Math.round(100 * (newW / originalW)));
+                              $("#sidebar").fadeIn();
+                              thisLine = $(".ui-resizable-resizing");
+                            },
+                            resize: function(event, ui) {
+                              newW = ui.size.width;
+                              $("#newLine").html(Math.round(100 * (newW / originalW)));
+                            },
+                            stop: function(event, ui) {
+                              $("#progress").html("Line Resized - Saving...");
+                              var thisLineID = thisLine.attr("lineserverid");
+                              var thisLineW = parseFloat(thisLine.attr("linewidth")) * (newW / originalW);
+                              thisLine.attr("linewidth", thisLineW);
+                              updateLine(thisLine, false, true);
+                              $("#progress").html("Line Saved").delay(3000).fadeOut(1000);
+                              $("#lineResizing").delay(3000).fadeOut(1000);
+                            }
+                          });
+                          //For some reason this bubbles up to #transcriptionTemplate and only allows one resize.  This should stop that from happening
+                          $(".adjustable").on('resize', function (e) {
+                            e.stopPropagation();
+                          });
+                        //}
+                    }
+                    if (thisID == "addLines"){
+                        $("#addLines").addClass("active");
+                        $("#mergeLines").removeClass("active");
+                        $("#adjustLines").removeClass("active");
+                        $("#removeLine").removeClass("active");
+                        tpen.screen.isAddingLines = true;
+                        $("#imgTop").children(".line").addClass("parsing").removeClass("line");
+                        $(".parsing").bind({
+                            mouseenter: function(){
+                                applyRuler($(this), false);
+                            },
+                            mouseleave: function(){
+                                removeRuler($(this), false);
+                            },
+                            click: function(event){
+                                lineChange($(this), event, false);
+                            }
+                        });
+
+                    }
+                    if (thisID == "mergeLines" || thisID == "removeLine"){
+                        $("#mergeLines").addClass("active");
+                        $("#addLines").removeClass("active");
+                        $("#adjustLines").removeClass("active");
+                        $("#removeLine").removeClass("active");
+                        var deleteOnly = false;
+                        if(thisID === "removeLine"){
+                            deleteOnly = true;
+                        }
+                        //prep for column adjustment
+                        tpen.screen.isAddingLines = false;
+                        $(".parsing").bind({
+                            mouseenter: function(){
+                                applyRuler($(this), deleteOnly);
+                            },
+                            mouseleave: function(){
+                                removeRuler($(this), deleteOnly);
+                            },
+                            click: function(event){
+                                lineChange($(this), event, deleteOnly);
+                            }
+                        });
+                        $("#imgTop").children(".line").addClass("parsing").removeClass("line");
+                    }
+//                    if (thisID == "removeLine"){
+//                        console.log("The id of the btn was remove line");
+//                        $("#removeLine").addClass("active");
+//                        $("#addLines").removeClass("active");
+//                        $("#mergeLines").removeClass("active");
+//                        $("#adjustLines").removeClass("active");
+//                        //prep for column adjustment
+//                        tpen.screen.isAddingLines = false;
+//                        activateLastLineRemoval();
+//                        $(".parsing").bind({
+//                            mouseenter: function(){
+//                                applyRuler($(this));
+//                            },
+//                            mouseleave: function(){
+//                                removeRuler($(this));
+//                            },
+//                            click: function(event){
+//                                lineChange($(this), event, true);
+//                            }
+//                        });
+//                        $("#imgTop").children(".line").addClass("parsing").removeClass("line");
+//                    }
+                };
+            });
+
+
+        $(".accordion").children("span")
+        .append("<span class='fa fa-triangle-right pull-left'></span>")
+        .click(function(event){
+        $(document).unbind("mousemove");
+        $(document).unbind("mousedown");
+        $(document).unbind("mouseup");
+        $("#imgTop").css("cursor", "default");
+        $("#imgBottom").css("cursor", "default");
+        $(".parsing").unbind('mousemove');
+        $("#imgTop").children(".parsing").removeClass("adjustable");
+        $(".destroyPage").unbind();
+        $(".tpenButton").removeClass("ui-state-active");
+        $("#ruler1").hide();
+        $("#ruler2").hide();
+        var thisID = $(this).attr("id");
+        if (!$(this).next("div").is(":visible")) {
+            $(this).siblings("div").not($(this).next("div")).slideUp();
+            $(this).addClass("ui-state-active")
+                .children(".fa-triangle-right").switchClass("fa-triangle-right","fa-triangle-down").end()
+                .siblings("span").removeClass("ui-state-active")
+                .children(".fa-triangle-down").switchClass("fa-triangle-down","fa-triangle-right");
+            $(this).next("div").slideDown();
+        }
+        if (thisID === "reparseColumns") {
+                //load the adjustment tool and then show the reparsing instructions
+                $(".parsingColumn").removeClass("parsingColumnSelected");
+                var columnSet = $(".parsingColumn");
+                $("#reparseColumn").html('<span class="pull-left fa fa-refresh"></span>Submit '+columnSet.size()+' for Reparsing');
+                $("#reparseColumn").bind('click', function(){
+                    reparseColumns();
+                });
+            }
+        });
+
+         $("#brightnessSlider").slider({
+            orientation: "horizontal",
+            range: "min",
+            max: 200,
+            min: 0,
+            value: 100,
+            slide: imageSlider,
+            change: imageSlider
+        });
+        $("#contrastSlider").slider({
+            orientation: "horizontal",
+            range: "min",
+            max: 200,
+            min: 0,
+            value: 100,
+            slide: imageSlider,
+            change: imageSlider
+        });
+
+        $("#previewSplit")
+        .on("click",".previewText,.previewNotes",function(){edit(this);})
+        .on("click","#previewNotes",function(){
+            if($(this).hasClass("ui-state-active")){
+                $(".previewNotes").hide();
+                $("#previewNotes")
+                    .text("Show Notes")
+                    .removeClass("ui-state-active");
+            } else {
+                $(".previewNotes").show();
+                $("#previewNotes")
+                    .text("Hide Notes")
+                    .addClass("ui-state-active");
+            }
+            scrollToCurrentPage();
+        });
+
+        $(".helpContents").click(function(){
+          Help.select($(this));
+        });
+      $(".showMe").each(function(index){
+          $(this).append(function(){
+          var tip = $("<div/>");
+          var ref = $(this).attr("ref");
+          var content = "<span class='ui-state-default ui-corner-all lightUp' ref='"+index+"'>Show on Screen</span><span class='ui-state-default ui-corner-all video' ref='"+index+"'>Video Help</span>";
+          tip.addClass("helpDetail ui-corner-all").html(content);
+          return tip;
+          });
+  }).hover(function(){
+          var thisWidth = $(this).width()+10;
+          var tipWidth = 200;
+          var thisPos = ($(this).position().left > tipWidth/1.8) ? Math.min((tipWidth-thisWidth)/2,(Page.width()-tipWidth-5)) : $(this).position().left - 5;
+          var thisHeight = $(this).height();
+          //if (thisPos+thisWidth > tipWidth) thisPos = tipWidth-thisWidth;
+          $(this).find(".helpDetail").css({
+              left  : -thisPos+"px",
+              width : tipWidth+"px",
+              top   : thisHeight+"px"
+          }).show();
+      },function(){
+          $(".helpDetail").hide();
+      });
+      $(".lightUp").on("click",function(){
+          var refIndex = parseInt($(this).attr("ref"));
+          Help.lightUp(refIndex);
+      });
+      $(".video").on("click",function(){
+          var refIndex = parseInt($(this).attr("ref"));
+          Help.video(refIndex);
+      });
+      $(".glossary").append(function(){
+          var tip = $("<div/>");
+          var ref = $(this).attr("ref");
+          var content = $("#"+ref).add($("#"+ref).next("dd")).clone();
+          tip.addClass("gloss ui-state-default ui-corner-all").html(content);
+          return tip;
+      }).hover(function(){
+          var thisWidth = $(this).width()+10;
+          var thisPos = $(this).position().left-$(this).parent().position().left-5;
+          var thisHeight = $(this).height();
+          var tipWidth = Math.min($(this).parents(".helpColumn").width()-15,600);
+          if (thisPos+thisWidth > tipWidth) thisPos = tipWidth-thisWidth;
+          $(this).find(".gloss").css({
+              left  : -thisPos+"px",
+              width : tipWidth+"px",
+              top   : thisHeight+"px"
+          }).show();
+      },function(){
+          $(".gloss").hide();
+      }).click(function(){
+          var ref = $(this).attr("ref");
+          $("#helpContents").children(":last").click();
+          var def = $("#"+ref);
+          def.css('color','orangered');
+      });
+
+        $(".exitPage").one("click",function(event) {
+            var thisLink = $(this).attr("href");
+            event.preventDefault();
+            if(tpen.project.isExiting){
+                return false;
+            }
+            tpen.project.isExiting = true;
+            //If there is any ajax running and you try to leave a page, this will stop you
+            $("body").ajaxStart(function() {
+              $(this).addClass("ui-state-disabled");
+            })
+            .ajaxStop(function() {
+                //When the ajax finishes, you can leave.
+              if (thisLink.indexOf("?") != -1)
+                thisLink += "&tool=" + tpen.screen.liveTool;
+                Data.saveTranscription(thisLink);
+                return false;
+            });
+            Data.saveTranscription(thisLink);
+//            if (leftovers != undefined)
+//              Linebreak.saveLeftovers(escape(leftovers));
+        });
+
+
+        $("#historyListing").on({
+            mouseenter: function(){
+                History.adjustBookmark($(this));
+                $(this).children(".historyOptions").fadeIn("fast");
+            },
+            mouseleave: function(){
+                $("#historyBookmark").css({"box-shadow":"box-shadow:0 0 30px black","border":"solid thin blue"}).add(".historyDims").empty();
+                $(this).children(".historyOptions").fadeOut("fast");
+            }
+        },".historyEntry");
+
+        $("#historyListing").on({
+            mouseenter: function(){
+                var dims = $(this).parents(".historyEntry").children(".historyRevert");
+                dims.html($(this).attr("title")).show();
+            },
+            mouseleave: function(){
+                $(this).parents(".historyEntry").children(".historyRevert").html("").hide();
+            },
+            click: function(){
+                History.revert(this);
+            }
+        },".historyOptions span");
+
+        $("#helpHeaders a").click(function(e){
+            // fix scrolling from maybe center div? #290 on github
+            e.preventDefault();
+            var targ = $(this).attr("href");
+            $(targ)[0].scrollIntoView();
+            $("#helpSplit").scrollTop(0);
+            $("#transcriptionCanvas").height("");
+            $("#transcriptionCanvas").height($(".transcriptionImage").height());
+        });
+        //moved out of setTPENObject function because these events do not get attached properly when fired in there.
+        tpen.screen.abbrevLabelsAll = $("#abbrevLabels").clone();
+        $("#abbrevLabels").change(function(){
+            $("#abbrevImg").attr("src","//t-pen.org/images/cappelli/"+$(this).val());
+        });
+        $("#abbrevGroups").change(function(){
+            $("#abbrevSplit").addClass("ui-state-disabled");
+            $("#abbrevLabels option").remove();
+            tpen.screen.abbrevLabelsAll.children(".group-"+$("#abbrevGroups option:selected").val()).clone(true).appendTo("#abbrevLabels");
+            $("#abbrevLabels").removeAttr("disabled");
+            $("#abbrevSplit").removeClass("ui-state-disabled");
+            $("#abbrevLabels option:first").attr("selected",true);
+            $("#abbrevLabels").change();
+        });
+
+    });
+
+    //UI effects for when a user decides to edit a line within the preview split tool.
+    function edit(line){
+        var focusLineID = $(line).siblings(".previewLineNumber").attr("lineserverid");
+        var transcriptionText = ($(line).hasClass("previewText")) ? ".theText" : ".notes";
+        var pair = $(".transcriptlet[lineserverid='"+focusLineID+"']").find(transcriptionText);
+        var transcriptlet = $(".transcriptlet[lineserverid='"+focusLineID+"']");
+        if ($(line).hasClass("currentPage")){
+          if (pair.parent().attr('id') !== tpen.screen.focusItem[1].attr('id')){
+              updatePresentation(transcriptlet);
+          }
+            line.focus();
+            $(line).keyup(function(){
+                //Data.makeUnsaved();
+                pair.val($(this).text());
+            });
+        }
+        else {
+            //console.log("NOt the current page.")
+        }
+    }
+
+    function toggleSelected($area, parsing){
+        var $unselectArea = $area.parent();
+        if(parsing){
+            $unselectArea.find(".selected").removeClass("selected"); //don't want to leave any of the others selected.
+            $unselectArea.find(".blockOpen").removeClass("blockOpen"); //don't want to leave any of the others selected.
+            $area.children("button").toggleClass("selected");
+            $(".icon-panel").find(".selected").removeClass("selected");
+        }
+        if($area.hasClass("selected")){
+            $area.removeClass("selected");
+        }
+        else{
+            $area.addClass("selected");
+        }
+    }
+
+    function toggleIcon(fromBtn){
+        toggleSelected($("img[from='"+fromBtn+"']"), true);
+    }
+
+    function maintenanceDate(){
+        var url="upgradeManagement";
+        var params = {"getSettings" : "get", "cancelUpgrade":"false"};
+        $.post(url, params)
+            .done(function(data){
+                if(data){
+                    var managerData = JSON.parse(data);
+                    var mdate = managerData.upgradeDate;
+                    var countdown = managerData.countdown;
+                    var options = {
+                        weekday: "long", year: "numeric", month: "short",
+                        day: "numeric", hour: "2-digit", minute: "2-digit"
+                    };
+                    var dateForUser = new Date(mdate);
+                    $("#maintenance").attr("title", "Maintenance sheduled on "+dateForUser);
+                    if(managerData.active > 0){
+                        if(countdown > 0){
+                            setCountdown(mdate);
+                            $("#schedmaintenance").hide();
+                        }
+                        else{
+                            $("#schedmaintenance").html(dateForUser.toLocaleTimeString("en-us", options));
+                            $("#countdown").hide();
+                            attachWindowResize();
+                        }
+                    }
+                    else{
+                        $("#maintenance").hide();
+                        attachWindowResize();
+                    }
+                }
+                else{
+                    $("#maintenance").hide();
+                    attachWindowResize();
+                }
+            });
+    }
+
+
+            function setCountdown(endtime){
+                var end = new Date(endtime);
+
+                var _second = 1000;
+                var _minute = _second * 60;
+                var _hour = _minute * 60;
+                var _day = _hour * 24;
+                var timer;
+
+                function showRemaining() {
+                    var now = new Date();
+                    var distance = end - now;
+                    if (distance < 0) {
+                        clearInterval(timer);
+                        document.getElementById('countdown').innerHTML = 'UPGRADING!';
+                        return;
+                    }
+                    var days = Math.floor(distance / _day);
+                    var hours = Math.floor((distance % _day) / _hour);
+                    var minutes = Math.floor((distance % _hour) / _minute);
+                    var seconds = Math.floor((distance % _minute) / _second);
+
+                    document.getElementById('countdown').innerHTML = days + 'days ';
+                    document.getElementById('countdown').innerHTML += hours + 'hrs ';
+                    document.getElementById('countdown').innerHTML += minutes + 'mins ';
+                    document.getElementById('countdown').innerHTML += seconds + 'secs';
+
+                }
+                timer = setInterval(showRemaining, 1000);
+                //Wait out timer to perform this.
+                setTimeout(function(){
+                    var trims = $(".trimSection:visible").length;
+                    var contentWidth = (function(){
+                        var w=0;
+                        $('.trimSection').each(function(){
+                            w+=$(this).width();
+                        });
+                        return w;
+                    })();
+                    if(contentWidth>Page.width()-(trims*20)){ // margin not accounted for otherwise
+                        // content is encroaching and will overlap, so hide the #maintenenance content right off so it is just the icon and responsiveNav() off that.
+                        // Once hidden, it will not reappear, but the tooltip for the icon will contain the necessary information.
+                        // The purpose of this is to give the user a better header experience and allow the most space possible for the more important lnks.
+                        $("#countdown").hide();
+                        $("#schedmaintenance").hide();
+                    }
+                    attachWindowResize();
+                    tpen.screen.responsiveNavigation();
+                }, 1200);
+
+            }
+
+        </script>
+        <noscript>
+            <div id="noscript">
+                You are blocking scripts on this page. T-PEN uses
+                <code>googleapis.com</code> and <code>javascript</code>
+                for necessary functionality.
+            </div>
+            <div class="trexHead" style="display:block"></div>
+        </noscript>
+    </body>
+</html>

@@ -2,8 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="99bcc42e-9c28-4f26-873d-be03e9253da8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/ant.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/J2EE_1_4_J2EE_1_4.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/edu/slu/tpen/servlet/CanvasServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/edu/slu/tpen/servlet/CanvasServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/edu/slu/tpen/transfer/JsonLDExporter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/edu/slu/tpen/transfer/JsonLDExporter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +51,7 @@
       <updated>1665352987952</updated>
       <workItem from="1665352990798" duration="3213000" />
       <workItem from="1665429889873" duration="598000" />
-      <workItem from="1665440053269" duration="781000" />
+      <workItem from="1665440053269" duration="3856000" />
     </task>
     <servers />
   </component>

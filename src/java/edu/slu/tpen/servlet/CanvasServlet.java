@@ -64,7 +64,7 @@ public class CanvasServlet extends HttpServlet{
                     resp.setHeader("Access-Control-Allow-Headers", "*");
                     resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                     resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
-                    resp.getWriter().write(export(buildPage(folioID, f)));
+                    resp.getWriter().write(export(buildPage(f)));
                     resp.setStatus(SC_OK);
                 } else {
                     getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
@@ -103,7 +103,7 @@ public class CanvasServlet extends HttpServlet{
         build the JSON representation of a canvas and return it.  It will not know about the project, so otherContent will contains all annotation lists this canvas
         has across all projects.  It will ignore all user checks so as to be open.  
     */
-     private JSONObject buildPage(int projID, Folio f) throws SQLException, IOException {
+     private JSONObject buildPage(Folio f) throws SQLException, IOException {
          
      try{
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
@@ -119,7 +119,9 @@ public class CanvasServlet extends HttpServlet{
             }
             LOG.log(INFO, "pageDim={0}", pageDim);
             JSONObject result  = new JSONObject();
-            result.put("@wid", canvasID);
+            //Map<String, Object> result = new LinkedHashMap<>();
+            result.put("@context","http://iiif.io/api/presentation/2/context.json");
+            result.put("@id", canvasID);
             result.put("@type", "sc:Canvas");
             result.put("label", f.getPageName());
             int canvasHeight = pageDim.getCanvasHeight();
@@ -166,9 +168,9 @@ public class CanvasServlet extends HttpServlet{
             //System.out.println("Get otherContent");
             //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());;
             //otherContent = getAnnotationListsForProject(-, canvasID, 0);
-            otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), 0); //Can be an empty array now.
+            //otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), 0); //Can be an empty array now.
             //System.out.println("Finalize result");
-            result.put("otherContent", otherContent);
+            //result.put("otherContent", otherContent);
             result.put("images", images);
             //System.out.println("Return");
             return result;

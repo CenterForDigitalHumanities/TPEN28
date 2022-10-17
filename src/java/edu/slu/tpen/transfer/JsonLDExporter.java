@@ -18,12 +18,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static edu.slu.tpen.entity.Image.Canvas.getLinesForProject;
 import static edu.slu.util.LangUtils.buildQuickMap;
-import static utils.JsonHelper.buildNoneLanguageMap;      ///////////////////////////////////////////////////////////////////////
+import static utils.JsonHelper.buildNoneLanguageMap;     
 import static imageLines.ImageCache.getImageDimension;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import static java.lang.String.format;
 import static java.lang.System.out;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -56,36 +55,42 @@ public class JsonLDExporter {
     * Holds data which will be serialised to JSON.
     */
    Map<String, Object> manifestData;
+   /*
+   A seperate constructor that still takes Project and User, but with the includement of Profile
+   we are able to distinguish which constructor to use by searching the url and if finding presi 3 would send it to them
+   But if we are unable to determine what version the User request, we will send presi 2
+   Values for profile: "v3, iiif/v3, version3, ... etc..."
+   */
 public JsonLDExporter(Project proj, User u, String profile) throws SQLException, IOException
 {   
    
        Folio[] folios = proj.getFolios();
        int projID = proj.getProjectID();
-       if (profile.contains("3")){       
-               System.out.println("This is Presi 3!");
+       if (profile.contains("v3")){       
                manifestData = new LinkedHashMap<>();
                String projName = getRbTok("SERVERURL") + "manifest/"+projID;
                
-               manifestData.put("@context", "http://www.shared-canvas.org/ns/context.json");
+               manifestData.put("@context", "http://iiif.io/api/presentation/3/context.json");
+               // Fix value of context
                manifestData.put("id", projName + "/manifest.json");
-               manifestData.put("type", "sc:Manifest");
+               manifestData.put("type", "Manifest");
+               // Not preferred value
                //Remember that this is a Metadata title, not project name...
                
-               //manifestData.put("label", proj.getProjectName()); <- old ver
                manifestData.put("label",buildNoneLanguageMap(proj.getProjectName()));
                
               
        }
-       else{ //<-why?
-           //  if (!profile.isDigit(profile, "3")){ // To see if index of 3 is even in correct position or just manifest number in url?
-           System.out.println("This doesn't work");
+       else{
+           System.out.println("This doesn't work"); // Not sure how to call other constructor here
+          
        }
 }
    /**
     * Populate a map which will contain all the relevant project information.
     *
     * @param proj the project to be exported.
-     * @param u  ? why'd it make me add these?
+     * @param u  
     * @throws SQLException
      * @throws IOException <--
     */

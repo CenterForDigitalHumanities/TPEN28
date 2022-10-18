@@ -121,7 +121,7 @@ public class ProjectServlet extends HttpServlet {
                                 resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                                 resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
 
-                                if (req.getHeader("Accept").contains("iiif/v3"))
+                                if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3"))
                                 {
 //                                    System.out.println(req.getHeader("Accept"));
                                     resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");

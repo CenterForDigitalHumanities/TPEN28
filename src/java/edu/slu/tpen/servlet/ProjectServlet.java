@@ -51,6 +51,9 @@ public class ProjectServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method, returning a JSON-LD
      * serialisation of the requested T-PEN project.
+     * If <code>Accept</code> header in the request is specified
+     * and contains <code>iiif/v3</code>, returns Presentation v3.0 serialisation.
+     * Otherwise, returns Presentation v2.1 serialisation.
      *
      * @param req servlet request
      * @param resp servlet response

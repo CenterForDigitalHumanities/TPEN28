@@ -7,7 +7,6 @@ package edu.slu.tpen.servlet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static edu.slu.tpen.entity.Image.Canvas.getLinesForProject;
 import static edu.slu.util.LangUtils.buildQuickMap;
 import static imageLines.ImageCache.getImageDimension;
 import java.awt.Dimension;
@@ -43,7 +42,7 @@ import static textdisplay.FolioDims.createFolioDimsRecord;
 public class CanvasServlet extends HttpServlet{
     /**
      * Handles the HTTP <code>GET</code> method, returning a JSON-LD
-     * serialisation of the requested T-PEN project.
+     * serialisation of the requested T-PEN canvas.
      *
      * @param req servlet request
      * @param resp servlet response

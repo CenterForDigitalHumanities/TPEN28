@@ -47,11 +47,7 @@ nbdist/
 
 nbbuild.xml
 .idea
-<<<<<<< HEAD
 TPEN28.iml
 /src/java/version.properties
-=======
-
->>>>>>> f0a1c0b33e89b4f4962180b4a2085c3e243f683d
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,netbeans

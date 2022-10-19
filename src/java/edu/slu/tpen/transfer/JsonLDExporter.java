@@ -59,7 +59,7 @@ public class JsonLDExporter {
     * Populate a map which will contain all the relevant project information.
     *
     * @param proj the project to be exported.
-f    * @throws SQLException
+    * @throws SQLException
     */
    public JsonLDExporter(Project proj, User u) throws SQLException, IOException {
       Folio[] folios = proj.getFolios();

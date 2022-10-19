@@ -101,7 +101,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
           //System.out.println("Export project "+projID);
          String projName = getRbTok("SERVERURL") + "manifest/"+projID;
          manifestData = new LinkedHashMap<>();
-         manifestData.put("@context", "http://www.shared-canvas.org/ns/context.json");
+         manifestData.put("@context", "http://iiif.io/api/presentation/2/context.json");
          manifestData.put("@id", projName + "/manifest.json");
          manifestData.put("@type", "sc:Manifest");
          //Remember that this is a Metadata title, not project name...

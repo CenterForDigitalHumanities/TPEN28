@@ -51,6 +51,9 @@ public class ProjectServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method, returning a JSON-LD
      * serialisation of the requested T-PEN project.
+     * If <code>Accept</code> header in the request is specified
+     * and contains <code>iiif/v3</code>, returns Presentation v3.0 serialisation.
+     * Otherwise, returns Presentation v2.1 serialisation.
      *
      * @param req servlet request
      * @param resp servlet response
@@ -119,8 +122,19 @@ public class ProjectServlet extends HttpServlet {
                                 }
                                 resp.setHeader("Access-Control-Allow-Headers", "*");
                                 resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
-                                resp.setHeader("Cache-Control", "max-age=15, must-revalidate"); 
-                                resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
+                                resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
+
+                                if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3"))
+                                {
+//                                    System.out.println(req.getHeader("Accept"));
+                                    resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
+                                    resp.getWriter().write(new JsonLDExporter(proj, new User(uid), "v3").export());
+
+                                } else
+                                {
+                                    resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
+                                }
+
                                 resp.setStatus(SC_OK);
                             } else {
                                 //FIXME we seem to make it here, but the response is still 200 with the object in the body...doesn't seem to save any time.

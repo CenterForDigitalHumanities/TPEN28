@@ -205,7 +205,7 @@ public class Canvas {
                 lineAnnot.put("_tpen_line_id", lineURI);
                 lineAnnot.put("@type", "oa:Annotation");
                 lineAnnot.put("motivation", "oad:transcribing");
-                lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", encoder().decodeForHTML(lines[i].getText())));
+                lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "chars", encoder().decodeForHTML(lines[i].getText())));
                 lineAnnot.put("on", format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight()));
                 if (null != lines[i].getComment() && !"null".equals(lines[i].getComment())) {
                     //System.out.println("comment was usable");

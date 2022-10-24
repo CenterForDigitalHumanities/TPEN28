@@ -53,11 +53,17 @@ public class CanvasServlet extends HttpServlet{
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
             int folioID = 0;
-            //try {
+           try {
                 folioID = parseInt(req.getPathInfo().substring(1).replace("/", ""));
+           }
+           catch(NumberFormatException ex){
+                getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
+                resp.sendError(SC_NOT_FOUND);
+           }
+              try{
                 //System.out.println(req.getPathInfo().substring(1));
-               // System.out.println(folioID);
-               try{
+               System.out.println(folioID);
+               if(folioID>0){
                     Folio f = new Folio(folioID);
                     if(f.folioNumber>0){
                     resp.setContentType("application/json; charset=UTF-8");
@@ -66,22 +72,19 @@ public class CanvasServlet extends HttpServlet{
                     resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
                     resp.getWriter().write(export(buildPage(f)));
                     resp.setStatus(SC_OK);
-                    
-                } else {
-                    getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
-                    resp.sendError(SC_NOT_FOUND);
-                    }
+                    } 
+//                    else {
+//                    getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
+//                    resp.sendError(SC_NOT_FOUND);
+//                    }
                 }
+             
+
+            }
                catch (NumberFormatException | SQLException | IOException ex) {
                 getLogger(CanvasServlet.class.getName()).log(SEVERE, null, ex);
-                System.out.println(folioID);
                 throw new ServletException(ex);
             }
-        
-//            } catch (NumberFormatException | SQLException | IOException ex) {
-//                getLogger(CanvasServlet.class.getName()).log(SEVERE, null, ex);
-//                throw new ServletException(ex);
-//            }
 
     }
 

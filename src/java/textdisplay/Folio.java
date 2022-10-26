@@ -1532,7 +1532,14 @@ public class Folio {
         out.println("Report Generated!");
        return responseString;       
    }
-
+   public boolean exists(int folioID){
+       if(folioID>0){
+           if(true){
+           return true;
+       }
+   }
+       return false;
+   }
    private static final Logger LOG = getLogger(Folio.class.getName());
 
 }

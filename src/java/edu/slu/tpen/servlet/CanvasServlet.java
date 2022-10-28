@@ -52,46 +52,34 @@ public class CanvasServlet extends HttpServlet{
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-            int folioID = 0;
-           try {
-                folioID = parseInt(req.getPathInfo().substring(1).replace("/", ""));
-           }
-           catch(NumberFormatException ex){
-                getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
-                resp.sendError(SC_NOT_FOUND);
-           }
-              try{
-                //System.out.println(req.getPathInfo().substring(1));
-               if(folioID>0){
-                    System.out.println(folioID);
-                    Folio f = new Folio(folioID);
-                    if(f.folioNumber>0){
-                    resp.setContentType("application/json; charset=UTF-8");
-                    resp.setHeader("Access-Control-Allow-Headers", "*");
-                    resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
-                    resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
-                    resp.getWriter().write(export(buildPage(f)));
-                    resp.setStatus(SC_OK);
-                    } 
-                    else {
-                        System.out.println("AAAAA");
-                getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
-                resp.sendError(SC_NOT_FOUND);
-                    }
-//                }
-             
-               }
-            }
-               catch (NumberFormatException | SQLException | IOException ex) {
-                getLogger(CanvasServlet.class.getName()).log(SEVERE, null, ex);
-                throw new ServletException(ex);
-            }
+    int folioID = 0;
+    try {
+         folioID = parseInt(req.getPathInfo().substring(1).replace("/", ""));
+          //System.out.println(req.getPathInfo().substring(1));
+         if(folioID>0 && Folio.exists(folioID)){
+              System.out.println(folioID);
+              Folio f = new Folio(folioID);
+              resp.setContentType("application/json; charset=UTF-8");
+              resp.setHeader("Access-Control-Allow-Headers", "*");
+              resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+              resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
+              resp.getWriter().write(export(buildPage(f)));
+              resp.setStatus(SC_OK);
+         }
+         else {
+              System.out.println("AAAAA");
+              getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
+              resp.sendError(SC_NOT_FOUND);
+          }
     }
-
-//    }   catch (SQLException ex) {
-//            Logger.getLogger(CanvasServlet.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+     catch(NumberFormatException ex){
+          getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
+          resp.sendError(SC_NOT_FOUND);
+     } 
+     catch (SQLException ex) {
+         Logger.getLogger(CanvasServlet.class.getName()).log(Level.SEVERE, null, ex);
+     }
+ }
 
     /**
      * Handles the HTTP <code>PUT</code> method, updating a project from a plain

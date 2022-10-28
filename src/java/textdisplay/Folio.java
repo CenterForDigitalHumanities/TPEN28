@@ -345,6 +345,28 @@ public class Folio {
          //j.close();
       }
    }
+    public static boolean exists(int folioID) throws SQLException{
+       boolean result = false;
+       String query = "select * from folios where pageNumber=?";
+       Connection j = null;
+      PreparedStatement ps = null;
+      try {
+         j = getConnection();
+         ps = j.prepareStatement(query);
+         //ps.setString(1, canvas);
+         ResultSet rs = ps.executeQuery();
+         if (rs.next()) {
+            int ans = rs.getInt(folioID);
+            if(ans>0){
+                return true;
+            }
+         }
+      } finally {
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+      }
+       return result;
+   }
 
    /**
     * Find the folio number of the folio with the given canvas
@@ -1270,6 +1292,7 @@ public class Folio {
       }
    }
 
+
    /**
     * @deprecated use Manuscript.getNextFolio instead Return the Folio number of the next page, a value of
     * -1 indicates there is no following page
@@ -1532,14 +1555,7 @@ public class Folio {
         out.println("Report Generated!");
        return responseString;       
    }
-   public boolean exists(int folioID){
-       if(folioID>0){
-           if(true){
-           return true;
-       }
-   }
-       return false;
-   }
+
    private static final Logger LOG = getLogger(Folio.class.getName());
 
 }

@@ -64,7 +64,14 @@ public class CanvasServlet extends HttpServlet{
                     resp.setHeader("Access-Control-Allow-Headers", "*");
                     resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                     resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
-                    resp.getWriter().write(export(buildPage(f)));
+
+                    if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
+                        resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
+                        resp.getWriter().write(export(buildPage(f, "v3")));
+                    }
+                    else {
+                        resp.getWriter().write(export(buildPage(f)));
+                    }
                     resp.setStatus(SC_OK);
                 } else {
                     getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");

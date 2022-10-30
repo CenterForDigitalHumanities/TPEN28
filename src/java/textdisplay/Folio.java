@@ -349,7 +349,7 @@ public class Folio {
        boolean result = false;
        String query = "select * from folios where pageNumber=?";
        Connection j = null;
-      PreparedStatement ps = null;
+       PreparedStatement ps = null;
       try {
          j = getConnection();
          ps = j.prepareStatement(query);
@@ -360,6 +360,8 @@ public class Folio {
             if(ans>0){
                 return true;
             }
+
+            
          }
       } finally {
             closeDBConnection(j);

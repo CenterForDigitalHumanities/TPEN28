@@ -355,6 +355,8 @@ public class Folio {
          ps = j.prepareStatement(query);
          ps.setInt(1,folioID);
          //ps.setString(1, canvas);
+         //
+         //
          ResultSet rs = ps.executeQuery();
          if (rs.next()) {
             int ans = rs.getInt(11);

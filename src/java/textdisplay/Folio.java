@@ -353,10 +353,11 @@ public class Folio {
       try {
          j = getConnection();
          ps = j.prepareStatement(query);
+         ps.setInt(1,folioID);
          //ps.setString(1, canvas);
          ResultSet rs = ps.executeQuery();
          if (rs.next()) {
-            int ans = rs.getInt(folioID);
+            int ans = rs.getInt(11);
             if(ans>0){
                 return true;
             }

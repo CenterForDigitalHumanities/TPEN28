@@ -66,9 +66,7 @@ public class CanvasServlet extends HttpServlet{
               resp.getWriter().write(export(buildPage(f)));
               resp.setStatus(SC_OK);
          }
-
          else {
-              System.out.println("!!!!");
               getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
               resp.sendError(SC_NOT_FOUND);
           }

@@ -360,8 +360,6 @@ public class Folio {
             if(ans>0){
                 return true;
             }
-
-            
          }
       } finally {
             closeDBConnection(j);

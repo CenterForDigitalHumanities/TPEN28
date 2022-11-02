@@ -2206,10 +2206,14 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
         lineColumnIndicator.find('.lineColOnLine').attr("style", "line-height:" + lineHeight + ";");
         //Put to the DOM
         if (hiResBackground.length>0){
-            lineColumnIndicator.css({
-                opacity:1,
-                boxShadow:"rgb(0 0 0 / 60%) 0px 0px 15px 0.5em"
+            const backgroundImg = new Image()
+            backgroundImg.onload(ev=>{
+                lineColumnIndicator.css({
+                    opacity:1,
+                    boxShadow:"rgb(0 0 0 / 60%) 0px 0px 15px 0.5em"
+                })
             })
+            backgroundImg.src = $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`)
         }
         $(".lineColIndicatorArea").append(lineColumnIndicator);
         $("#fullpageSplitCanvas").append(fullPageLineColumnIndicator);

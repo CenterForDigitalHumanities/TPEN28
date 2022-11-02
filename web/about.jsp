@@ -34,9 +34,9 @@
                     <ul id="about">
                         <li class="gui-tab-section">
                             <h3>T&#8209;PEN</h3>
-                            <p>The Transcription for Paleographical and Editorial Notation (T&#8209;PEN) project is coordinated by the <a href="http://www.slu.edu/x27122.xml" target="_blank">Center for Digital Theology</a> at <a href="www.slu.edu" target="_blank">Saint Louis University</a> (SLU) and funded by the <a href="http://www.mellon.org/" target="_blank">Andrew W. Mellon Foundation</a> and the <a title="National Endowment for the Humanities" target="_blank" href="http://www.neh.gov/">NEH</a>. The <a target="_blank" href="ENAP/">Electronic Norman Anonymous Project</a> developed several abilities at the core of this project's functionality.</p>
+                            <p>The Transcription for Paleographical and Editorial Notation (T&#8209;PEN) project was coordinated by the <a href="http://www.slu.edu/x27122.xml" target="_blank">Center for Digital Theology</a> at <a href="www.slu.edu" target="_blank">Saint Louis University</a> (SLU) and funded by the <a href="http://www.mellon.org/" target="_blank">Andrew W. Mellon Foundation</a> and the <a title="National Endowment for the Humanities" target="_blank" href="http://www.neh.gov/">NEH</a>. The <a target="_blank" href="ENAP/">Electronic Norman Anonymous Project</a> developed several abilities at the core of this project's functionality.</p>
                             <p>T&#8209;PEN is released under <a href="http://www.opensource.org/licenses/ecl2.php" title="Educational Community License" target="_blank">ECL v.2.0</a> as free and open-source software (<a href="https://github.com/jginther/T-PEN/tree/master/trunk" target="_blank">git</a>), the primary instance of which is maintained by SLU at <a href="www.T&#8209;PEN.org" target="_blank">T&#8209;PEN.org</a>.
-                            </p>
+                            <p>T&#8209;PEN is currently (2022) maintained by the Research Computing Group at Saint Louis University.</p>    
                         </li>
                         <li class="gui-tab-section" style="background-image:url(./images/trexhead.png);">
                         </li>
@@ -111,6 +111,15 @@
                             <p>  </p>
                         </li>
                         <li class="gui-tab-section">
+                            <h3>Support/Maintenance Team <br> T-PEN 2.8-3.0</h3>
+                            <dl>                                
+                                <dt>Patrick Cuba, IT Architect</dt>
+                                <dd>Research Computing Group, Saint Louis University</dd>
+                                <dt>Bryan Haberberger, Full Stack Developer</dt>
+                                <dd>Research Computing Group, Saint Louis University</dd>
+                            </dl>
+                        </li>
+                        <li class="gui-tab-section">
                             <h3>Support/Maintenance Team <br> T-PEN 2.0-2.8</h3>
                             <dl>                                
                                 <dt>Dr. Jim Ginther, Principal Investigator</dt>
@@ -145,7 +154,7 @@
                                 <dt>Jon Deering, Senior Developer</dt>
                                 <dd>Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
                                 <dt>Patrick Cuba, Web Developer</dt>
-                                <dd>Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
+                                <dd>Research Computing Group, Saint Louis University</dd>
                             </dl>
                         </li>
                         <li class="gui-tab-section">

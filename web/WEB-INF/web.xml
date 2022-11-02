@@ -251,6 +251,10 @@
         <servlet-name>updateXMLEntries</servlet-name>
         <servlet-class>servlets.updateXMLEntries</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetDunbarProjectsList</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.GetDunbarProjectsList</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>imageResize</servlet-name>
         <url-pattern>/imageResize</url-pattern>
@@ -684,6 +688,10 @@
     <servlet-mapping>
         <servlet-name>updateXMLEntries</servlet-name>
         <url-pattern>/updateXMLEntries</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetDunbarProjectsList</servlet-name>
+        <url-pattern>/getDunbarProjects</url-pattern>
     </servlet-mapping>
     <session-config>
         <!-- In minutes -->

@@ -52,6 +52,10 @@ public class PageImage extends HttpServlet {
             BufferedImage img = f.loadLocalImage();
             if (img != null) {
                response.setContentType("image/jpeg");
+               response.setHeader("Access-Control-Allow-Headers", "*");
+               response.setHeader("Access-Control-Allow-Methods", "GET");
+               response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+               response.setHeader("Cache-Control", "max-age=31536000, must-revalidate"); //This is immutable (or at least there is no plan for it to change).  Let it be fresh for a year.
                     write(img, "jpg", os);
             } else {
                response.sendError(400, "Unknown image archive");

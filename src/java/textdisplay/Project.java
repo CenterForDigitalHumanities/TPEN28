@@ -264,6 +264,10 @@ public class Project {
     public int getProjectID() {
         return projectID;
     }
+    
+    public String getName() {
+        return projectName;
+    }
 
     /**
      * Update the Project image sequence
@@ -583,6 +587,48 @@ public class Project {
      */
     public static Project[] getPublicProjects() throws SQLException {
         String query = "select distinct(project.id) from project join projectpermissions on project.id=projectpermissions.projectID where projectpermissions.allow_public_read_transcription=true order by project.name desc";
+        Connection j = null;
+        PreparedStatement ps = null;
+        try {
+            j = getConnection();
+            ps = j.prepareStatement(query);
+
+            ResultSet rs = ps.executeQuery();
+            Stack<Integer> projectIDs = new Stack();
+            while (rs.next()) {
+                projectIDs.push(rs.getInt("project.id"));
+            }
+            Project[] toret = new Project[projectIDs.size()];
+            int ctr = 0;
+            while (!projectIDs.empty()) {
+                toret[ctr] = new Project(projectIDs.pop());
+                ctr++;
+            }
+            return toret;
+        } finally {
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+        }
+    }
+    
+    /**
+     * Get all Projects that are connected with the DLA projects.
+     * They should all have titles like 
+     *
+     * @return
+     * @throws java.sql.SQLException
+     */
+    public static Project[] getAllDunbarProjects() throws SQLException {
+        String query = "select distinct(project.id) from project where "
+                + "project.name like '% DLA %' or "
+                //+ "project.name like 'F-_%-_% ' or " //F-ne-nenbsp;blah
+                //+ "project.name like 'F-%' or " //F followed by hyphen then anything
+                //+ "project.name like 'F#%' or " //F followed by a number then anything
+                + "project.name like '%letter%' or "
+                + "project.name like '%telegram%' or "
+                + "project.name like '%envelope%' or "
+                + "project.name like '%poem%' "
+                + "order by project.name desc";
         Connection j = null;
         PreparedStatement ps = null;
         try {
@@ -1016,6 +1062,98 @@ public class Project {
                 return new Folio(folio, true).getlines();
             }
             return toret;
+        } finally {
+            if (j != null) {
+                closeDBConnection(j);
+            }
+            closePreparedStatement(qry);
+        }
+    }
+    
+    /**
+     * Get the parsed lines for this Folio that are specific to this Project
+     *
+     * @param folio
+     * @return
+     * @throws java.sql.SQLException
+     * @throws java.io.IOException
+     */
+    public int getNumImagePositionLines(int folio) throws SQLException, IOException {
+        Connection j = null;
+        PreparedStatement qry = null;
+        try {
+            String query = "select count(id) from imagepositions where folio=? and width>0";
+            j = getConnection();
+            qry = j.prepareStatement(query);
+            qry.setInt(1, folio);
+            ResultSet rs = qry.executeQuery();
+            int linecount = 0;
+            if (rs.next()) {
+                linecount = rs.getInt(1);
+            }
+            return linecount;
+        } finally {
+            if (j != null) {
+                closeDBConnection(j);
+            }
+            closePreparedStatement(qry);
+        }
+    }
+    
+     /**
+     * Get the parsed lines for this Folio that are specific to this Project
+     *
+     * @param folio
+     * @return
+     * @throws java.sql.SQLException
+     * @throws java.io.IOException
+     */
+    public int getNumTranscriptionLines(int folio) throws SQLException, IOException {
+        Connection j = null;
+        PreparedStatement qry = null;
+        try {
+            String query = "select count(id) from transcription where folio=? and projectID=? and width>0";
+            j = getConnection();
+            qry = j.prepareStatement(query);
+            qry.setInt(1, folio);
+            qry.setInt(2, this.projectID);
+            ResultSet rs = qry.executeQuery();
+            int linecount = 0;
+            if (rs.next()) {
+                linecount = rs.getInt(1);
+            }
+            return linecount;
+        } finally {
+            if (j != null) {
+                closeDBConnection(j);
+            }
+            closePreparedStatement(qry);
+        }
+    }
+    
+    /**
+     * Get the parsed lines for this Folio that are specific to this Project
+     *
+     * @param folio
+     * @return
+     * @throws java.sql.SQLException
+     * @throws java.io.IOException
+     */
+    public int getNumTranscriptionLinesWithText(int folio) throws SQLException, IOException {
+        Connection j = null;
+        PreparedStatement qry = null;
+        try {
+            String query = "select count(id) from transcription where folio=? and projectID=? and text is not null and text !='' and width>0";
+            j = getConnection();
+            qry = j.prepareStatement(query);
+            qry.setInt(1, folio);
+            qry.setInt(2, this.projectID);
+            ResultSet rs = qry.executeQuery();
+            int linecount = 0;
+            if (rs.next()) {
+                linecount = rs.getInt(1);
+            }
+            return linecount;
         } finally {
             if (j != null) {
                 closeDBConnection(j);

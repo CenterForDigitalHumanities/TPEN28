@@ -1129,8 +1129,8 @@
                 if (thisUser != null){
                 %>
                 <a href="admin.jsp">Account Management</a>
-                <a href="admin.jsp?selecTab=4">About T&#8209;PEN</a>
-                <a href="admin.jsp?selecTab=4">Contact Us</a>
+                <a href="about.jsp">About T&#8209;PEN</a>
+                <a href="admin.jsp?selecTab=5">Contact Us</a>
                 <%} else {%>
                 <a href="about.jsp">About T&#8209;PEN</a>
                 <a href="about.jsp">Contact Us</a>

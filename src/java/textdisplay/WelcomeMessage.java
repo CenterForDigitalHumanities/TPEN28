@@ -97,7 +97,7 @@ public class WelcomeMessage {
 
     public static void main(String[] args) throws SQLException, Exception {
         WelcomeMessage w = new WelcomeMessage();
-        String msg = w.getMessage("digitalhumanities@slu.edu", "newpass");
+        String msg = w.getMessage("research.computing@slu.edu", "newpass");
         out.println(msg);
 
     }

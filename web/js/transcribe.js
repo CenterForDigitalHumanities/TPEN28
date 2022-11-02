@@ -2206,13 +2206,6 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
         // Make sure the col/line pair sits vertically in the middle of the outlined line.
         var lineHeight = theHeight * (height / 100) + "px";
         lineColumnIndicator.find('.lineColOnLine').attr("style", "line-height:" + lineHeight + ";");
-        //Put to the DOM
-        if (hiResBackground.length>0){
-            lineColumnIndicator.css({
-                opacity:1,
-                boxShadow:"rgb(0 0 0 / 60%) 0px 0px 15px 0.5em"
-            })
-        }
         $(".lineColIndicatorArea").append(lineColumnIndicator);
         $("#fullpageSplitCanvas").append(fullPageLineColumnIndicator);
         colCounter++;
@@ -2570,8 +2563,8 @@ function adjustImgs(positions) {
                 "border": "2px solid " + tpen.screen.colorThisTime
             });
     linesToMakeActive.css({
-        "box-shadow": "0 0 15px .5em rgba(0,0,0,1)",
-        "opacity": ".6"
+        "box-shadow": "rgb(0 0 0 / 60%) 0px 0px 15px 0.5em",
+        "opacity": "1"
     });
     linesToMakeActive.addClass("activeLine");
 }

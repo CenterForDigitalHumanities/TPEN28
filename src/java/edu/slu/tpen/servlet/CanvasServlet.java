@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
@@ -84,8 +85,15 @@ public class CanvasServlet extends HttpServlet{
                 getLogger(CanvasServlet.class.getName()).log(SEVERE, null, ex);
                 throw new ServletException(ex);
             }
-
     }
+     catch(NumberFormatException ex){
+          getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
+          resp.sendError(SC_NOT_FOUND);
+     } 
+     catch (SQLException ex) {
+         Logger.getLogger(CanvasServlet.class.getName()).log(Level.SEVERE, null, ex);
+     }
+ }
 
     /**
      * Handles the HTTP <code>PUT</code> method, updating a project from a plain

@@ -81,11 +81,8 @@ public class CanvasServlet extends HttpServlet{
                     getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
                     resp.sendError(SC_NOT_FOUND);
                 }
-            } catch (NumberFormatException | SQLException | IOException ex) {
-                getLogger(CanvasServlet.class.getName()).log(SEVERE, null, ex);
-                throw new ServletException(ex);
-            }
 
+            }
      catch(NumberFormatException ex){
           getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
           resp.sendError(SC_NOT_FOUND);

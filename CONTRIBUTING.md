@@ -24,6 +24,15 @@ The Java Classes which extend HTTPServlet are considered "Java Servlets".  There
 
 - The servlets are located in `/src/java/slu/edu/tpen/servlet`
 - The classes are located throughout `/src/`
+- The URL patterns for the servlet are recorded in /web/WEB-INF/web.xml
+
+#### 3.2 Example Servlet
+TPEN offers an endpoint for any user project that returns a IIIF Presentation API Manifest JSON-LD representation of the project.  The JSON-LD contains the images, the segments of interest on those images, and text to go along with those segments
+
+Here is a diagram of what happens when a user asks for a particular manifest like http://t-pen.org/TPEN/manifest/7006
+
+#### 3.3 Servlet Diagram
+!["Manifest Servlet Diagram"](web/images/diagram1.jpg "Diagram 1")
 
 ### 4. TPEN HTML + JS + CSS Interfaces
 

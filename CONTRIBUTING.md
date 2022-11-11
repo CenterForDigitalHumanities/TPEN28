@@ -56,4 +56,4 @@ TPEN offers various interfaces which offers users the ability to set up projects
 We will look specifically at the transcription interface located in `/web/transcription.html` which uses the script file `/web/js/transcribe.js` to `fetch()` data using the available servlets.  In this case, the interface acts as the client, so the diagram will seem very familiar
 
 #### 4.3 Interface Diagram
-!["Transcription Interface Diagram"](web/images/diagram2.jpg "Interface Diagram")
+!["Transcription Interface Diagram 1"](web/images/diagram2.jpg "Interface Diagram 1" =50%x)  !["Transcription Interface Diagram 2"](web/images/diagram3.jpg "Interface Diagram 2" =50%x)

@@ -24,7 +24,7 @@ The Java Classes which extend HTTPServlet are considered "Java Servlets".  There
 
 - The servlets are located in `/src/java/slu/edu/tpen/servlet`
 - The classes are located throughout `/src/`
-- The URL patterns for the servlet are recorded in /web/WEB-INF/web.xml
+- The URL patterns for the servlet are recorded in `/web/WEB-INF/web.xml`
 
 #### 3.2 Example Servlet
 TPEN offers an endpoint for any user project that returns a IIIF Presentation API Manifest JSON-LD representation of the project.  The JSON-LD contains the images, the segments of interest on those images, and text to go along with those segments
@@ -32,12 +32,28 @@ TPEN offers an endpoint for any user project that returns a IIIF Presentation AP
 Here is a diagram of what happens when a user asks for a particular manifest like http://t-pen.org/TPEN/manifest/7006
 
 #### 3.3 Servlet Diagram
-!["Manifest Servlet Diagram"](web/images/diagram1.jpg "Diagram 1")
+- /src/java/slu/edu/tpen/servlet/ProjectServlet.java
+- /src/java/slu/edu/tpen/transfer/JSONLDExporter.java
+- web.xml maps the URL pattern to those files via the following entry
+```
+<servlet>
+    <servlet-name>ProjectServlet</servlet-name>
+    <servlet-class>edu.slu.tpen.servlet.ProjectServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>ProjectServlet</servlet-name>
+    <url-pattern>/manifest/*</url-pattern>
+</servlet-mapping>
+```
+!["Manifest Servlet Diagram"](web/images/diagram1.jpg "Servlet Diagram")
 
 ### 4. TPEN HTML + JS + CSS Interfaces
 
 #### 4.1 HTML Interfaces
 TPEN offers various interfaces which offers users the ability to set up projects built around manuscripts and perform line by line transcription of those manuscripts. 
 
-#### 4.1
-This is section 4.1
+#### 4.2 Transcription Interface
+We will look specifically at the transcription interface located in `/web/transcription.html` which uses the script file `/web/js/transcribe.js` to `fetch()` data using the available servlets.  In this case, the interface acts as the client, so the diagram will seem very familiar
+
+#### 4.3 Interface Diagram
+!["Transcription Interface Diagram"](web/images/diagram2.jpg "Interface Diagram")

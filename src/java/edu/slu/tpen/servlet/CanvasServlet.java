@@ -62,7 +62,7 @@ public class CanvasServlet extends HttpServlet{
                 folioID = parseInt(req.getPathInfo().substring(1).replace("/", ""));
                 //System.out.println(req.getPathInfo().substring(1));
                // System.out.println(folioID);
-                if (folioID > 0) {
+                if (folioID > 0 && Folio.exists(folioID)) {
                     Folio f = new Folio(folioID);
                     resp.setContentType("application/json; charset=UTF-8");
                     resp.setHeader("Access-Control-Allow-Headers", "*");
@@ -81,10 +81,15 @@ public class CanvasServlet extends HttpServlet{
                     getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
                     resp.sendError(SC_NOT_FOUND);
                 }
-            } catch (NumberFormatException | SQLException | IOException ex) {
-                getLogger(CanvasServlet.class.getName()).log(SEVERE, null, ex);
-                throw new ServletException(ex);
+
             }
+     catch(NumberFormatException ex){
+          getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
+          resp.sendError(SC_NOT_FOUND);
+     } 
+     catch (SQLException ex) {
+         Logger.getLogger(CanvasServlet.class.getName()).log(Level.SEVERE, null, ex);
+     }
  }
 
     /**

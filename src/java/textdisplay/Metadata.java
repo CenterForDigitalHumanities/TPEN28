@@ -28,6 +28,7 @@ import static textdisplay.DatabaseWrapper.closePreparedStatement;
 import static textdisplay.DatabaseWrapper.getConnection;
 import user.Group;
 import user.User;
+import static utils.JsonHelper.buildNoneLanguageMap; 
 
 /**
  *
@@ -359,6 +360,88 @@ public class Metadata {
         return metadata;
   }
    
+   
+   public static JSONArray getMetadataAsJSON(int projectID, String profile) throws SQLException{
+	String query = "select * from metadata where projectID=?";
+        Connection j = null;
+        PreparedStatement ps = null;
+        j = getConnection();
+        ps = j.prepareStatement(query);
+        ps.setInt(1, projectID);
+        ResultSet rs = ps.executeQuery();
+        JSONArray metadata = new JSONArray();
+        JSONObject metadata_entry = new JSONObject();
+        if (rs.next()) {            
+           String title = rs.getString("title");
+           metadata_entry.element("label", buildNoneLanguageMap("title"));
+           metadata_entry.element("value", buildNoneLanguageMap(title));
+           metadata.add(metadata_entry);
+
+           String subtitle = rs.getString("subtitle");
+           metadata_entry.element("label", buildNoneLanguageMap("subtitle"));
+           metadata_entry.element("value", buildNoneLanguageMap(subtitle));
+           metadata.add(metadata_entry);
+
+           String msIdentifier = rs.getString("msIdentifier");
+           metadata_entry.element("label", buildNoneLanguageMap("msIdentifier"));
+           metadata_entry.element("value", buildNoneLanguageMap(msIdentifier));
+           metadata.add(metadata_entry);
+
+           String msSettlement = rs.getString("msSettlement");
+           metadata_entry.element("label", buildNoneLanguageMap("msSettlement"));
+           metadata_entry.element("value", buildNoneLanguageMap(msSettlement));
+           metadata.add(metadata_entry);
+
+           String msRepository = rs.getString("msRepository");
+           metadata_entry.element("label", buildNoneLanguageMap("msRepository"));
+           metadata_entry.element("value", buildNoneLanguageMap(msRepository));
+           metadata.add(metadata_entry);
+
+           String msIdNumber = rs.getString("msIdNumber");
+           metadata_entry.element("label", buildNoneLanguageMap("msIdNumber"));
+           metadata_entry.element("value", buildNoneLanguageMap(msIdNumber));
+           metadata.add(metadata_entry);
+
+           String subject = rs.getString("subject");
+           metadata_entry.element("label", buildNoneLanguageMap("subject"));
+           metadata_entry.element("value", buildNoneLanguageMap(subject));
+           metadata.add(metadata_entry);
+
+           String date = rs.getString("date");
+           metadata_entry.element("label", buildNoneLanguageMap("date"));
+           metadata_entry.element("value", buildNoneLanguageMap(date));
+           metadata.add(metadata_entry);
+
+           String language = rs.getString("language");
+           metadata_entry.element("label", buildNoneLanguageMap("language"));
+           metadata_entry.element("value", buildNoneLanguageMap(language));
+           metadata.add(metadata_entry);
+
+           String author = rs.getString("author");
+           metadata_entry.element("label", buildNoneLanguageMap("author"));
+           metadata_entry.element("value", buildNoneLanguageMap(author));
+           metadata.add(metadata_entry);
+
+           String description = rs.getString("description");
+           metadata_entry.element("label", buildNoneLanguageMap("description"));
+           metadata_entry.element("value", buildNoneLanguageMap(description));
+           metadata.add(metadata_entry);
+
+           String location = rs.getString("location");
+           metadata_entry.element("label", buildNoneLanguageMap("location"));
+           metadata_entry.element("value", buildNoneLanguageMap(location));
+           metadata.add(metadata_entry);
+
+           String msCollection = rs.getString("msCollection");
+           metadata_entry.element("label", buildNoneLanguageMap("msCollection"));
+           metadata_entry.element("value", buildNoneLanguageMap(msCollection));
+           metadata.add(metadata_entry);
+
+        }
+        closeDBConnection(j);
+        closePreparedStatement(ps);
+        return metadata;
+   }
 
    /**
     * Generate a TEI header from the Metadata TPEN stores

@@ -28,7 +28,6 @@ import static textdisplay.DatabaseWrapper.closePreparedStatement;
 import static textdisplay.DatabaseWrapper.getConnection;
 import user.Group;
 import user.User;
-import static utils.JsonHelper.buildNoneLanguageMap; 
 import static utils.JsonHelper.buildLanguageMap;
 
 /**

@@ -29,6 +29,7 @@ import static textdisplay.DatabaseWrapper.getConnection;
 import user.Group;
 import user.User;
 import static utils.JsonHelper.buildNoneLanguageMap; 
+import static utils.JsonHelper.buildLanguageMap;
 
 /**
  *
@@ -376,8 +377,8 @@ public class Metadata {
 	   for (String key : metadata_keys)
 	   {
 		String value = rs.getString(key);
-		metadata_entry.element("label", buildNoneLanguageMap(key));
-		metadata_entry.element("value", buildNoneLanguageMap(value));
+		metadata_entry.element("label", buildLanguageMap("en", key));
+		metadata_entry.element("value", buildLanguageMap("none", value));
 		metadata.add(metadata_entry);
 	   }
         }

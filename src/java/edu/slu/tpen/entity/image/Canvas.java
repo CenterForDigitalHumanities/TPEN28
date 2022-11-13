@@ -179,11 +179,13 @@ public class Canvas {
         String dateString = "";
         String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
         annotationList.element("@id", annoListID);
-        annotationList.element("@type", "sc:AnnotationList");
-        annotationList.element("label", canvasID + " List");
-        annotationList.element("proj", projectID);
-        annotationList.element("on", canvasID);
-        annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
+        annotationList.element("@type", "AnnotationList");
+        JSONObject labeler = new JSONObject();
+        labeler.put("en",canvasID + " List");
+        annotationList.element("label",labeler);
+        //annotationList.element("proj", projectID);
+        annotationList.element("target", canvasID);
+        //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
         //annotationList.element("testing", "msid_creation");
         Transcription[] lines;
         lines = getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
@@ -228,7 +230,7 @@ public class Canvas {
         resources_array = JSONArray.fromObject(resources); //This can be an empty array now.
 //            String newListID = Annotation.saveNewAnnotationList(annotationList);
 //            annotationList.element("@id", newListID);
-        annotationList.element("resources", resources_array);
+        annotationList.element("items   ", resources_array);
         JSONArray annotationLists = new JSONArray();
         annotationLists.add(annotationList); // Only one in this version.
         return annotationLists;

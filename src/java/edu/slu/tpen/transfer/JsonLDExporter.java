@@ -33,7 +33,9 @@ import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
 import textdisplay.FolioDims;
@@ -41,7 +43,6 @@ import static textdisplay.FolioDims.createFolioDimsRecord;
 import static textdisplay.Metadata.getMetadataAsJSON;
 import textdisplay.Project;
 import user.User;
-
 /**
  * Class which manages serialisation to JSON-LD. Builds a Map containing the
  * Project's data, and then uses Jackson to serialise it as JSON.
@@ -105,7 +106,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
          manifestData.put("@id", projName + "/manifest.json");
          manifestData.put("@type", "sc:Manifest");
          //Remember that this is a Metadata title, not project name...
-         manifestData.put("label", proj.getProjectName());
+         manifestData.put("label",proj.getProjectName());
          manifestData.put("metadata", getMetadataAsJSON(projID));
 
            Map<String, Object> service = new LinkedHashMap<>();

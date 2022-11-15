@@ -57,7 +57,7 @@ We will look specifically at the transcription interface located in `/web/transc
 
 #### 4.3 Interface Diagram
 <p align="middle">
-    <img align="top" src="web/images/diagram2.jpg" width="420"/> <img align="top" src="web/images/diagram3.jpg" width="225"/
+    <img align="top" src="web/images/diagram2.jpg" width="420"/> <img align="top" src="web/images/diagram3.jpg" width="225"/>
 </p>
 
 

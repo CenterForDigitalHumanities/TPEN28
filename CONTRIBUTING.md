@@ -13,7 +13,7 @@ Use this as a model maybe https://iiif.io/event/conduct/, or perhaps just say TP
 [Wecome](#welcome)
  * [Thank You](#thank-you)
  * [Code of Conduct](#code-of-conduct)
- * 
+ 
 [Table of Contents](#table-of-contents)
 
 [Introduction](#introduction)
@@ -27,17 +27,17 @@ Use this as a model maybe https://iiif.io/event/conduct/, or perhaps just say TP
  * [Make Issue(s) First](#make-issues-first)
  * [Branch Next](#branch-next)
  * [Finally, a Pull Request](#finally-a-pull-request)
- * 
+ 
 [TPEN User Interfaces Front End](#tpen-user-interfaces-front-end)
  * [HTML + JS + CSS Interfaces](#html-js-css-interfaces)
  * [Transcription Interface](#transcription-interface)
  * [Interface Diagram](#interface-diagram)
- * 
+ 
 [TPEN Java Back End](#tpen-java-back-end)
  * [Servlets and Classes](#servlets-and-classes)
  * [Example Servlets](#example-servlets)
  * [Servlet Diagram](#servlet-diagram)
- * 
+ 
 [Branches](#branches)
 
 [Issues and Pull Requests](#issues-and-pull-requests)

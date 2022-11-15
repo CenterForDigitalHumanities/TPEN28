@@ -9,10 +9,10 @@ Thank you for considering contributions to the TPEN source code.  TPEN relies on
 ### 1.2 Code of Conduct
 Use this as a model maybe https://iiif.io/event/conduct/, or perhaps just say TPEN adopts this code of conduct??  We will probably also link to mention the LICENSE.md here.
 
-### 2. Tables of Contents
+### 2. Table of Contents
 [Wecome](#welcome)
  * [Thank You](#thank-you)
- * [Code of Conduct](#conduce)
+ * [Code of Conduct](#code-of-conduct)
 [Table of Contents](#table-of-contents)
 [Introduction](#introduction)
 [Code Free Contributions](#code-free-contributions)

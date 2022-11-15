@@ -58,7 +58,7 @@ To follow are guides for where to begin based on how you would like to contribut
 
 #### 5.1 Here Be Dragons, Semicolons, and the Dreaded Brackets
 
-#### 6. TPEN User Interfaces Front End
+### 6. TPEN User Interfaces Front End
 
 #### 6.1 HTML + JS + CSS Interfaces
 TPEN offers various interfaces which offers users the ability to set up projects built around manuscripts and perform line by line transcription of those manuscripts. 
@@ -71,7 +71,7 @@ We will look specifically at the transcription interface located in `/web/transc
     <img align="top" src="web/images/diagram2.jpg" width="420"/> <img align="top" src="web/images/diagram3.jpg" width="225"/>
 </p>
 
-#### 7. TPEN Java Back End
+### 7. TPEN Java Back End
 
 #### 7.1 Servlets and Classes
 TPEN uses Java 8 through those most recent JDK.  The Java Classes which extend [HTTPServlet](https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServlet.html) are considered "Java Servlets".  There are also various Java Classes that back end duties which are not exposed to users, though some of them contain helper functions for the Java Servlets.

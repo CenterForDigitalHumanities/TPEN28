@@ -77,9 +77,8 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                manifestData.put("type", "Manifest");
                // Not preferred value
                //Remember that this is a Metadata title, not project name...
-               
                manifestData.put("label",buildNoneLanguageMap(proj.getProjectName()));
-               
+               manifestData.put("metadata", getMetadataAsJSON(projID, profile));
               
        }
        else{

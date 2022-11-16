@@ -32,7 +32,7 @@ import static org.owasp.esapi.ESAPI.encoder;
 import static textdisplay.Folio.getRbTok;
 import textdisplay.Transcription;
 import static textdisplay.Transcription.getProjectTranscriptions;
-import static utils.JsonHelper.buildNoneLanguageMap;
+import static utils.JsonHelper.*;
 
 /**
  *
@@ -181,10 +181,7 @@ public class Canvas {
         String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
         annotationList.element("@id", annoListID);
         annotationList.element("@type", "AnnotationList");
-        JSONObject labeler = new JSONObject();
-        labeler.put("en",canvasID + " List");
-        
-        annotationList.element("label",buildNoneLanguageMap(canvasID+" List"));
+        annotationList.element("label",buildLanguageMapOtherContent("en",canvasID));
         //annotationList.element("proj", projectID);
         annotationList.element("target", canvasID);
         //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");

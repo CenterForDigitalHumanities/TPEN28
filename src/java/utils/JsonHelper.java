@@ -26,6 +26,13 @@ public class JsonHelper {
         return languageMap;
     }
     
+        public static JSONObject buildLanguageMapOtherContent(String language, String label)
+    {
+	JSONObject languageMap = new JSONObject();
+        languageMap.put(language,label+ " List");
+        return languageMap;
+    }
+    
     /**
     *  Make a hashmap with old @type from v2 API being keys and new type and format fields being values
      *  to use in buildAnnotationResource

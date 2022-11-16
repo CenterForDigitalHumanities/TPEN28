@@ -28,6 +28,7 @@ import static textdisplay.DatabaseWrapper.closePreparedStatement;
 import static textdisplay.DatabaseWrapper.getConnection;
 import user.Group;
 import user.User;
+import static utils.JsonHelper.buildLanguageMap;
 
 /**
  *
@@ -359,6 +360,31 @@ public class Metadata {
         return metadata;
   }
    
+   
+   public static JSONArray getMetadataAsJSON(int projectID, String profile) throws SQLException{
+	String query = "select * from metadata where projectID=?";
+        Connection j = null;
+        PreparedStatement ps = null;
+        j = getConnection();
+        ps = j.prepareStatement(query);
+        ps.setInt(1, projectID);
+        ResultSet rs = ps.executeQuery();
+        JSONArray metadata = new JSONArray();
+        JSONObject metadata_entry = new JSONObject();
+	String[] metadata_keys = new String[] {"title", "subtitle", "msIdentifier", "msSettlement", "msRepository", "msIdNumber", "subject", "date", "language", "author", "description", "location", "msCollection"};
+        if (rs.next()) {   
+	   for (String key : metadata_keys)
+	   {
+		String value = rs.getString(key);
+		metadata_entry.element("label", buildLanguageMap("en", key));
+		metadata_entry.element("value", buildLanguageMap("none", value));
+		metadata.add(metadata_entry);
+	   }
+        }
+        closeDBConnection(j);
+        closePreparedStatement(ps);
+        return metadata;
+   }
 
    /**
     * Generate a TEI header from the Metadata TPEN stores

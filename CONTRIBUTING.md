@@ -25,22 +25,25 @@ Use this as a model maybe https://iiif.io/event/conduct/, or perhaps just say TP
 
 [Source Code Contributions](#source-code-contributions)
  * [Make Issue(s) First](#make-issues-first)
- * [Branch Next](#branch-next)
- * [Finally, a Pull Request](#finally-a-pull-request)
+ * [Make a Branch](#branch-next)
+ * [Make a Pull Request](#make-pull-request)
 
 [TPEN User Interfaces Front End](#tpen-user-interfaces-front-end)
  * [HTML + JS + CSS Interfaces](#html-js-css-interfaces)
  * [Transcription Interface](#transcription-interface)
  * [Interface Diagram](#interface-diagram)
+ * [Other Interfaces](#other-interfaces)
 
 [TPEN Java Back End](#tpen-java-back-end)
  * [Servlets and Classes](#servlets-and-classes)
  * [Example Servlets](#example-servlets)
  * [Servlet Diagram](#servlet-diagram)
 
-[Branches](#branches)
+[Localhost Development](#localhost-development)
 
-[Issues and Pull Requests](#issues-and-pull-requests)
+[Localhost Testing](#localhost-development)
+
+[How Your Code Makes It To Production](#code-contribution-and-development-testing)
 
 [Additional Information](#additional-information)
 
@@ -97,36 +100,55 @@ Unsure where to begin? You can start by looking through these `beginner` and `he
 
 * [Beginner issues][beginner] - issues which should only require a few lines of code, and a test or two.
 * [Help wanted issues][help-wanted] - issues which should be a bit more involved than `beginner` issues.
+  
+This section wil explain the general flow for contributing code.  The sections after will specifically guide you to the code file you are looking for.
 
 ### 5.1 Make Issue(s) First
-First make an issue in the TPEN GitHub repository that clearly explains what your contribution is for.  Look through the details of sections 4.2 and 4.3 for some ice breakers.
+First [make an issue in the TPEN GitHub repository](https://github.com/CenterForDigitalHumanities/TPEN28/issues) that clearly explains what your contribution is for.  Look through the details of sections 4.2 and 4.3 for some ice breakers.
 
 ### 5.2 Branch Next
-Next make a branch for you work.  Name it like `{issue number}-{name}`, ex `1-first-hotfix`.
+Next make a branch for you work.  Name it like `{issue number}-{name}`. Example `1-transcription-hotfix`.
 
-### 5.3 Finally, a Pull Request
+### 5.3 Pull Request to Submit
 We suggest you open a Draft Pull Request early in the process.  This will ensure you have branches, and give others a place to easily look at your work under a specific namespace.  Once you have completed your work, you can take it out of draft (or make it if you had not yet).  Pull Requests will be reviewed and comments will be left on the Pull Request if there are suggested code changes.
 
 ## 6. TPEN User Interfaces Front End
 
 ### 6.1 HTML + JS + CSS Interfaces
-TPEN offers various interfaces which offers users the ability to set up projects built around manuscripts and perform line by line transcription of those manuscripts. 
+TPEN offers various interfaces which offers users the ability to set up projects built around manuscripts and perform line by line transcription of those manuscripts. The HTML, CSS and Javascript files are located in the `/web` directory.
 
 ### 6.2 Transcription Interface
-We will look specifically at the transcription interface located in `/web/transcription.html` which uses the script file `/web/js/transcribe.js` to `fetch()` data using the available servlets.  In this case, the TPEN interface acts as the client.
+We will look specifically at the transcription interface located in `/web/transcription.html` which uses the script file `/web/js/transcribe.js` to `fetch()` data using the available TPEN servlets.  In this case, the TPEN interface acts as the client.
 
 ### 6.3 Interface Diagram
 <p align="middle">
     <img align="top" src="web/images/diagram2.jpg" width="420"/> <img align="top" src="web/images/diagram3.jpg" width="225"/>
 </p>
 
+### 6.4 Other Interfaces
+The other interfaces in TPEN work the same way.  Other high use interfaces include
+ - Line Parsing (transcription.html)
+ - Project Management (project.jsp)
+ - Project Group Management (group.jsp, groupmembers.jsp)
+ - User's Projects Dashboard (index.jsp)
+
 ## 7. TPEN Java Back End
 
 ### 7.1 Servlets and Classes
 TPEN uses Java 8 through those most recent JDK.  The Java Classes which extend [HTTPServlet](https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServlet.html) are considered "Java Servlets".  There are also various Java Classes that back end duties which are not exposed to users, though some of them contain helper functions for the Java Servlets.
 
-- The servlets are located in `/src/java/slu/edu/tpen/servlet`
-- The classes are located throughout `/src/`
+- The classes are located throughout `/src/java/`.  Critical classes include
+    + `/textdisplay/Folio.java`
+    + `/textdisplay/Project.java`
+    + `/edu/slu/tpen/entity/image/Canvas.java`
+    + `/edu/slu/tpen/transfer/JSONLDExporter.java`
+    + `/user/User.java`
+    + `/user/Group.java`
+- The servlets are located in `/src/java/slu/edu/tpen/servlet`.  Critical servlets include
+    + `ProjectServlet.java`
+    + `CanvasServlet.java`
+    + `GetProjectTPENServlet.java`
+    + `UserInfoServlet.java`
 - The URL patterns for the servlet are recorded in `/web/WEB-INF/web.xml`
 
 ### 7.2 Example Servlet
@@ -150,8 +172,10 @@ Here is a diagram of what happens when a user asks for a particular Manifest lik
 ```
 <img align="top" src="web/images/diagram1.jpg" width="320"/>
 
-## 8. Branches
+## 8. Localhost Development
 
-## 9. Issues and Pull Requests
+## 9. Localhost Testing
 
-## 10. Additional Information
+## 10. How Your Code Makes It To Production
+
+## 11. Additional Information

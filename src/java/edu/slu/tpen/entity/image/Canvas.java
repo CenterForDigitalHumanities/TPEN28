@@ -180,12 +180,14 @@ public class Canvas {
         String dateString = "";
         String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
         annotationList.element("@id", annoListID);
+        if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
         annotationList.element("@type", "AnnotationList");
         annotationList.element("label",buildLanguageMapOtherContent("en",canvasID));
         //annotationList.element("proj", projectID);
         annotationList.element("target", canvasID);
         //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
         //annotationList.element("testing", "msid_creation");
+        }
         Transcription[] lines;
         lines = getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
         int numberOfLines = lines.length;

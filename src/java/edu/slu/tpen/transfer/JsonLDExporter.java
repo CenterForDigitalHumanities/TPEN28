@@ -204,6 +204,16 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
 		}
 		result.put("width", canvasWidth);
 		result.put("height", canvasHeight);
+		
+		//AnnotationPage
+		String pageID = getRbTok("SERVERURL")+"annotations/"+f.getFolioNumber();
+		Map<String, Object> page = new LinkedHashMap<>();
+		page.put("id", pageID);
+		page.put("type", "AnnotationPage");
+		page.put("label", buildNoneLanguageMap(canvasID + " List"));
+		page.put("target", canvasID);
+		page.put("items", new Object[] {});
+		result.put("items", page);
 		return result;
 	}
 	catch (Exception e)

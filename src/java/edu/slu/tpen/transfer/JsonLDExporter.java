@@ -167,9 +167,43 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
 	{
 		Map<String, Object> result = new LinkedHashMap<>();
 		String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
+		FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
+		Dimension storedDims = null;
+
+		JSONArray otherContent;
+		if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
+		   storedDims = getImageDimension(f.getFolioNumber());
+		   if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
+		      // System.out.println("Need to resolve image headers for dimensions");
+		      storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+		   }
+		}
+
 		result.put("id", canvasID);
 		result.put("type", "Canvas");
 		result.put("label", buildNoneLanguageMap(f.getPageName()));
+		int canvasHeight = pageDim.getCanvasHeight();
+		int canvasWidth = pageDim.getCanvasWidth();
+		if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
+		      if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
+			  if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.
+			      //generate canvas values for foliodim
+			      canvasHeight = 1000;
+			      canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
+			      //System.out.println("Need to make folio dims record");
+			      createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
+			  }
+		      }
+		      else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
+			  canvasHeight = 0;
+			  canvasWidth = 0;
+		      }
+		}
+		else{ //define a 0, 0 storedDims
+		    storedDims = new Dimension(0,0);
+		}
+		result.put("width", canvasWidth);
+		result.put("height", canvasHeight);
 		return result;
 	}
 	catch (Exception e)

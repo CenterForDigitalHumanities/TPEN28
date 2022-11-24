@@ -78,6 +78,14 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                //Remember that this is a Metadata title, not project name...
                manifestData.put("label",buildNoneLanguageMap(proj.getProjectName()));
                manifestData.put("metadata", getMetadataAsJSON(projID, profile));
+		List<Map<String, Object>> canvasList = new ArrayList<>();
+		int index = 0;
+		for (Folio f : folios) {
+		    System.out.println(f.folioNumber);
+		    index++;
+		    canvasList.add(buildPage(proj.getProjectID(), projName, f, u, "v3"));
+		}
+		manifestData.put("annotations", canvasList );
               
        }
        else{
@@ -151,6 +159,25 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
         out.println("Send out manifest");
       ObjectMapper mapper = new ObjectMapper();
       return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(manifestData);
+   }
+   
+   private Map<String, Object> buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException
+   {
+	try 
+	{
+		Map<String, Object> result = new LinkedHashMap<>();
+		String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
+		result.put("id", canvasID);
+		result.put("type", "Canvas");
+		result.put("label", buildNoneLanguageMap(f.getPageName()));
+		return result;
+	}
+	catch (Exception e)
+	{
+		Map<String, Object> empty = new LinkedHashMap<>();
+		LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
+		return empty;
+	}
    }
 
    /**

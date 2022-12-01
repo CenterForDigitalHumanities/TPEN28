@@ -79,6 +79,26 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                manifestData.put("label",buildNoneLanguageMap(proj.getProjectName()));
                manifestData.put("metadata", getMetadataAsJSON(projID, profile));
               
+               Map<String, Object> services;
+           services = new LinkedHashMap<>();
+               services.put("id","http://t-pen.org/TPEN/login.jsp");
+               services.put("type",buildNoneLanguageMap("ImageService3"));
+               services.put("profile", "http://iiif.io/api/auth/1/login");
+               services.put("label", buildNoneLanguageMap("T-PEN Login"));
+               services.put("header", buildNoneLanguageMap("Login for image access"));
+               services.put("description", buildNoneLanguageMap("Agreement requires an open T-PEN session to view images"));
+               services.put("confirmLabel", buildNoneLanguageMap("Login"));
+               services.put("failureHeader", buildNoneLanguageMap("T-PEN Login Failed"));
+               services.put("failureDescription",buildNoneLanguageMap("<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>"));
+
+                Map<String, Object> logout = new LinkedHashMap<>();
+                logout.put("@id", "http://t-pen.org/TPEN/login.jsp");
+                logout.put("profile", "http://iiif.io/api/auth/1/logout");
+                logout.put("label", "End T-PEN Session");
+                services.put("service",new Object[] { logout });
+
+         manifestData.put("service",new Object[] { services });
+               
        }
        else{
            System.out.println("This doesn't work"); // Not sure how to call other constructor here

@@ -180,14 +180,13 @@ public class Canvas {
         String dateString = "";
         String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
         annotationList.element("@id", annoListID);
-        if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
         annotationList.element("@type", "AnnotationList");
         annotationList.element("label",buildLanguageMapOtherContent("en",canvasID));
         //annotationList.element("proj", projectID);
         annotationList.element("target", canvasID);
         //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
         //annotationList.element("testing", "msid_creation");
-        }
+        
         Transcription[] lines;
         lines = getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
         int numberOfLines = lines.length;
@@ -236,7 +235,6 @@ public class Canvas {
         annotationLists.add(annotationList); // Only one in this version.
         return annotationLists;
     }
-
     /**
      * Check the annotation store for the annotation list on this canvas for
      * this project.
@@ -247,57 +245,65 @@ public class Canvas {
      * @return : The annotation lists @id property, not the object. Meant to
      * look like an otherContent field.
      */
-    public static String[] getAnnotationListsForProject(Integer projectID, String canvasID, Integer UID) throws MalformedURLException, IOException {
-        URL postUrl = new URL(ANNOTATION_SERVER_ADDR + "/anno/getAnnotationByProperties.action");
-        JSONObject parameter = new JSONObject();
-        parameter.element("@type", "sc:AnnotationList");
-        if (projectID > -1) {
-            parameter.element("proj", projectID);
-        }
-        parameter.element("on", canvasID);
-        //System.out.println("Get anno list for proj "+projectID+" on canvas "+canvasID);
-        HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
-        connection.setDoOutput(true);
-        connection.setDoInput(true);
-        connection.setRequestMethod("POST");
-        connection.setUseCaches(false);
-        connection.setInstanceFollowRedirects(true);
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        connection.connect();
-        //value to save
-        try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
-            //value to save
-            out.writeBytes("content=" + encode(parameter.toString(), "utf-8"));
-            out.flush();
-            // flush and close
-        }
-        StringBuilder sb;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
-            String line = "";
-            sb = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                //line = new String(line.getBytes(), "utf-8");
-                sb.append(line);
+    public static JSONArray getAnnotationLinesForAnnotationPage(Integer projectID, String canvasID,Integer folioNumber, Integer UID, String Profile) throws MalformedURLException, IOException, SQLException {
+        //System.out.println("Get lines for project");
+        JSONObject annotationList = new JSONObject();
+        JSONArray resources_array = new JSONArray();
+        String dateString = "";
+        String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
+        annotationList.element("@id", annoListID);
+        annotationList.element("@type", "sc:AnnotationList");
+        annotationList.element("label", canvasID + " List");
+        annotationList.element("proj", projectID);
+        annotationList.element("on", canvasID);
+        annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
+        //annotationList.element("testing", "msid_creation");
+        Transcription[] lines;
+        lines = getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
+        int numberOfLines = lines.length;
+        List<Object> resources = new ArrayList<>();
+        //System.out.println("How many lines?   "+numberOfLines);
+        for (int i = 0; i < numberOfLines; i++) { //numberOfLines can be 0 now.
+            if (lines[i] != null) {
+                //System.out.println("On line "+i);
+                dateString = "";
+                //when it breaks, it doesn't get this far
+                //System.out.println(lines[i].getLineID() + " " +lines[i].getDate().toString());
+                int lineID = lines[i].getLineID();
+                Map<String, Object> lineAnnot = new LinkedHashMap<>();
+                String lineURI = "line/" + lineID;
+                String annoLineID = getRbTok("SERVERURL") + "line/" + lineID;
+                //lineAnnot.put("@id", lineURI);
+                lineAnnot.put("@id", annoLineID);
+                lineAnnot.put("_tpen_line_id", lineURI);
+                lineAnnot.put("@type", "oa:Annotation");
+                lineAnnot.put("motivation", "oad:transcribing");
+                lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", encoder().decodeForHTML(lines[i].getText())));
+                lineAnnot.put("on", format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight()));
+                if (null != lines[i].getComment() && !"null".equals(lines[i].getComment())) {
+                    //System.out.println("comment was usable");
+                    lineAnnot.put("_tpen_note", lines[i].getComment());
+                } else {
+                    //System.out.println("comment was null");
+                    lineAnnot.put("_tpen_note", "");
+                }
+                lineAnnot.put("_tpen_creator", lines[i].getCreator());
+                //This is throwing Null Pointer and bubbling up to JsonLDExporter and up to getProjectTPENServlet
+
+                dateString = lines[i].getDate().toString();
+                lineAnnot.put("modified", dateString);
+                resources.add(lineAnnot);
+            } else {
+                getLogger(Canvas.class.getName()).log(INFO, null, "Lines for list was null");
+                out.println("lines was null");
             }
         }
-        connection.disconnect();
-        //FIXME: Every now and then, this line throws an error: A JSONArray text must start with '[' at character 1 of &lt
-        JSONArray theLists = null;
-        try {
-            theLists = JSONArray.fromObject(sb.toString());
-        } catch (JSONException e) {
-            getLogger(Canvas.class.getName()).log(INFO, null, e);
-            throw e;
-            // System.out.println("Batch save response does not contain JSONARRAY in new_resouces.");
-        }
-
-        String[] annotationLists = new String[theLists.size()];
-        for (int i = 0; i < theLists.size(); i++) {
-            JSONObject currentList = theLists.getJSONObject(i);
-            String id = currentList.getString("@id");
-            // System.out.println("List ID: "+id);
-            annotationLists[i] = id;
-        }
+        resources_array = JSONArray.fromObject(resources); //This can be an empty array now.
+//            String newListID = Annotation.saveNewAnnotationList(annotationList);
+//            annotationList.element("@id", newListID);
+        annotationList.element("resources", resources_array);
+        JSONArray annotationLists = new JSONArray();
+        annotationLists.add(annotationList); // Only one in this version.
         return annotationLists;
     }
 

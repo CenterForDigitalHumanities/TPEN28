@@ -59,10 +59,10 @@ public class CanvasServlet extends HttpServlet{
 
                     if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
                         resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
-                        resp.getWriter().write(export(JsonHelper.buildPage(f, "v3")));
+                        resp.getWriter().write(export((JSONObject) JsonHelper.buildPage(f, "v3")));
                     }
                     else {
-                        resp.getWriter().write(export(JsonHelper.buildPage(f)));
+                        resp.getWriter().write(export((JSONObject) JsonHelper.buildPage(f)));
                     }
                     resp.setStatus(SC_OK);
                 } else {

@@ -33,17 +33,17 @@ import user.User;
  */
 public class JsonHelper {
     private static final Logger LOG = getLogger(JsonHelper.class.getName());
-    public static JSONObject buildNoneLanguageMap(String label)
+    public static HashMap buildNoneLanguageMap(String label)
     {
-        JSONObject languageMap = new JSONObject();
+        HashMap<String, String[]> languageMap = new LinkedHashMap();
         String[] noneMap = new String[] {label};
         languageMap.put("none", noneMap);
         return languageMap;
     }
 
-    public static JSONObject buildLanguageMap(String language, String label)
+    public static HashMap buildLanguageMap(String language, String label)
     {
-	JSONObject languageMap = new JSONObject();
+	HashMap<String, String[]> languageMap = new LinkedHashMap();
         String[] noneMap = new String[] {label};
         languageMap.put(language, noneMap);
         return languageMap;
@@ -55,9 +55,9 @@ public class JsonHelper {
     * */
     private static HashMap formatTextualBody()
     {
-        HashMap<String, JSONObject> map = new HashMap();
+        HashMap<String, HashMap> map = new HashMap();
         
-        JSONObject textMap = new JSONObject();
+        HashMap<String, String> textMap = new LinkedHashMap();
         textMap.put("type", "TextualBody");
         textMap.put("format", "text/plain");
         map.put("cnt:ContentAsText", textMap);
@@ -70,10 +70,9 @@ public class JsonHelper {
      * Make a body property for annotations according to IIIF v3 API using @type and value from v2
      * works based on map build by formatTextualBody() and throws NoSuchElementException if type was not found among keys
      * */
-    public static JSONObject buildAnnotationBody(String type, String value) throws NoSuchElementException
+    public static HashMap buildAnnotationBody(String type, String value) throws NoSuchElementException
     {
-        // since jsonobject extends object, casting should be safe
-        JSONObject body = (JSONObject) formatTextualBody().get(type);
+        HashMap body = (HashMap) formatTextualBody().get(type);
         if (body == null)
         {
             throw new NoSuchElementException(type + " was not found among supported types: " + formatTextualBody().keySet().toString());
@@ -83,9 +82,9 @@ public class JsonHelper {
         return body;
     }
 
-    public static JSONObject buildAnnotationBody(String type, String value, String purpose) throws NoSuchElementException
+    public static HashMap buildAnnotationBody(String type, String value, String purpose) throws NoSuchElementException
     {
-        JSONObject body = buildAnnotationBody(type, value);
+        HashMap body = buildAnnotationBody(type, value);
         body.put("purpose", purpose);
         return body;
     }
@@ -244,7 +243,7 @@ public class JsonHelper {
         build the JSON representation of a canvas and return it.  It will not know about the project, so otherContent will contains all annotation lists this canvas
         has across all projects.  It will ignore all user checks so as to be open.  
     */
-     public static JSONObject buildPage(Folio f) throws SQLException, IOException {
+     public static Map<String, Object> buildPage(Folio f) throws SQLException, IOException {
          
      try{
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
@@ -259,7 +258,7 @@ public class JsonHelper {
                }
             }
             LOG.log(INFO, "pageDim={0}", pageDim);
-            JSONObject result  = new JSONObject();
+            Map<String, Object> result  = new LinkedHashMap();
             //Map<String, Object> result = new LinkedHashMap<>();
             result.put("@context","http://iiif.io/api/presentation/2/context.json");
             result.put("@id", canvasID);
@@ -318,7 +317,7 @@ public class JsonHelper {
         }
         catch(Exception e){
             //Map<String, Object> empty = new LinkedHashMap<>();
-            JSONObject empty = new JSONObject();
+            Map<String, Object> empty = new LinkedHashMap();
             LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
             return empty;
         }
@@ -327,7 +326,7 @@ public class JsonHelper {
    /**
     * Builds the JSON representation of canvas according to presentation 3 standard and returns it
     * */
-    public static JSONObject buildPage(Folio f, String profile) throws SQLException, IOException {
+    public static Map<String, Object> buildPage(Folio f, String profile) throws SQLException, IOException {
          try {
              String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
              FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
@@ -341,7 +340,7 @@ public class JsonHelper {
                  }
              }
              LOG.log(INFO, "pageDim={0}", pageDim);
-             JSONObject result  = new JSONObject();
+             Map<String, Object> result  = new HashMap();
              result.put("id", canvasID);
              result.put("type", "Canvas");
              result.put("label", buildNoneLanguageMap(f.getPageName()));
@@ -367,13 +366,13 @@ public class JsonHelper {
              }
              result.put("width", canvasWidth);
              result.put("height", canvasHeight);
-             result.put("items", new JSONObject());
-             result.put("annotations", new JSONObject());
+             result.put("items", new HashMap());
+             result.put("annotations", new HashMap());
 
              return result;
          }
          catch (Exception e) {
-             JSONObject empty = new JSONObject();
+             HashMap<String, Object> empty = new HashMap();
              LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
              return empty;
          }

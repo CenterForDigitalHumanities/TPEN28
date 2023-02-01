@@ -83,7 +83,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                Map<String, Object> services;
            services = new LinkedHashMap<>();
                services.put("id","http://t-pen.org/TPEN/login.jsp");
-               services.put("type",buildNoneLanguageMap("ImageService3"));
+               services.put("type","ImageService3");
                services.put("profile", "http://iiif.io/api/auth/1/login");
                services.put("label", buildNoneLanguageMap("T-PEN Login"));
                services.put("header", buildNoneLanguageMap("Login for image access"));
@@ -95,7 +95,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                 Map<String, Object> logout = new LinkedHashMap<>();
                 logout.put("@id", "http://t-pen.org/TPEN/login.jsp");
                 logout.put("profile", "http://iiif.io/api/auth/1/logout");
-                logout.put("label", "End T-PEN Session");
+                logout.put("label", buildNoneLanguageMap("End T-PEN Session"));
                 services.put("service",new Object[] { logout });
 
          manifestData.put("service",new Object[] { services });

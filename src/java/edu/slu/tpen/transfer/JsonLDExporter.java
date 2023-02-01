@@ -66,6 +66,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
    
        Folio[] folios = proj.getFolios();
        int projID = proj.getProjectID();
+       try{
        if (profile.contains("v3")){       
                manifestData = new LinkedHashMap<>();
                String projName = getRbTok("SERVERURL") + "manifest/"+projID;
@@ -98,12 +99,31 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                 services.put("service",new Object[] { logout });
 
          manifestData.put("service",new Object[] { services });
-               
+        
+         //Work on
+         Map<String, Object> pages = new LinkedHashMap<>();
+         pages.put("id", getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
+         pages.put("type", "sc:Sequence");
+         pages.put("label", "Current Page Order");
+
+         List<Map<String, Object>> pageList = new ArrayList<>();
+         int index = 0;
+         for (Folio f : folios) {
+             index++;
+            pageList.add(buildPage(proj.getProjectID(), projName, f, u));
+         }
+         pages.put("canvases", pageList);
+         manifestData.put("sequences", new Object[] { pages });        
        }
-       else{
-           System.out.println("This doesn't work"); // Not sure how to call other constructor here
-          
-       }
+      }
+      catch (UnsupportedEncodingException ignored) {
+      }
+         
+         
+         
+         
+ 
+       
 }
    /**
     * Populate a map which will contain all the relevant project information.

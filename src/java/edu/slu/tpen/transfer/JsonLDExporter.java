@@ -85,12 +85,12 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                services.put("id","http://t-pen.org/TPEN/login.jsp");
                services.put("type","ImageService3");
                services.put("profile", "http://iiif.io/api/auth/1/login");
-               services.put("label", buildNoneLanguageMap("T-PEN Login"));
-               services.put("header", buildNoneLanguageMap("Login for image access"));
+               services.put("label", "T-PEN Login");
+               services.put("header", "Login for image access");
                services.put("description", "Agreement requires an open T-PEN session to view images");
-               services.put("confirmLabel", buildNoneLanguageMap("Login"));
-               services.put("failureHeader", buildNoneLanguageMap("T-PEN Login Failed"));
-               services.put("failureDescription",buildNoneLanguageMap("<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>"));
+               services.put("confirmLabel", "Login");
+               services.put("failureHeader", "T-PEN Login Failed");
+               services.put("failureDescription","<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
 
                 Map<String, Object> logout = new LinkedHashMap<>();
                 logout.put("@id", "http://t-pen.org/TPEN/login.jsp");

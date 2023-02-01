@@ -87,7 +87,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                services.put("profile", "http://iiif.io/api/auth/1/login");
                services.put("label", buildNoneLanguageMap("T-PEN Login"));
                services.put("header", buildNoneLanguageMap("Login for image access"));
-               services.put("description", buildNoneLanguageMap("Agreement requires an open T-PEN session to view images"));
+               services.put("description", "Agreement requires an open T-PEN session to view images");
                services.put("confirmLabel", buildNoneLanguageMap("Login"));
                services.put("failureHeader", buildNoneLanguageMap("T-PEN Login Failed"));
                services.put("failureDescription",buildNoneLanguageMap("<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>"));
@@ -100,20 +100,14 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
 
          manifestData.put("service",new Object[] { services });
         
-         //Work on
-         Map<String, Object> pages = new LinkedHashMap<>();
-         pages.put("id", getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
-         pages.put("type", "sc:Sequence");
-         pages.put("label", "Current Page Order");
-
+  
          List<Map<String, Object>> pageList = new ArrayList<>();
          int index = 0;
          for (Folio f : folios) {
              index++;
             pageList.add(buildPage(proj.getProjectID(), projName, f, u));
          }
-         pages.put("canvases", pageList);
-         manifestData.put("sequences", new Object[] { pages });        
+         manifestData.put("canvases", new Object[] { pageList });        
        }
       }
       catch (UnsupportedEncodingException ignored) {

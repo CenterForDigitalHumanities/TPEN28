@@ -66,6 +66,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
    
        Folio[] folios = proj.getFolios();
        int projID = proj.getProjectID();
+       try{
        if (profile.contains("v3")){       
                manifestData = new LinkedHashMap<>();
                String projName = getRbTok("SERVERURL") + "manifest/"+projID;
@@ -79,11 +80,44 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                manifestData.put("label",buildNoneLanguageMap(proj.getProjectName()));
                manifestData.put("metadata", getMetadataAsJSON(projID, profile));
               
+               Map<String, Object> services;
+           services = new LinkedHashMap<>();
+               services.put("id","http://t-pen.org/TPEN/login.jsp");
+               services.put("type","ImageService3");
+               services.put("profile", "http://iiif.io/api/auth/1/login");
+               services.put("label", "T-PEN Login");
+               services.put("header", "Login for image access");
+               services.put("description", "Agreement requires an open T-PEN session to view images");
+               services.put("confirmLabel", "Login");
+               services.put("failureHeader", "T-PEN Login Failed");
+               services.put("failureDescription","<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
+
+                Map<String, Object> logout = new LinkedHashMap<>();
+                logout.put("@id", "http://t-pen.org/TPEN/login.jsp");
+                logout.put("profile", "http://iiif.io/api/auth/1/logout");
+                logout.put("label", buildNoneLanguageMap("End T-PEN Session"));
+                services.put("service",new Object[] { logout });
+
+         manifestData.put("service",new Object[] { services });
+        
+  
+         List<Map<String, Object>> pageList = new ArrayList<>();
+         int index = 0;
+         for (Folio f : folios) {
+             index++;
+            pageList.add(buildPage(proj.getProjectID(), projName, f, u));
+         }
+         manifestData.put("canvases", new Object[] { pageList });        
        }
-       else{
-           System.out.println("This doesn't work"); // Not sure how to call other constructor here
-          
-       }
+      }
+      catch (UnsupportedEncodingException ignored) {
+      }
+         
+         
+         
+         
+ 
+       
 }
    /**
     * Populate a map which will contain all the relevant project information.

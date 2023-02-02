@@ -29,6 +29,7 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import static net.sf.json.JSONObject.fromObject;
 import static org.owasp.esapi.ESAPI.encoder;
+import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
 import textdisplay.Transcription;
 import static textdisplay.Transcription.getProjectTranscriptions;
@@ -184,6 +185,9 @@ public class Canvas {
         annotationList.element("label",buildLanguageMapOtherContent("en",canvasID));
         //annotationList.element("proj", projectID);
         annotationList.element("target", canvasID);
+        
+        
+        
         //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
         //annotationList.element("testing", "msid_creation");
         
@@ -245,19 +249,29 @@ public class Canvas {
      * @return : The annotation lists @id property, not the object. Meant to
      * look like an otherContent field.
      */
-    public static JSONArray getAnnotationLinesForAnnotationPage(Integer projectID, String canvasID,Integer folioNumber, Integer UID, String Profile) throws MalformedURLException, IOException, SQLException {
+    public static JSONArray getAnnotationLinesForAnnotationPage(Integer projectID, String canvasID,Integer folioNumber, Integer UID, String profile) throws MalformedURLException, IOException, SQLException {
         //System.out.println("Get lines for project");
         JSONObject annotationList = new JSONObject();
         JSONArray resources_array = new JSONArray();
         String dateString = "";
         String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
         annotationList.element("@id", annoListID);
-        annotationList.element("@type", "sc:AnnotationList");
-        annotationList.element("label", canvasID + " List");
-        annotationList.element("proj", projectID);
-        annotationList.element("on", canvasID);
-        annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
+        annotationList.element("@type", "AnnotationList");
+        annotationList.element("label",buildLanguageMapOtherContent("en",canvasID));
+        //annotationList.element("proj", projectID);
+        annotationList.element("target", canvasID);
+        if (profile.contains("v3")){
+            List<Map<String, Object>> pageList = new ArrayList<>();
+            Folio[] folios = proj.getFolios();
+            for (Folio f : folios) {
+                pageList.add(JsonHelper.buildPage(projectID, projName, f, u,"A"));
+            }
+            //System.out.println("Put all canvas together");
+          
+            annotationList.put("items", pageList);
+        //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
         //annotationList.element("testing", "msid_creation");
+        
         Transcription[] lines;
         lines = getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
         int numberOfLines = lines.length;
@@ -301,57 +315,10 @@ public class Canvas {
         resources_array = JSONArray.fromObject(resources); //This can be an empty array now.
 //            String newListID = Annotation.saveNewAnnotationList(annotationList);
 //            annotationList.element("@id", newListID);
-        annotationList.element("resources", resources_array);
+        annotationList.element("items", resources_array);
         JSONArray annotationLists = new JSONArray();
         annotationLists.add(annotationList); // Only one in this version.
         return annotationLists;
-    }
-
-    /* 
-    @param resources: A JSON array of annotations that are all new (insert can be used).  
-    @return A JSONArray of annotations with their @id included.
-
-    The resources need to be saved and a JSON array of the objects with their @ids in them needs
-    to be returneds.
-     */
-    public static JSONArray bulkSaveAnnotations(JSONArray resources) throws MalformedURLException, IOException {
-        JSONArray new_resources = new JSONArray();
-        URL postUrlCopyAnno = new URL(ANNOTATION_SERVER_ADDR + "/anno/batchSaveFromCopy.action");
-        HttpURLConnection ucCopyAnno = (HttpURLConnection) postUrlCopyAnno.openConnection();
-        ucCopyAnno.setDoInput(true);
-        ucCopyAnno.setDoOutput(true);
-        ucCopyAnno.setRequestMethod("POST");
-        ucCopyAnno.setUseCaches(false);
-        ucCopyAnno.setInstanceFollowRedirects(true);
-        ucCopyAnno.addRequestProperty("content-type", "application/x-www-form-urlencoded");
-        ucCopyAnno.connect();
-        try (DataOutputStream dataOutCopyAnno = new DataOutputStream(ucCopyAnno.getOutputStream())) {
-            String str_resources = "";
-            if (resources.size() > 0) {
-                str_resources = resources.toString();
-            } else {
-                str_resources = "[]";
-            }
-            dataOutCopyAnno.writeBytes("content=" + encode(str_resources, "utf-8"));
-            dataOutCopyAnno.flush();
-        }
-        StringBuilder sbAnnoLines;
-        try (BufferedReader returnedAnnoList = new BufferedReader(new InputStreamReader(ucCopyAnno.getInputStream(), "utf-8"))) {
-            String lines = "";
-            sbAnnoLines = new StringBuilder();
-            while ((lines = returnedAnnoList.readLine()) != null) {
-                sbAnnoLines.append(lines);
-            }
-        }
-        String parseThis = sbAnnoLines.toString();
-        JSONObject batchSaveResponse = fromObject(parseThis);
-        try {
-            new_resources = (JSONArray) batchSaveResponse.get("new_resources");
-        } catch (JSONException e) {
-            getLogger(Canvas.class.getName()).log(INFO, null, e);
-            throw e;
-        }
-        return new_resources;
     }
 
     /* 

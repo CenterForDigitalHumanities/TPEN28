@@ -31,8 +31,11 @@ import static net.sf.json.JSONObject.fromObject;
 import static org.owasp.esapi.ESAPI.encoder;
 import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
+import textdisplay.Project;
 import textdisplay.Transcription;
 import static textdisplay.Transcription.getProjectTranscriptions;
+import user.User;
+import utils.JsonHelper;
 import static utils.JsonHelper.*;
 
 /**
@@ -262,6 +265,9 @@ public class Canvas {
         annotationList.element("target", canvasID);
         if (profile.contains("v3")){
             List<Map<String, Object>> pageList = new ArrayList<>();
+            Project proj = new Project(projectID);
+            String projName = proj.getName();
+            User u = new User(UID);
             Folio[] folios = proj.getFolios();
             for (Folio f : folios) {
                 pageList.add(JsonHelper.buildPage(projectID, projName, f, u,"A"));
@@ -269,6 +275,7 @@ public class Canvas {
             //System.out.println("Put all canvas together");
           
             annotationList.put("items", pageList);
+        }
         //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
         //annotationList.element("testing", "msid_creation");
         
@@ -319,6 +326,7 @@ public class Canvas {
         JSONArray annotationLists = new JSONArray();
         annotationLists.add(annotationList); // Only one in this version.
         return annotationLists;
+  
     }
 
     /* 

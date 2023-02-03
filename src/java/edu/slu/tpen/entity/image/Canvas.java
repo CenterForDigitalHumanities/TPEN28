@@ -259,7 +259,7 @@ public class Canvas {
         String dateString = "";
         String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
         annotationList.element("@id", annoListID);
-        annotationList.element("@type", "AnnotationPage");
+        annotationList.element("@type", "Annotation");
         annotationList.element("label",buildLanguageMapOtherContent("en",canvasID));
         //annotationList.element("proj", projectID);
         annotationList.element("target", canvasID);
@@ -297,7 +297,7 @@ public class Canvas {
                 //lineAnnot.put("@id", lineURI);
                 lineAnnot.put("@id", annoLineID);
                 lineAnnot.put("_tpen_line_id", lineURI);
-                lineAnnot.put("@type", "oa:Annotation");
+                lineAnnot.put("@type", "AnnotationPage");
                 lineAnnot.put("motivation", "oad:transcribing");
                 lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", encoder().decodeForHTML(lines[i].getText())));
                 lineAnnot.put("on", format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight()));

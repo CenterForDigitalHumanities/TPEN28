@@ -69,9 +69,9 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                 pageList.add(JsonHelper.buildPage(proj.getProjectID(), projName, f, u,"A"));
             }
             //System.out.println("Put all canvas together");
-          
-            manifestData.put("items", pageList);
             manifestData = new LinkedHashMap<>();
+ 
+
   
 
             manifestData.put("@context", "http://iiif.io/api/presentation/3/context.json");
@@ -113,8 +113,10 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
          for (Folio f : folios) {
             pageList.add(buildPage(proj.getProjectID(), projName, f, u));
          }
-         manifestData.put("canvases", new Object[] { pageList });        
+         manifestData.put("canvases", new Object[] { pageList });  
+         manifestData.put("items", pageList);
        }
+
        }
       catch (UnsupportedEncodingException ignored) {
       }

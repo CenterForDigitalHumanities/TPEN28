@@ -259,7 +259,7 @@ public class Canvas {
         String dateString = "";
         String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
         annotationList.element("@id", annoListID);
-        annotationList.element("@type", "AnnotationList");
+        annotationList.element("@type", "AnnotationPage");
         annotationList.element("label",buildLanguageMapOtherContent("en",canvasID));
         //annotationList.element("proj", projectID);
         annotationList.element("target", canvasID);

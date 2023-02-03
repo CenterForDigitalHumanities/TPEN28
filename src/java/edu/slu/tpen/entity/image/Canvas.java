@@ -184,16 +184,12 @@ public class Canvas {
         String dateString = "";
         String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
         annotationList.element("@id", annoListID);
-        annotationList.element("@type", "AnnotationList");
-        annotationList.element("label",buildLanguageMapOtherContent("en",canvasID));
-        //annotationList.element("proj", projectID);
-        annotationList.element("target", canvasID);
-        
-        
-        
-        //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
+        annotationList.element("@type", "sc:AnnotationList");
+        annotationList.element("label", canvasID + " List");
+        annotationList.element("proj", projectID);
+        annotationList.element("on", canvasID);
+        annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
         //annotationList.element("testing", "msid_creation");
-        
         Transcription[] lines;
         lines = getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
         int numberOfLines = lines.length;
@@ -237,7 +233,7 @@ public class Canvas {
         resources_array = JSONArray.fromObject(resources); //This can be an empty array now.
 //            String newListID = Annotation.saveNewAnnotationList(annotationList);
 //            annotationList.element("@id", newListID);
-        annotationList.element("items", resources_array);
+        annotationList.element("resources", resources_array);
         JSONArray annotationLists = new JSONArray();
         annotationLists.add(annotationList); // Only one in this version.
         return annotationLists;
@@ -254,15 +250,15 @@ public class Canvas {
      */
     public static JSONArray getAnnotationLinesForAnnotationPage(Integer projectID, String canvasID,Integer folioNumber, Integer UID, String profile) throws MalformedURLException, IOException, SQLException {
         //System.out.println("Get lines for project");
-        JSONObject annotationList = new JSONObject();
+        JSONObject annotationPage = new JSONObject();
         JSONArray resources_array = new JSONArray();
         String dateString = "";
         String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
-        annotationList.element("@id", annoListID);
-        annotationList.element("@type", "Annotation");
-        annotationList.element("label",buildLanguageMapOtherContent("en",canvasID));
+        annotationPage.element("@id", annoListID);
+        annotationPage.element("@type", "Annotation");
+        annotationPage.element("label",buildLanguageMapOtherContent("en",canvasID));
         //annotationList.element("proj", projectID);
-        annotationList.element("target", canvasID);
+        annotationPage.element("target", canvasID);
         if (profile.contains("v3")){
             List<Map<String, Object>> pageList = new ArrayList<>();
             Project proj = new Project(projectID);
@@ -274,7 +270,7 @@ public class Canvas {
             }
             //System.out.println("Put all canvas together");
           
-            annotationList.put("items", pageList);
+            annotationPage.put("resources", pageList);
         }
         //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
         //annotationList.element("testing", "msid_creation");
@@ -301,7 +297,7 @@ public class Canvas {
                 lineAnnot.put("motivation", "oad:transcribing");
                 lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", encoder().decodeForHTML(lines[i].getText())));
                 lineAnnot.put("on", format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight()));
-                if (null != lines[i].getComment() && !"null".equals(lines[i].getComment())) {
+                if (null != lines[i].getComment() && !"null".equals(lines[i].getComment())) {   
                     //System.out.println("comment was usable");
                     lineAnnot.put("_tpen_note", lines[i].getComment());
                 } else {
@@ -322,9 +318,9 @@ public class Canvas {
         resources_array = JSONArray.fromObject(resources); //This can be an empty array now.
 //            String newListID = Annotation.saveNewAnnotationList(annotationList);
 //            annotationList.element("@id", newListID);
-        annotationList.element("items", resources_array);
+        annotationPage.element("items", resources_array);
         JSONArray annotationLists = new JSONArray();
-        annotationLists.add(annotationList); // Only one in this version.
+        annotationLists.add(annotationPage); // Only one in this version.
         return annotationLists;
   
     }

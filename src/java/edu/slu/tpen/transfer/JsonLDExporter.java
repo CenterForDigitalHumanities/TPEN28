@@ -132,7 +132,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
     * @param proj the project to be exported.
      * @param u  
     * @throws SQLException
-     * @throws IOException <--
+     * @throws IOException <--ß
     */
    public JsonLDExporter(Project proj, User u) throws SQLException, IOException {
       Folio[] folios = proj.getFolios();

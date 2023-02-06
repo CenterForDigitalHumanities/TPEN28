@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import static java.lang.String.format;
 import static java.lang.System.out;
 import java.net.HttpURLConnection;
@@ -178,7 +179,7 @@ public class Canvas {
      * look like an otherContent field.
      */
     public static JSONArray getLinesForProject(Integer projectID, String canvasID, Integer folioNumber, Integer UID) throws MalformedURLException, IOException, SQLException {
-        //System.out.println("Get lines for project");
+        System.out.println("Get lines for project");
         JSONObject annotationList = new JSONObject();
         JSONArray resources_array = new JSONArray();
         String dateString = "";
@@ -260,17 +261,23 @@ public class Canvas {
         //annotationList.element("proj", projectID);
         annotationPage.element("target", canvasID);
         if (profile.contains("v3")){
-            List<Map<String, Object>> pageList = new ArrayList<>();
+            System.out.println("reached v3"); //System.out.println("Put all canvas together");
+           List<Map<String, Object>> pageList = new ArrayList<>();
             Project proj = new Project(projectID);
             String projName = proj.getName();
             User u = new User(UID);
             Folio[] folios = proj.getFolios();
+            int index = 0 ;
+            System.out.println(folios.length);
             for (Folio f : folios) {
+                index++;
                 pageList.add(JsonHelper.buildPage(projectID, projName, f, u,"v3"));
+//                  pageList.add(JsonHelper.buildPage(f, "v3"));
+                System.out.println(index);
             }
             //System.out.println("Put all canvas together");
-          
             annotationPage.put("resources", pageList);
+
         }
         //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
         //annotationList.element("testing", "msid_creation");
@@ -318,10 +325,12 @@ public class Canvas {
         resources_array = JSONArray.fromObject(resources); //This can be an empty array now.
 //            String newListID = Annotation.saveNewAnnotationList(annotationList);
 //            annotationList.element("@id", newListID);
-        annotationPage.element("items", resources_array);
+        annotationPage.element("resource", resources_array);
         JSONArray annotationLists = new JSONArray();
         annotationLists.add(annotationPage); // Only one in this version.
         return annotationLists;
+
+        
   
     }
 

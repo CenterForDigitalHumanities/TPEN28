@@ -267,15 +267,13 @@ public class Canvas {
             String projName = proj.getName();
             User u = new User(UID);
             Folio[] folios = proj.getFolios();
-            int index = 0 ;
             System.out.println(folios.length);
             for (Folio f : folios) {
-                index++;
-                pageList.add(JsonHelper.buildPage(projectID, projName, f, u,"v3"));
+//                pageList.add(JsonHelper.buildPage(projectID, projName, f, u,"v3"));
+                  pageList.add(JsonHelper.buildPage(f));
 //                  pageList.add(JsonHelper.buildPage(f, "v3"));
-                System.out.println(index);
             }
-            //System.out.println("Put all canvas together");
+            System.out.println("Put all canvas together");
             annotationPage.put("resources", pageList);
 
         }

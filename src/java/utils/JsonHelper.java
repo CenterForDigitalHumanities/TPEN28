@@ -291,6 +291,7 @@ public class JsonHelper {
     public static Map<String, Object> buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException
    {
 	try 	{
+                System.out.println("v3 buildpage");
             Map<String, Object> result = new LinkedHashMap<>();
 		String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
 		FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
@@ -357,6 +358,7 @@ public class JsonHelper {
     * */
     public static Map<String, Object> buildPage(Folio f, String profile) throws SQLException, IOException {
          try {
+             System.out.println("v3 canvas buildpage");
              String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
              FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
              Dimension storedDims = null;
@@ -369,7 +371,7 @@ public class JsonHelper {
                  }
              }
              LOG.log(INFO, "pageDim={0}", pageDim);
-             Map<String, Object> result  = new HashMap();
+             Map<String, Object> result  = new LinkedHashMap();
              result.put("id", canvasID);
              result.put("type", "Canvas");
              result.put("label", buildNoneLanguageMap(f.getPageName()));
@@ -393,11 +395,12 @@ public class JsonHelper {
              else{ //define a 0, 0 storedDims
                  storedDims = new Dimension(0,0);
              }
-             result.put("width", canvasWidth);
              result.put("height", canvasHeight);
+             result.put("width", canvasWidth);
              result.put("items", new HashMap());
+             Map<String, Object> resultAnnotation  = new LinkedHashMap();
              result.put("annotations", new HashMap());
-
+             System.out.println(result);
              return result;
          }
          catch (Exception e) {
@@ -407,5 +410,6 @@ public class JsonHelper {
          }
 
     }
+
 }
 

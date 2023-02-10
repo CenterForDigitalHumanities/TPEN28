@@ -59,8 +59,9 @@ public class CanvasServlet extends HttpServlet{
                     resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
 
                     if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
+                        
                         resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
-                        System.out.println("reached v3");
+
                         resp.getWriter().write(export(JsonHelper.buildPage(f, "v3")));
                     }
                     else {

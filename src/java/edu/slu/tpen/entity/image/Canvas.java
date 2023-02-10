@@ -255,9 +255,9 @@ public class Canvas {
         JSONArray resources_array = new JSONArray();
         String dateString = "";
         String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
-        annotationPage.element("@id", annoListID);
-        annotationPage.element("@type", "Annotation");
-        annotationPage.element("label",buildLanguageMapOtherContent("en",canvasID));
+        annotationPage.element("id", annoListID);
+        annotationPage.element("type", "AnnotationPage");
+//        annotationPage.element("label",buildLanguageMapOtherContent("en",canvasID));
         //annotationList.element("proj", projectID);
         annotationPage.element("target", canvasID);
         if (profile.contains("v3")){
@@ -296,9 +296,9 @@ public class Canvas {
                 String lineURI = "line/" + lineID;
                 String annoLineID = getRbTok("SERVERURL") + "line/" + lineID;
                 //lineAnnot.put("@id", lineURI);
-                lineAnnot.put("@id", annoLineID);
+                lineAnnot.put("id", annoLineID);
                 lineAnnot.put("_tpen_line_id", lineURI);
-                lineAnnot.put("@type", "AnnotationPage");
+                lineAnnot.put("type", "AnnotationPage");
                 lineAnnot.put("motivation", "oad:transcribing");
                 lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", encoder().decodeForHTML(lines[i].getText())));
                 lineAnnot.put("on", format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight()));

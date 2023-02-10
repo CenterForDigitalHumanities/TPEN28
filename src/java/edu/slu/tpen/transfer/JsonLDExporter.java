@@ -57,7 +57,7 @@ public class JsonLDExporter {
    */
 public JsonLDExporter(Project proj, User u, String profile) throws SQLException, IOException
 {   
-   
+       System.out.println("manifest v3");
        Folio[] folios = proj.getFolios();
 
        int projID = proj.getProjectID();
@@ -70,10 +70,6 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
             }
             //System.out.println("Put all canvas together");
             manifestData = new LinkedHashMap<>();
- 
-
-  
-
             manifestData.put("@context", "http://iiif.io/api/presentation/3/context.json");
             // Fix value of context
             manifestData.put("id", projName + "/manifest.json");
@@ -88,7 +84,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                 System.out.println(f.folioNumber);
                 canvasList.add(JsonHelper.buildPage(proj.getProjectID(), projName, f, u, "v3"));
 		}
-            manifestData.put("canvases", canvasList );
+//            manifestData.put("canvases", canvasList );
               
                Map<String, Object> services;
            services = new LinkedHashMap<>();
@@ -113,7 +109,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
          for (Folio f : folios) {
             pageList.add(buildPage(proj.getProjectID(), projName, f, u));
          }
-         manifestData.put("canvases", new Object[] { pageList });  
+//         manifestData.put("canvases", new Object[] { pageList });  
          manifestData.put("items", pageList);
        }
 
@@ -139,7 +135,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
       int projID = proj.getProjectID();
 
       try {
-          //System.out.println("Export project "+projID);
+          System.out.println("v2 manifest");
          String projName = getRbTok("SERVERURL") + "manifest/"+projID;
          manifestData = new LinkedHashMap<>();
          manifestData.put("@context", "http://iiif.io/api/presentation/2/context.json");

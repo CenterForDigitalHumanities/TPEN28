@@ -109,7 +109,6 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                 pageList.add(buildPage(proj.getProjectID(), projName, f, u, "v3"));
             }
                 System.out.println(pageList.toString());
-            //         manifestData.put("canvases", new Object[] { pageList });
             manifestData.put("items", pageList);
        }
          

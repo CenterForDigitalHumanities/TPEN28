@@ -20,6 +20,7 @@ import java.net.URL;
 import static java.net.URLEncoder.encode;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,8 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import static net.sf.json.JSONObject.fromObject;
 import static org.owasp.esapi.ESAPI.encoder;
+import textdisplay.Annotation;
+import static textdisplay.Annotation.getAnnotationSet;
 import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
 import textdisplay.Project;
@@ -253,6 +256,8 @@ public class Canvas {
         //System.out.println("Get lines for project");
         JSONObject annotationPage = new JSONObject();
         JSONArray resources_array = new JSONArray();
+        Annotation[] annotations = null;
+//        ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         String dateString = "";
         String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
         annotationPage.element("id", annoListID);
@@ -275,8 +280,11 @@ public class Canvas {
             }
             System.out.println("Put all canvas together");
             annotationPage.put("resources", pageList);
-
+            annotations = getAnnotationSet(projectID,folioNumber);
+            System.out.println(Arrays.toString(annotations));
+        
         }
+        annotationPage.put("items",annotations);
         //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
         //annotationList.element("testing", "msid_creation");
         

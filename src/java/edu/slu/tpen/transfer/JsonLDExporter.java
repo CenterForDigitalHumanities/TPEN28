@@ -16,6 +16,7 @@ package edu.slu.tpen.transfer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static edu.slu.tpen.entity.Image.Canvas.*;
 import java.util.ArrayList;
 import static utils.JsonHelper.buildNoneLanguageMap;     
 import java.io.IOException;
@@ -28,12 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
+import net.sf.json.JSONArray;
 import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
 import static textdisplay.Metadata.getMetadataAsJSON;
 import textdisplay.Project;
 import user.User;
 import utils.*;
+import static utils.JsonHelper.buildAnnotationForManifest;
 import static utils.JsonHelper.buildPage;
 
 /**
@@ -104,19 +107,20 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
             services.put("service",new Object[] { logout });
 
             manifestData.put("service",new Object[] { services });
-
+           JSONArray annotationPage = new JSONArray(); 
             for (Folio f : folios) {
                 pageList.add(buildPage(proj.getProjectID(), projName, f, u, "v3"));
+                String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
+                annotationPage.add(        getAnnotationLinesForAnnotationPage(proj.getProjectID(),projName,f.getFolioNumber(),u.getUID(),"v3"));
+
             }
                 System.out.println(pageList.toString());
             manifestData.put("items", pageList);
+            manifestData.put("annotations", annotationPage);
        }
          
 }
-         
-         
- 
-       
+
    /**
     * Populate a map which will contain all the relevant project information.
     *

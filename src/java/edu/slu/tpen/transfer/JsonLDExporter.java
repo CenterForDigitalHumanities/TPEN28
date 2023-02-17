@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 package edu.slu.tpen.transfer;
-
+import static textdisplay.Annotation.getAnnotationSet;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static edu.slu.tpen.entity.Image.Canvas.*;
@@ -111,7 +111,8 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
             for (Folio f : folios) {
                 pageList.add(buildPage(proj.getProjectID(), projName, f, u, "v3"));
                 String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
-                annotationPage.add(        getAnnotationLinesForAnnotationPage(proj.getProjectID(),projName,f.getFolioNumber(),u.getUID(),"v3"));
+//                annotationPage.add(        getAnnotationLinesForAnnotationPage(proj.getProjectID(),projName,f.getFolioNumber(),u.getUID(),"v3"));
+                  annotationPage.add(getAnnotationSet(proj.getProjectID(),f.getFolioNumber()));
 
             }
                 System.out.println(pageList.toString());

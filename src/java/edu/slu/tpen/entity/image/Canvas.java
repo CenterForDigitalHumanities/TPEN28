@@ -212,6 +212,7 @@ public class Canvas {
                 //lineAnnot.put("@id", lineURI);
                 lineAnnot.put("@id", annoLineID);
                 lineAnnot.put("_tpen_line_id", lineURI);
+                //////////////////////////*////////////////////////////
                 lineAnnot.put("@type", "oa:Annotation");
                 lineAnnot.put("motivation", "oad:transcribing");
                 lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", encoder().decodeForHTML(lines[i].getText())));
@@ -306,6 +307,7 @@ public class Canvas {
                 //lineAnnot.put("@id", lineURI);
                 lineAnnot.put("id", annoLineID);
                 lineAnnot.put("_tpen_line_id", lineURI);
+                ////////////////////////////////////////////////////
                 lineAnnot.put("type", "AnnotationPage");
                 lineAnnot.put("motivation", "oad:transcribing");
                 lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", encoder().decodeForHTML(lines[i].getText())));

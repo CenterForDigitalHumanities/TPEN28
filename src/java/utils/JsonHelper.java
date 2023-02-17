@@ -332,6 +332,8 @@ public class JsonHelper {
 		result.put("width", canvasWidth);
 		result.put("height", canvasHeight);
 		//AnnotationPage
+                
+                ///////////////////
 		String pageID = getRbTok("SERVERURL")+"annotations/"+f.getFolioNumber();
 		Map<String, Object> page = new LinkedHashMap<>();
 		page.put("id", pageID);

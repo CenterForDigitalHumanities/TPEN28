@@ -254,9 +254,8 @@ public class Canvas {
      * look like an otherContent field.
      */
     public static JSONArray getAnnotationLinesForAnnotationPage(Integer projectID, String canvasID,Integer folioNumber, Integer UID, String profile) throws MalformedURLException, IOException, SQLException {
-        //System.out.println("Get lines for project");
         JSONObject annotationPage = new JSONObject();
-        JSONArray resources_array = new JSONArray();
+        JSONArray annotationsArray = new JSONArray();
         Annotation[] annotations = null;
 //        ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         String dateString = "";
@@ -285,32 +284,32 @@ public class Canvas {
 //            System.out.println(Arrays.toString(annotations));
         
 //        }
-        annotationPage.put("items",annotations);
-        //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
-        //annotationList.element("testing", "msid_creation");
-        
+        annotationPage.put("items",annotations); 
         Transcription[] lines;
         lines = getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
         int numberOfLines = lines.length;
         List<Object> resources = new ArrayList<>();
-        //System.out.println("How many lines?   "+numberOfLines);
         for (int i = 0; i < numberOfLines; i++) { //numberOfLines can be 0 now.
             if (lines[i] != null) {
-                //System.out.println("On line "+i);
                 dateString = "";
-                //when it breaks, it doesn't get this far
-                //System.out.println(lines[i].getLineID() + " " +lines[i].getDate().toString());
                 int lineID = lines[i].getLineID();
                 Map<String, Object> lineAnnot = new LinkedHashMap<>();
                 String lineURI = "line/" + lineID;
                 String annoLineID = getRbTok("SERVERURL") + "line/" + lineID;
-                //lineAnnot.put("@id", lineURI);
                 lineAnnot.put("id", annoLineID);
-                lineAnnot.put("_tpen_line_id", lineURI);
                 lineAnnot.put("type", "Annotation");
-                lineAnnot.put("motivation", "oad:transcribing");
-                lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", encoder().decodeForHTML(lines[i].getText())));
-                lineAnnot.put("on", format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight()));
+                lineAnnot.put("motivation", "transcribing");
+		
+		// Annotation body
+		Map<String, String> body = JsonHelper.buildAnnotationBody("cnt:ContentAsText", encoder().decodeForHTML(lines[i].getText()));
+		lineAnnot.put("body", body);
+		lineAnnot.put("target", canvasID);
+		// `target` replaces `on` from version 2 and it seems like they don't want the dimensions on the canvas url
+		// lineAnnot.put("target", format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight()));
+
+
+		// All these properties below are from version 2 annotations, but it seems like they are project-specific and therefore should be here as well
+		lineAnnot.put("_tpen_line_id", lineURI);
                 if (null != lines[i].getComment() && !"null".equals(lines[i].getComment())) {   
                     //System.out.println("comment was usable");
                     lineAnnot.put("_tpen_note", lines[i].getComment());
@@ -329,16 +328,8 @@ public class Canvas {
                 out.println("lines was null");
             }
         }
-        resources_array = JSONArray.fromObject(resources); //This can be an empty array now.
-//	    System.out.println("found annotations " + resources_array.size());
-//	    System.out.println(resources_array.toString());
-//            String newListID = Annotation.saveNewAnnotationList(annotationList);
-//            annotationList.element("@id", newListID);
-//        annotationPage.element("resource", resources_array);
-//        JSONArray annotationLists = new JSONArray();
-//        annotationLists.add(annotationPage); // Only one in this version.
-//        return annotationLists;
-	return resources_array;
+        annotationsArray = JSONArray.fromObject(resources); //This can be an empty array now.
+	return annotationsArray;
     }
 
     public static JSONArray getPaintingAnnotations(Dimension storedDims, Folio f) throws SQLException {

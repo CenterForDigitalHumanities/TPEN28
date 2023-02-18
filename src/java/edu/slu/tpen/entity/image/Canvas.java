@@ -7,6 +7,7 @@ package edu.slu.tpen.entity.Image;
 
 import static edu.slu.tpen.servlet.Constant.ANNOTATION_SERVER_ADDR;
 import static edu.slu.util.LangUtils.buildQuickMap;
+import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -340,6 +341,35 @@ public class Canvas {
 	return resources_array;
     }
 
+    public static JSONArray getPaintingAnnotations(Dimension storedDims, Folio f) throws SQLException {
+		try {
+			String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
+			JSONArray paintingAnnotations = new JSONArray();
+			JSONObject annotation = new JSONObject();
+			annotation.put("@type", "oa:Annotation");
+			annotation.put("motivation", "sc:painting");
+			String imageURL = f.getImageURL();
+			if (imageURL.startsWith("/")) {
+			    imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
+			}
+			Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
+
+			if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
+			    //doing this check will return invalid images because we will not include height and width of 0.
+			   imageResource.put("height", storedDims.height ); 
+			   imageResource.put("width", storedDims.width ); 
+			}
+			annotation.put("resource", imageResource);
+			annotation.put("on", canvasID);
+			paintingAnnotations.add(annotation);
+			return paintingAnnotations;
+		} catch (Exception e)
+		{
+			System.out.println(e);
+			return new JSONArray();
+		}
+    }
+    
     /* 
     @param resources: A JSON array of annotations that are all new (insert can be used).  
     @return A JSONArray of annotations with their @id included.

@@ -331,16 +331,24 @@ public class JsonHelper {
 		}
 		result.put("width", canvasWidth);
 		result.put("height", canvasHeight);
-		//AnnotationPage
 		String pageID = getRbTok("SERVERURL")+"annotations/"+f.getFolioNumber();
-		Map<String, Object> page = new LinkedHashMap<>();
-		page.put("id", pageID);
-		page.put("type", "AnnotationPage");
-                page.put("items", getAnnotationLinesForAnnotationPage(projID,canvasID,f.getFolioNumber(),u.getUID(),profile));
-		page.put("label", buildNoneLanguageMap(canvasID + " List"));
-		page.put("target", canvasID);
-		result.put("items", page);
-                    return result;
+		//AnnotationPage that contains painting annotations - should be under `items`
+		Map<String, Object> itemsPage = new LinkedHashMap<>();
+		itemsPage.put("id", pageID);
+		itemsPage.put("type", "AnnotationPage");
+                itemsPage.put("items", getPaintingAnnotations(storedDims, f));
+		itemsPage.put("label", buildNoneLanguageMap(canvasID + " List"));
+		itemsPage.put("target", canvasID);
+		result.put("items", itemsPage);
+		//AnnotationPage that contains external annotations - should be under `annotations`
+		Map<String, Object> annotationsPage = new LinkedHashMap<>();
+		annotationsPage.put("id", pageID);
+		annotationsPage.put("type", "AnnotationPage");
+                annotationsPage.put("items", getAnnotationLinesForAnnotationPage(projID,canvasID,f.getFolioNumber(),u.getUID(),profile));
+		annotationsPage.put("label", buildNoneLanguageMap(canvasID + " List"));
+		annotationsPage.put("target", canvasID);
+		result.put("annotations", annotationsPage);
+                return result;
 	
         }
 	catch (Exception e)

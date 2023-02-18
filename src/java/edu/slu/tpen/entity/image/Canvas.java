@@ -260,30 +260,30 @@ public class Canvas {
 //        ArrayList<Annotation> annotations = new ArrayList<Annotation>();
         String dateString = "";
         String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
-        annotationPage.element("id", annoListID);
-        annotationPage.element("type", "AnnotationPage");
-//        annotationPage.element("label",buildLanguageMapOtherContent("en",canvasID));
-        //annotationList.element("proj", projectID);
-        annotationPage.element("target", canvasID);
-        if (profile.contains("v3")){
-            System.out.println("reached v3"); //System.out.println("Put all canvas together");
-           List<Map<String, Object>> pageList = new ArrayList<>();
-            Project proj = new Project(projectID);
-            String projName = proj.getName();
-            User u = new User(UID);
-            Folio[] folios = proj.getFolios();
+//        annotationPage.element("id", annoListID);
+//        annotationPage.element("type", "AnnotationPage");
+////        annotationPage.element("label",buildLanguageMapOtherContent("en",canvasID));
+//        //annotationList.element("proj", projectID);
+//        annotationPage.element("target", canvasID);
+//        if (profile.contains("v3")){
+//            System.out.println("reached v3"); //System.out.println("Put all canvas together");
+//           List<Map<String, Object>> pageList = new ArrayList<>();
+//            Project proj = new Project(projectID);
+//            String projName = proj.getName();
+//            User u = new User(UID);
+//            Folio[] folios = proj.getFolios();
 //            System.out.println(folios.length);
-            for (Folio f : folios) {
+//            for (Folio f : folios) {
 //                pageList.add(JsonHelper.buildPage(projectID, projName, f, u,"v3"));
 //          ÷        pageList.add(JsonHelper.buildPage(f)); 
-                  pageList.add(JsonHelper.buildPage(f, "v3"));
-            }
-            System.out.println("Put all canvas together");
-            annotationPage.put("resources", pageList);
-            annotations = getAnnotationSet(projectID,folioNumber);
-            System.out.println(Arrays.toString(annotations));
+//                  pageList.add(JsonHelper.buildPage(f, "v3"));
+//            }
+//            System.out.println("Put all canvas together");
+//            annotationPage.put("resources", pageList);
+//            annotations = getAnnotationSet(projectID,folioNumber);
+//            System.out.println(Arrays.toString(annotations));
         
-        }
+//        }
         annotationPage.put("items",annotations);
         //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
         //annotationList.element("testing", "msid_creation");
@@ -306,7 +306,7 @@ public class Canvas {
                 //lineAnnot.put("@id", lineURI);
                 lineAnnot.put("id", annoLineID);
                 lineAnnot.put("_tpen_line_id", lineURI);
-                lineAnnot.put("type", "AnnotationPage");
+                lineAnnot.put("type", "Annotation");
                 lineAnnot.put("motivation", "oad:transcribing");
                 lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", encoder().decodeForHTML(lines[i].getText())));
                 lineAnnot.put("on", format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight()));
@@ -329,15 +329,15 @@ public class Canvas {
             }
         }
         resources_array = JSONArray.fromObject(resources); //This can be an empty array now.
+//	    System.out.println("found annotations " + resources_array.size());
+//	    System.out.println(resources_array.toString());
 //            String newListID = Annotation.saveNewAnnotationList(annotationList);
 //            annotationList.element("@id", newListID);
-        annotationPage.element("resource", resources_array);
-        JSONArray annotationLists = new JSONArray();
-        annotationLists.add(annotationPage); // Only one in this version.
-        return annotationLists;
-
-        
-  
+//        annotationPage.element("resource", resources_array);
+//        JSONArray annotationLists = new JSONArray();
+//        annotationLists.add(annotationPage); // Only one in this version.
+//        return annotationLists;
+	return resources_array;
     }
 
     /* 

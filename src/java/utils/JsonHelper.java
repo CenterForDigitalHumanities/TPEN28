@@ -289,10 +289,10 @@ public class JsonHelper {
      
      
     public static Map<String, Object> buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException
-   {
+	{
 	try 	{
                 System.out.println("v3 buildpage");
-            Map<String, Object> result = new LinkedHashMap<>();
+		Map<String, Object> result = new LinkedHashMap<>();
 		String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
 		FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
 		Dimension storedDims = null;
@@ -336,10 +336,9 @@ public class JsonHelper {
 		Map<String, Object> page = new LinkedHashMap<>();
 		page.put("id", pageID);
 		page.put("type", "AnnotationPage");
-                page.put("annotations",getAnnotationLinesForAnnotationPage(projID,canvasID,f.getFolioNumber(),u.getUID(),profile));
+                page.put("items", getAnnotationLinesForAnnotationPage(projID,canvasID,f.getFolioNumber(),u.getUID(),profile));
 		page.put("label", buildNoneLanguageMap(canvasID + " List"));
 		page.put("target", canvasID);
-		page.put("items", new Object[] {});
 		result.put("items", page);
                     return result;
 	

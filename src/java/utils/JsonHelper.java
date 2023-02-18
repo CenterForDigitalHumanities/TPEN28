@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -288,11 +289,13 @@ public class JsonHelper {
     */
      
      
-    public static Map<String, Object> buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException
+//    public static Map<String, Object> buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException
+      public static JSONObject buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException
 	{
 	try 	{
                 System.out.println("v3 buildpage");
-		Map<String, Object> result = new LinkedHashMap<>();
+//		Map<String, Object> result = new LinkedHashMap<>();
+		JSONObject result = new JSONObject();
 		String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
 		FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
 		Dimension storedDims = null;
@@ -339,7 +342,7 @@ public class JsonHelper {
                 itemsPage.put("items", getPaintingAnnotations(storedDims, f));
 		itemsPage.put("label", buildNoneLanguageMap(canvasID + " List"));
 		itemsPage.put("target", canvasID);
-		result.put("items", itemsPage);
+		result.put("items", Arrays.asList(itemsPage));
 		//AnnotationPage that contains external annotations - should be under `annotations`
 		Map<String, Object> annotationsPage = new LinkedHashMap<>();
 		annotationsPage.put("id", pageID);
@@ -347,15 +350,14 @@ public class JsonHelper {
                 annotationsPage.put("items", getAnnotationLinesForAnnotationPage(projID,canvasID,f.getFolioNumber(),u.getUID(),profile));
 		annotationsPage.put("label", buildNoneLanguageMap(canvasID + " List"));
 		annotationsPage.put("target", canvasID);
-		result.put("annotations", annotationsPage);
+		result.put("annotations", Arrays.asList(annotationsPage));
                 return result;
 	
         }
 	catch (Exception e)
 	{
-		Map<String, Object> empty = new LinkedHashMap<>();
 		LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
-		return empty;
+		return new JSONObject();
 	}
    }
      

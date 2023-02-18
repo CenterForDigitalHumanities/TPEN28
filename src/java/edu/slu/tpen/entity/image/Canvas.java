@@ -196,6 +196,7 @@ public class Canvas {
         //annotationList.element("testing", "msid_creation");
         Transcription[] lines;
         lines = getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
+        System.out.println(Arrays.toString(lines));
         int numberOfLines = lines.length;
         List<Object> resources = new ArrayList<>();
         //System.out.println("How many lines?   "+numberOfLines);
@@ -281,7 +282,7 @@ public class Canvas {
             System.out.println("Put all canvas together");
             annotationPage.put("resources", pageList);
             annotations = getAnnotationSet(projectID,folioNumber);
-            System.out.println(Arrays.toString(annotations));
+//            System.out.println(Arrays.toString(annotations));
         
         }
         annotationPage.put("items",annotations);

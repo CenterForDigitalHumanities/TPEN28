@@ -70,7 +70,7 @@ public class JsonHelper {
         textMap.put("type", "TextualBody");
         textMap.put("format", "text/plain");
         map.put("cnt:ContentAsText", textMap);
-	
+		
         return map;
 
     }
@@ -339,7 +339,7 @@ public class JsonHelper {
 		Map<String, Object> itemsPage = new LinkedHashMap<>();
 		itemsPage.put("id", pageID);
 		itemsPage.put("type", "AnnotationPage");
-                itemsPage.put("items", getPaintingAnnotations(storedDims, f));
+                itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims));
 		itemsPage.put("label", buildNoneLanguageMap(canvasID + " List"));
 		itemsPage.put("target", canvasID);
 		result.put("items", Arrays.asList(itemsPage));

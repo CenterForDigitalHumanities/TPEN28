@@ -332,28 +332,36 @@ public class Canvas {
 	return annotationsArray;
     }
 
-    public static JSONArray getPaintingAnnotations(Dimension storedDims, Folio f) throws SQLException {
+    public static JSONArray getPaintingAnnotations(Integer projectID, Folio f, Dimension storedDims) throws SQLException {
 		try {
 			String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
+			String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + f.getFolioNumber();
 			JSONArray paintingAnnotations = new JSONArray();
 			JSONObject annotation = new JSONObject();
-			annotation.put("@type", "oa:Annotation");
-			annotation.put("motivation", "sc:painting");
 			String imageURL = f.getImageURL();
 			if (imageURL.startsWith("/")) {
 			    imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
 			}
-			Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
 
+			annotation.put("id", annoListID);
+			annotation.put("type", "Annotation");
+			annotation.put("motivation", "painting");
+			
+			JSONObject body = new JSONObject();
+			body.put("id", imageURL);
+			body.put("type", "Image");
+			body.put("format", "image/jpeg");
 			if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
 			    //doing this check will return invalid images because we will not include height and width of 0.
-			   imageResource.put("height", storedDims.height ); 
-			   imageResource.put("width", storedDims.width ); 
+			   body.put("height", storedDims.height ); 
+			   body.put("width", storedDims.width ); 
 			}
-			annotation.put("resource", imageResource);
-			annotation.put("on", canvasID);
+			annotation.put("body", body);
+			
+			annotation.put("target", canvasID);
 			paintingAnnotations.add(annotation);
 			return paintingAnnotations;
+		
 		} catch (Exception e)
 		{
 			System.out.println(e);

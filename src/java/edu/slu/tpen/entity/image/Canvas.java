@@ -334,7 +334,7 @@ public class Canvas {
 	return annotationsArray;
     }
 
-    public static JSONArray getPaintingAnnotations(Integer projectID, Folio f, Dimension storedDims) throws SQLException {
+    public static JSONArray getPaintingAnnotations(Integer projectID, Folio f, Dimension storedDims, Map services) throws SQLException {
 		try {
 			String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
 			String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + f.getFolioNumber();
@@ -358,6 +358,7 @@ public class Canvas {
 			   body.put("height", storedDims.height ); 
 			   body.put("width", storedDims.width ); 
 			}
+			body.put("service", services);
 			annotation.put("body", body);
 			
 			annotation.put("target", canvasID);

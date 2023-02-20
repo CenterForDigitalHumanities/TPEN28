@@ -290,7 +290,7 @@ public class JsonHelper {
      
      
 //    public static Map<String, Object> buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException
-      public static JSONObject buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException
+      public static JSONObject buildPage(int projID, String projName, Folio f, User u, Map services, String profile) throws SQLException
 	{
 	try 	{
                 System.out.println("v3 buildpage");
@@ -339,7 +339,7 @@ public class JsonHelper {
 		Map<String, Object> itemsPage = new LinkedHashMap<>();
 		itemsPage.put("id", pageID);
 		itemsPage.put("type", "AnnotationPage");
-                itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims));
+                itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims, services));
 		result.put("items", Arrays.asList(itemsPage));
 		//AnnotationPage that contains external annotations - should be under `annotations`
 		Map<String, Object> annotationsPage = new LinkedHashMap<>();

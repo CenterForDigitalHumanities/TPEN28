@@ -49,7 +49,6 @@ import static utils.JsonHelper.*;
  */
 public class Canvas {
 
-
     private String objectId;
     //for reference in the sc:AnnotationList
     private String id;
@@ -183,14 +182,6 @@ public class Canvas {
      * @return : The annotation lists @id property, not the object. Meant to
      * look like an otherContent field.
      */
-    public static  Map<String, Object> buildService(String id){
-        Map<String, Object> service = new LinkedHashMap<>();
-        service.put("id", id);
-        service.put("type","ImageService3");
-        service.put("profile","level2");
-        return service;
-               
-    }
     public static JSONArray getLinesForProject(Integer projectID, String canvasID, Integer folioNumber, Integer UID) throws MalformedURLException, IOException, SQLException {
         System.out.println("Get lines for project");
         JSONObject annotationList = new JSONObject();
@@ -365,7 +356,6 @@ public class Canvas {
 			   body.put("height", storedDims.height ); 
 			   body.put("width", storedDims.width ); 
 			}
-                        body.put("service", buildService(canvasID));
 			annotation.put("body", body);
 			
 			annotation.put("target", canvasID);

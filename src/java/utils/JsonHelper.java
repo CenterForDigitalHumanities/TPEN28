@@ -157,7 +157,7 @@ public class JsonHelper {
             if (imageURL.startsWith("/")) {
                 imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
             }
-            Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
+            Map<String, Object> imageResource = buildQuickMap( "@type", "dctypes:Image", "format", "image/jpeg");
 
             if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
                 //doing this check will return invalid images because we will not include height and width of 0.
@@ -414,85 +414,6 @@ public class JsonHelper {
          }
 
     }
-    public static Map<String, Object> buildAnnotationForManifest(int projID, String projName, Folio f, User u) throws SQLException, IOException {
-        try{
-            String manifestID = getRbTok("SERVERURL")+"manifest/"+f.getFolioNumber();
-            FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
-            Dimension storedDims = null;
-
-            JSONArray otherContent;
-            if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-               storedDims = getImageDimension(f.getFolioNumber());
-               if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
-                  // System.out.println("Need to resolve image headers for dimensions");
-                  storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
-               }
-            }
-
-            LOG.log(INFO, "pageDim={0}", pageDim);
-            Map<String, Object> result = new LinkedHashMap<>();
-//            result.put("@context", "http://iiif.io/api/presentation/3/context.json");
-            result.put("id", manifestID);
-            result.put("type", "AnnotationPage");
-//            result.put("label", f.getPageName());
-            int canvasHeight = pageDim.getCanvasHeight();
-            int canvasWidth = pageDim.getCanvasWidth();
-            result.put("items", getAnnotationLinesForAnnotationPage(projID,manifestID,f.getFolioNumber(),u.getUID(),"v3"));
-            if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
-                  if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
-                      if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.
-                          //generate canvas values for foliodim
-                          canvasHeight = 1000;
-                          canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
-                          //System.out.println("Need to make folio dims record");
-                          createFolioDimsRecord(storedDims.width,  storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
-                      }
-                  }
-                  else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
-                      canvasHeight = 0;
-                      canvasWidth = 0;
-                  }
-            }
-            else{ //define a 0, 0 storedDims
-                storedDims = new Dimension(0,0);
-            }
-//            result.put("width", canvasWidth);
-//            result.put("height", canvasHeight);
-            List<Object> images = new ArrayList<>();
-            Map<String, Object> imageAnnot = new LinkedHashMap<>();
-            imageAnnot.put("type", "Annotation");
-            imageAnnot.put("motivation", "commenting");
-            Map<String, Object>bodyAnnot = new LinkedHashMap<>();
-            String imageURL = f.getImageURL();
-            if (imageURL.startsWith("/")) {
-                imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
-            }
-            Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
-
-            if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
-                //doing this check will return invalid images because we will not include height and width of 0.
-               imageResource.put("height", storedDims.height ); 
-               imageResource.put("width", storedDims.width ); 
-            }
-            imageAnnot.put("resource", imageResource);
-            imageAnnot.put("on", manifestID);
-            images.add(imageAnnot);
-            //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
-            //System.out.println("Get otherContent");
-            //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
-//            otherContent = getLinesForProject(projID, manifestID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
-            //System.out.println("Finalize result");
-//            result.put("otherContent", otherContent);
-//            result.put("images", images);
-            System.out.println("Return");
-            return result;
-        }
-        catch(Exception e){
-            Map<String, Object> empty = new LinkedHashMap<>();
-            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
-            return empty;
-        }
-   }
 
 }
 

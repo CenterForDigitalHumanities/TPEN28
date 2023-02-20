@@ -36,7 +36,6 @@ import static textdisplay.Metadata.getMetadataAsJSON;
 import textdisplay.Project;
 import user.User;
 import utils.*;
-import static utils.JsonHelper.buildAnnotationForManifest;
 import static utils.JsonHelper.buildPage;
 
 /**
@@ -113,7 +112,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                 canvases.add(buildPage(proj.getProjectID(), projName, f, u, "v3"));
                 String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
 //                annotationPage.add(        getAnnotationLinesForAnnotationPage(proj.getProjectID(),projName,f.getFolioNumber(),u.getUID(),"v3"));
-                  annotations.add(getAnnotationSet(proj.getProjectID(),f.getFolioNumber()));
+//                  annotations.add(getAnnotationSet(proj.getProjectID(),f.getFolioNumber()));
 		
             }
 //                System.out.println(pageList.toString());

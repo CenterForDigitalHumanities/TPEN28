@@ -118,7 +118,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
             }
 //                System.out.println(pageList.toString());
             manifestData.put("items", canvases);
-	    manifestData.put("annnotations", new JSONArray());
+	    manifestData.put("annotations", new JSONArray());
 	    
 //            manifestData.put("annotations", annotationPage);
        }

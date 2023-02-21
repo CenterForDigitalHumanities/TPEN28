@@ -245,48 +245,18 @@ public class Canvas {
         return annotationLists;
     }
     /**
-     * Check the annotation store for the annotation list on this canvas for
-     * this project.
+     * Check the annotation store for the annotation page with textual annotations
+     * on this canvas for this project.
      *
      * @param projectID : the projectID the canvas belongs to
-     * @param canvasID: The canvas ID the annotation list is on
-     * @param UID: The current UID of the user in session.
-     * @return : The annotation lists @id property, not the object. Meant to
-     * look like an otherContent field.
+     * @param canvasID: The canvas ID the annotation page is on
+     * @param folioNumber: 
+     * @return: The annotation page of textual annotations that belong to the 
+     * specific canvas
      */
-    public static JSONArray getAnnotationLinesForAnnotationPage(Integer projectID, String canvasID,Integer folioNumber, Integer UID, String profile) throws MalformedURLException, IOException, SQLException {
-        JSONObject annotationPage = new JSONObject();
-        JSONArray annotationsArray = new JSONArray();
-        Annotation[] annotations = null;
-//        ArrayList<Annotation> annotations = new ArrayList<Annotation>();
-        String dateString = "";
-        String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
-//        annotationPage.element("id", annoListID);
-//        annotationPage.element("type", "AnnotationPage");
-////        annotationPage.element("label",buildLanguageMapOtherContent("en",canvasID));
-//        //annotationList.element("proj", projectID);
-//        annotationPage.element("target", canvasID);
-//        if (profile.contains("v3")){
-//            System.out.println("reached v3"); //System.out.println("Put all canvas together");
-//           List<Map<String, Object>> pageList = new ArrayList<>();
-//            Project proj = new Project(projectID);
-//            String projName = proj.getName();
-//            User u = new User(UID);
-//            Folio[] folios = proj.getFolios();
-//            System.out.println(folios.length);
-//            for (Folio f : folios) {
-//                pageList.add(JsonHelper.buildPage(projectID, projName, f, u,"v3"));
-//          ÷        pageList.add(JsonHelper.buildPage(f)); 
-//                  pageList.add(JsonHelper.buildPage(f, "v3"));
-//            }
-//            System.out.println("Put all canvas together");
-//            annotationPage.put("resources", pageList);
-//            annotations = getAnnotationSet(projectID,folioNumber);
-//            System.out.println(Arrays.toString(annotations));
-
-        
-//        }
-        annotationPage.put("items",annotations); 
+    public static JSONArray getAnnotationLinesForAnnotationPage(Integer projectID, String canvasID, Integer folioNumber) throws MalformedURLException, IOException, SQLException {
+        JSONArray annotationsArray;
+        String dateString;
         Transcription[] lines;
         lines = getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
         int numberOfLines = lines.length;
@@ -307,16 +277,13 @@ public class Canvas {
 		lineAnnot.put("body", body);
 		lineAnnot.put("target", canvasID);
 		// `target` replaces `on` from version 2 and it seems like they don't want the dimensions on the canvas url
-		// lineAnnot.put("target", format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight()));
 
 
 		// All these properties below are from version 2 annotations, but it seems like they are project-specific and therefore should be here as well
 		lineAnnot.put("_tpen_line_id", lineURI);
                 if (null != lines[i].getComment() && !"null".equals(lines[i].getComment())) {   
-                    //System.out.println("comment was usable");
                     lineAnnot.put("_tpen_note", lines[i].getComment());
                 } else {
-                    //System.out.println("comment was null");
                     lineAnnot.put("_tpen_note", "");
                 }
                 lineAnnot.put("_tpen_creator", lines[i].getCreator());

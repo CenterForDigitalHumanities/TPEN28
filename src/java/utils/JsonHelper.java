@@ -289,7 +289,7 @@ public class JsonHelper {
     */
      
      
-//    public static Map<String, Object> buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException
+
       public static JSONObject buildPage(int projID, String projName, Folio f, User u, Map services, String profile) throws SQLException
 	{
 	try 	{
@@ -345,7 +345,7 @@ public class JsonHelper {
 		Map<String, Object> annotationsPage = new LinkedHashMap<>();
 		annotationsPage.put("id", pageID);
 		annotationsPage.put("type", "AnnotationPage");
-                annotationsPage.put("items", getAnnotationLinesForAnnotationPage(projID,canvasID,f.getFolioNumber(),u.getUID(),profile));
+                annotationsPage.put("items", getAnnotationLinesForAnnotationPage(projID, canvasID, f.getFolioNumber()));
 		result.put("annotations", Arrays.asList(annotationsPage));
                 return result;
 	
@@ -437,7 +437,7 @@ public class JsonHelper {
 //            result.put("label", f.getPageName());
             int canvasHeight = pageDim.getCanvasHeight();
             int canvasWidth = pageDim.getCanvasWidth();
-            result.put("items", getAnnotationLinesForAnnotationPage(projID,manifestID,f.getFolioNumber(),u.getUID(),"v3"));
+            result.put("items", getAnnotationLinesForAnnotationPage(projID,manifestID,f.getFolioNumber()));
             if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
                   if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
                       if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.

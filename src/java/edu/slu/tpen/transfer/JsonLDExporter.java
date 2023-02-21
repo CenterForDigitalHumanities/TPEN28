@@ -105,7 +105,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
             logout.put("profile", "http://iiif.io/api/auth/1/logout");
             logout.put("label", "End T-PEN Session");
             services.put("service",new Object[] { logout });
-	    manifestData.put("service",new Object[] { services });
+			manifestData.put("services",new Object[] { services });
 	   
 	    JSONArray canvases = new JSONArray(); 
 	    JSONArray annotations = new JSONArray();

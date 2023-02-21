@@ -331,9 +331,10 @@ public class JsonHelper {
             result.put("width", canvasWidth);
             result.put("height", canvasHeight);
             String pageID = getRbTok("SERVERURL")+"annotations/"+f.getFolioNumber();
+			String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
             //AnnotationPage that contains painting annotations - should be under `items`
             Map<String, Object> itemsPage = new LinkedHashMap<>();
-            itemsPage.put("id", pageID);
+            itemsPage.put("id", paintingPageID);
             itemsPage.put("type", "AnnotationPage");
             itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims, services));
             result.put("items", Arrays.asList(itemsPage));

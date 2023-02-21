@@ -302,15 +302,15 @@ public class Canvas {
     }
 
     public static JSONArray getPaintingAnnotations(Integer projectID, Folio f, Dimension storedDims, Map services) throws SQLException {
-		try {
-			String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
-			String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + f.getFolioNumber();
-			JSONArray paintingAnnotations = new JSONArray();
-			JSONObject annotation = new JSONObject();
-			String imageURL = f.getImageURL();
-			if (imageURL.startsWith("/")) {
-			    imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
-			}
+        try {
+            String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
+            String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + f.getFolioNumber();
+            JSONArray paintingAnnotations = new JSONArray();
+            JSONObject annotation = new JSONObject();
+            String imageURL = f.getImageURL();
+            if (imageURL.startsWith("/")) {
+                imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
+		}
 
 			annotation.put("id", annoListID);
 			annotation.put("type", "Annotation");

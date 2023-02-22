@@ -7,6 +7,7 @@ package edu.slu.tpen.entity.Image;
 
 import static edu.slu.tpen.servlet.Constant.ANNOTATION_SERVER_ADDR;
 import static edu.slu.util.LangUtils.buildQuickMap;
+import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -244,78 +245,45 @@ public class Canvas {
         return annotationLists;
     }
     /**
-     * Check the annotation store for the annotation list on this canvas for
-     * this project.
+     * Check the annotation store for the annotation page with textual annotations
+     * on this canvas for this project.
      *
      * @param projectID : the projectID the canvas belongs to
-     * @param canvasID: The canvas ID the annotation list is on
-     * @param UID: The current UID of the user in session.
-     * @return : The annotation lists @id property, not the object. Meant to
-     * look like an otherContent field.
+     * @param canvasID: The canvas ID the annotation page is on
+     * @param folioNumber: 
+     * @return: The annotation page of textual annotations that belong to the 
+     * specific canvas
      */
-    public static JSONArray getAnnotationLinesForAnnotationPage(Integer projectID, String canvasID,Integer folioNumber, Integer UID, String profile) throws MalformedURLException, IOException, SQLException {
-        //System.out.println("Get lines for project");
-        JSONObject annotationPage = new JSONObject();
-        JSONArray resources_array = new JSONArray();
-        Annotation[] annotations = null;
-//        ArrayList<Annotation> annotations = new ArrayList<Annotation>();
-        String dateString = "";
-        String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + folioNumber;
-        annotationPage.element("id", annoListID);
-        annotationPage.element("type", "AnnotationPage");
-//        annotationPage.element("label",buildLanguageMapOtherContent("en",canvasID));
-        //annotationList.element("proj", projectID);
-        annotationPage.element("target", canvasID);
-        if (profile.contains("v3")){
-            System.out.println("reached v3"); //System.out.println("Put all canvas together");
-           List<Map<String, Object>> pageList = new ArrayList<>();
-            Project proj = new Project(projectID);
-            String projName = proj.getName();
-            User u = new User(UID);
-            Folio[] folios = proj.getFolios();
-//            System.out.println(folios.length);
-            for (Folio f : folios) {
-//                pageList.add(JsonHelper.buildPage(projectID, projName, f, u,"v3"));
-//          ÷        pageList.add(JsonHelper.buildPage(f)); 
-                  pageList.add(JsonHelper.buildPage(f, "v3"));
-            }
-            System.out.println("Put all canvas together");
-            annotationPage.put("resources", pageList);
-            annotations = getAnnotationSet(projectID,folioNumber);
-//            System.out.println(Arrays.toString(annotations));
-        
-        }
-        annotationPage.put("items",annotations);
-        //annotationList.element("@context", "http://iiif.io/api/presentation/2/context.json");
-        //annotationList.element("testing", "msid_creation");
-        
+    public static JSONArray getAnnotationLinesForAnnotationPage(Integer projectID, String canvasID, Integer folioNumber) throws MalformedURLException, IOException, SQLException {
+        JSONArray annotationsArray;
+        String dateString;
         Transcription[] lines;
         lines = getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
         int numberOfLines = lines.length;
         List<Object> resources = new ArrayList<>();
-        //System.out.println("How many lines?   "+numberOfLines);
         for (int i = 0; i < numberOfLines; i++) { //numberOfLines can be 0 now.
             if (lines[i] != null) {
-                //System.out.println("On line "+i);
                 dateString = "";
-                //when it breaks, it doesn't get this far
-                //System.out.println(lines[i].getLineID() + " " +lines[i].getDate().toString());
                 int lineID = lines[i].getLineID();
                 Map<String, Object> lineAnnot = new LinkedHashMap<>();
                 String lineURI = "line/" + lineID;
                 String annoLineID = getRbTok("SERVERURL") + "line/" + lineID;
-                //lineAnnot.put("@id", lineURI);
                 lineAnnot.put("id", annoLineID);
-                lineAnnot.put("_tpen_line_id", lineURI);
-                lineAnnot.put("type", "AnnotationPage");
-                lineAnnot.put("motivation", "oad:transcribing");
-                lineAnnot.put("resource", buildQuickMap("@type", "cnt:ContentAsText", "cnt:chars", encoder().decodeForHTML(lines[i].getText())));
-                lineAnnot.put("on", format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight()));
+                lineAnnot.put("type", "Annotation");
+                lineAnnot.put("motivation", "transcribing");
+		
+		// Annotation body
+		Map<String, String> body = JsonHelper.buildAnnotationBody("cnt:ContentAsText", encoder().decodeForHTML(lines[i].getText()));
+		lineAnnot.put("body", body);
+		lineAnnot.put("target", canvasID);
+		// `target` replaces `on` from version 2 and it seems like they don't want the dimensions on the canvas url
+
+
+		// All these properties below are from version 2 annotations, but it seems like they are project-specific and therefore should be here as well
+		lineAnnot.put("_tpen_line_id", lineURI);
                 if (null != lines[i].getComment() && !"null".equals(lines[i].getComment())) {   
-                    //System.out.println("comment was usable");
                     lineAnnot.put("_tpen_note", lines[i].getComment());
                 } else {
-                    //System.out.println("comment was null");
                     lineAnnot.put("_tpen_note", "");
                 }
                 lineAnnot.put("_tpen_creator", lines[i].getCreator());
@@ -329,18 +297,53 @@ public class Canvas {
                 out.println("lines was null");
             }
         }
-        resources_array = JSONArray.fromObject(resources); //This can be an empty array now.
-//            String newListID = Annotation.saveNewAnnotationList(annotationList);
-//            annotationList.element("@id", newListID);
-        annotationPage.element("resource", resources_array);
-        JSONArray annotationLists = new JSONArray();
-        annotationLists.add(annotationPage); // Only one in this version.
-        return annotationLists;
-
-        
-  
+        annotationsArray = JSONArray.fromObject(resources); //This can be an empty array now.
+	return annotationsArray;
     }
 
+    public static JSONArray getPaintingAnnotations(Integer projectID, Folio f, Dimension storedDims, Map manifestServices) throws SQLException {
+        try {
+            String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
+            String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + f.getFolioNumber();
+            JSONArray paintingAnnotations = new JSONArray();
+            JSONObject annotation = new JSONObject();
+            String imageURL = f.getImageURL();
+            if (imageURL.startsWith("/")) {
+                imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
+		}
+
+			annotation.put("id", annoListID);
+			annotation.put("type", "Annotation");
+			annotation.put("motivation", "painting");
+			
+			JSONObject body = new JSONObject();
+			body.put("id", imageURL);
+			body.put("type", "Image");
+			body.put("format", "image/jpeg");
+			if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
+			    //doing this check will return invalid images because we will not include height and width of 0.
+			   body.put("height", storedDims.height ); 
+			   body.put("width", storedDims.width ); 
+			}
+			
+			JSONObject service = new JSONObject();
+			service.put("id", manifestServices.get("id"));
+			service.put("type", manifestServices.get("type"));
+			body.put("service", service);
+			
+			annotation.put("body", body);
+			
+			annotation.put("target", canvasID);
+			paintingAnnotations.add(annotation);
+			return paintingAnnotations;
+		
+		} catch (Exception e)
+		{
+			System.out.println(e);
+			return new JSONArray();
+		}
+    }
+    
     /* 
     @param resources: A JSON array of annotations that are all new (insert can be used).  
     @return A JSONArray of annotations with their @id included.

@@ -105,19 +105,22 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
             logout.put("profile", "http://iiif.io/api/auth/1/logout");
             logout.put("label", "End T-PEN Session");
             services.put("service",new Object[] { logout });
-
-            manifestData.put("service",new Object[] { services });
-           JSONArray annotationPage = new JSONArray(); 
+			manifestData.put("services",new Object[] { services });
+	   
+	    JSONArray canvases = new JSONArray(); 
+	    JSONArray annotations = new JSONArray();
             for (Folio f : folios) {
-                pageList.add(buildPage(proj.getProjectID(), projName, f, u, "v3"));
+                canvases.add(buildPage(proj.getProjectID(), projName, f, u, services, "v3"));
                 String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
 //                annotationPage.add(        getAnnotationLinesForAnnotationPage(proj.getProjectID(),projName,f.getFolioNumber(),u.getUID(),"v3"));
-                  annotationPage.add(getAnnotationSet(proj.getProjectID(),f.getFolioNumber()));
-
+                  annotations.add(getAnnotationSet(proj.getProjectID(),f.getFolioNumber()));
+		
             }
-                System.out.println(pageList.toString());
-            manifestData.put("items", pageList);
-            manifestData.put("annotations", annotationPage);
+//                System.out.println(pageList.toString());
+            manifestData.put("items", canvases);
+	    manifestData.put("annotations", new JSONArray());
+	    
+//            manifestData.put("annotations", annotationPage);
        }
          
 }

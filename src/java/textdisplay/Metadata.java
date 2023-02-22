@@ -28,7 +28,7 @@ import static textdisplay.DatabaseWrapper.closePreparedStatement;
 import static textdisplay.DatabaseWrapper.getConnection;
 import user.Group;
 import user.User;
-import static utils.JsonHelper.buildLanguageMap;
+import static utils.JsonHelper.buildNoneLanguageMap;
 
 /**
  *
@@ -373,13 +373,12 @@ public class Metadata {
         JSONObject metadata_entry = new JSONObject();
 	String[] metadata_keys = new String[] {"title", "subtitle", "msIdentifier", "msSettlement", "msRepository", "msIdNumber", "subject", "date", "language", "author", "description", "location", "msCollection"};
         if (rs.next()) {   
-	   for (String key : metadata_keys)
-	   {
-		String value = rs.getString(key);
-		metadata_entry.element("label", buildLanguageMap("en", key));
-		metadata_entry.element("value", buildLanguageMap("none", value));
-		metadata.add(metadata_entry);
-	   }
+			for (String key : metadata_keys) {
+				String value = rs.getString(key);
+				metadata_entry.element("label", buildNoneLanguageMap(key));
+				metadata_entry.element("value", buildNoneLanguageMap(value));
+				metadata.add(metadata_entry);
+			}
         }
         closeDBConnection(j);
         closePreparedStatement(ps);

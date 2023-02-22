@@ -90,8 +90,9 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
 
             Map<String, Object> services;
             services = new LinkedHashMap<>();
+            services.put("@context","http://iiif.io/api/auth/1/context.json");
             services.put("id","http://t-pen.org/TPEN/login.jsp");
-            services.put("type","ImageService3");
+            services.put("type","AuthCookieService1");
             services.put("profile", "http://iiif.io/api/auth/1/login");
             services.put("label", "T-PEN Login");
             services.put("header", "Login for image access");

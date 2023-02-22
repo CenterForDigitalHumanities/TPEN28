@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
@@ -58,11 +59,13 @@ public class CanvasServlet extends HttpServlet{
                     resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
 
                     if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
+                        
                         resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
-                        resp.getWriter().write(export((JSONObject) JsonHelper.buildPage(f, "v3")));
+
+                        resp.getWriter().write(export(JsonHelper.buildPage(f, "v3")));
                     }
                     else {
-                        resp.getWriter().write(export((JSONObject) JsonHelper.buildPage(f)));
+                        resp.getWriter().write(export(JsonHelper.buildPage(f)));
                     }
                     resp.setStatus(SC_OK);
                 } else {
@@ -102,11 +105,17 @@ public class CanvasServlet extends HttpServlet{
         return "T-PEN Canvas Dereferencer";
     }
     
+
     private static final Logger LOG = getLogger(CanvasServlet.class.getName());
     
     private String export(JSONObject data) throws JsonProcessingException {
       ObjectMapper mapper = new ObjectMapper();
       return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
    }
-
+    
+ 
+    private String export(Map<String, Object> data) throws JsonProcessingException {
+      ObjectMapper mapper = new ObjectMapper();
+      return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
+   }
 }

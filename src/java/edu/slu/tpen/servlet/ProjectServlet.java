@@ -126,12 +126,14 @@ public class ProjectServlet extends HttpServlet {
 
                                 if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3"))
                                 {
-//                                    System.out.println(req.getHeader("Accept"));
+                                    System.out.println(req.getHeader("Accept manifest v3"));
                                     resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
                                     resp.getWriter().write(new JsonLDExporter(proj, new User(uid), "v3").export());
 
                                 } else
                                 {
+//                                                                        resp.getWriter().write(new JsonLDExporter(proj, new User(uid), "v3").export());
+                                    System.out.println(req.getHeader("Accept manifest v2"));
                                     resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
                                 }
 

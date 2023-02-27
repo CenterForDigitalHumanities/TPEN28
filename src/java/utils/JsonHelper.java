@@ -7,6 +7,12 @@ import static edu.slu.util.LangUtils.buildQuickMap;
 import static imageLines.ImageCache.getImageDimension;
 import java.awt.Dimension;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -358,7 +364,6 @@ public class JsonHelper {
     * */
     public static Map<String, Object> buildPage(Folio f, String profile) throws SQLException, IOException {
          try {
-             System.out.println("v3 canvas buildpage");
              String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
              FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
              Dimension storedDims = null;
@@ -489,6 +494,31 @@ public class JsonHelper {
             return empty;
         }
    }
+    
+    public static int getProjIDFromFolio(final int folioNumber) throws SQLException, IOException {
+        final String query = "select project from projectfolios where folio=?";
+        int projID = 0, size = 0;
+        Connection j = null;
+        PreparedStatement ps = null;
+        
+        try {
+            j = getConnection();
+            ps = j.prepareStatement(query);
+            ps.setInt(1, folioNumber);
+            final ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                projID = rs.getInt("project");
+                size++;
+            }
+            
+            if (size != 1) throw new IOException("Multiple or no projects for this folio number were found");
+            return projID;
+        } finally {
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+        }
+    }
 
 }
 

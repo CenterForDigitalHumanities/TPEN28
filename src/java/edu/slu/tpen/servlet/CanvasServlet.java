@@ -62,6 +62,9 @@ public class CanvasServlet extends HttpServlet{
                         
                         resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
 
+                        
+                        int projID = JsonHelper.getProjIDFromFolio(f.getFolioNumber());
+                        System.out.println("Project folio: " + projID);
                         resp.getWriter().write(export(JsonHelper.buildPage(f, "v3")));
                     }
                     else {

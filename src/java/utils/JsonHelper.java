@@ -318,7 +318,7 @@ public class JsonHelper {
      
      
 
-    public static JSONObject buildPage(int projID, String projName, Folio f, User u, Map services, String profile) throws SQLException {
+    public static JSONObject buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException {
         try {
             JSONObject result = new JSONObject();
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
@@ -364,7 +364,7 @@ public class JsonHelper {
             Map<String, Object> itemsPage = new LinkedHashMap<>();
             itemsPage.put("id", paintingPageID);
             itemsPage.put("type", "AnnotationPage");
-            itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims, services));
+            itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims));
             result.put("items", Arrays.asList(itemsPage));
             //AnnotationPage that contains external annotations - should be under `annotations`
             Map<String, Object> annotationsPage = new LinkedHashMap<>();

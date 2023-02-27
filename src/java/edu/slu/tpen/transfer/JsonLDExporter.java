@@ -36,7 +36,6 @@ import static textdisplay.Metadata.getMetadataAsJSON;
 import textdisplay.Project;
 import user.User;
 import utils.*;
-import static utils.JsonHelper.buildAnnotationForManifest;
 import static utils.JsonHelper.buildPage;
 
 /**

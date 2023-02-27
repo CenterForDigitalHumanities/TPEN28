@@ -88,25 +88,8 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
 //		}
 //            manifestData.put("items", canvasList );
 
-            Map<String, Object> services;
-            services = new LinkedHashMap<>();
-            services.put("@context","http://iiif.io/api/auth/1/context.json");
-            services.put("id","http://t-pen.org/TPEN/login.jsp");
-            services.put("type","AuthCookieService1");
-            services.put("profile", "http://iiif.io/api/auth/1/login");
-            services.put("label", "T-PEN Login");
-            services.put("header", "Login for image access");
-            services.put("description", "Agreement requires an open T-PEN session to view images");
-            services.put("confirmLabel", "Login");
-            services.put("failureHeader", "T-PEN Login Failed");
-            services.put("failureDescription","<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
-
-            Map<String, Object> logout = new LinkedHashMap<>();
-            logout.put("@id", "http://t-pen.org/TPEN/login.jsp");
-            logout.put("profile", "http://iiif.io/api/auth/1/logout");
-            logout.put("label", "End T-PEN Session");
-            services.put("service",new Object[] { logout });
-			manifestData.put("services",new Object[] { services });
+            Map<String, Object> services = JsonHelper.buildServices();
+            manifestData.put("services", new Object[] { services });
 	   
 	    JSONArray canvases = new JSONArray(); 
 	    JSONArray annotations = new JSONArray();

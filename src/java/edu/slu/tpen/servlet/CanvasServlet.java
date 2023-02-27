@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
@@ -24,7 +25,7 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import net.sf.json.JSONObject;
 import textdisplay.Folio;
 import utils.*;
-
+import user.User;
 
 /**
  *
@@ -62,10 +63,12 @@ public class CanvasServlet extends HttpServlet{
                         
                         resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
 
-                        
                         int projID = JsonHelper.getProjIDFromFolio(f.getFolioNumber());
-                        System.out.println("Project folio: " + projID);
-                        resp.getWriter().write(export(JsonHelper.buildPage(f, "v3")));
+                        String projName = "";
+                        User u = new User(0);
+                        HashMap services = new HashMap();
+                        
+                        resp.getWriter().write(export(JsonHelper.buildPage(projID, projName, f, u, services, "v3")));
                     }
                     else {
                         resp.getWriter().write(export(JsonHelper.buildPage(f)));
@@ -111,10 +114,10 @@ public class CanvasServlet extends HttpServlet{
 
     private static final Logger LOG = getLogger(CanvasServlet.class.getName());
     
-    private String export(JSONObject data) throws JsonProcessingException {
-      ObjectMapper mapper = new ObjectMapper();
-      return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
-   }
+//    private String export(JSONObject data) throws JsonProcessingException {
+//      ObjectMapper mapper = new ObjectMapper();
+//      return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
+//   }
     
  
     private String export(Map<String, Object> data) throws JsonProcessingException {

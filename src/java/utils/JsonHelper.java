@@ -98,6 +98,34 @@ public class JsonHelper {
         return body;
     }
     
+    /**
+     * Build a JSON representation of a single AuthCookieService1 service,
+     * used in version 3 manifests. Doing it here instead of in JSONLDExporter
+     * makes it easier to access for version 3 canvases, that need for annotations.
+     * 
+     * @return services
+     */
+    public static Map<String, Object> buildServices() {
+        Map<String, Object> services = new LinkedHashMap<>();
+        services.put("@context","http://iiif.io/api/auth/1/context.json");
+        services.put("id","http://t-pen.org/TPEN/login.jsp");
+        services.put("type","AuthCookieService1");
+        services.put("profile", "http://iiif.io/api/auth/1/login");
+        services.put("label", "T-PEN Login");
+        services.put("header", "Login for image access");
+        services.put("description", "Agreement requires an open T-PEN session to view images");
+        services.put("confirmLabel", "Login");
+        services.put("failureHeader", "T-PEN Login Failed");
+        services.put("failureDescription","<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
+
+        Map<String, Object> logout = new LinkedHashMap<>();
+        logout.put("@id", "http://t-pen.org/TPEN/login.jsp");
+        logout.put("profile", "http://iiif.io/api/auth/1/logout");
+        logout.put("label", "End T-PEN Session");
+        services.put("service",new Object[] { logout });
+        return services;
+    }
+    
     
     /**
     * Get the map which contains the serialisable information for the given
@@ -290,7 +318,7 @@ public class JsonHelper {
      
      
 
-    public static JSONObject buildPage(int projID, String projName, Folio f, User u, Map services, String profile) throws SQLException {
+    public static JSONObject buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException {
         try {
             JSONObject result = new JSONObject();
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
@@ -336,7 +364,7 @@ public class JsonHelper {
             Map<String, Object> itemsPage = new LinkedHashMap<>();
             itemsPage.put("id", paintingPageID);
             itemsPage.put("type", "AnnotationPage");
-            itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims, services));
+            itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims));
             result.put("items", Arrays.asList(itemsPage));
             //AnnotationPage that contains external annotations - should be under `annotations`
             Map<String, Object> annotationsPage = new LinkedHashMap<>();

@@ -301,10 +301,11 @@ public class Canvas {
 	return annotationsArray;
     }
 
-    public static JSONArray getPaintingAnnotations(Integer projectID, Folio f, Dimension storedDims, Map manifestServices) throws SQLException {
+    public static JSONArray getPaintingAnnotations(Integer projectID, Folio f, Dimension storedDims) throws SQLException {
         try {
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
             String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + f.getFolioNumber();
+            Map<String, Object> manifestServices = JsonHelper.buildServices();
             JSONArray paintingAnnotations = new JSONArray();
             JSONObject annotation = new JSONObject();
             String imageURL = f.getImageURL();

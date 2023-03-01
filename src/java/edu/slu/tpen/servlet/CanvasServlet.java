@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
@@ -66,9 +65,8 @@ public class CanvasServlet extends HttpServlet{
                         int projID = JsonHelper.getProjIDFromFolio(f.getFolioNumber());
                         String projName = "";
                         User u = new User(0);
-                        HashMap services = new HashMap();
                         
-                        resp.getWriter().write(export(JsonHelper.buildPage(projID, projName, f, u, services, "v3")));
+                        resp.getWriter().write(export(JsonHelper.buildPage(projID, projName, f, u, "v3")));
                     }
                     else {
                         resp.getWriter().write(export(JsonHelper.buildPage(f)));

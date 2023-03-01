@@ -324,7 +324,7 @@ public class JsonHelper {
      
      
 
-    public static JSONObject buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException {
+    public static JSONObject buildPage(int projID, Folio f, User u, String profile) throws SQLException {
         try {
             JSONObject result = new JSONObject();
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();

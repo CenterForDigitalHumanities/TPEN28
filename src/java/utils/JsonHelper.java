@@ -373,11 +373,30 @@ public class JsonHelper {
             itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims));
             result.put("items", Arrays.asList(itemsPage));
             //AnnotationPage that contains external annotations - should be under `annotations`
-            Map<String, Object> annotationsPage = new LinkedHashMap<>();
-            annotationsPage.put("id", pageID);
-            annotationsPage.put("type", "AnnotationPage");
-            annotationsPage.put("items", getAnnotationLinesForAnnotationPage(projID, canvasID, f.getFolioNumber()));
-            result.put("annotations", Arrays.asList(annotationsPage));
+			
+			JSONArray annotations = new JSONArray();
+			ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
+			System.out.println(projIDs.size());
+			System.out.println(projIDs.toString());
+			
+			if (projIDs.size() > 1) {
+				for (int i : projIDs) {
+					Map<String, Object> annotationsPage = new LinkedHashMap<>();
+					annotationsPage.put("id", pageID);
+					annotationsPage.put("type", "AnnotationPage");
+					annotationsPage.put("projectId", i);
+					annotationsPage.put("items", getAnnotationLinesForAnnotationPage(i, canvasID, f.getFolioNumber()));
+					System.out.println(annotationsPage.toString());
+					annotations.add(annotationsPage);
+				}
+			} else {
+				Map<String, Object> annotationsPage = new LinkedHashMap<>();
+				annotationsPage.put("id", pageID);
+				annotationsPage.put("type", "AnnotationPage");
+				annotationsPage.put("items", getAnnotationLinesForAnnotationPage(projID, canvasID, f.getFolioNumber()));
+				annotations.add(annotationsPage);
+			}
+            result.put("annotations", annotations);
             return result;
         }
         catch (Exception e)
@@ -387,9 +406,10 @@ public class JsonHelper {
         }
     }
     
-    public static int getProjIDFromFolio(final int folioNumber) throws SQLException, IOException {
+    public static ArrayList getProjIDFromFolio(final int folioNumber) throws SQLException, IOException {
         final String query = "select project from projectfolios where folio=?";
         int projID = 0, size = 0;
+		ArrayList<Integer> projIDs = new ArrayList<>();
         Connection j = null;
         PreparedStatement ps = null;
         
@@ -401,11 +421,11 @@ public class JsonHelper {
             
             while (rs.next()) {
                 projID = rs.getInt("project");
+				projIDs.add(projID);
                 size++;
             }
             
-            if (size != 1) throw new IOException("Multiple or no projects for this folio number were found");
-            return projID;
+			return projIDs;
         } finally {
             closeDBConnection(j);
             closePreparedStatement(ps);

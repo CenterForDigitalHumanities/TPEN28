@@ -63,9 +63,8 @@ public class CanvasServlet extends HttpServlet{
                         
                         resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
 
-//                        int projID = JsonHelper.getProjIDFromFolio(f.getFolioNumber());
-						int projID = -1;
-						ArrayList<Integer> projIDs = JsonHelper.getProjIDFromFolio(f.getFolioNumber());
+			int projID = -1;
+			ArrayList<Integer> projIDs = JsonHelper.getProjIDFromFolio(f.getFolioNumber());
                         User u = new User(0);
                         
                         resp.getWriter().write(export(JsonHelper.buildPage(projID, f, u, "v3")));

@@ -366,11 +366,18 @@ public class JsonHelper {
             result.put("height", canvasHeight);
             String pageID = getRbTok("SERVERURL")+"annotations/"+f.getFolioNumber();
             String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
+            ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
             //AnnotationPage that contains painting annotations - should be under `items`
             Map<String, Object> itemsPage = new LinkedHashMap<>();
             itemsPage.put("id", paintingPageID);
             itemsPage.put("type", "AnnotationPage");
-            itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims));
+            
+            System.out.println(projID);
+            if (projID == -1) {
+                itemsPage.put("items", getPaintingAnnotations(projIDs.get(0), f, storedDims));
+            } else {
+                itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims));
+            } 
             result.put("items", Arrays.asList(itemsPage));
             //AnnotationPage that contains external annotations - should be under `annotations`
 			
@@ -378,8 +385,7 @@ public class JsonHelper {
             
             // -1 is a hard-coded value from CanvasServlet call of this method
             if (projID == -1) {
-                // method was called from CanvasServlet - find all projects that have a version of this folio 
-                ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
+                // method was called from CanvasServlet - find all projects that have a version of this folio  
                 for (int id : projIDs) {
                     Map<String, Object> annotationsPage = new LinkedHashMap<>();
                     annotationsPage.put("id", pageID + "/project/" + id);

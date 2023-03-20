@@ -302,7 +302,7 @@ public class Canvas {
     }
 
     public static JSONArray getPaintingAnnotations(Integer projectID, Folio f, Dimension storedDims) throws SQLException {
-        try {
+        try {      
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
             String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + f.getFolioNumber();
             Map<String, Object> manifestServices = JsonHelper.buildServices();
@@ -311,38 +311,38 @@ public class Canvas {
             String imageURL = f.getImageURL();
             if (imageURL.startsWith("/")) {
                 imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
-		}
+            }
 
-			annotation.put("id", annoListID);
-			annotation.put("type", "Annotation");
-			annotation.put("motivation", "painting");
-			
-			JSONObject body = new JSONObject();
-			body.put("id", imageURL);
-			body.put("type", "Image");
-			body.put("format", "image/jpeg");
-			if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
-			    //doing this check will return invalid images because we will not include height and width of 0.
-			   body.put("height", storedDims.height ); 
-			   body.put("width", storedDims.width ); 
-			}
-			
-			JSONObject service = new JSONObject();
-			service.put("id", manifestServices.get("id"));
-			service.put("type", manifestServices.get("type"));
-			body.put("service", service);
-			
-			annotation.put("body", body);
-			
-			annotation.put("target", canvasID);
-			paintingAnnotations.add(annotation);
-			return paintingAnnotations;
-		
-		} catch (Exception e)
-		{
-			System.out.println(e);
-			return new JSONArray();
-		}
+            annotation.put("id", annoListID);
+            annotation.put("type", "Annotation");
+            annotation.put("motivation", "painting");
+
+            JSONObject body = new JSONObject();
+            body.put("id", imageURL);
+            body.put("type", "Image");
+            body.put("format", "image/jpeg");
+            if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
+                //doing this check will return invalid images because we will not include height and width of 0.
+               body.put("height", storedDims.height ); 
+               body.put("width", storedDims.width ); 
+            }
+
+            JSONObject service = new JSONObject();
+            service.put("id", manifestServices.get("id"));
+            service.put("type", manifestServices.get("type"));
+            body.put("service", service);
+
+            annotation.put("body", body);
+
+            annotation.put("target", canvasID);
+            paintingAnnotations.add(annotation);
+            return paintingAnnotations;
+
+            } catch (Exception e)
+            {
+                    System.out.println(e);
+                    return new JSONArray();
+            }
     }
     
     /* 

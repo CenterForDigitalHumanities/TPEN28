@@ -120,7 +120,7 @@ public class FileUpload extends HttpServlet implements Servlet {
                FileItem fileItem = (FileItem)i.next();
                if (fileItem.isFormField() == false) {
                   if (fileItem.getSize() > 0 && fileItem.getSize() < maxSize && fileItem.getName().toLowerCase().endsWith("zip")) {
-                     File f = new File(getRbTok("uploadLocation") + "/" + thisUser.getLname() + thisUser.getUID() + ".zip");
+                     File f = new File(getRbTok("uploadLocation") + "data/userimages" + thisUser.getLname() + thisUser.getUID() + ".zip");
                      fileItem.write(f);
                      Manuscript ms = new Manuscript(repository, archive, collection, city, -999);
                             create(conn, f, thisUser, ms);

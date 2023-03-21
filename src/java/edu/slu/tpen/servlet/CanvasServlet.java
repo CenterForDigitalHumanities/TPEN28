@@ -56,7 +56,6 @@ public class CanvasServlet extends HttpServlet{
                     resp.setContentType("application/json; charset=UTF-8");
                     resp.setHeader("Access-Control-Allow-Headers", "*");
                     resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
-//                    resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
                     resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
                     resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
                     resp.setHeader("Expires", "0"); // Proxies.

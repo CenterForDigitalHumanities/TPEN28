@@ -372,7 +372,6 @@ public class JsonHelper {
             itemsPage.put("id", paintingPageID);
             itemsPage.put("type", "AnnotationPage");
             
-            System.out.println(projID);
             if (projID == -1) {
                 itemsPage.put("items", getPaintingAnnotations(projIDs.get(0), f, storedDims));
             } else {
@@ -416,7 +415,7 @@ public class JsonHelper {
     public static ArrayList getProjIDFromFolio(final int folioNumber) throws SQLException, IOException {
         final String query = "select project from projectfolios where folio=?";
         int projID = 0, size = 0;
-		ArrayList<Integer> projIDs = new ArrayList<>();
+        ArrayList<Integer> projIDs = new ArrayList<>();
         Connection j = null;
         PreparedStatement ps = null;
         

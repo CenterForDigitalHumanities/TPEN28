@@ -60,6 +60,11 @@ public class JsonLDExporter {
    */
 public JsonLDExporter(Project proj, User u, String profile) throws SQLException, IOException
 {   
+   /**
+ *
+ * @author DrewSadler01
+ */
+    // Reviews the header request to see if it contains "v3", if so, it will then send the correct manifest
        Folio[] folios = proj.getFolios();
 
        int projID = proj.getProjectID();

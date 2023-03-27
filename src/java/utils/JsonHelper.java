@@ -428,7 +428,6 @@ public class JsonHelper {
              result.put("items", new HashMap());
              Map<String, Object> resultAnnotation  = new LinkedHashMap();
              result.put("annotations", new HashMap());
-             System.out.println(result);
              return result;
          }
          catch (Exception e) {

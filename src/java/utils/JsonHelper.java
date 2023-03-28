@@ -141,7 +141,7 @@ public class JsonHelper {
     * @return a map containing the relevant info, suitable for Jackson
     * serialisation
     */
-    public static Map<String, Object> buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
+    public static Map<String, Object> buildPage(int projID, Folio f, User u) throws SQLException, IOException {
         try{
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
@@ -204,7 +204,16 @@ public class JsonHelper {
             //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
             //System.out.println("Get otherContent");
             //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
-            otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
+            if (projID == -1) {
+                ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
+                otherContent = new JSONArray();
+                for (int i : projIDs) {
+                    otherContent.add(getLinesForProject(i, canvasID, f.getFolioNumber(), u.getUID()).get(0));
+                }
+            } else {
+                otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
+            }
+//            otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
             //System.out.println("Finalize result");
             result.put("otherContent", otherContent);
             result.put("images", images);

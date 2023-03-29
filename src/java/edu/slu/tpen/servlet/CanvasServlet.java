@@ -70,8 +70,9 @@ public class CanvasServlet extends HttpServlet{
                         resp.getWriter().write(export(JsonHelper.buildPage(projID, f, u, "v3")));
                     }
                     else {
-//                        resp.getWriter().write(export(JsonHelper.buildPage(f)));
-                        resp.getWriter().write(export(JsonHelper.buildPage(-1, f, new User(0))));
+                        int projID = -1;
+                        User u = new User(0);
+                        resp.getWriter().write(export(JsonHelper.buildPage(projID, f, u)));
                     }
                     resp.setStatus(SC_OK);
                 } else {

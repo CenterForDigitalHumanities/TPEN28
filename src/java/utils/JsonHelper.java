@@ -135,9 +135,11 @@ public class JsonHelper {
     
     /**
     * Get the map which contains the serialisable information for the given
-    * page.
-    *
+    * page using version 2 presentation standard.
+    *   
+    * @param projID the project whose folio is to be exported, -1 for folios from all projects
     * @param f the folio to be exported
+    * @param u the current user in session
     * @return a map containing the relevant info, suitable for Jackson
     * serialisation
     */
@@ -201,16 +203,16 @@ public class JsonHelper {
             imageAnnot.put("resource", imageResource);
             imageAnnot.put("on", canvasID);
             images.add(imageAnnot);
-            //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
-            //System.out.println("Get otherContent");
-            //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
+            // -1 is a hard-coded value from CanvasServlet call of this method
             if (projID == -1) {
+                // method was called from CanvasServlet - find all projects that have a version of this folio 
                 ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
                 otherContent = new JSONArray();
                 for (int i : projIDs) {
                     otherContent.add(getLinesForProject(i, canvasID, f.getFolioNumber(), u.getUID()).get(0));
                 }
             } else {
+                // method was called from JSONLDExporter - find the version of this folio that is used for this project
                 otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
             }
             result.put("otherContent", otherContent);
@@ -224,23 +226,19 @@ public class JsonHelper {
             return empty;
         }
    }
-
-   /**
-    * Builds the JSON representation of canvas according to presentation 3 standard and returns it
-    * */
-    
     
     /**
     * Get the map which contains the serialisable information for the given
-    * page.
+    * page using version 3 presentation standard.
     *
+    * @param projID the project whose folio is to be exported, -1 for folios from all projects
     * @param f the folio to be exported
+    * @param u the current user in session
+    * @param profile specifies that this returns a version 3 presentation canvas
     * @return a map containing the relevant info, suitable for Jackson
     * serialisation
     */
      
-     
-
     public static JSONObject buildPage(int projID, Folio f, User u, String profile) throws SQLException {
         try {
             JSONObject result = new JSONObject();

@@ -20,6 +20,6 @@ package edu.slu.tpen.servlet;
  */
 public class Constant {
       public static String ANNOTATION_SERVER_ADDR = "http://store.rerum.io/v1/api";
-      public static String TPEN_CANVAS_PREFIX = "http://newberry.t-pen.org/paleography";
+      public static String TPEN_CANVAS_PREFIX = "http://tpenner.rerum.io/TPEN";
     //public static String ANNOTATION_SERVER_ADDR = "http://localhost:8080/annotationstore";
 }

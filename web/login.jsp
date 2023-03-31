@@ -117,7 +117,7 @@
    else
 {
        
-session.setAttribute("ref",request.getParameter("referrer"));
+session.setAttribute("ref",request.getParameter("referer"));
 
 }%>
             <div id="main" class="ui-widget ui-widget-content ui-corner-all ui-tabs ui-helper-reset ui-helper-clearfix">

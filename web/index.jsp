@@ -22,15 +22,11 @@
     "http://www.w3.org/TR/html4/loose.dtd">
 <%
     user.User thisUser = null;
-    out.println("request url "+request.getRequestURL().toString());
-    out.println("referer "+request.getHeader("referer"));
-    out.println("Session UID is "+session.getAttribute("UID")+" !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    
+
     int UID = 0;
     if (session.getAttribute("UID") != null) {
         thisUser = new user.User(Integer.parseInt(session.getAttribute("UID").toString()));
         UID = thisUser.getUID();
-        
         if (request.getParameter("accept") != null) {
             thisUser.acceptUserAgreement();
         }
@@ -392,7 +388,7 @@
                         <form action="login.jsp" method="POST">
                             <label for="uname">Email</label><input class="text" type="text" name="uname"><br>
                             <label for="password">Password</label><input class="text" type="password" name="password"><br>
-                            <input type="hidden" name="ref" value="login.jsp">
+                            <input type="hidden" name="ref" value="http://t-pen.org/TPEN/login.jsp">
                             <input class="ui-state-default ui-button ui-corner-all" type="submit" title="Log In" value="Log In">
                         </form>
                             <!--<br> didn't work to fix problem on mac-->

@@ -132,6 +132,72 @@ public class JsonHelper {
         return services;
     }
     
+    /**
+     * Build an AnnotationPage containing only textual annotations from a specific project and folio
+     * @param projID
+     * @param pageID
+     * @param canvasID
+     * @param f
+     * @return
+     * @throws IOException
+     * @throws SQLException 
+     */
+    public static Map<String, Object> buildAnnotationPage(int projID, Folio f, String pageID, String canvasID) 
+        throws IOException, SQLException {
+        try {
+            Map<String, Object> annotationPage = new LinkedHashMap<>();
+            annotationPage.put("id", pageID + "/project/" + projID);
+            annotationPage.put("type", "AnnotationPage");
+            annotationPage.put("projectId", projID);
+            annotationPage.put("items", getAnnotationLinesForAnnotationPage(projID, canvasID, f.getFolioNumber()));
+            return annotationPage;
+        } catch (Exception e) {
+            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
+            return new JSONObject();   
+        }
+    }
+    
+    /**
+     * Build an AnnotationPage containing only painting annotation from a specific project and folio
+     * 
+     * @param projID
+     * @param pageID
+     * @param canvasID
+     * @param f
+     * @param storedDims
+     * @return
+     * @throws IOException
+     * @throws SQLException 
+     */
+    public static Map<String, Object> buildAnnotationPage(int projID, Folio f) 
+        throws IOException, SQLException {
+        try {
+            Dimension storedDims = null;
+            String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
+            FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
+            if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
+            storedDims = getImageDimension(f.getFolioNumber());
+                if(null == storedDims || storedDims.height <=0) { //There was no imagecache entry or a bad one we can't use
+                // System.out.println("Need to resolve image headers for dimensions");
+                    storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+                }
+            }
+            
+            else{ //define a 0, 0 storedDims
+                storedDims = new Dimension(0,0);
+            }
+            Map<String, Object> annotationPage = new LinkedHashMap<>();
+            annotationPage.put("id", paintingPageID);
+            annotationPage.put("type", "AnnotationPage");
+            annotationPage.put("items", getPaintingAnnotations(projID, f, storedDims));
+            return annotationPage;
+            
+            
+        } catch (Exception e) {
+            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
+            return new JSONObject();   
+        }
+    }
     
     /**
     * Get the map which contains the serialisable information for the given

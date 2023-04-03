@@ -171,6 +171,10 @@ public class JsonHelper {
     public static Map<String, Object> buildAnnotationPage(int projID, Folio f) 
         throws IOException, SQLException {
         try {
+            if (projID == -1) {
+                ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
+                projID = projIDs.get(0);
+            }
             Dimension storedDims = null;
             String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
@@ -449,7 +453,7 @@ public class JsonHelper {
             if (projID == -1) {
                 // method was called from CanvasServlet - find all projects that have a version of this folio  
                 for (int id : projIDs) {
-                    Map<String, Object> annotationPage = buildAnnotationPage(projID, f, pageID, canvasID);
+                    Map<String, Object> annotationPage = buildAnnotationPage(id, f, pageID, canvasID);
                     annotationPage.put("projectId", id);
                     annotations.add(annotationPage);
                 }

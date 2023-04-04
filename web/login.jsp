@@ -14,12 +14,9 @@
        user.User thisOne=new user.User(request.getParameter("uname"), request.getParameter("password"));
             if(thisOne.getUID()>0)
                 {
-                
-                  
                 session.setAttribute("UID", ""+thisOne.getUID());
                 String ref="";
-                String tmpref=request.getHeader("referer");
-
+                String tmpref=request.getHeader("referer");               
                 if(request.getHeader("referer")==null || request.getHeader("referer").compareTo("")==0 || request.getHeader("referer").contains("login")){
                     %>
                     <script>
@@ -117,7 +114,7 @@
    else
 {
        
-session.setAttribute("ref",request.getParameter("referrer"));
+session.setAttribute("ref",request.getParameter("referer"));
 
 }%>
             <div id="main" class="ui-widget ui-widget-content ui-corner-all ui-tabs ui-helper-reset ui-helper-clearfix">

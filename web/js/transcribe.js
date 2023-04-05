@@ -1497,7 +1497,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
             clearTimeout(longLoadingProject);
             if (permissionForImage) {
                 $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,''));
-                $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
+                $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,''));
                 populateCompareSplit(tpen.screen.currentFolio);
                 populateHistorySplit(tpen.screen.currentFolio);
                 //FIXME At some point I had to track tpen.screen.originalCanvasHeight differently.  Not sure that

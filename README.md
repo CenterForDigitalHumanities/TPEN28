@@ -1,5 +1,5 @@
 # TPEN28
-![](http://t-pen.org/TPEN/images/tpen_logo_header.jpg)
+![](https://t-pen.org/TPEN/images/tpen_logo_header.jpg)
 
 The Transcription for Paleographical and Editorial Notation (T‑PEN) project was coordinated by the Center for Digital Theology at Saint Louis University (SLU) and funded by the Andrew W. Mellon Foundation and the NEH. The Electronic Norman Anonymous Project developed several abilities at the core of this project's functionality.
 

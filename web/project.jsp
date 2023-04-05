@@ -430,7 +430,7 @@
                     </div>
                 </div>
                 <div id="tabs">
-                    <a id="videoBtn_project" class="videoBtn" title="See help video!" onclick="openHelpVideo('http://www.youtube.com/embed/2ot-nGSZP2g');"><span class="vInvert"></span></a>
+                    <a id="videoBtn_project" class="videoBtn" title="See help video!" onclick="openHelpVideo('https://www.youtube.com/embed/2ot-nGSZP2g');"><span class="vInvert"></span></a>
                     <ul>
                         <li><a title="Switch between projects or manage pages" href="#tabs-1">Projects</a></li>
                         <li><a title="Alter linebreaks and parsings" href="#tabs-2">Manuscripts</a></li>
@@ -904,12 +904,12 @@
                                         }
                                     %>
                                     <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[0]);%> value="https://centerfordigitalhumanities.github.io/cappelli/" title="Cappelli's Abbreviations"/><span contentEditable="true">Cappelli's Abbreviations</span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[1]);%> value="http://vulsearch.sourceforge.net/cgi-bin/vulsearch" title="Latin Vulgate Search"/><span contentEditable="true">Latin Vulgate Search</span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[2]);%> value="http://www.perseus.tufts.edu/hopper/resolveform?lang=latin" title="Latin Dictionary"/><span contentEditable="true">Latin Dictionary</span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[3]);%> value="http://quod.lib.umich.edu/m/med/lookup.html" title="Middle English Dictionary"/><span contentEditable="true">Middle English Dictionary</span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[4]);%> value="http://www.cnrtl.fr/morphologie/" title="French Dictionary"/><span contentEditable="true">French Dictionary</span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[5]);%> value="http://tapor.library.utoronto.ca/cgi-bin/doe/production.pl" title="Dictionary of Old English"/><span contentEditable="true">Dictionary of Old English</span></label>
-                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[6]);%> value="http://ciham-digital.huma-num.fr/enigma/" title="Enigma"/><span contentEditable="true">Enigma</span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[1]);%> value="https://vulsearch.sourceforge.net/cgi-bin/vulsearch" title="Latin Vulgate Search"/><span contentEditable="true">Latin Vulgate Search</span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[2]);%> value="https://www.perseus.tufts.edu/hopper/resolveform?lang=latin" title="Latin Dictionary"/><span contentEditable="true">Latin Dictionary</span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[3]);%> value="https://quod.lib.umich.edu/m/med/lookup.html" title="Middle English Dictionary"/><span contentEditable="true">Middle English Dictionary</span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[4]);%> value="https://www.cnrtl.fr/morphologie/" title="French Dictionary"/><span contentEditable="true">French Dictionary</span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[5]);%> value="https://tapor.library.utoronto.ca/cgi-bin/doe/production.pl" title="Dictionary of Old English"/><span contentEditable="true">Dictionary of Old English</span></label>
+                                    <label class='projectTools'><input name="projectTool[]" type="checkbox" <%out.print(projectToolCheck[6]);%> value="https://ciham-digital.huma-num.fr/enigma/" title="Enigma"/><span contentEditable="true">Enigma</span></label>
                                     <% } %>
                                     <input type="hidden" name="p" value="<%out.print(pageno);%>"/>
                                     <input type="hidden" name="projectID" value="<%out.print(projectID);%>"/>

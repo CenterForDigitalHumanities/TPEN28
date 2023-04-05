@@ -166,10 +166,10 @@ public class sequence {
 
     public static void main(String[] args) {
         try {
-            String w = "http://67.23.4.192/NormalSequence.xml";
+            String w = "https://67.23.4.192/NormalSequence.xml";
             URL[] urls = new URL[2];
-            urls[0] = new URL("http://dms-data.stanford.edu/Oxford/Bodley342/Manifest.xml");//"http://67.23.4.192/NormalSequence.xml");//"http://rosetest.library.jhu.edu/m3/Francais12594");
-            urls[1] = new URL("http://dms-data.stanford.edu/Oxford/Bodley342/ImageAnnotations.xml");
+            urls[0] = new URL("https://dms-data.stanford.edu/Oxford/Bodley342/Manifest.xml");//"http://67.23.4.192/NormalSequence.xml");//"http://rosetest.library.jhu.edu/m3/Francais12594");
+            urls[1] = new URL("https://dms-data.stanford.edu/Oxford/Bodley342/ImageAnnotations.xml");
             //URL [] urls=new URL[3];
             //urls[0]=new URL("http://67.23.4.192/IA.n3");
             //urls[1]=new URL("http://67.23.4.192/normalSequence.n3");

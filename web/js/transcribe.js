@@ -6083,21 +6083,21 @@ var Help = {
         switch (refIndex) {
             case 0: //Previous Line
             case 1: //Next Line
-                vidLink = 'http://www.youtube.com/embed/gcDOP5XfiwM';
+                vidLink = 'https://www.youtube.com/embed/gcDOP5XfiwM';
                 break;
             case 2: //Line Indicator
-                vidLink = 'http://www.youtube.com/embed/rIfF9ksffnU';
+                vidLink = 'https://www.youtube.com/embed/rIfF9ksffnU';
                 break;
             case 3: //View Full Page
             case 7:
-                vidLink = 'http://www.youtube.com/embed/6X-KlLpF6RQ';
+                vidLink = 'https://www.youtube.com/embed/6X-KlLpF6RQ';
                 break;
             case 4: //Preview Tool
             case 15:
-                vidLink = 'http://www.youtube.com/embed/dxS-BF3PJ_0';
+                vidLink = 'https://www.youtube.com/embed/dxS-BF3PJ_0';
                 break;
             case 5: //Special Characters
-                vidLink = 'http://www.youtube.com/embed/EJL_GRA-grA';
+                vidLink = 'https://www.youtube.com/embed/EJL_GRA-grA';
                 break;
             case 6: //XML Tags
                 vidLink = '';
@@ -6124,10 +6124,10 @@ var Help = {
                 vidLink = '';
                 break;
             case 16: //Location Flag
-                vidLink = 'http://www.youtube.com/embed/8D3drB9MTA8';
+                vidLink = 'https://www.youtube.com/embed/8D3drB9MTA8';
                 break;
             case 17: //Jump to Page
-                vidLink = 'http://www.youtube.com/embed/mv_W_3N_Sbo';
+                vidLink = 'https://www.youtube.com/embed/mv_W_3N_Sbo';
                 break;
             case 18: //Previous Page
                 vidLink = '';
@@ -7058,7 +7058,7 @@ function dailyTip() {
         "Attempt something against your permissions and you will see the T&#8209;PEN t-rex.",
         "Export your project as a SharedCanvas Manifest to use it in other great IIIF tools.",
         "You can find your project's T&#8209;PEN I.D. by managing your project.  It is also often in your browser's address bar! ",
-        "Access the SharedCanvas Manifest for your project any time by going to http://t-pen.org/TPEN/manifest/{projectID}",
+        "Access the SharedCanvas Manifest for your project any time by going to https://t-pen.org/TPEN/manifest/{projectID}",
         "The Research Computing Group at Saint Louis University thanks you for using T&#8209;PEN.",
         "Need a closer look?  Try using the Inspect tool!",
         "Visit the blog for news on TPEN3!"

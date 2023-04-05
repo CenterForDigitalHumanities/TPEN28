@@ -82,9 +82,9 @@
         <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
         <!--[if lt IE 8]><link rel="stylesheet" href="css/ie.css" type="text/css" media="screen, projection"><![endif]-->
         <link type="text/css" href="css/custom-theme/jQuery.css" rel="Stylesheet" />
-        <link  href="http://fonts.googleapis.com/css?family=Nova+Cut:regular&v1" rel="stylesheet" type="text/css" >
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
+        <link  href="//fonts.googleapis.com/css?family=Nova+Cut:regular&v1" rel="stylesheet" type="text/css" >
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
         <script type="text/javascript" src="js/tpen.js"></script>
         <script type="text/javascript" src="js/transcription.js"></script>
         <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
@@ -1501,7 +1501,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
                     String archiveLink = thisFolio.getArchiveLink();
                     textdisplay.Manuscript ms = new textdisplay.Manuscript(thisFolio.getFolioNumber());
                     if(ms.getRepository().compareTo("Corpus Christi College")==0){
-                        out.print("<a id='linkback' target='_blank' href=\"http://dms-dev.stanford.edu/catalog/CCC"+ms.getCollection().replace("MS_", "") + "_keywords\">View in Stanford Search and Discovery<span class='ui-icon ui-icon-extlink right'></span></a>");
+                        out.print("<a id='linkback' target='_blank' href=\"https://dms-dev.stanford.edu/catalog/CCC"+ms.getCollection().replace("MS_", "") + "_keywords\">View in Stanford Search and Discovery<span class='ui-icon ui-icon-extlink right'></span></a>");
                     }
                     if ((ms.getControllingUser() != null) && (ms.getControllingUser().getUID() == thisUser.getUID())){
                         out.print("<a class='left ui-icon ui-icon-wrench' href=\"manuscriptAdmin.jsp?ms=" + ms.getID() + "\" title=\"Change page name or administer manuscript access\">Change Page Names</a>");

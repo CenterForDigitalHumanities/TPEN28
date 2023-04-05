@@ -77,16 +77,16 @@ public class JsonLDExporter {
 
            Map<String, Object> service = new LinkedHashMap<>();
          service.put("@context", "http://iiif.io/api/auth/1/context.json");
-         service.put("@id","http://t-pen.org/TPEN/login.jsp");
+         service.put("@id","https://t-pen.org/TPEN/login.jsp");
          service.put("profile", "http://iiif.io/api/auth/1/login");
          service.put("label", "T-PEN Login");
          service.put("header", "Login for image access");
          service.put("description", "Agreement requires an open T-PEN session to view images");
          service.put("confirmLabel", "Login");
          service.put("failureHeader", "T-PEN Login Failed");
-         service.put("failureDescription", "<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
+         service.put("failureDescription", "<a href=\"https://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
         Map<String, Object> logout = new LinkedHashMap<>();
-         logout.put("@id", "http://t-pen.org/TPEN/login.jsp");
+         logout.put("@id", "https://t-pen.org/TPEN/login.jsp");
          logout.put("profile", "http://iiif.io/api/auth/1/logout");
          logout.put("label", "End T-PEN Session");
         service.put("service",new Object[] { logout });

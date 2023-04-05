@@ -1496,7 +1496,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
             $(".turnMsg").html("Please wait while we load the transcription interface.");
             clearTimeout(longLoadingProject);
             if (permissionForImage) {
-                $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', ''));
+                $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,''));
                 $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', ''));
                 populateCompareSplit(tpen.screen.currentFolio);
                 populateHistorySplit(tpen.screen.currentFolio);
@@ -2191,7 +2191,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
         $(".xmlClosingTags").before(newAnno);
         var hiResBackground = ""
         if ($(".transcriptionImage").attr("src").includes('/full/full')) {
-            hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`) + ");";
+            hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
         }
 
         var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter

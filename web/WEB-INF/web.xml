@@ -426,9 +426,6 @@
     <servlet-mapping>
         <servlet-name>PageServlet</servlet-name>
         <url-pattern>/annotations/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>PageServlet</servlet-name>
         <url-pattern>/annotationpage/*</url-pattern>
     </servlet-mapping>
     <!-- tpen webservices for newberry starts -->

@@ -161,7 +161,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
          for (Folio f : folios) {
              index++;
              //System.out.println("Build page "+index);
-            pageList.add(JsonHelper.buildPage(proj.getProjectID(), projName, f, u));
+            pageList.add(JsonHelper.buildPage(proj.getProjectID(), f, u));
          }
          //System.out.println("Put all canvas together");
          pages.put("canvases", pageList);

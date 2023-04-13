@@ -204,13 +204,15 @@ public class JsonHelper {
     
     /**
     * Get the map which contains the serialisable information for the given
-    * page.
-    *
+    * page using version 2 presentation standard.
+    *   
+    * @param projID the project whose folio is to be exported, -1 for folios from all projects
     * @param f the folio to be exported
+    * @param u the current user in session
     * @return a map containing the relevant info, suitable for Jackson
     * serialisation
     */
-    public static Map<String, Object> buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
+    public static Map<String, Object> buildPage(int projID, Folio f, User u) throws SQLException, IOException {
         try{
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
@@ -270,11 +272,18 @@ public class JsonHelper {
             imageAnnot.put("resource", imageResource);
             imageAnnot.put("on", canvasID);
             images.add(imageAnnot);
-            //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
-            //System.out.println("Get otherContent");
-            //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
-            otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
-            //System.out.println("Finalize result");
+            // -1 is a hard-coded value from CanvasServlet call of this method
+            if (projID == -1) {
+                // method was called from CanvasServlet - find all projects that have a version of this folio 
+                ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
+                otherContent = new JSONArray();
+                for (int i : projIDs) {
+                    otherContent.add(getLinesForProject(i, canvasID, f.getFolioNumber(), u.getUID()).get(0));
+                }
+            } else {
+                // method was called from JSONLDExporter - find the version of this folio that is used for this project
+                otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
+            }
             result.put("otherContent", otherContent);
             result.put("images", images);
             //System.out.println("Return");
@@ -287,112 +296,18 @@ public class JsonHelper {
         }
    }
     
-	
-    
-    /*
-        build the JSON representation of a canvas and return it.  It will not know about the project, so otherContent will contains all annotation lists this canvas
-        has across all projects.  It will ignore all user checks so as to be open.  
-    */
-
-     public static Map<String, Object> buildPage(Folio f) throws SQLException, IOException {
-         
-     try{
-            String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
-            FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
-            Dimension storedDims = null;
-            JSONArray otherContent;
-            if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-               storedDims = getImageDimension(f.getFolioNumber());
-               if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
-                  // System.out.println("Need to resolve image headers for dimensions");
-                  storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
-               }
-            }
-            LOG.log(INFO, "pageDim={0}", pageDim);
-
-            Map<String, Object> result  = new LinkedHashMap();
-            //Map<String, Object> result = new LinkedHashMap<>();
-            result.put("@context","http://iiif.io/api/presentation/2/context.json");
-            result.put("@id", canvasID);
-            result.put("@type", "sc:Canvas");
-            result.put("label", f.getPageName());
-            int canvasHeight = pageDim.getCanvasHeight();
-            int canvasWidth = pageDim.getCanvasWidth();
-            if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
-                  if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
-                      if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.
-                          //generate canvas values for foliodim
-                          canvasHeight = 1000;
-                          canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
-                          //System.out.println("Need to make folio dims record");
-                          createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
-                      }
-                  }
-                  else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
-                      canvasHeight = 0;
-                      canvasWidth = 0;
-                  }
-            }
-            else{ //define a 0, 0 storedDims
-                storedDims = new Dimension(0,0);
-            }
-            result.put("width", canvasWidth);
-            result.put("height", canvasHeight);
-            List<Object> images = new ArrayList<>();
-            Map<String, Object> imageAnnot = new LinkedHashMap<>();
-            imageAnnot.put("@type", "oa:Annotation");
-            imageAnnot.put("motivation", "sc:painting");
-            String imageURL = f.getImageURL();
-            if (imageURL.startsWith("/")) {
-                imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
-            }
-            Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
-
-            if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
-                //doing this check will return invalid images because we will not include height and width of 0.
-               imageResource.put("height", storedDims.height ); 
-               imageResource.put("width", storedDims.width ); 
-            }
-            imageAnnot.put("resource", imageResource);
-            imageAnnot.put("on", canvasID);
-            images.add(imageAnnot);
-            //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
-            //System.out.println("Get otherContent");
-            //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());;
-            //otherContent = getAnnotationListsForProject(-, canvasID, 0);
-//            otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), 0); //Can be an empty array now.
-
-            //System.out.println("Finalize result");
-            //result.put("otherContent", otherContent);
-            result.put("images", images);
-            //System.out.println("Return");
-            return result;
-        }
-        catch(Exception e){
-            //Map<String, Object> empty = new LinkedHashMap<>();
-
-            Map<String, Object> empty = new LinkedHashMap();
-            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
-            return empty;
-        }
-   }
-
-   /**
-    * Builds the JSON representation of canvas according to presentation 3 standard and returns it
-    * */
-    
-    
     /**
     * Get the map which contains the serialisable information for the given
-    * page.
+    * page using version 3 presentation standard.
     *
+    * @param projID the project whose folio is to be exported, -1 for folios from all projects
     * @param f the folio to be exported
+    * @param u the current user in session
+    * @param profile specifies that this returns a version 3 presentation canvas
     * @return a map containing the relevant info, suitable for Jackson
     * serialisation
     */
      
-     
-
     public static JSONObject buildPage(int projID, Folio f, User u, String profile) throws SQLException {
         try {
             JSONObject result = new JSONObject();

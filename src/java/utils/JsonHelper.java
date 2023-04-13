@@ -132,6 +132,75 @@ public class JsonHelper {
         return services;
     }
     
+    /**
+     * Build an AnnotationPage containing only textual annotations from a specific project and folio
+     * @param projID
+     * @param pageID
+     * @param canvasID
+     * @param f
+     * @return
+     * @throws IOException
+     * @throws SQLException 
+     */
+    public static Map<String, Object> buildAnnotationPage(int projID, Folio f, String pageID, String canvasID) 
+        throws IOException, SQLException {
+        try {
+            Map<String, Object> annotationPage = new LinkedHashMap<>();
+            annotationPage.put("id", pageID + "/project/" + projID);
+            annotationPage.put("type", "AnnotationPage");
+            annotationPage.put("items", getAnnotationLinesForAnnotationPage(projID, canvasID, f.getFolioNumber()));
+            return annotationPage;
+        } catch (Exception e) {
+            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
+            return new JSONObject();   
+        }
+    }
+    
+    /**
+     * Build an AnnotationPage containing only painting annotation from a specific project and folio
+     * 
+     * @param projID
+     * @param pageID
+     * @param canvasID
+     * @param f
+     * @param storedDims
+     * @return
+     * @throws IOException
+     * @throws SQLException 
+     */
+    public static Map<String, Object> buildAnnotationPage(int projID, Folio f) 
+        throws IOException, SQLException {
+        try {
+            if (projID == -1) {
+                ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
+                projID = projIDs.get(0);
+            }
+            Dimension storedDims = null;
+            String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
+            FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
+            if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
+            storedDims = getImageDimension(f.getFolioNumber());
+                if(null == storedDims || storedDims.height <=0) { //There was no imagecache entry or a bad one we can't use
+                // System.out.println("Need to resolve image headers for dimensions");
+                    storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+                }
+            }
+            
+            else{ //define a 0, 0 storedDims
+                storedDims = new Dimension(0,0);
+            }
+            Map<String, Object> annotationPage = new LinkedHashMap<>();
+            annotationPage.put("id", paintingPageID);
+            annotationPage.put("type", "AnnotationPage");
+            annotationPage.put("items", getPaintingAnnotations(projID, f, storedDims));
+            return annotationPage;
+            
+            
+        } catch (Exception e) {
+            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
+            return new JSONObject();   
+        }
+    }
     
     /**
     * Get the map which contains the serialisable information for the given
@@ -282,39 +351,31 @@ public class JsonHelper {
             String pageID = getRbTok("SERVERURL")+"annotations/"+f.getFolioNumber();
             String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
             ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
-            //AnnotationPage that contains painting annotations - should be under `items`
-            Map<String, Object> itemsPage = new LinkedHashMap<>();
-            itemsPage.put("id", paintingPageID);
-            itemsPage.put("type", "AnnotationPage");
             
+            //AnnotationPage that contains painting annotations - should be under `items`
+            Map<String, Object> itemsPage;
             if (projID == -1) {
-                itemsPage.put("items", getPaintingAnnotations(projIDs.get(0), f, storedDims));
+                itemsPage = buildAnnotationPage(projIDs.get(0), f);
             } else {
-                itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims));
+                itemsPage = buildAnnotationPage(projID, f);
             } 
             result.put("items", Arrays.asList(itemsPage));
-            //AnnotationPage that contains external annotations - should be under `annotations`
-			
+            
+            //AnnotationPage that contains external annotations - should be under `annotations`	
             JSONArray annotations = new JSONArray();
             
             // -1 is a hard-coded value from CanvasServlet call of this method
             if (projID == -1) {
                 // method was called from CanvasServlet - find all projects that have a version of this folio  
                 for (int id : projIDs) {
-                    Map<String, Object> annotationsPage = new LinkedHashMap<>();
-                    annotationsPage.put("id", pageID + "/project/" + id);
-                    annotationsPage.put("type", "AnnotationPage");
-                    annotationsPage.put("projectId", id);
-                    annotationsPage.put("items", getAnnotationLinesForAnnotationPage(id, canvasID, f.getFolioNumber()));
-                    annotations.add(annotationsPage);
+                    Map<String, Object> annotationPage = buildAnnotationPage(id, f, pageID, canvasID);
+                    annotationPage.put("projectId", id);
+                    annotations.add(annotationPage);
                 }
             } else {
                 // method was called from JSONLDExporter - find the version of this folio that is used for this project
-                Map<String, Object> annotationsPage = new LinkedHashMap<>();
-                annotationsPage.put("id", pageID);
-                annotationsPage.put("type", "AnnotationPage");
-                annotationsPage.put("items", getAnnotationLinesForAnnotationPage(projID, canvasID, f.getFolioNumber()));
-                annotations.add(annotationsPage);
+                Map<String, Object> annotationPage = buildAnnotationPage(projID, f, pageID, canvasID);
+                annotations.add(annotationPage);
             }
            
             result.put("annotations", annotations);

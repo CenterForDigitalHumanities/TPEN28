@@ -7,6 +7,12 @@ import static edu.slu.util.LangUtils.buildQuickMap;
 import static imageLines.ImageCache.getImageDimension;
 import java.awt.Dimension;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import static textdisplay.DatabaseWrapper.closeDBConnection;
+import static textdisplay.DatabaseWrapper.closePreparedStatement;
+import static textdisplay.DatabaseWrapper.getConnection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,16 +132,87 @@ public class JsonHelper {
         return services;
     }
     
+    /**
+     * Build an AnnotationPage containing only textual annotations from a specific project and folio
+     * @param projID
+     * @param pageID
+     * @param canvasID
+     * @param f
+     * @return
+     * @throws IOException
+     * @throws SQLException 
+     */
+    public static Map<String, Object> buildAnnotationPage(int projID, Folio f, String pageID, String canvasID) 
+        throws IOException, SQLException {
+        try {
+            Map<String, Object> annotationPage = new LinkedHashMap<>();
+            annotationPage.put("id", pageID + "/project/" + projID);
+            annotationPage.put("type", "AnnotationPage");
+            annotationPage.put("items", getAnnotationLinesForAnnotationPage(projID, canvasID, f.getFolioNumber()));
+            return annotationPage;
+        } catch (Exception e) {
+            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
+            return new JSONObject();   
+        }
+    }
+    
+    /**
+     * Build an AnnotationPage containing only painting annotation from a specific project and folio
+     * 
+     * @param projID
+     * @param pageID
+     * @param canvasID
+     * @param f
+     * @param storedDims
+     * @return
+     * @throws IOException
+     * @throws SQLException 
+     */
+    public static Map<String, Object> buildAnnotationPage(int projID, Folio f) 
+        throws IOException, SQLException {
+        try {
+            if (projID == -1) {
+                ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
+                projID = projIDs.get(0);
+            }
+            Dimension storedDims = null;
+            String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
+            FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
+            if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
+            storedDims = getImageDimension(f.getFolioNumber());
+                if(null == storedDims || storedDims.height <=0) { //There was no imagecache entry or a bad one we can't use
+                // System.out.println("Need to resolve image headers for dimensions");
+                    storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+                }
+            }
+            
+            else{ //define a 0, 0 storedDims
+                storedDims = new Dimension(0,0);
+            }
+            Map<String, Object> annotationPage = new LinkedHashMap<>();
+            annotationPage.put("id", paintingPageID);
+            annotationPage.put("type", "AnnotationPage");
+            annotationPage.put("items", getPaintingAnnotations(projID, f, storedDims));
+            return annotationPage;
+            
+            
+        } catch (Exception e) {
+            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
+            return new JSONObject();   
+        }
+    }
     
     /**
     * Get the map which contains the serialisable information for the given
-    * page.
-    *
+    * page using version 2 presentation standard.
+    *   
+    * @param projID the project whose folio is to be exported, -1 for folios from all projects
     * @param f the folio to be exported
+    * @param u the current user in session
     * @return a map containing the relevant info, suitable for Jackson
     * serialisation
     */
-    public static Map<String, Object> buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
+    public static Map<String, Object> buildPage(int projID, Folio f, User u) throws SQLException, IOException {
         try{
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
@@ -195,11 +272,18 @@ public class JsonHelper {
             imageAnnot.put("resource", imageResource);
             imageAnnot.put("on", canvasID);
             images.add(imageAnnot);
-            //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
-            //System.out.println("Get otherContent");
-            //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
-            otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
-            //System.out.println("Finalize result");
+            // -1 is a hard-coded value from CanvasServlet call of this method
+            if (projID == -1) {
+                // method was called from CanvasServlet - find all projects that have a version of this folio 
+                ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
+                otherContent = new JSONArray();
+                for (int i : projIDs) {
+                    otherContent.add(getLinesForProject(i, canvasID, f.getFolioNumber(), u.getUID()).get(0));
+                }
+            } else {
+                // method was called from JSONLDExporter - find the version of this folio that is used for this project
+                otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
+            }
             result.put("otherContent", otherContent);
             result.put("images", images);
             //System.out.println("Return");
@@ -212,113 +296,19 @@ public class JsonHelper {
         }
    }
     
-	
-    
-    /*
-        build the JSON representation of a canvas and return it.  It will not know about the project, so otherContent will contains all annotation lists this canvas
-        has across all projects.  It will ignore all user checks so as to be open.  
-    */
-
-     public static Map<String, Object> buildPage(Folio f) throws SQLException, IOException {
-         
-     try{
-            String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
-            FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
-            Dimension storedDims = null;
-            JSONArray otherContent;
-            if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-               storedDims = getImageDimension(f.getFolioNumber());
-               if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
-                  // System.out.println("Need to resolve image headers for dimensions");
-                  storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
-               }
-            }
-            LOG.log(INFO, "pageDim={0}", pageDim);
-
-            Map<String, Object> result  = new LinkedHashMap();
-            //Map<String, Object> result = new LinkedHashMap<>();
-            result.put("@context","http://iiif.io/api/presentation/2/context.json");
-            result.put("@id", canvasID);
-            result.put("@type", "sc:Canvas");
-            result.put("label", f.getPageName());
-            int canvasHeight = pageDim.getCanvasHeight();
-            int canvasWidth = pageDim.getCanvasWidth();
-            if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
-                  if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
-                      if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.
-                          //generate canvas values for foliodim
-                          canvasHeight = 1000;
-                          canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
-                          //System.out.println("Need to make folio dims record");
-                          createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
-                      }
-                  }
-                  else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
-                      canvasHeight = 0;
-                      canvasWidth = 0;
-                  }
-            }
-            else{ //define a 0, 0 storedDims
-                storedDims = new Dimension(0,0);
-            }
-            result.put("width", canvasWidth);
-            result.put("height", canvasHeight);
-            List<Object> images = new ArrayList<>();
-            Map<String, Object> imageAnnot = new LinkedHashMap<>();
-            imageAnnot.put("@type", "oa:Annotation");
-            imageAnnot.put("motivation", "sc:painting");
-            String imageURL = f.getImageURL();
-            if (imageURL.startsWith("/")) {
-                imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
-            }
-            Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
-
-            if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
-                //doing this check will return invalid images because we will not include height and width of 0.
-               imageResource.put("height", storedDims.height ); 
-               imageResource.put("width", storedDims.width ); 
-            }
-            imageAnnot.put("resource", imageResource);
-            imageAnnot.put("on", canvasID);
-            images.add(imageAnnot);
-            //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
-            //System.out.println("Get otherContent");
-            //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());;
-            //otherContent = getAnnotationListsForProject(-, canvasID, 0);
-//            otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), 0); //Can be an empty array now.
-
-            //System.out.println("Finalize result");
-            //result.put("otherContent", otherContent);
-            result.put("images", images);
-            //System.out.println("Return");
-            return result;
-        }
-        catch(Exception e){
-            //Map<String, Object> empty = new LinkedHashMap<>();
-
-            Map<String, Object> empty = new LinkedHashMap();
-            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
-            return empty;
-        }
-   }
-
-   /**
-    * Builds the JSON representation of canvas according to presentation 3 standard and returns it
-    * */
-    
-    
     /**
     * Get the map which contains the serialisable information for the given
-    * page.
+    * page using version 3 presentation standard.
     *
+    * @param projID the project whose folio is to be exported, -1 for folios from all projects
     * @param f the folio to be exported
+    * @param u the current user in session
+    * @param profile specifies that this returns a version 3 presentation canvas
     * @return a map containing the relevant info, suitable for Jackson
     * serialisation
     */
      
-     
-
-    public static JSONObject buildPage(int projID, String projName, Folio f, User u, String profile) throws SQLException {
+    public static JSONObject buildPage(int projID, Folio f, User u, String profile) throws SQLException {
         try {
             JSONObject result = new JSONObject();
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
@@ -359,19 +349,36 @@ public class JsonHelper {
             result.put("width", canvasWidth);
             result.put("height", canvasHeight);
             String pageID = getRbTok("SERVERURL")+"annotations/"+f.getFolioNumber();
-			String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
+            String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
+            ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
+            
             //AnnotationPage that contains painting annotations - should be under `items`
-            Map<String, Object> itemsPage = new LinkedHashMap<>();
-            itemsPage.put("id", paintingPageID);
-            itemsPage.put("type", "AnnotationPage");
-            itemsPage.put("items", getPaintingAnnotations(projID, f, storedDims));
+            Map<String, Object> itemsPage;
+            if (projID == -1) {
+                itemsPage = buildAnnotationPage(projIDs.get(0), f);
+            } else {
+                itemsPage = buildAnnotationPage(projID, f);
+            } 
             result.put("items", Arrays.asList(itemsPage));
-            //AnnotationPage that contains external annotations - should be under `annotations`
-            Map<String, Object> annotationsPage = new LinkedHashMap<>();
-            annotationsPage.put("id", pageID);
-            annotationsPage.put("type", "AnnotationPage");
-            annotationsPage.put("items", getAnnotationLinesForAnnotationPage(projID, canvasID, f.getFolioNumber()));
-            result.put("annotations", Arrays.asList(annotationsPage));
+            
+            //AnnotationPage that contains external annotations - should be under `annotations`	
+            JSONArray annotations = new JSONArray();
+            
+            // -1 is a hard-coded value from CanvasServlet call of this method
+            if (projID == -1) {
+                // method was called from CanvasServlet - find all projects that have a version of this folio  
+                for (int id : projIDs) {
+                    Map<String, Object> annotationPage = buildAnnotationPage(id, f, pageID, canvasID);
+                    annotationPage.put("projectId", id);
+                    annotations.add(annotationPage);
+                }
+            } else {
+                // method was called from JSONLDExporter - find the version of this folio that is used for this project
+                Map<String, Object> annotationPage = buildAnnotationPage(projID, f, pageID, canvasID);
+                annotations.add(annotationPage);
+            }
+           
+            result.put("annotations", annotations);
             return result;
         }
         catch (Exception e)
@@ -380,143 +387,32 @@ public class JsonHelper {
             return new JSONObject();
         }
     }
-     
-   /**
-    * Builds the JSON representation of canvas according to presentation 3 standard and returns it
-    * */
-    public static Map<String, Object> buildPage(Folio f, String profile) throws SQLException, IOException {
-         try {
-             System.out.println("v3 canvas buildpage");
-             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
-             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
-             Dimension storedDims = null;
-             JSONArray otherContent;
-             if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-                 storedDims = getImageDimension(f.getFolioNumber());
-                 if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
-                     // System.out.println("Need to resolve image headers for dimensions");
-                     storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
-                 }
-             }
-             LOG.log(INFO, "pageDim={0}", pageDim);
-             Map<String, Object> result  = new LinkedHashMap();
-             result.put("id", canvasID);
-             result.put("type", "Canvas");
-             result.put("label", buildNoneLanguageMap(f.getPageName()));
-             int canvasHeight = pageDim.getCanvasHeight();
-             int canvasWidth = pageDim.getCanvasWidth();
-             if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
-                 if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
-                     if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.
-                         //generate canvas values for foliodim
-                         canvasHeight = 1000;
-                         canvasWidth = storedDims.width * canvasHeight / storedDims.height;
-                         //System.out.println("Need to make folio dims record");
-                         createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
-                     }
-                 }
-                 else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
-                     canvasHeight = 0;
-                     canvasWidth = 0;
-                 }
-             }
-             else{ //define a 0, 0 storedDims
-                 storedDims = new Dimension(0,0);
-             }
-             result.put("height", canvasHeight);
-             result.put("width", canvasWidth);
-             result.put("items", new HashMap());
-             Map<String, Object> resultAnnotation  = new LinkedHashMap();
-             result.put("annotations", new HashMap());
-             System.out.println(result);
-             return result;
-         }
-         catch (Exception e) {
-             HashMap<String, Object> empty = new HashMap();
-             LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
-             return empty;
-         }
-
+    
+    public static ArrayList getProjIDFromFolio(final int folioNumber) throws SQLException, IOException {
+        final String query = "select project from projectfolios where folio=?";
+        int projID = 0, size = 0;
+        ArrayList<Integer> projIDs = new ArrayList<>();
+        Connection j = null;
+        PreparedStatement ps = null;
+        
+        try {
+            j = getConnection();
+            ps = j.prepareStatement(query);
+            ps.setInt(1, folioNumber);
+            final ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                projID = rs.getInt("project");
+				projIDs.add(projID);
+                size++;
+            }
+            
+			return projIDs;
+        } finally {
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+        }
     }
-    public static Map<String, Object> buildAnnotationForManifest(int projID, String projName, Folio f, User u) throws SQLException, IOException {
-        try{
-            String manifestID = getRbTok("SERVERURL")+"manifest/"+f.getFolioNumber();
-            FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
-            Dimension storedDims = null;
-
-            JSONArray otherContent;
-            if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-               storedDims = getImageDimension(f.getFolioNumber());
-               if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
-                  // System.out.println("Need to resolve image headers for dimensions");
-                  storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
-               }
-            }
-
-            LOG.log(INFO, "pageDim={0}", pageDim);
-            Map<String, Object> result = new LinkedHashMap<>();
-//            result.put("@context", "http://iiif.io/api/presentation/3/context.json");
-            result.put("id", manifestID);
-            result.put("type", "AnnotationPage");
-//            result.put("label", f.getPageName());
-            int canvasHeight = pageDim.getCanvasHeight();
-            int canvasWidth = pageDim.getCanvasWidth();
-            result.put("items", getAnnotationLinesForAnnotationPage(projID,manifestID,f.getFolioNumber()));
-            if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
-                  if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
-                      if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.
-                          //generate canvas values for foliodim
-                          canvasHeight = 1000;
-                          canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
-                          //System.out.println("Need to make folio dims record");
-                          createFolioDimsRecord(storedDims.width,  storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
-                      }
-                  }
-                  else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
-                      canvasHeight = 0;
-                      canvasWidth = 0;
-                  }
-            }
-            else{ //define a 0, 0 storedDims
-                storedDims = new Dimension(0,0);
-            }
-//            result.put("width", canvasWidth);
-//            result.put("height", canvasHeight);
-            List<Object> images = new ArrayList<>();
-            Map<String, Object> imageAnnot = new LinkedHashMap<>();
-            imageAnnot.put("type", "Annotation");
-            imageAnnot.put("motivation", "commenting");
-            Map<String, Object>bodyAnnot = new LinkedHashMap<>();
-            String imageURL = f.getImageURL();
-            if (imageURL.startsWith("/")) {
-                imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
-            }
-            Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
-
-            if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
-                //doing this check will return invalid images because we will not include height and width of 0.
-               imageResource.put("height", storedDims.height ); 
-               imageResource.put("width", storedDims.width ); 
-            }
-            imageAnnot.put("resource", imageResource);
-            imageAnnot.put("on", manifestID);
-            images.add(imageAnnot);
-            //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
-            //System.out.println("Get otherContent");
-            //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
-//            otherContent = getLinesForProject(projID, manifestID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
-            //System.out.println("Finalize result");
-//            result.put("otherContent", otherContent);
-//            result.put("images", images);
-            System.out.println("Return");
-            return result;
-        }
-        catch(Exception e){
-            Map<String, Object> empty = new LinkedHashMap<>();
-            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
-            return empty;
-        }
-   }
 
 }
 

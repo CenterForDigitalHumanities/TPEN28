@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
@@ -24,7 +25,7 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import net.sf.json.JSONObject;
 import textdisplay.Folio;
 import utils.*;
-
+import user.User;
 
 /**
  *
@@ -56,16 +57,21 @@ public class CanvasServlet extends HttpServlet{
                     resp.setContentType("application/json; charset=UTF-8");
                     resp.setHeader("Access-Control-Allow-Headers", "*");
                     resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
-                    resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
-
+                    resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+                    resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+                    resp.setHeader("Expires", "0"); // Proxies.
                     if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
                         
                         resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
 
-                        resp.getWriter().write(export(JsonHelper.buildPage(f, "v3")));
+			int projID = -1;
+                        User u = new User(0);
+                        resp.getWriter().write(export(JsonHelper.buildPage(projID, f, u, "v3")));
                     }
                     else {
-                        resp.getWriter().write(export(JsonHelper.buildPage(f)));
+                        int projID = -1;
+                        User u = new User(0);
+                        resp.getWriter().write(export(JsonHelper.buildPage(projID, f, u)));
                     }
                     resp.setStatus(SC_OK);
                 } else {
@@ -108,10 +114,10 @@ public class CanvasServlet extends HttpServlet{
 
     private static final Logger LOG = getLogger(CanvasServlet.class.getName());
     
-    private String export(JSONObject data) throws JsonProcessingException {
-      ObjectMapper mapper = new ObjectMapper();
-      return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
-   }
+//    private String export(JSONObject data) throws JsonProcessingException {
+//      ObjectMapper mapper = new ObjectMapper();
+//      return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
+//   }
     
  
     private String export(Map<String, Object> data) throws JsonProcessingException {

@@ -17,6 +17,7 @@ package edu.slu.tpen.servlet;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.slu.tpen.entity.Image.Canvas;
+import static edu.slu.tpen.entity.Image.Canvas.getLinesForProject;
 import edu.slu.tpen.transfer.JsonImporter;
 import edu.slu.tpen.transfer.JsonLDExporter;
 import static edu.slu.util.ServletUtils.getBaseContentType;
@@ -42,8 +43,10 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static javax.servlet.http.HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import textdisplay.Folio;
+import static textdisplay.Folio.getRbTok;
 import textdisplay.Project;
 import user.Group;
 import user.User;
@@ -99,7 +102,6 @@ public class ProjectServlet extends HttpServlet {
                 } else {
                     //System.out.println("Project 2");
                     String[] uriData = req.getPathInfo().substring(1).split("/");
-                    System.out.println("URI length " + uriData.length);
                     switch (uriData.length) {
                         case 1: 
                             // project/* - Project
@@ -164,18 +166,21 @@ public class ProjectServlet extends HttpServlet {
                             }
                             break;
                         case 3:
+                            // /project/*/annotation/* - AnnotationList
                             resp.setContentType("application/ld+json; charset=UTF-8");
                             resp.setHeader("Access-Control-Allow-Headers", "*");
                             resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                             resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
                             resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
                             resp.setHeader("Expires", "0"); // Proxies.
-                            // /project/*/annotation/* - AnnotationList
+                            
                             projID = parseInt(uriData[0]);
                             int folioNumber = parseInt(uriData[2]);
-                            Folio f = new Folio(folioNumber);
-                    
-                            resp.getWriter().write("Test");
+                            String canvasID = getRbTok("SERVERURL")+"canvas/"+ folioNumber;
+                            
+                            JSONArray listArray = Canvas.getLinesForProject(projID, canvasID, folioNumber, 0);
+                            if (listArray.size() != 1) resp.sendError(SC_NOT_FOUND);
+                            resp.getWriter().write(export((JSONObject) listArray.get(0)));
                             break;
                     }
                 }

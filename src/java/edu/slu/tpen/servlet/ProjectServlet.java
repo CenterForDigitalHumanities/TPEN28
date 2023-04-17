@@ -126,7 +126,8 @@ public class ProjectServlet extends HttpServlet {
                                 resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
                                 resp.setHeader("Expires", "0"); // Proxies.
 
-                                if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3"))
+                                if ((req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) 
+                                        || (req.getParameter("version") != null && req.getParameter("version").equals("3")))
                                 {
                                     System.out.println(req.getHeader("Accept manifest v3"));
                                     resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");

@@ -60,7 +60,8 @@ public class CanvasServlet extends HttpServlet{
                     resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
                     resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
                     resp.setHeader("Expires", "0"); // Proxies.
-                    if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
+                    if ((req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) 
+                            || (req.getParameter("version") != null && req.getParameter("version").equals("3"))) {
                         
                         resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
 

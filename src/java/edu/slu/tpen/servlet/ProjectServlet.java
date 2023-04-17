@@ -101,8 +101,8 @@ public class ProjectServlet extends HttpServlet {
                     resp.sendRedirect(redirectURL);
                 } else {
                     //System.out.println("Project 2");
-                    String[] uriData = req.getPathInfo().substring(1).split("/");
-                    switch (uriData.length) {
+                    String[] urlData = req.getPathInfo().substring(1).split("/");
+                    switch (urlData.length) {
                         case 1: 
                             // project/* - Project
                             projID = parseInt(req.getPathInfo().substring(1).replace("/", "").replace("manifest.json",""));
@@ -174,8 +174,8 @@ public class ProjectServlet extends HttpServlet {
                             resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
                             resp.setHeader("Expires", "0"); // Proxies.
                             
-                            projID = parseInt(uriData[0]);
-                            int folioNumber = parseInt(uriData[2]);
+                            projID = parseInt(urlData[0]);
+                            int folioNumber = parseInt(urlData[2]);
                             String canvasID = getRbTok("SERVERURL")+"canvas/"+ folioNumber;
                             
                             JSONArray listArray = Canvas.getLinesForProject(projID, canvasID, folioNumber, 0);

@@ -221,7 +221,7 @@
     </servlet>
     <servlet>
         <servlet-name>LineServlet</servlet-name>
-        <servlet-name>edu.slu.tpen.servlet.LineServlet</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.LineServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>PageServlet</servlet-name>

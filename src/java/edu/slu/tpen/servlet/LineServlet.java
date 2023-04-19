@@ -55,7 +55,17 @@ public class LineServlet extends HttpServlet{
             try {
                 String[] URLreq = req.getPathInfo().substring(1).split("/");
                 lineID = parseInt(URLreq[0]);
-                
+                JSONObject hello = new JSONObject();
+                hello.accumulate("hello", "everyone");            
+                resp.setContentType("application/json; charset=UTF-8");
+                resp.setHeader("Access-Control-Allow-Headers", "*");
+                resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+                resp.setHeader("Cache-Control","no-cache, no-store, must-revalidate,max-age=15"); // HTTP 1.1.");
+                resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+                resp.setHeader("Expires", "0"); // Proxies.
+                resp.getWriter().write(hello.toString());
+
+            /*    
             if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
                  // Mint a Presentation API 3 Annotation
                 //Replace foloio with word line, create a line.Exist methods
@@ -69,35 +79,35 @@ public class LineServlet extends HttpServlet{
                     resp.setHeader("Access-Control-Allow-Headers", "*");
                     resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                     resp.setHeader("Cache-Control","no-cache, no-store, must-revalidate,max-age=15"); // HTTP 1.1.");
-                        
                     resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
                     resp.setHeader("Expires", "0"); // Proxies.
-                
-                switch (req.getServletPath().substring(1)) {
-                    case "annotations":
-                        if (URLreq.length == 3 && URLreq[1].equals("project")) {
-                            String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
-                            String pageID = getRbTok("SERVERURL")+"annotations/"+f.getFolioNumber();
-                            projectID = parseInt(URLreq[2]);
-                            resp.getWriter().write(export(JsonHelper.buildAnnotationPage(projectID, f, pageID, canvasID)));
-                        } else {
+                    switch (req.getServletPath().substring(1)) {
+                        case "annotations":
+                            if (URLreq.length == 3 && URLreq[1].equals("project")) {
+                                String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
+                                String pageID = getRbTok("SERVERURL")+"annotations/"+f.getFolioNumber();
+                                projectID = parseInt(URLreq[2]);
+                                resp.getWriter().write(export(JsonHelper.buildAnnotationPage(projectID, f, pageID, canvasID)));
+                            } else {
+                                resp.sendError(SC_NOT_FOUND);
+                            }
+                            break;
+                        case "annotationpage":
+                            resp.getWriter().write(export(JsonHelper.buildAnnotationPage(-1, f)));
+                            break;
+                        default:
                             resp.sendError(SC_NOT_FOUND);
-                        }
-                        break;
-                    case "annotationpage":
-                        resp.getWriter().write(export(JsonHelper.buildAnnotationPage(-1, f)));
-                        break;
-                    default:
-                        resp.sendError(SC_NOT_FOUND);
-                        break;
+                            break;
+                    }
+                    resp.setStatus(SC_OK);
+                } 
+                else {
+                    getLogger(LineServlet.class.getName()).log(SEVERE, null, "No ID provided for line");
+                    resp.sendError(SC_NOT_FOUND);
                 }
-                resp.setStatus(SC_OK);
-            } else {
-                getLogger(LineServlet.class.getName()).log(SEVERE, null, "No ID provided for line");
-                resp.sendError(SC_NOT_FOUND);
-            }
 
             }
+            */
             // build version 2 API here
         }
         catch(NumberFormatException ex){
@@ -105,10 +115,10 @@ public class LineServlet extends HttpServlet{
              resp.sendError(SC_NOT_FOUND);
              System.out.println(ex);
         } 
-        catch (SQLException ex) {
-            Logger.getLogger(LineServlet.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println(ex);
-        }
+//        catch (SQLException ex) {
+//            Logger.getLogger(LineServlet.class.getName()).log(Level.SEVERE, null, ex);
+//            System.out.println(ex);
+//        }
     }
  
     
@@ -118,45 +128,3 @@ public class LineServlet extends HttpServlet{
     }
 }
 
-    /**
-     * Handles the HTTP <code>PUT</code> method, updating a project from a plain
-     * JSON serialisation.
-     *
-     * @param req servlet request
-     * @param resp servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-       doGet(req, resp);
-    }
-/// no need for doput
-    
-    
-    
-    /// need do  Options
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getServletInfo() {
-        return "T-PEN Line Dereferencer";
-    }
-    
-
-    private static final Logger LOG = getLogger(LineServlet.class.getName());
-    
-    private String export(JSONObject data) throws JsonProcessingException {
-      ObjectMapper mapper = new ObjectMapper();
-      return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
-   }
-    
- 
-    private String export(Map<String, Object> data) throws JsonProcessingException {
-      ObjectMapper mapper = new ObjectMapper();
-      return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
-   }
-
-}

@@ -220,6 +220,10 @@
         <servlet-class>edu.slu.tpen.servlet.FolioReport</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>LineServlet</servlet-name>
+        <servlet-name>edu.slu.tpen.servlet.LineServlet</servlet-name>
+    </servlet>
+    <servlet>
         <servlet-name>PageServlet</servlet-name>
         <servlet-class>edu.slu.tpen.servlet.PageServlet</servlet-class>
     </servlet>
@@ -422,6 +426,10 @@
     <servlet-mapping>
         <servlet-name>FolioReport</servlet-name>
         <url-pattern>/folioReport</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LineServlet</servlet-name>
+        <url-pattern>/line/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PageServlet</servlet-name>

@@ -21,12 +21,16 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import net.sf.json.JSONObject;
 import textdisplay.Folio;
+import static textdisplay.Folio.getRbTok;
 import utils.*;
 
 /**
  *
  * @author DrewSadler01
  */
+
+
+///// use web.xml to make header areas
 public class LineServlet extends HttpServlet{
     
         /**
@@ -42,48 +46,77 @@ public class LineServlet extends HttpServlet{
      * @throws IOException if an I/O error occurs
      */
     
-    //A callable method that would have the framework to resolve URI and a header request to the page
+    //Override HTTPServlet's doGet Function for line specific function
     @Override
-    protected void doGetUri(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-            int folioID = 0;
+            int lineID = 0;
+            int projectID = 0;
             try {
-                if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
-                folioID = parseInt(req.getPathInfo().substring(1).replace("/", ""));
+                String[] URLreq = req.getPathInfo().substring(1).split("/");
+                lineID = parseInt(URLreq[0]);
+                
+            if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
+                 // Mint a Presentation API 3 Annotation
+                //Replace foloio with word line, create a line.Exist methods
+                
                 //System.out.println(req.getPathInfo().substring(1));
                // System.out.println(folioID);
-                if (folioID > 0 && Folio.exists(folioID)) {
-                    Folio f = new Folio(folioID);
+                if (lineID > 0 && Folio.exists(lineID)) {
+                    // Work on this
+                    Folio f = new Folio(lineID);
                     resp.setContentType("application/json; charset=UTF-8");
                     resp.setHeader("Access-Control-Allow-Headers", "*");
                     resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
-                    resp.setHeader("Cache-Control", "max-age=15, must-revalidate");
-
-                    if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
+                    resp.setHeader("Cache-Control","no-cache, no-store, must-revalidate,max-age=15"); // HTTP 1.1.");
                         
-                        resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
-
-                        resp.getWriter().write(export(JsonHelper.buildPage(f, "v3")));
-                    }
-                    else {
-                        resp.getWriter().write(export(JsonHelper.buildPage(f)));
-                    }
-                    resp.setStatus(SC_OK);
-                } else {
-                    getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
-                    resp.sendError(SC_NOT_FOUND);
+                    resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+                    resp.setHeader("Expires", "0"); // Proxies.
+                
+                switch (req.getServletPath().substring(1)) {
+                    case "annotations":
+                        if (URLreq.length == 3 && URLreq[1].equals("project")) {
+                            String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
+                            String pageID = getRbTok("SERVERURL")+"annotations/"+f.getFolioNumber();
+                            projectID = parseInt(URLreq[2]);
+                            resp.getWriter().write(export(JsonHelper.buildAnnotationPage(projectID, f, pageID, canvasID)));
+                        } else {
+                            resp.sendError(SC_NOT_FOUND);
+                        }
+                        break;
+                    case "annotationpage":
+                        resp.getWriter().write(export(JsonHelper.buildAnnotationPage(-1, f)));
+                        break;
+                    default:
+                        resp.sendError(SC_NOT_FOUND);
+                        break;
                 }
-
-                }
+                resp.setStatus(SC_OK);
+            } else {
+                getLogger(LineServlet.class.getName()).log(SEVERE, null, "No ID provided for line");
+                resp.sendError(SC_NOT_FOUND);
             }
-     catch(NumberFormatException ex){
-          getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
-          resp.sendError(SC_NOT_FOUND);
-     } 
-     catch (SQLException ex) {
-         Logger.getLogger(CanvasServlet.class.getName()).log(Level.SEVERE, null, ex);
-     }
- }
+
+            }
+            // build version 2 API here
+        }
+        catch(NumberFormatException ex){
+             getLogger(LineServlet.class.getName()).log(SEVERE, null, "No ID provided for line");
+             resp.sendError(SC_NOT_FOUND);
+             System.out.println(ex);
+        } 
+        catch (SQLException ex) {
+            Logger.getLogger(LineServlet.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
+        }
+    }
+ 
+    
+    private String export(Map<String, Object> data) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
+    }
+}
 
     /**
      * Handles the HTTP <code>PUT</code> method, updating a project from a plain
@@ -98,17 +131,22 @@ public class LineServlet extends HttpServlet{
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
        doGet(req, resp);
     }
-
+/// no need for doput
+    
+    
+    
+    /// need do  Options
+    
     /**
      * {@inheritDoc}
      */
     @Override
     public String getServletInfo() {
-        return "T-PEN Canvas Dereferencer";
+        return "T-PEN Line Dereferencer";
     }
     
 
-    private static final Logger LOG = getLogger(CanvasServlet.class.getName());
+    private static final Logger LOG = getLogger(LineServlet.class.getName());
     
     private String export(JSONObject data) throws JsonProcessingException {
       ObjectMapper mapper = new ObjectMapper();

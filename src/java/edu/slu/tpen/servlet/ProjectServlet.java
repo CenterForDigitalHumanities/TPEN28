@@ -95,7 +95,6 @@ public class ProjectServlet extends HttpServlet {
                     //System.out.println("Project 2");
                     projID = parseInt(req.getPathInfo().substring(1).replace("/", "").replace("manifest.json",""));
                     Project proj = new Project(projID);
-                    System.out.println("Project 3");
                     if (proj.getProjectID() > 0) {
                         //System.out.println("Project 4");
                         if (new Group(proj.getGroupID()).isMember(uid) || skip) {

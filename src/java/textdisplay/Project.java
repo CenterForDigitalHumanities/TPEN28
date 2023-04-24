@@ -105,29 +105,6 @@ public class Project {
             closePreparedStatement(ps);
         }
     }
-        public static boolean exists(int projNum) throws SQLException{
-       boolean result = false;
-       String query = "select * from projectfolios where pageNumber=?";
-       Connection j = null;
-       PreparedStatement ps = null;
-      try {
-         j = getConnection();
-         ps = j.prepareStatement(query);
-         ps.setInt(1,projNum);
-         ResultSet rs = ps.executeQuery();
-         if (rs.next()) {
-            int ans = rs.getInt(11);
-            if(ans>0){
-                return true;
-            }
-         }
-      } finally {
-            closeDBConnection(j);
-            closePreparedStatement(ps);
-      }
-      System.out.println("not working");
-       return result;
-   }
 
     /**
      * exclude one of the built in tools in TPEN in the display for this project

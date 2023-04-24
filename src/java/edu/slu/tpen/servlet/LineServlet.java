@@ -53,9 +53,19 @@ public class LineServlet extends HttpServlet{
             int lineID = 0;
             int projectID = 0;
             try {
+              
                 String[] URLreq = req.getPathInfo().substring(1).split("/");
                 lineID = parseInt(URLreq[0]);
-                
+                JSONObject Writer = new JSONObject();
+                Writer.accumulate("hello", "does this work");
+                resp.setContentType("application/json; charset=UTF-8");
+                resp.setHeader("Access-Control-Allow-Headers", "*");
+                resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+                resp.setHeader("Cache-Control","no-cache, no-store, must-revalidate,max-age=15"); // HTTP 1.1.");
+                resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+                resp.setHeader("Expires", "0"); // Proxies.
+                resp.getWriter().write((Writer.toString()));
+                  /*
             if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) {
                  // Mint a Presentation API 3 Annotation
                 //Replace foloio with word line, create a line.Exist methods
@@ -99,16 +109,17 @@ public class LineServlet extends HttpServlet{
 
             }
             // build version 2 API here
+            */
         }
         catch(NumberFormatException ex){
              getLogger(LineServlet.class.getName()).log(SEVERE, null, "No ID provided for line");
              resp.sendError(SC_NOT_FOUND);
              System.out.println(ex);
         } 
-        catch (SQLException ex) {
-            Logger.getLogger(LineServlet.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println(ex);
-        }
+      //  catch (SQLException ex) {
+       //     Logger.getLogger(LineServlet.class.getName()).log(Level.SEVERE, null, ex);
+       //     System.out.println(ex);
+       // }
     }
  
     
@@ -116,7 +127,7 @@ public class LineServlet extends HttpServlet{
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
     }
-}
+
 
     /**
      * Handles the HTTP <code>PUT</code> method, updating a project from a plain
@@ -152,11 +163,4 @@ public class LineServlet extends HttpServlet{
       ObjectMapper mapper = new ObjectMapper();
       return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
    }
-    
- 
-    private String export(Map<String, Object> data) throws JsonProcessingException {
-      ObjectMapper mapper = new ObjectMapper();
-      return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
-   }
-
 }

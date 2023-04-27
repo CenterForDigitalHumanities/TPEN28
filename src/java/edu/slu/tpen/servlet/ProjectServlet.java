@@ -85,15 +85,16 @@ public class ProjectServlet extends HttpServlet {
                 //System.out.println("Project 1");
                 String check = "transcribe";
                 String redirect = req.getPathInfo().substring(1);
-                if (redirect.contains(check)) {
-                    projID = parseInt(redirect.replace("/" + check, ""));
-                    String redirectURL = req.getContextPath() + "/transcription.html?projectID=" + projID;
-                    resp.sendRedirect(redirectURL);
-                } else {
+                int projInt = redirect.length();
+                if( projInt > 0) {
+                    if (redirect.contains(check)) {
+                        projID = parseInt(redirect.replace("/" + check, ""));
+                        String redirectURL = req.getContextPath() + "/transcription.html?projectID=" + projID;
+                        resp.sendRedirect(redirectURL);
+                }   else {
                     //System.out.println("Project 2");
                     projID = parseInt(req.getPathInfo().substring(1).replace("/", "").replace("manifest.json",""));
                     Project proj = new Project(projID);
-                    //System.out.println("Project 3");
                     if (proj.getProjectID() > 0) {
                         //System.out.println("Project 4");
                         if (new Group(proj.getGroupID()).isMember(uid) || skip) {
@@ -152,6 +153,11 @@ public class ProjectServlet extends HttpServlet {
                         resp.sendError(SC_NOT_FOUND);
                     }
                 }
+            }
+                else{
+                    resp.sendError(SC_NOT_FOUND);
+                }
+                    
             } catch (NumberFormatException | SQLException | IOException ex) {
                 throw new ServletException(ex);
             }

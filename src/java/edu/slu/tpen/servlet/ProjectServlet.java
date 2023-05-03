@@ -95,11 +95,13 @@ public class ProjectServlet extends HttpServlet {
                 //System.out.println("Project 1");
                 String check = "transcribe";
                 String redirect = req.getPathInfo().substring(1);
-                if (redirect.contains(check)) {
-                    projID = parseInt(redirect.replace("/" + check, ""));
-                    String redirectURL = req.getContextPath() + "/transcription.html?projectID=" + projID;
-                    resp.sendRedirect(redirectURL);
-                } else {
+                int projInt = redirect.length();
+                if( projInt > 0) {
+                    if (redirect.contains(check)) {
+                        projID = parseInt(redirect.replace("/" + check, ""));
+                        String redirectURL = req.getContextPath() + "/transcription.html?projectID=" + projID;
+                        resp.sendRedirect(redirectURL);
+                }   else {
                     //System.out.println("Project 2");
                     String[] urlData = req.getPathInfo().substring(1).split("/");
                     switch (urlData.length) {
@@ -139,7 +141,6 @@ public class ProjectServlet extends HttpServlet {
                                         resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
                                         resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
                                         resp.setHeader("Expires", "0"); // Proxies.
-
                                         if (req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3"))
                                         {
                                             
@@ -184,6 +185,11 @@ public class ProjectServlet extends HttpServlet {
                             break;
                     }
                 }
+            }
+                else{
+                    resp.sendError(SC_NOT_FOUND);
+                }
+                    
             } catch (NumberFormatException | SQLException | IOException ex) {
                 throw new ServletException(ex);
             }

@@ -112,6 +112,41 @@ Next make a branch for you work.  Name it like `{issue number}-{name}`. Example 
 Install JDK 18
 
 Install Tomcat 9
+* [MacOs](https://formulae.brew.sh/formula/tomcat@9)
+* [Window](https://tomcat.apache.org/download-90.cgi)
+In bin/catalina.bat point to the JDK you just installed
+    * Under all the 'rem' lines under 'setlocal' type... set "JAVA_HOME=C:\YOUR_FILES\Java\YOUR_JDK15"
+ * The default port is 8080.  If you change it, you will need that change for version.properties.
+* Initiate ESAPI.properties
+ * This is weird and don't think too hard about it.
+ * In your Users/{YOU} folder create the directory .esapi
+ * Put the ESAPI.properties file into this directory
+
+
+Install MySQL Server 5.5
+* Set up as development machines
+* Remember the user and password and port you set during this.  You need them for version.properties.
+
+Install MySQL-Front
+* Create a new connection and find your localhost mysql service you just created, it should be started.
+* It is at host 127.0.0.1 port 3306
+* It is a built-in connection
+* Do not supply a database
+
+Create a tpen database with utf8 character encoding
+* Note you will need this database name for version.properties
+Import the tpen_oss.sql into that database
+
+Install [Netbeans 15](https://netbeans.apache.org/download/index.html)
+
+SETTING UP NETBEAN
+* Select File > New Project
+* Select Java with Ant > Java Web > Web Application with Existing Sources
+* Use the folder you cloned TPEN into as the existing sources.
+* Server is Apache Tomcat or TomEE
+* Java EE Version is Java EE 7 Web
+* The context is /TPEN   
+
 
 ### 5.4 Pull Request to Submit
 We suggest you open a Draft Pull Request early in the process.  This will ensure you have branches, and give others a place to easily look at your work under a specific namespace.  Once you have completed your work, you can take it out of draft (or make it if you had not yet).  Pull Requests will be reviewed and comments will be left on the Pull Request if there are suggested code changes.

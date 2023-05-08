@@ -162,13 +162,13 @@ Make sure your MySQL Service is running
 * Navigate to Tomcat9/bin and type startup.bat (or ./startup.sh for MacOS)) if Tomcat is not already running
 * In a browser, go to http://localhost:8080/TPEN/
 * Keep an eye on your Tomcat logs, a console window should have appeared on startup.
-* Shutdown the server with shutdown.bat or (./shutdown.sh for MacOs)
-* Logging is  tail -f ../logs/catalina.out 
+* Shutdown the server with "shutdown.bat" or (./shutdown.sh for MacOs)
+* Logging the server with "tail -f ../logs/catalina.out" 
 
 There are three Projects in this database, and so three manifests.  These endpoints should give you JSON
-http://localhost:8080/TPEN/manifest/7211
-http://localhost:8080/TPEN/manifest/7212
-http://localhost:8080/TPEN/manifest/7213
+* http://localhost:8080/TPEN/manifest/7211
+* http://localhost:8080/TPEN/manifest/7212
+* http://localhost:8080/TPEN/manifest/7213
 
 
 ### 5.4 Pull Request to Submit

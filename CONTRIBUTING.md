@@ -108,8 +108,11 @@ First [make an issue in the TPEN GitHub repository](https://github.com/CenterFor
 
 ### 5.2 Branch Next
 Next make a branch for you work.  Name it like `{issue number}-{name}`. Example `1-transcription-hotfix`.
+### 5.3 Setting Up Environment
+Install JDK 18
+Install Tomcat 9
 
-### 5.3 Pull Request to Submit
+### 5.4 Pull Request to Submit
 We suggest you open a Draft Pull Request early in the process.  This will ensure you have branches, and give others a place to easily look at your work under a specific namespace.  Once you have completed your work, you can take it out of draft (or make it if you had not yet).  Pull Requests will be reviewed and comments will be left on the Pull Request if there are suggested code changes.
 
 ## 6. TPEN User Interfaces Front End

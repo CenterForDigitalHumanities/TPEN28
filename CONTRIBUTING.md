@@ -115,12 +115,13 @@ Install Tomcat 9
 * [MacOs](https://formulae.brew.sh/formula/tomcat@9)
 * [Window](https://tomcat.apache.org/download-90.cgi)
 In bin/catalina.bat point to the JDK you just installed
-    * Under all the 'rem' lines under 'setlocal' type... set "JAVA_HOME=C:\YOUR_FILES\Java\YOUR_JDK15"
- * The default port is 8080.  If you change it, you will need that change for version.properties.
-* Initiate ESAPI.properties
- * This is weird and don't think too hard about it.
- * In your Users/{YOU} folder create the directory .esapi
- * Put the ESAPI.properties file into this directory
+
+Under all the 'rem' lines under 'setlocal' type... set "JAVA_HOME=C:\YOUR_FILES\Java\YOUR_JDK15"
+    * The default port is 8080.  If you change it, you will need that change for version.properties.
+    * Initiate ESAPI.properties
+    * This is weird and don't think too hard about it.
+    * In your Users/{YOU} folder create the directory .esapi
+    * Put the ESAPI.properties file into this directory
 
 
 Install MySQL Server 5.5

@@ -110,6 +110,7 @@ First [make an issue in the TPEN GitHub repository](https://github.com/CenterFor
 Next make a branch for you work.  Name it like `{issue number}-{name}`. Example `1-transcription-hotfix`.
 ### 5.3 Setting Up Environment
 Install JDK 18
+
 Install Tomcat 9
 
 ### 5.4 Pull Request to Submit

@@ -112,7 +112,7 @@ Next make a branch for you work.  Name it like `{issue number}-{name}`. Example 
 Install JDK 18
 
 Install Tomcat 9
-* [MacOs](https://formulae.brew.sh/formula/tomcat@9)
+* [MacOS](https://formulae.brew.sh/formula/tomcat@9)
 * [Window](https://tomcat.apache.org/download-90.cgi)
 In bin/catalina.bat point to the JDK you just installed
 
@@ -140,13 +140,35 @@ Import the tpen_oss.sql into that database
 
 Install [Netbeans 15](https://netbeans.apache.org/download/index.html)
 
-SETTING UP NETBEAN
+Setting Up NetBean
 * Select File > New Project
 * Select Java with Ant > Java Web > Web Application with Existing Sources
 * Use the folder you cloned TPEN into as the existing sources.
 * Server is Apache Tomcat or TomEE
 * Java EE Version is Java EE 7 Web
 * The context is /TPEN   
+
+T-PEN RUNNING ON LOCALHOST
+
+Make sure your MySQL Service is running
+* use 'run' (Windows + R) and type services.msc
+* You will see a listing for you MySQL service and can start it if its state is 'stopped'.
+* Open the tpen project in Netbeans 15.
+* Make sure you have a version.properties file in tpen/src/java
+* Make sure you version.properties file has all the correct values for your local environment.
+* 'Clean and Build' with Netbeans to produce a .war file
+* Move the .war file into Tomcat9/webapps
+  * You can also do this through tomcat manager through localhost:8080/ if you set up a user for your manager.
+* Navigate to Tomcat9/bin and type startup.bat (or ./startup.sh for MacOS)) if Tomcat is not already running
+* In a browser, go to http://localhost:8080/TPEN/
+* Keep an eye on your Tomcat logs, a console window should have appeared on startup.
+* Shutdown the server with shutdown.bat or (./shutdown.sh for MacOs)
+* Logging is  tail -f ../logs/catalina.out 
+
+There are three Projects in this database, and so three manifests.  These endpoints should give you JSON
+http://localhost:8080/TPEN/manifest/7211
+http://localhost:8080/TPEN/manifest/7212
+http://localhost:8080/TPEN/manifest/7213
 
 
 ### 5.4 Pull Request to Submit

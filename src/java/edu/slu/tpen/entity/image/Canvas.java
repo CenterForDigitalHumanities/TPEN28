@@ -12,7 +12,6 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import static java.lang.String.format;
 import static java.lang.System.out;
 import java.net.HttpURLConnection;
@@ -21,7 +20,6 @@ import java.net.URL;
 import static java.net.URLEncoder.encode;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,16 +30,11 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import static net.sf.json.JSONObject.fromObject;
 import static org.owasp.esapi.ESAPI.encoder;
-import textdisplay.Annotation;
-import static textdisplay.Annotation.getAnnotationSet;
 import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
-import textdisplay.Project;
 import textdisplay.Transcription;
 import static textdisplay.Transcription.getProjectTranscriptions;
-import user.User;
 import utils.JsonHelper;
-import static utils.JsonHelper.*;
 
 /**
  *
@@ -183,7 +176,6 @@ public class Canvas {
      * look like an otherContent field.
      */
     public static JSONArray getLinesForProject(Integer projectID, String canvasID, Integer folioNumber, Integer UID) throws MalformedURLException, IOException, SQLException {
-        System.out.println("Get lines for project");
         JSONObject annotationList = new JSONObject();
         JSONArray resources_array = new JSONArray();
         String dateString = "";
@@ -197,7 +189,6 @@ public class Canvas {
         //annotationList.element("testing", "msid_creation");
         Transcription[] lines;
         lines = getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
-        System.out.println(Arrays.toString(lines));
         int numberOfLines = lines.length;
         List<Object> resources = new ArrayList<>();
         //System.out.println("How many lines?   "+numberOfLines);

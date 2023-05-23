@@ -16,8 +16,6 @@ package edu.slu.tpen.transfer;
 import static textdisplay.Annotation.getAnnotationSet;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static edu.slu.tpen.entity.Image.Canvas.*;
-import java.util.ArrayList;
 import static utils.JsonHelper.buildNoneLanguageMap;     
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -64,46 +62,26 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
        int projID = proj.getProjectID();
        String projName = getRbTok("SERVERURL") + "manifest/"+projID;
        if (profile.contains("v3")){
-           System.out.println("manifest v3");
-           List<Map<String, Object>> pageList = new ArrayList<>();
-//           for (Folio f : folios) {
-//               pageList.add(JsonHelper.buildPage(proj.getProjectID(), projName, f, u,"A"));
-//           }
-           //System.out.println("Put all canvas together");
-           manifestData = new LinkedHashMap<>();
-           manifestData.put("@context", "http://iiif.io/api/presentation/3/context.json");
-           // Fix value of context
-           manifestData.put("id", projName + "/manifest.json");
-           manifestData.put("type", "Manifest");
-           // Not preferred value
-           //Remember that this is a Metadata title, not project name...
-           manifestData.put("label",buildNoneLanguageMap(proj.getProjectName()));
-           manifestData.put("metadata", getMetadataAsJSON(projID, profile));
-           List<Map<String, Object>> canvasList = new ArrayList<>();
-           
-//            for (Folio f : folios) {
-//                System.out.println(f.folioNumber);
-//                canvasList.add(JsonHelper.buildPage(proj.getProjectID(), projName, f, u, "v3"));
-//		}
-//            manifestData.put("items", canvasList );
-
+            List<Map<String, Object>> pageList = new ArrayList<>();
+            manifestData = new LinkedHashMap<>();
+            manifestData.put("@context", "http://iiif.io/api/presentation/3/context.json");
+            // Fix value of context
+            manifestData.put("id", projName + "/manifest.json");
+            manifestData.put("type", "Manifest");
+            // Not preferred value
+            //Remember that this is a Metadata title, not project name...
+            manifestData.put("label",buildNoneLanguageMap(proj.getProjectName()));
+            manifestData.put("metadata", getMetadataAsJSON(projID, profile));
+            List<Map<String, Object>> canvasList = new ArrayList<>();
             Map<String, Object> services = JsonHelper.buildServices();
             manifestData.put("services", new Object[] { services });
-	   
-	    JSONArray canvases = new JSONArray(); 
-	    JSONArray annotations = new JSONArray();
+            JSONArray canvases = new JSONArray(); 
             for (Folio f : folios) {
                 canvases.add(buildPage(proj.getProjectID(), f, u, "v3"));
-                String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
-//                annotationPage.add(        getAnnotationLinesForAnnotationPage(proj.getProjectID(),projName,f.getFolioNumber(),u.getUID(),"v3"));
-                  annotations.add(getAnnotationSet(proj.getProjectID(),f.getFolioNumber()));
-		
             }
-//                System.out.println(pageList.toString());
+            System.out.println(pageList.toString());
             manifestData.put("items", canvases);
-	    manifestData.put("annotations", new JSONArray());
-	    
-//            manifestData.put("annotations", annotationPage);
+            manifestData.put("annotations", new JSONArray());
        }
          
 }
@@ -121,7 +99,6 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
       int projID = proj.getProjectID();
 
       try {
-          System.out.println("v2 manifest");
          String projName = getRbTok("SERVERURL") + "manifest/"+projID;
          manifestData = new LinkedHashMap<>();
          manifestData.put("@context", "http://iiif.io/api/presentation/2/context.json");
@@ -131,29 +108,26 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
          manifestData.put("label", proj.getProjectName());
          manifestData.put("metadata", getMetadataAsJSON(projID));
 
-           Map<String, Object> service = new LinkedHashMap<>();
-         service.put("@context", "http://iiif.io/api/auth/1/context.json");
-         service.put("@id","http://t-pen.org/TPEN/login.jsp");
-         service.put("profile", "http://iiif.io/api/auth/1/login");
-         service.put("label", "T-PEN Login");
-         service.put("header", "Login for image access");
-         service.put("description", "Agreement requires an open T-PEN session to view images");
-         service.put("confirmLabel", "Login");
-         service.put("failureHeader", "T-PEN Login Failed");
-         service.put("failureDescription", "<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
+        Map<String, Object> service = new LinkedHashMap<>();
+        service.put("@context", "http://iiif.io/api/auth/1/context.json");
+        service.put("@id","http://t-pen.org/TPEN/login.jsp");
+        service.put("profile", "http://iiif.io/api/auth/1/login");
+        service.put("label", "T-PEN Login");
+        service.put("header", "Login for image access");
+        service.put("description", "Agreement requires an open T-PEN session to view images");
+        service.put("confirmLabel", "Login");
+        service.put("failureHeader", "T-PEN Login Failed");
+        service.put("failureDescription", "<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
         Map<String, Object> logout = new LinkedHashMap<>();
-         logout.put("@id", "http://t-pen.org/TPEN/login.jsp");
-         logout.put("profile", "http://iiif.io/api/auth/1/logout");
-         logout.put("label", "End T-PEN Session");
+        logout.put("@id", "http://t-pen.org/TPEN/login.jsp");
+        logout.put("profile", "http://iiif.io/api/auth/1/logout");
+        logout.put("label", "End T-PEN Session");
         service.put("service",new Object[] { logout });
-
-         manifestData.put("service",new Object[] { service });
-      
-         
-         Map<String, Object> pages = new LinkedHashMap<>();
-         pages.put("@id", getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
-         pages.put("@type", "sc:Sequence");
-         pages.put("label", "Current Page Order");
+        manifestData.put("service",new Object[] { service });
+        Map<String, Object> pages = new LinkedHashMap<>();
+        pages.put("@id", getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
+        pages.put("@type", "sc:Sequence");
+        pages.put("label", "Current Page Order");
 
          List<Map<String, Object>> pageList = new ArrayList<>();
          //System.out.println("I found "+folios.length+" pages");

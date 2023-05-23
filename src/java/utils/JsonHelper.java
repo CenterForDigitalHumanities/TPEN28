@@ -2,7 +2,6 @@ package utils;
 
 
 import static edu.slu.tpen.entity.Image.Canvas.*;
-import edu.slu.tpen.transfer.JsonLDExporter;
 import static edu.slu.util.LangUtils.buildQuickMap;
 import static imageLines.ImageCache.getImageDimension;
 import java.awt.Dimension;

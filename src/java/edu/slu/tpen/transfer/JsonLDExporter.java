@@ -79,7 +79,6 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
             for (Folio f : folios) {
                 canvases.add(buildPage(proj.getProjectID(), f, u, "v3"));
             }
-            System.out.println(pageList.toString());
             manifestData.put("items", canvases);
             manifestData.put("annotations", new JSONArray());
        }

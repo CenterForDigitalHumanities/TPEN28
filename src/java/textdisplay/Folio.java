@@ -670,7 +670,7 @@ public class Folio {
                } else {
                         // If it's a reference to the T-PEN pageImage servlet, point it at the
                         // current T-PEN instance.
-                        url = url.replace("http://t-pen.org/TPEN/", getRbTok("SERVERURL"));
+                        url = url.replace("https://t-pen.org/TPEN/", getRbTok("SERVERURL"));
                 }
             }
          }
@@ -1230,10 +1230,10 @@ public class Folio {
       Property rdfType = model.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
       Resource viewFrag = model.createResource("http://www.openannotation.org/ns/Annotation");
       Property isPartOf = model.createProperty("http://purl.org/dc/terms/", "isPartOf");
-      Resource fullImage = model.createResource("http://t-pen.org/views/" + this.folioNumber);
+      Resource fullImage = model.createResource("https://t-pen.org/views/" + this.folioNumber);
 
       // String[] uuids = new String[transcriptions.length];
-      Resource thisPage = model.createResource("http://t-pen.org/transcription/" + this.folioNumber);
+      Resource thisPage = model.createResource("https://t-pen.org/transcription/" + this.folioNumber);
       // Resource[] items = new Resource[uuids.length];
       Property aggregates = model.createProperty("http://www.openarchives.org/ore/terms/", "aggregates");
 //      for (int i = 0; i < transcriptions.length; i++) {
@@ -1253,7 +1253,7 @@ public class Folio {
 //         /**
 //          * @TODO change to use Transcription.getProjectTranscriptions
 //          */
-//         Resource thisLine = model.createResource("http://t-pen.org/transcription/" + this.folioNumber + "/" + i);
+//         Resource thisLine = model.createResource("https://t-pen.org/transcription/" + this.folioNumber + "/" + i);
 //         String xyhw = "#xywh=" + transcriptions[i].getX() + ", " + transcriptions[i].getY() + ", " + transcriptions[i].getHeight() + ", " + transcriptions[i].getWidth();
 //         Resource image = model.createResource(f.getArchiveLink());//+"#xyhw="+xyhw);
 //         Literal text = model.createLiteral(transcriptions[i].getText());

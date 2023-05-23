@@ -113,7 +113,7 @@ public class JsonHelper {
     public static Map<String, Object> buildServices() {
         Map<String, Object> services = new LinkedHashMap<>();
         services.put("@context","http://iiif.io/api/auth/1/context.json");
-        services.put("id","http://t-pen.org/TPEN/login.jsp");
+        services.put("id","https://t-pen.org/TPEN/login.jsp");
         services.put("type","AuthCookieService1");
         services.put("profile", "http://iiif.io/api/auth/1/login");
         services.put("label", "T-PEN Login");
@@ -121,10 +121,10 @@ public class JsonHelper {
         services.put("description", "Agreement requires an open T-PEN session to view images");
         services.put("confirmLabel", "Login");
         services.put("failureHeader", "T-PEN Login Failed");
-        services.put("failureDescription","<a href=\"http://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
+        services.put("failureDescription","<a href=\"https://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
 
         Map<String, Object> logout = new LinkedHashMap<>();
-        logout.put("@id", "http://t-pen.org/TPEN/login.jsp");
+        logout.put("@id", "https://t-pen.org/TPEN/login.jsp");
         logout.put("profile", "http://iiif.io/api/auth/1/logout");
         logout.put("label", "End T-PEN Session");
         services.put("service",new Object[] { logout });

@@ -551,7 +551,7 @@ public class sequence {
         model.setNsPrefix("dc", "http://purl.org/dc/elements/1.1/");
         model.setNsPrefix("dcterms", "http://purl.org/dc/terms/");
         
-        Resource seq=model.createResource("http://t-pen.org/sequences/");
+        Resource seq=model.createResource("https://t-pen.org/sequences/");
         Resource DMScanvas=model.createResource("http://dms.stanford.edu/ns/Canvas");
         Resource imageBody=model.createResource("http://dms.stanford.edu/ns/ImageBody");
         Property rdfType=model.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");

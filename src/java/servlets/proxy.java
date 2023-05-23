@@ -56,7 +56,7 @@ public class proxy extends HttpServlet {
     OutputStream resultOutStream = response.getOutputStream();
 
  response.setContentType(mime);
- response.addHeader("Access-Control-Allow-Origin", "http://t-pen.org");
+ response.addHeader("Access-Control-Allow-Origin", "https://t-pen.org");
  response.addHeader("Access-Control-Allow-Credentials", "true");
     try {
         URL url = new URL(search);

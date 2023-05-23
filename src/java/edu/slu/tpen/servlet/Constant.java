@@ -19,7 +19,7 @@ package edu.slu.tpen.servlet;
  * @author hanyan
  */
 public class Constant {
-      public static String ANNOTATION_SERVER_ADDR = "http://store.rerum.io/v1/api";
-      public static String TPEN_CANVAS_PREFIX = "http://t-pen.org/TPEN";
+      public static String ANNOTATION_SERVER_ADDR = "https://store.rerum.io/v1/api";
+      public static String TPEN_CANVAS_PREFIX = "https://t-pen.org/TPEN";
     //public static String ANNOTATION_SERVER_ADDR = "http://localhost:8080/annotationstore";
 }

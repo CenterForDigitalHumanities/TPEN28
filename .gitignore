@@ -35,6 +35,8 @@ Temporary Items
 
 ### NetBeans ###
 **/nbproject/*
+lib/CopyLibs
+lib/java-ee-endorsed-api*
 build/
 nbbuild/
 dist/

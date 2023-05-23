@@ -87,7 +87,7 @@
         <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
         <!--[if lt IE 8]><link rel="stylesheet" href="css/ie.css" type="text/css" media="screen, projection"><![endif]-->
         <link type="text/css" href="css/custom-theme/jQuery.css" rel="Stylesheet" />
-        <link  href="http://fonts.googleapis.com/css?family=Nova+Cut:regular&v1" rel="stylesheet" type="text/css" >
+        <link  href="//fonts.googleapis.com/css?family=Nova+Cut:regular&v1" rel="stylesheet" type="text/css" >
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script> 
         <script type="text/javascript" src="js/tpen.js"></script>

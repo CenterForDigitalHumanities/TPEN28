@@ -34,8 +34,8 @@
                     <ul id="about">
                         <li class="gui-tab-section">
                             <h3>T&#8209;PEN</h3>
-                            <p>The Transcription for Paleographical and Editorial Notation (T&#8209;PEN) project was coordinated by the <a href="http://www.slu.edu/x27122.xml" target="_blank">Center for Digital Theology</a> at <a href="www.slu.edu" target="_blank">Saint Louis University</a> (SLU) and funded by the <a href="http://www.mellon.org/" target="_blank">Andrew W. Mellon Foundation</a> and the <a title="National Endowment for the Humanities" target="_blank" href="http://www.neh.gov/">NEH</a>. The <a target="_blank" href="ENAP/">Electronic Norman Anonymous Project</a> developed several abilities at the core of this project's functionality.</p>
-                            <p>T&#8209;PEN is released under <a href="http://www.opensource.org/licenses/ecl2.php" title="Educational Community License" target="_blank">ECL v.2.0</a> as free and open-source software (<a href="https://github.com/jginther/T-PEN/tree/master/trunk" target="_blank">git</a>), the primary instance of which is maintained by SLU at <a href="www.T&#8209;PEN.org" target="_blank">T&#8209;PEN.org</a>.
+                            <p>The Transcription for Paleographical and Editorial Notation (T&#8209;PEN) project was coordinated by the <a href="//www.slu.edu/x27122.xml" target="_blank">Center for Digital Theology</a> at <a href="//www.slu.edu" target="_blank">Saint Louis University</a> (SLU) and funded by the <a href="//www.mellon.org/" target="_blank">Andrew W. Mellon Foundation</a> and the <a title="National Endowment for the Humanities" target="_blank" href="//www.neh.gov/">NEH</a>. The <a target="_blank" href="ENAP/">Electronic Norman Anonymous Project</a> developed several abilities at the core of this project's functionality.</p>
+                            <p>T&#8209;PEN is released under <a href="//www.opensource.org/licenses/ecl2.php" title="Educational Community License" target="_blank">ECL v.2.0</a> as free and open-source software (<a href="https://github.com/jginther/T-PEN/tree/master/trunk" target="_blank">git</a>), the primary instance of which is maintained by SLU at <a href="//www.t-pen.org" target="_blank">T&#8209;PEN.org</a>.
                             <p>T&#8209;PEN is currently (2022) maintained by the Research Computing Group at Saint Louis University.</p>    
                         </li>
                         <li class="gui-tab-section" style="background-image:url(./images/trexhead.png);">
@@ -142,7 +142,7 @@
                                 <dt>Dr. Jim Ginther, Principal Investigator</dt>
                                 <dd>Director, Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
                                 <dt>Dr. Abigail Firey, co-Principal Investigator</dt>
-                                <dd><a href="http://ccl.rch.uky.edu" target="_blank" title="Carolingian Canon Law">CCL</a>&nbsp;Project&nbsp;Director, University&nbsp;of&nbsp;Kentucky</dd>
+                                <dd><a href="//ccl.rch.uky.edu" target="_blank" title="Carolingian Canon Law">CCL</a>&nbsp;Project&nbsp;Director, University&nbsp;of&nbsp;Kentucky</dd>
                                 <dt>Dr. Tomás O’Sullivan, Research Fellow (2010-11)</dt>
                                 <dd>Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
                                 <dt>Dr. Alison Walker, Research Fellow (2011-12)</dt>
@@ -161,15 +161,15 @@
                             <h3>Contributors</h3>
                             <h5>Repositories</h5>
                             <dl>
-                                <dt><a target="_blank" href="http://parkerweb.stanford.edu/">Parker Library on the Web</a></dt>
-                                <dt><a target="_blank" href="http://www.e-codices.unifr.ch/">e-codices</a></dt>
-                                <dt><a target="_blank" href="http://www.ceec.uni-koeln.de/">Codices Electronici Ecclesiae Coloniensis</a></dt>
-                                <dt><a target="_blank" href="http://hcl.harvard.edu/libraries/houghton/collections/early.cfm">Harvard Houghton Library</a></dt>
-                                <dt><a target="_blank" href="http://www.sisf-assisi.it/" title="Società internazionale di Studi francescani">SISF - Assisi</a></dt>
+                                <dt><a target="_blank" href="//parkerweb.stanford.edu/">Parker Library on the Web</a></dt>
+                                <dt><a target="_blank" href="//www.e-codices.unifr.ch/">e-codices</a></dt>
+                                <dt><a target="_blank" href="//www.ceec.uni-koeln.de/">Codices Electronici Ecclesiae Coloniensis</a></dt>
+                                <dt><a target="_blank" href="//hcl.harvard.edu/libraries/houghton/collections/early.cfm">Harvard Houghton Library</a></dt>
+                                <dt><a target="_blank" href="//www.sisf-assisi.it/" title="Società internazionale di Studi francescani">SISF - Assisi</a></dt>
                             </dl>
                             <h5>Institutions</h5>
                             <dl>
-                                <dt><a target="_blank" href="http://www-sul.stanford.edu/">Stanford University Libraries</a></dt>
+                                <dt><a target="_blank" href="//www-sul.stanford.edu/">Stanford University Libraries</a></dt>
                             </dl>
                         </li>
                         <li class="gui-tab-section">
@@ -180,7 +180,7 @@
                             <p>Manuscript images displayed on T&#8209;PEN are not the property of T&#8209;PEN, but are linked through agreement from hosting repositories. The User Agreement describes the users' rights to these images.</p>
                             <p>All images used or composited in the design of T&#8209;PEN originated in the public domain. Individuals who wish to use portions of this site's design are encouraged to seek out the original source file to adapt. Using the T&#8209;PEN logo or any of its design elements with the purposes of deceiving, defrauding, defaming, phishing, or otherwise misrepresenting the T&#8209;PEN project is prohibited.</p>
                             <h5>Logo</h5>
-                            <p>The T&#8209;PEN logo displayed on each page and the variant on the home page was assembled by committee and is an identifying mark. The tyrannosaurus is used with permission from Mineo Shiraishi at <a href="http://www.dinosaurcentral.com/" target="_blank">Dinosaur Central.com</a>.</p>
+                            <p>The T&#8209;PEN logo displayed on each page and the variant on the home page was assembled by committee and is an identifying mark. The tyrannosaurus is used with permission from Mineo Shiraishi at <a href="//www.dinosaurcentral.com/" target="_blank">Dinosaur Central.com</a>.</p>
                             <h5>Source Code</h5>
                             <p>All code generated by the T&#8209;PEN Development Team is covered by license as described in the User Agreement. This project makes use of several public libraries.</p>
                         </li>

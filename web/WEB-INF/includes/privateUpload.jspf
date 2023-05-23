@@ -356,7 +356,7 @@
         </form>
     </div>
     <div id="irfan" class="ui-state-active ui-corner-all">
-        <a href="http://www.irfanview.com/" target="_blank" class="right">
+        <a href="//www.irfanview.com/" target="_blank" class="right">
             <img alt="IrfanView Logo" src="images/sharing/irfanview-64.png" />
         </a>
         <h4>Reduce those files!</h4>
@@ -366,7 +366,7 @@
         <p>The work you export from T&#8209;PEN will match your original images
             at their full resolution, as long as they are resized proportionally.</p>
         <p>IrfanView 
-            (<a href="http://www.irfanview.com/" target="_blank">found here</a>)
+            (<a href="//www.irfanview.com/" target="_blank">found here</a>)
             is a simple and versatile tool that is free for
             most users. It will safely convert and resize image files.
     </div>

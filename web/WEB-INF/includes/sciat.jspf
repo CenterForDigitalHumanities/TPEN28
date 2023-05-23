@@ -162,7 +162,7 @@ jQuery and jQueryUI are also used, but are not required for basic function.
         dummyImg.src = imgURL;
     }
     function tpenFolio(imgURL) {
-        return "http://t-pen.org/TPEN/imageResize?folioNum="+imgURL+"&height=2000";
+        return "//t-pen.org/TPEN/imageResize?folioNum="+imgURL+"&height=2000";
     }
 </script>
 <!--

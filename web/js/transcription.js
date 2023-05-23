@@ -1692,21 +1692,21 @@ var Help = {
         switch (refIndex){
             case 0  :   //Previous Line
             case 1  :   //Next Line
-                vidLink = 'http://www.youtube.com/embed/gcDOP5XfiwM';
+                vidLink = 'https://www.youtube.com/embed/gcDOP5XfiwM';
                 break;
             case 2  :   //Line Indicator
-                vidLink = 'http://www.youtube.com/embed/rIfF9ksffnU';
+                vidLink = 'https://www.youtube.com/embed/rIfF9ksffnU';
                 break;
             case 3  :   //View Full Page
             case 7  :
-                vidLink = 'http://www.youtube.com/embed/6X-KlLpF6RQ';
+                vidLink = 'https://www.youtube.com/embed/6X-KlLpF6RQ';
                 break;
             case 4  :   //Preview Tool
             case 15 :
-                vidLink = 'http://www.youtube.com/embed/dxS-BF3PJ_0';
+                vidLink = 'https://www.youtube.com/embed/dxS-BF3PJ_0';
                 break;
             case 5  :   //Special Characters
-                vidLink = 'http://www.youtube.com/embed/EJL_GRA-grA';
+                vidLink = 'https://www.youtube.com/embed/EJL_GRA-grA';
                 break;
             case 6  :   //XML Tags
                 vidLink = '';
@@ -1733,10 +1733,10 @@ var Help = {
                 vidLink = '';
                 break;
             case 16 :   //Location Flag
-                vidLink = 'http://www.youtube.com/embed/8D3drB9MTA8';
+                vidLink = 'https://www.youtube.com/embed/8D3drB9MTA8';
                 break;
             case 17 :   //Jump to Page
-                vidLink = 'http://www.youtube.com/embed/mv_W_3N_Sbo';
+                vidLink = 'https://www.youtube.com/embed/mv_W_3N_Sbo';
                 break;
             case 18 :   //Previous Page
                 vidLink = '';
@@ -2233,7 +2233,7 @@ var Interaction = {
                 "<form id='login' action='login.jsp' method='POST'>",
                 "<label for='uname'>Email</label><input class='text' type='text' name='uname'>",
                 "<label for='password'>Password</label><input class='text' type='password' name='password'>",
-                "<input type='hidden' name='ref' value='http://t-pen.org/TPEN/login.jsp'>",
+                "<input type='hidden' name='ref' value='https://t-pen.org/TPEN/login.jsp'>",
                 "<input class='ui-state-default ui-button ui-corner-all' type='submit' title='Log In' value='Log In'>",
                 "</form></p>",
                 "<a href='index.jsp'>T&#8209;PEN Home</a></div>",

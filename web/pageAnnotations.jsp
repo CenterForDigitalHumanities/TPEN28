@@ -42,8 +42,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>TPEN - Annotations</title>
 <!--        <script type="text/javascript" src="js/rison.js"></script>-->
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-        <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css" rel="stylesheet" />
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+        <link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css" rel="stylesheet" />
         <style type="text/css">
             * {box-sizing:border-box;}
             #annotations,#annotationImg {position:absolute;top:0;left:0;}

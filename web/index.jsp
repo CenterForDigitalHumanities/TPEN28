@@ -22,7 +22,6 @@
     "http://www.w3.org/TR/html4/loose.dtd">
 <%
     user.User thisUser = null;
-
     int UID = 0;
     if (session.getAttribute("UID") != null) {
         thisUser = new user.User(Integer.parseInt(session.getAttribute("UID").toString()));
@@ -251,7 +250,7 @@
                         var src = [
                             "https://maps.googleapis.com/maps/api/staticmap?",
                             "center=",city,
-                            "&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png|",city,
+                            "&markers=icon:https://www.t-pen.org/TPEN/images/quillpin.png|",city,
                             "&sensor=false&scale=1&zoom=3&visibility=simplified&maptype=terrain",
                             "&key=AIzaSyCo380ccyCHOeJRDqKIjCiTzOcwm-ZqjmU",  
                             "&size=",mapwidth,"x",mapheight
@@ -388,7 +387,7 @@
                         <form action="login.jsp" method="POST">
                             <label for="uname">Email</label><input class="text" type="text" name="uname"><br>
                             <label for="password">Password</label><input class="text" type="password" name="password"><br>
-                            <input type="hidden" name="ref" value="http://t-pen.org/TPEN/login.jsp">
+                            <input type="hidden" name="ref" value="login.jsp">
                             <input class="ui-state-default ui-button ui-corner-all" type="submit" title="Log In" value="Log In">
                         </form>
                             <!--<br> didn't work to fix problem on mac-->
@@ -497,9 +496,9 @@
                         <h3>Available Repositories</h3>
                         <div class="lists">
                           <div id="cityMapContain">
-                                          <img id="cityMap" alt="map" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=3&sensor=false&scale=1&size=300x200&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis&key=AIzaSyCo380ccyCHOeJRDqKIjCiTzOcwm-ZqjmU" />
+                                          <img id="cityMap" alt="map" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=3&sensor=false&scale=1&size=300x200&maptype=terrain&visibility=simplified&markers=icon:https://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis&key=AIzaSyCo380ccyCHOeJRDqKIjCiTzOcwm-ZqjmU" />
                                           <div id="cityMapZoom">
-                                              <img alt="inset" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=10&sensor=false&scale=1&size=100x140&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis&key=AIzaSyCo380ccyCHOeJRDqKIjCiTzOcwm-ZqjmU" />
+                                              <img alt="inset" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=10&sensor=false&scale=1&size=100x140&maptype=terrain&visibility=simplified&markers=icon:https://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis&key=AIzaSyCo380ccyCHOeJRDqKIjCiTzOcwm-ZqjmU" />
                                           </div>
                           </div>
                             <%
@@ -563,7 +562,7 @@
                     </table>
                         </div><%
                         } else {
-                            out.print("Getting Started:<br/><iframe src='http://www.youtube.com/embed/0S5ilvLM9fw' allowfullscreen></iframe>");
+                            out.print("Getting Started:<br/><iframe src='//www.youtube.com/embed/0S5ilvLM9fw' allowfullscreen></iframe>");
                         }
                    } catch (SQLException err) {
                     out.print("<p class=ui-state-error-text>Error retreiving list of projects.</p>");
@@ -1054,7 +1053,7 @@
         </form>
     </div>
     <div id="irfan" class="ui-state-active ui-corner-all">
-        <a href="http://www.irfanview.com/" target="_blank" class="right">
+        <a href="//www.irfanview.com/" target="_blank" class="right">
             <img alt="IrfanView Logo" src="images/sharing/irfanview-64.png">
         </a>
         <h4>Reduce those files!</h4>
@@ -1064,7 +1063,7 @@
         <p>The work you export from T‑PEN will match your original images
             at their full resolution, as long as they are resized proportionally.</p>
         <p>IrfanView 
-            (<a href="http://www.irfanview.com/" target="_blank">found here</a>)
+            (<a href="//www.irfanview.com/" target="_blank">found here</a>)
             is a simple and versatile tool that is free for
             most users. It will safely convert and resize image files.
     </p></div>
@@ -1113,10 +1112,10 @@
                     </div>
                     <div class="column">
                         <p><em>Watch a video on how to get started with T-PEN 2.8 (9 minutes):</em><br/>
-                            <iframe src="http://www.youtube.com/embed/0S5ilvLM9fw" frameborder="0" allowfullscreen></iframe>
+                            <iframe src="//www.youtube.com/embed/0S5ilvLM9fw" frameborder="0" allowfullscreen></iframe>
                         </p>
 <!--                        <p><em>Learn more about transcribing in this five minute tour <span class="quiet small">(please note this is for version 0.4, current is <%out.print(Folio.getRbTok("VERSION"));%>)</span>:</em><br/>
-                            <iframe src="http://www.youtube.com/embed/sOnJtWtCFZc" frameborder="0" allowfullscreen></iframe>
+                            <iframe src="//www.youtube.com/embed/sOnJtWtCFZc" frameborder="0" allowfullscreen></iframe>
                         </p>-->
                     </div>
                     </div>

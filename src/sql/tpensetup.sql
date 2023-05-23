@@ -438,7 +438,7 @@ CREATE TABLE IF NOT EXISTS `folios` (
 --
 
 INSERT INTO `folios` (`pageNumber`, `uri`, `collection`, `pageName`, `imageName`, `archive`, `force`, `msID`, `sequence`, `canvas`, `paleography`) VALUES
-(1, 'http://normananonymous.org/images/415_001_TC_46z.jpg', '', '001', 'http://normananonymous.org/images/415_001_TC_46z.jpg', 'ENAP', 1, 1, 0, '', '2012-05-01 10:12:20');
+(1, '//normananonymous.org/images/415_001_TC_46z.jpg', '', '001', '//normananonymous.org/images/415_001_TC_46z.jpg', 'ENAP', 1, 1, 0, '', '2012-05-01 10:12:20');
 
 -- --------------------------------------------------------
 
@@ -1206,7 +1206,7 @@ INSERT INTO `users` (`Uname`, `UID`, `pass`, `lname`, `fname`, `openID`, `accept
 
 CREATE TABLE IF NOT EXISTS `userTools` (
   `projectID` int(11) NOT NULL,
-  `url` varchar(512) DEFAULT 'http://vulsearch.sourceforge.net/cgi-bin/vulsearch',
+  `url` varchar(512) DEFAULT '//vulsearch.sourceforge.net/cgi-bin/vulsearch',
   `name` varchar(512) DEFAULT 'Latin Vulgate Search'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -1215,8 +1215,8 @@ CREATE TABLE IF NOT EXISTS `userTools` (
 --
 
 INSERT INTO `userTools` (`projectID`, `url`, `name`) VALUES
-(2411, 'http://vulsearch.sourceforge.net/cgi-bin/vulsearch', 'Latin Vulgate'),
-(2411, 'http://t-pen.org/hopper/morph.jsp', 'Latin Dictionary');
+(2411, '//vulsearch.sourceforge.net/cgi-bin/vulsearch', 'Latin Vulgate'),
+(2411, '//t-pen.org/hopper/morph.jsp', 'Latin Dictionary');
 
 -- --------------------------------------------------------
 

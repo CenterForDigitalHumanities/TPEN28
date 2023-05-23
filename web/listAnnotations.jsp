@@ -42,8 +42,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>TPEN - List Annotations</title>
 <!--        <script type="text/javascript" src="js/rison.js"></script>-->
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-        <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css" rel="stylesheet" />
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+        <link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css" rel="stylesheet" />
         <style type="text/css">
             #annoTable {width: 100%;}
             .annotation {position: relative;}

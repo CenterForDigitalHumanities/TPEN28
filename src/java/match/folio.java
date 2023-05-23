@@ -231,7 +231,7 @@ public class folio {
       while (nameBits[1].charAt(0) == '0') {
          nameBits[1] = nameBits[1].substring(1);
       }
-      toret = "http://parkerweb.stanford.edu/parker/actions/page_turner?ms_no=" + nameBits[0] + "&pageNumber=" + nameBits[1] + "&pageType=";
+      toret = "https://parkerweb.stanford.edu/parker/actions/page_turner?ms_no=" + nameBits[0] + "&pageNumber=" + nameBits[1] + "&pageType=";
       if (imageName.contains("V")) {
          toret += "V";
       }

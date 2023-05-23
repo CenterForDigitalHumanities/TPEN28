@@ -427,7 +427,7 @@ public class User {
             // textdisplay.mailer m = new textdisplay.mailer();
             // String body = newUser.getFname() + " " + newUser.getLname() + " (" + newUser.getUname()
             //         + ") has created a new account, which needs your approval.\n";
-            // body += "Proceed to http://t-pen.org/TPEN/admin.jsp to approve their account";
+            // body += "Proceed to https://t-pen.org/TPEN/admin.jsp to approve their account";
             try {
                 newUser.activateUser();
                 // m.sendMail(Folio.getRbTok("EMAILSERVER"), "TPEN@t-pen.org",
@@ -718,7 +718,7 @@ public class User {
         if (sendEmail) {
             textdisplay.mailer m = new textdisplay.mailer();
             String body = "Your TPEN password has been reset to " + newPass + "\n"
-                    + "You may head to http://t-pen.org and change it.";
+                    + "You may head to https://t-pen.org and change it.";
             m.sendMail(getRbTok("EMAILSERVER"), "TPEN@t-pen.org", this.Uname, "TPEN Password Reset", body);
         }
         return newPass;
@@ -943,7 +943,7 @@ public class User {
             // send a notification email to the invitee
             body = this.getFname() + " " + this.getLname() + " (" + this.getUname()
                     + ") has invited you to join their transcription project on TPEN.  \n"
-                    + "If you'd like to accept, head to http://t-pen.org/TPEN/admin.jsp and enter "+uname+" to activate your account. "
+                    + "If you'd like to accept, head to https://t-pen.org/TPEN/admin.jsp and enter "+uname+" to activate your account. "
                     + "You will receive an email to set your password and may then update your username and start your own projects.\n\n"
                     + "This is the last message you will receive if you do not wish to create an account and no further action is required.\n\n"
                     + "Thanks for transcribing, the TPEN team";

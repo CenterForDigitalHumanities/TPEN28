@@ -39,7 +39,7 @@ UNUSED FILE
         
             
             
-            out.print("<img style=\"float:left;\" src=\"http://t-pen.org/TPEN/images/cappelli/"+abbrev.getImageName()+"\"</img><br>");
+            out.print("<img style=\"float:left;\" src=\"https://t-pen.org/TPEN/images/cappelli/"+abbrev.getImageName()+"\"</img><br>");
 
             }
         %>

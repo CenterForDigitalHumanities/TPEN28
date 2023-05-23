@@ -100,7 +100,7 @@ public class UserImageCollection {
      */
     public static void create(Connection conn, File zippedFile, User uploader, Manuscript ms) throws Exception {
         String directory = getRbTok("uploadLocation");
-        File dir = new File(directory + "/" + uploader.getLname() + "/" + ms.getID());
+        File dir = new File(directory + "images/userimages/" + uploader.getLname() + "/" + ms.getID());
         if (!dir.exists()) {
             dir.mkdirs();
         }

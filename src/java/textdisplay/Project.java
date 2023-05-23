@@ -164,9 +164,9 @@ public class Project {
      * instantiation in project.java
      */
     private void initializeTools(Connection conn) throws SQLException {
-        addUserTool(conn, "Latin Vulgate", "http://vulsearch.sourceforge.net/cgi-bin/vulsearch");
-        addUserTool(conn, "Latin Dictionary", "http://www.perseus.tufts.edu/hopper/resolveform?lang=latin");
-        addUserTool(conn, "Enigma", "http://ciham-digital.huma-num.fr/enigma/");
+        addUserTool(conn, "Latin Vulgate", "https://vulsearch.sourceforge.net/cgi-bin/vulsearch");
+        addUserTool(conn, "Latin Dictionary", "https://www.perseus.tufts.edu/hopper/resolveform?lang=latin");
+        addUserTool(conn, "Enigma", "https://ciham-digital.huma-num.fr/enigma/");
         addUserTool(conn, "Cappelli's Abbreviation", "https://centerfordigitalhumanities.github.io/cappelli/");
 
     }
@@ -1694,12 +1694,12 @@ public class Project {
         model.setNsPrefix("dcterms", "http://purl.org/dc/terms/");
 
         Folio[] fols = this.getFolios();
-        Resource sequence = model.createResource("http://t-pen.org/sequences/");
+        Resource sequence = model.createResource("https://t-pen.org/sequences/");
         Property rdfType = model.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
         RDFList l = model.createList(new RDFNode[]{sequence});
         Property aggregates = model.createProperty("http://www.openarchives.org/ore/terms/", "aggregates");
         for (Folio fol : fols) {
-            Resource view = model.createResource("http://t-pen.org/views/" + fol.folioNumber);
+            Resource view = model.createResource("https://t-pen.org/views/" + fol.folioNumber);
             view.addProperty(rdfType, view);
             sequence.addProperty(aggregates, view);
             l.add(view);

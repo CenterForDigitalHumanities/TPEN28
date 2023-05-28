@@ -251,13 +251,23 @@ public class JsonHelper {
             else{ //define a 0, 0 storedDims
                 storedDims = new Dimension(0,0);
             }
+            JSONObject thumbObj = new JSONObject();
+            String imageURL = f.getImageURL();
+            if (imageURL.startsWith("/")) {
+                imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
+            }
+            thumbObj.accumulate("@id", imageURL);
+            thumbObj.accumulate("@type", "dctypes:Image");
+            thumbObj.accumulate("format", "image/jpeg");
+            //thumbObj.accumulate("width", 300);
+            //thumbObj.accumulate("height", 200);
+            result.put("thumbnail", thumbObj);
             result.put("width", canvasWidth);
             result.put("height", canvasHeight);
             List<Object> images = new ArrayList<>();
             Map<String, Object> imageAnnot = new LinkedHashMap<>();
             imageAnnot.put("@type", "oa:Annotation");
             imageAnnot.put("motivation", "sc:painting");
-            String imageURL = f.getImageURL();
             if (imageURL.startsWith("/")) {
                 imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
             }
@@ -326,6 +336,19 @@ public class JsonHelper {
             result.put("id", canvasID);
             result.put("type", "Canvas");
             result.put("label", buildNoneLanguageMap(f.getPageName()));
+            JSONArray thumbnail = new JSONArray();
+            JSONObject thumbObj = new JSONObject();
+            String imageURL = f.getImageURL();
+            if (imageURL.startsWith("/")) {
+                imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
+            }
+            thumbObj.accumulate("id", imageURL);
+            thumbObj.accumulate("type", "Image");
+            thumbObj.accumulate("format", "image/jpeg");
+            //thumbObj.accumulate("width", 300);
+            //thumbObj.accumulate("height", 200);
+            thumbnail.add(thumbObj);
+            result.put("thumbnail", thumbnail);
             int canvasHeight = pageDim.getCanvasHeight();
             int canvasWidth = pageDim.getCanvasWidth();
             if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block

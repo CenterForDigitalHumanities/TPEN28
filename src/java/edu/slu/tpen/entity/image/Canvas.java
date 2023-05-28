@@ -266,7 +266,7 @@ public class Canvas {
 		// Annotation body
 		Map<String, String> body = JsonHelper.buildAnnotationBody("cnt:ContentAsText", encoder().decodeForHTML(lines[i].getText()));
 		lineAnnot.put("body", body);
-		lineAnnot.put("target", canvasID);
+                lineAnnot.put("target", format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight()));
 		// `target` replaces `on` from version 2 and it seems like they don't want the dimensions on the canvas url
 
 
@@ -321,7 +321,7 @@ public class Canvas {
             JSONObject service = new JSONObject();
             service.put("id", manifestServices.get("id"));
             service.put("type", manifestServices.get("type"));
-            body.put("service", service);
+            //body.put("service", service);
 
             annotation.put("body", body);
 

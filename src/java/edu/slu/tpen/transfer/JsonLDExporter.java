@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
 import static textdisplay.Metadata.getMetadataAsJSON;
@@ -62,7 +63,6 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
        int projID = proj.getProjectID();
        String projName = getRbTok("SERVERURL") + "manifest/"+projID;
        if (profile.contains("v3")){
-            List<Map<String, Object>> pageList = new ArrayList<>();
             manifestData = new LinkedHashMap<>();
             manifestData.put("@context", "http://iiif.io/api/presentation/3/context.json");
             // Fix value of context
@@ -72,10 +72,27 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
             //Remember that this is a Metadata title, not project name...
             manifestData.put("label",buildNoneLanguageMap(proj.getProjectName()));
             manifestData.put("metadata", getMetadataAsJSON(projID, profile));
-            List<Map<String, Object>> canvasList = new ArrayList<>();
-            Map<String, Object> services = JsonHelper.buildServices();
-            manifestData.put("services", new Object[] { services });
+            //Map<String, Object> services = JsonHelper.buildServices();
+            //manifestData.put("services", new Object[] { services });
             JSONArray canvases = new JSONArray(); 
+            JSONArray thumbnail = new JSONArray();
+            JSONObject thumbObj = new JSONObject();
+            
+            /**
+             * Default the thumbnail for this Manifest to the first folios image
+             */
+            Folio thumbFolio = folios[0];
+            String imageURL = thumbFolio.getImageURL();
+            if (imageURL.startsWith("/")) {
+                imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), thumbFolio.getFolioNumber());
+            }
+            thumbObj.accumulate("id", imageURL);
+            thumbObj.accumulate("type", "Image");
+            thumbObj.accumulate("format", "image/jpeg");
+            //thumbObj.accumulate("width", 300);
+            //thumbObj.accumulate("height", 200);
+            thumbnail.add(thumbObj);
+            manifestData.put("thumbnail", thumbnail);            
             for (Folio f : folios) {
                 canvases.add(buildPage(proj.getProjectID(), f, u, "v3"));
             }
@@ -94,10 +111,9 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
      * @throws IOException <--ß
     */
    public JsonLDExporter(Project proj, User u) throws SQLException, IOException {
-      Folio[] folios = proj.getFolios();
-      int projID = proj.getProjectID();
-
       try {
+         Folio[] folios = proj.getFolios();
+         int projID = proj.getProjectID();
          String projName = getRbTok("SERVERURL") + "manifest/"+projID;
          manifestData = new LinkedHashMap<>();
          manifestData.put("@context", "http://iiif.io/api/presentation/2/context.json");
@@ -106,6 +122,21 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
          //Remember that this is a Metadata title, not project name...
          manifestData.put("label", proj.getProjectName());
          manifestData.put("metadata", getMetadataAsJSON(projID));
+         
+         /**
+         * Default the thumbnail for this Manifest to the first folios image
+         */
+         Folio thumbFolio = folios[0];
+         JSONObject thumbObj = new JSONObject();
+         String imageURL = thumbFolio.getImageURL();
+         if (imageURL.startsWith("/")) {
+             imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), thumbFolio.getFolioNumber());
+         }
+         thumbObj.accumulate("@id", imageURL);
+         thumbObj.accumulate("@type", "dctypes:Image");
+         thumbObj.accumulate("format", "image/jpeg");
+         //thumbObj.accumulate("width", 300);
+         //thumbObj.accumulate("height", 200);
 
         Map<String, Object> service = new LinkedHashMap<>();
         service.put("@context", "http://iiif.io/api/auth/1/context.json");
@@ -122,7 +153,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
         logout.put("profile", "http://iiif.io/api/auth/1/logout");
         logout.put("label", "End T-PEN Session");
         service.put("service",new Object[] { logout });
-        manifestData.put("service",new Object[] { service });
+        //manifestData.put("service",new Object[] { service });
         Map<String, Object> pages = new LinkedHashMap<>();
         pages.put("@id", getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
         pages.put("@type", "sc:Sequence");
@@ -147,7 +178,15 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
    }
 
    public String export() throws JsonProcessingException {
-        out.println("Send out manifest");
+      if(manifestData.containsKey("@id")){
+          out.println("Send out manifest "+manifestData.get("@id"));
+      }
+      else if (manifestData.containsKey("id")){
+          out.println("Send out manifest "+manifestData.get("id"));
+      }
+      else{
+          out.println("Send out manifest");
+      }
       ObjectMapper mapper = new ObjectMapper();
       return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(manifestData);
    }

@@ -32,6 +32,7 @@ import static net.sf.json.JSONObject.fromObject;
 import static org.owasp.esapi.ESAPI.encoder;
 import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
+import textdisplay.FolioDims;
 import textdisplay.Transcription;
 import static textdisplay.Transcription.getProjectTranscriptions;
 import utils.JsonHelper;
@@ -292,7 +293,7 @@ public class Canvas {
 	return annotationsArray;
     }
 
-    public static JSONArray getPaintingAnnotations(Integer projectID, Folio f, Dimension storedDims) throws SQLException {
+    public static JSONArray getPaintingAnnotations(Integer projectID, Folio f, Dimension storedDims, FolioDims pageDims) throws SQLException {
         try {      
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
             String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + f.getFolioNumber();
@@ -314,8 +315,15 @@ public class Canvas {
             body.put("format", "image/jpeg");
             if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
                 //doing this check will return invalid images because we will not include height and width of 0.
-               body.put("height", storedDims.height ); 
                body.put("width", storedDims.width ); 
+               body.put("height", storedDims.height ); 
+            }
+            else if (pageDims.getImageHeight() > 0) {
+                body.put("width", pageDims.getImageWidth() );   
+                body.put("height", pageDims.getImageHeight() ); 
+            }
+            else{
+                 // @FIXME Same height and width as canvas maybe?
             }
 
             JSONObject service = new JSONObject();

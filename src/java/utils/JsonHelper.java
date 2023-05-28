@@ -191,7 +191,7 @@ public class JsonHelper {
             Map<String, Object> annotationPage = new LinkedHashMap<>();
             annotationPage.put("id", paintingPageID);
             annotationPage.put("type", "AnnotationPage");
-            annotationPage.put("items", getPaintingAnnotations(projID, f, storedDims));
+            annotationPage.put("items", getPaintingAnnotations(projID, f, storedDims, pageDim));
             return annotationPage;
             
             
@@ -272,11 +272,19 @@ public class JsonHelper {
                 imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
             }
             Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
-
             if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
                 //doing this check will return invalid images because we will not include height and width of 0.
-               imageResource.put("height", storedDims.height ); 
-               imageResource.put("width", storedDims.width ); 
+                imageResource.put("width", storedDims.width ); 
+                imageResource.put("height", storedDims.height ); 
+               
+            }
+            else  if (pageDim.getImageHeight() > 0) {
+                imageResource.put("width", pageDim.getImageWidth() );   
+                imageResource.put("height", pageDim.getImageHeight() ); 
+            }
+            else{
+               //imageResource.put("height", canvasHeight ); 
+               //imageResource.put("width", canvasWidth );   
             }
             imageAnnot.put("resource", imageResource);
             imageAnnot.put("on", canvasID);
@@ -361,8 +369,8 @@ public class JsonHelper {
                     }
                 }
                 else { //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
-                canvasHeight = 0;
-                canvasWidth = 0;
+                    canvasHeight = 0;
+                    canvasWidth = 0;
                 }
             }
             else{ //define a 0, 0 storedDims

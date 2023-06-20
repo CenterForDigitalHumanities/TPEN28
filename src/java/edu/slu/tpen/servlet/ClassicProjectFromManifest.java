@@ -139,43 +139,43 @@ public class ClassicProjectFromManifest extends HttpServlet {
                         ls_pageNames.add(canvas.getString("label"));
                         JSONArray images = canvas.getJSONArray("images");
                         if (null != images && images.size() > 0) {
-                        for (int n = 0; n < images.size(); n++) {
-                            JSONObject image = images.getJSONObject(n);
-                            if(!image.has("resource")){
-                                // This canvas did not have an image.  Skip it instead of making a placeholder?
-                                System.out.println("Image object did not have resource");
-                                continue;
-                            }
-                            JSONObject resource = image.getJSONObject("resource");
-                            String imageName = resource.getString("@id");
-                            String[] parts = imageName.split("/");
-                            String part = parts[parts.length-1];
-                            System.out.println("URL filename.  If it has a file extension, let's keep it.  Otherwise, try to build a IIIF Image API URL.");
-                            System.out.println(part);
-                            // If we think it is already a direct link to a resource at http://not.real/some.filetype, let's keep it and just use that.
-                            if(!checkIfFileHasExtension(part)){
-                                // Well then it isn't a file link.  It might resolve, but we can do better if a service exists.
-                                if(resource.has("service")){
-                                    // Then it is IIIF Image API 2.1 compliant.  Let's build from the image service link
-                                    JSONObject service = resource.getJSONObject("service");
-                                    if(service.has("@id")){
-                                        String serviceImageName = service.getString("@id");
-                                        if(serviceImageName.endsWith("/")){
-                                            serviceImageName += "full/full/0/default.jpg";
-                                        }
-                                        else{
-                                            serviceImageName += "/full/full/0/default.jpg";
-                                        }
-                                        imageName = serviceImageName;
-                                    }
-                                    // If there wasn't a service @id, then we are stuck with whatever the original image URL was.  Let's hope it resolves to an image.
+                            for (int n = 0; n < images.size(); n++) {
+                                JSONObject image = images.getJSONObject(n);
+                                if(!image.has("resource")){
+                                    // This canvas did not have an image.  Skip it instead of making a placeholder?
+                                    System.out.println("Image object did not have resource");
+                                    continue;
                                 }
-                                // If there wasn't a service, then we are stuck with whatever the original image URL was.  Let's hope it resolves to an image.
+                                JSONObject resource = image.getJSONObject("resource");
+                                String imageName = resource.getString("@id");
+                                String[] parts = imageName.split("/");
+                                String part = parts[parts.length-1];
+                                System.out.println("URL filename.  If it has a file extension, let's keep it.  Otherwise, try to build a IIIF Image API URL.");
+                                System.out.println(part);
+                                // If we think it is already a direct link to a resource at http://not.real/some.filetype, let's keep it and just use that.
+                                if(!checkIfFileHasExtension(part)){
+                                    // Well then it isn't a file link.  It might resolve, but we can do better if a service exists.
+                                    if(resource.has("service")){
+                                        // Then it is IIIF Image API 2.1 compliant.  Let's build from the image service link
+                                        JSONObject service = resource.getJSONObject("service");
+                                        if(service.has("@id")){
+                                            String serviceImageName = service.getString("@id");
+                                            if(serviceImageName.endsWith("/")){
+                                                serviceImageName += "full/full/0/default.jpg";
+                                            }
+                                            else{
+                                                serviceImageName += "/full/full/0/default.jpg";
+                                            }
+                                            imageName = serviceImageName;
+                                        }
+                                        // If there wasn't a service @id, then we are stuck with whatever the original image URL was.  Let's hope it resolves to an image.
+                                    }
+                                    // If there wasn't a service, then we are stuck with whatever the original image URL was.  Let's hope it resolves to an image.
+                                }
+                                out.println("Image name for Folio entry: "+imageName);
+                                //int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName, archive, mss.getID(), 0);
+                                //ls_folios_keys.add(folioKey);
                             }
-                            out.println("Image name for Folio entry: "+imageName);
-                            //int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName, archive, mss.getID(), 0);
-                            //ls_folios_keys.add(folioKey);
-                        }
                         }
                     }
                 }

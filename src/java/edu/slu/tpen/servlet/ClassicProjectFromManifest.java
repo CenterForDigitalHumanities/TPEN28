@@ -52,7 +52,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter writer = response.getWriter();
-        response.setHeader("Access-Control-Allow-Origin", "*");
+        //response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Headers", "*");
         response.setHeader("Access-Control-Allow-Methods", "*");
         response.setHeader("Access-Control-Expose-Headers", "*");
@@ -77,7 +77,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
     protected void doOptions(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
         //These headers must be present to pass browser preflight for CORS
-        response.setHeader("Access-Control-Allow-Origin", "*");
+        //response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Headers", "*");
         response.setHeader("Access-Control-Allow-Methods", "*");
         response.setHeader("Access-Control-Expose-Headers", "*");
@@ -88,7 +88,10 @@ public class ClassicProjectFromManifest extends HttpServlet {
     
     public Integer createProject(HttpServletRequest request, HttpServletResponse response) throws IOException{
         try{
-            int UID = parseInt(request.getSession().getAttribute("UID").toString());
+            int UID = -1;
+            if(null != request.getSession().getAttribute("UID")){
+                UID = parseInt(request.getSession().getAttribute("UID").toString());
+            }
             int projectID = 0;
             textdisplay.Project thisProject = null;
             if(request.getParameter("manifest")==null){
@@ -140,14 +143,15 @@ public class ClassicProjectFromManifest extends HttpServlet {
                                 JSONObject image = images.getJSONObject(n);
                                 JSONObject resource = image.getJSONObject("resource");
                                 String imageName = resource.getString("@id");
-                                int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName.replace('_', '&'), archive, mss.getID(), 0);
+                                out.println("Create Folio Record For "+imageName);
+                                int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName, archive, mss.getID(), 0);
                                 ls_folios_keys.add(folioKey);
                             }
                         }
                     }
                 }
             }
-            out.println("Create project");
+            out.println("Create Project Entry");
             //create a project for them
             String tmpProjName = mss.getShelfMark()+" project";
             if (theManifest.has("label")) {
@@ -177,25 +181,31 @@ public class ClassicProjectFromManifest extends HttpServlet {
         URL id = new URL(manifestID);
         BufferedReader reader = null;
         StringBuilder stringBuilder;
-        HttpURLConnection connection = (HttpURLConnection) id.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setReadTimeout(15*1000);
-        connection.connect();
+        try{
+            HttpURLConnection connection = (HttpURLConnection) id.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setReadTimeout(15*1000);
+            connection.connect();
 
-        reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        stringBuilder = new StringBuilder();
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            stringBuilder = new StringBuilder();
 
-        String line = null;
-        while ((line = reader.readLine()) != null)
-        {
-          stringBuilder.append(line + "\n");
+            String line = null;
+            while ((line = reader.readLine()) != null)
+            {
+              stringBuilder.append(line + "\n");
+            }
+            if(!stringBuilder.toString().trim().equals("")){
+                manifest = fromObject(stringBuilder.toString());
+            }
+            out.println("resolved");
+            out.println(manifest);
+            return manifest;
         }
-        if(!stringBuilder.toString().trim().equals("")){
-            manifest = fromObject(stringBuilder.toString());
+        catch(Exception e){
+            return new JSONObject();
         }
-        out.println("resolved");
-        out.println(manifest);
-        return manifest;
+        
     }
     /**
      * Returns a short description of the servlet.

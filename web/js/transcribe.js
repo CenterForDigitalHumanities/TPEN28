@@ -2192,7 +2192,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
         var hiResBackground = ""
         if ($(".transcriptionImage").attr("src").includes('/full/full')) {
            // causing double vision 
-           // hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
+            hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
         }
 
         var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter

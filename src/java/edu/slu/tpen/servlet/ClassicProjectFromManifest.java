@@ -142,7 +142,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
                             for (int n = 0; n < images.size(); n++) {
                                 JSONObject image = images.getJSONObject(n);
                                 if(!image.has("resource")){
-                                    // This canvas did not have an image.  Skip it instead of making a placeholder?
+                                    // This image object does not have a resource.  Skip it instead of making a placeholder for this canvas?
                                     System.out.println("Image object did not have resource");
                                     continue;
                                 }
@@ -156,7 +156,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
                                 if(!checkIfFileHasExtension(part)){
                                     // Well then it isn't a file link.  It might resolve, but we can do better if a service exists.
                                     if(resource.has("service")){
-                                        // Then it is IIIF Image API 2.1 compliant.  Let's build from the image service link
+                                        // Then it is probably IIIF Image API compliant.  Let's build from the image service link
                                         JSONObject service = resource.getJSONObject("service");
                                         if(service.has("@id")){
                                             String serviceImageName = service.getString("@id");

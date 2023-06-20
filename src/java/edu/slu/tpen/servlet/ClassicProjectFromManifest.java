@@ -18,6 +18,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import static java.util.logging.Level.SEVERE;
@@ -122,8 +123,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
             else{
                 label = "New T-PEN Manifest";
             }
-            out.println("Make new manuscript");
-            textdisplay.Manuscript mss=new textdisplay.Manuscript("TPEN 2.8", archive, city, city, -999);
+            
            // int [] msIDs=new int[0];
             User u = new User(UID);
             JSONArray sequences = (JSONArray) theManifest.get("sequences");
@@ -139,35 +139,67 @@ public class ClassicProjectFromManifest extends HttpServlet {
                         ls_pageNames.add(canvas.getString("label"));
                         JSONArray images = canvas.getJSONArray("images");
                         if (null != images && images.size() > 0) {
-                            for (int n = 0; n < images.size(); n++) {
-                                JSONObject image = images.getJSONObject(n);
-                                JSONObject resource = image.getJSONObject("resource");
-                                String imageName = resource.getString("@id");
-                                out.println("Create Folio Record For "+imageName);
-                                int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName, archive, mss.getID(), 0);
-                                ls_folios_keys.add(folioKey);
+                        for (int n = 0; n < images.size(); n++) {
+                            JSONObject image = images.getJSONObject(n);
+                            if(!image.has("resource")){
+                                // This canvas did not have an image.  Skip it instead of making a placeholder?
+                                System.out.println("Image object did not have resource");
+                                continue;
                             }
+                            JSONObject resource = image.getJSONObject("resource");
+                            String imageName = resource.getString("@id");
+                            String[] parts = imageName.split("/");
+                            String part = parts[parts.length-1];
+                            System.out.println("URL filename.  If it has a file extension, let's keep it.  Otherwise, try to build a IIIF Image API URL.");
+                            System.out.println(part);
+                            // If we think it is already a direct link to a resource at http://not.real/some.filetype, let's keep it and just use that.
+                            if(!checkIfFileHasExtension(part)){
+                                // Well then it isn't a file link.  It might resolve, but we can do better if a service exists.
+                                if(resource.has("service")){
+                                    // Then it is IIIF Image API 2.1 compliant.  Let's build from the image service link
+                                    JSONObject service = resource.getJSONObject("service");
+                                    if(service.has("@id")){
+                                        String serviceImageName = service.getString("@id");
+                                        if(serviceImageName.endsWith("/")){
+                                            serviceImageName += "full/full/0/default.jpg";
+                                        }
+                                        else{
+                                            serviceImageName += "/full/full/0/default.jpg";
+                                        }
+                                        imageName = serviceImageName;
+                                    }
+                                    // If there wasn't a service @id, then we are stuck with whatever the original image URL was.  Let's hope it resolves to an image.
+                                }
+                                // If there wasn't a service, then we are stuck with whatever the original image URL was.  Let's hope it resolves to an image.
+                            }
+                            out.println("Image name for Folio entry: "+imageName);
+                            //int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName, archive, mss.getID(), 0);
+                            //ls_folios_keys.add(folioKey);
+                        }
                         }
                     }
                 }
             }
-            out.println("Create Project Entry");
+            return 11101; 
+            //out.println("Create Project Entry");
             //create a project for them
-            String tmpProjName = mss.getShelfMark()+" project";
-            if (theManifest.has("label")) {
-                tmpProjName = theManifest.getString("label");
-            }
-            Connection conn = getDBConnection();
-            conn.setAutoCommit(false);
-            Group newgroup = new Group(conn, tmpProjName, UID);
-            Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
-            newProject.setFolios(conn, mss.getFolios());
-            newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + mss.getShelfMark(), UID);
-            thisProject=newProject;
-            projectID=thisProject.getProjectID();
-            newProject.importData(UID);
-            conn.commit();
-            return projectID;
+//            out.println("Make new manuscript");
+//            textdisplay.Manuscript mss=new textdisplay.Manuscript("TPEN 2.8", archive, city, city, -999);
+//            String tmpProjName = mss.getShelfMark()+" project";
+//            if (theManifest.has("label")) {
+//                tmpProjName = theManifest.getString("label");
+//            }
+//            Connection conn = getDBConnection();
+//            conn.setAutoCommit(false);
+//            Group newgroup = new Group(conn, tmpProjName, UID);
+//            Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
+//            newProject.setFolios(conn, mss.getFolios());
+//            newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + mss.getShelfMark(), UID);
+//            thisProject=newProject;
+//            projectID=thisProject.getProjectID();
+//            newProject.importData(UID);
+//            conn.commit();
+//            return projectID;
         }
         catch(IOException | NumberFormatException | SQLException e){
             response.sendError(500, e.getMessage());
@@ -199,13 +231,26 @@ public class ClassicProjectFromManifest extends HttpServlet {
                 manifest = fromObject(stringBuilder.toString());
             }
             out.println("resolved");
-            out.println(manifest);
             return manifest;
         }
         catch(Exception e){
             return new JSONObject();
         }
         
+    }
+    
+    /**
+     * Within the context of what filetypes we might come across in the IIIF Image API.
+     * See https://iiif.io/api/image/3.0/#45-format
+     * @param s
+     * @return 
+     */
+    public static boolean checkIfFileHasExtension(String s) {
+        String[] extn = {"png", "jpg", "JPG", "jpeg", "JPEG", "jp2", "gif", "tif", "webp"};
+        System.out.println("Does "+s+" contain a known extension in the following list?");
+        System.out.println(Arrays.toString(extn));
+        System.out.println(Arrays.stream(extn).anyMatch(entry -> s.endsWith(entry)));
+        return Arrays.stream(extn).anyMatch(entry -> s.endsWith(entry));
     }
     /**
      * Returns a short description of the servlet.

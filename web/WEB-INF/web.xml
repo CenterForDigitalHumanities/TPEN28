@@ -236,10 +236,6 @@
         <servlet-class>edu.slu.tpen.servlet.UpgradeManagement</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ClassicProjectFromManifest</servlet-name>
-        <servlet-class>edu.slu.tpen.servlet.ClassicProjectFromManifest</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>autoParse</servlet-name>
         <servlet-class>edu.slu.tpen.servlet.AutoParse</servlet-class>
     </servlet>
@@ -433,8 +429,8 @@
         <servlet-class>edu.slu.tpen.servlet.CreateProjectClassic</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>createProjectFromManifest</servlet-name>
-        <servlet-class>edu.slu.tpen.servlet.CreateProjectServlet</servlet-class>
+        <servlet-name>CreateProjectFromManifest</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.ClassicProjectFromManifest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>copyProject</servlet-name>
@@ -533,7 +529,7 @@
         <url-pattern>/createProject</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>createProjectFromManifest</servlet-name>
+        <servlet-name>CreateProjectFromManifest</servlet-name>
         <url-pattern>/createProjectFromManifest</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
@@ -672,10 +668,6 @@
     <servlet-mapping>
         <servlet-name>UpgradeManagement</servlet-name>
         <url-pattern>/upgradeManagement</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ClassicProjectFromManifest</servlet-name>
-        <url-pattern>/ClassicProjectFromManifest</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>autoParse</servlet-name>

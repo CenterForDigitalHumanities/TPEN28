@@ -2191,7 +2191,8 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
         $(".xmlClosingTags").before(newAnno);
         var hiResBackground = ""
         if ($(".transcriptionImage").attr("src").includes('/full/full')) {
-            hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
+           // causing double vision 
+           // hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
         }
 
         var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter

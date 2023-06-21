@@ -107,12 +107,12 @@ public class ClassicProjectFromManifest extends HttpServlet {
                 return -1; 
             }
             JSONObject theManifest = resolveID(request.getParameter("manifest")); 
-            String type = theManifest.getString("@type");
             //TODO: @context validation too?
-            if(!type.equals("sc:Manifest")){
+            if(!theManifest.has("@type") || !theManifest.getString("@type").equals("sc:Manifest")){
                 response.sendError(400, "The object provided is not a IIIF Presentation API 2.1 Manifest.");
                 return -1;
             }
+            String type = theManifest.getString("@type");
             //Should we be setting these to something strategic?
             //String repository = "unknown";
             //String collection = "unkown";

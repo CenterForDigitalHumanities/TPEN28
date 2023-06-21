@@ -182,8 +182,11 @@ public class JsonLDExporter {
                 canvasHeight = pageDim.getCanvasHeight();
                 canvasWidth = pageDim.getCanvasWidth(); 
             }
-            //Generate the FolioDims entry so we don't have to do this work again.  Note we can only create it, not update an existing one that may have a 0 stored.
+            //Generate the FolioDims entry so we don't have to do this work again.  Note we can only create it, not update an existing one that may have a 0.
             if(null == pageDim){
+                System.out.println("Create folio dim record for "+f.getFolioNumber());
+                System.out.println(storedDims.width+","+ storedDims.height);
+                System.out.println(canvasWidth+","+ canvasHeight);
                 createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
             }
             result.put("width", canvasWidth);

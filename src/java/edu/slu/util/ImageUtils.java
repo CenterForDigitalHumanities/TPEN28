@@ -77,8 +77,6 @@ public class ImageUtils {
     */
     public static Dimension getJPEGDimension(InputStream input) throws IOException {
         // Check for SOI marker.
-
-        System.out.println("GET JPG DIMENSIONS FROM INPUT STREAM");
         if (input.read() != 255 || input.read() != 216) {
             //If we throw this exception, it breaks through to the front end.  Instead, we would rather the manifest contain a flagged bad canvas
            //throw new IOException("Missing JPEG SOI (Start Of Image) marker.");

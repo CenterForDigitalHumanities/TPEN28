@@ -1429,8 +1429,10 @@ public class Folio {
                return new FileInputStream(path);
             } 
             else if (!onlyLocal) {
+               // Limit all IIIF Image API images to size 2000.  Note during the createProjectFromManifest process, this image height will be cached.
+               // By default, the interfaces will not ask for /full/full/.  It will be up to the interface to ask for a higher resolution.
                if(url.contains("/full/full/")){
-                   url = url.replace("/full/full/", "/full/,100/");
+                   url = url.replace("/full/full/", "/full/,2000/");
                    imageURL = new URL(url);
                }
                LOG.log(INFO, "Loading image with URL {0}", imageURL);

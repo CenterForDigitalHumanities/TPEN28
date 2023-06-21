@@ -1392,7 +1392,7 @@ public class Folio {
       String archName = getArchive();
       Archive a = new Archive(archName);
       String path;
-     LOG.log(INFO, "Connection method for {0} was {1}", new Object[] { archName, a.getConnectionMethod() });
+      LOG.log(INFO, "Connection method for {0} was {1}", new Object[] { archName, a.getConnectionMethod() });
 
       switch (a.getConnectionMethod()) {
          case local:
@@ -1429,18 +1429,14 @@ public class Folio {
                return new FileInputStream(path);
             } 
             else if (!onlyLocal) {
-               LOG.log(INFO, "Loading image with URL {0}", imageURL);
                if(url.contains("/full/full/")){
-                   System.out.println("/full/ detected.  Limit to height of 100");
                    url = url.replace("/full/full/", "/full/,100/");
                    imageURL = new URL(url);
-                   System.out.println(url);
                }
-//               HttpURLConnection conn = (HttpURLConnection) imageURL.openConnection();
-//               conn.connect();
-//               return conn.getInputStream();
-               return imageURL.openStream();
-               
+               LOG.log(INFO, "Loading image with URL {0}", imageURL);
+               HttpURLConnection conn = (HttpURLConnection) imageURL.openConnection();
+               conn.connect();
+               return conn.getInputStream();
             }
       }
       throw new IOException("Unable to open image for " + url);
@@ -1473,38 +1469,6 @@ public class Folio {
       catch (Error e){ //we were unable to gather the image, so just return 0, 0.  We want to get the dimensions from somewhere else if possible.
           return new Dimension(0, 0);
       }
-   }
-   
-   /**
-    * Get the dimensions of the image for this folio.  If it's a local file, we get the dimensions
-    * from the image itself.  Otherwise, we will fall back to getting the dimensions from a manifest
-    * associated with the document (code yet to be written).
-    * @return the dimensions, or <code>null</code> if the archive type is unknown
-    */
-   public Dimension getImageSize() throws IOException, SQLException {
-    
-        try{
-              InputStream stream = ImageCache.getImageStream(folioNumber);
-              if (stream != null) {
-                  System.out.println("getImageSize() has a good stream from the Image Cache.  Let's get dimensions.");
-                  return getJPEGDimension(stream);
-              }
-              else{
-                  System.out.println("getImageSize() did not find a good stream in the Image Cache.  We need to resolve the URL into a stream to get dimensions.");
-                  stream = getUncachedImageStream(false);
-                  if(stream == null){
-                      System.out.println("Could not resolve Image.  Dimensions are 0,0");
-                      return new Dimension(0,0);
-                  }
-                  System.out.println("The Image URL resolved to a good stream.  Let's get dimensions.");
-                  return getJPEGDimension(stream);
-              }
-        }
-        catch (Error e){ //we were unable to gather the image, so just return 0, 0.  We want to get the dimensions from somewhere else if possible.
-            System.out.println("GET IMAGE SIZE ERROR");
-            System.out.println(e);
-            return new Dimension(0, 0);
-        }
    }
 
    /**

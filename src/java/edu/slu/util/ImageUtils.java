@@ -85,56 +85,7 @@ public class ImageUtils {
            System.out.println("!!!!! MISSING JPEG SOI MARKER !!!!!!");
            return new Dimension(0,0);
         }
-        System.out.println("I.S. size: "+input.available());
-        System.out.println("I.S. first byte: "+input.read());
-        System.out.println("Initialize B.I.S.");
-        
-//        String suffix = "jpg";
-//        Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix(suffix);
-//        if (iter.hasNext()) {
-//            ImageReader reader = iter.next();
-//            try {
-//                ImageInputStream stream = ImageIO.createImageInputStream(input);
-//                System.out.println("set reader input");
-//                reader.setInput(stream);
-//                int width = reader.getWidth(reader.getMinIndex());
-//                int height = reader.getHeight(reader.getMinIndex());
-//                System.out.println("Result: "+width+", "+height);
-//                return new Dimension(width, height);
-//            } catch (Exception e) {
-//                System.out.println("New function could not process stream");
-//                System.out.println(e);
-//            } finally {
-//                reader.dispose();
-//            }
-//        } else {
-//            System.out.println("No reader found for given format: " + suffix);
-//        }
-//        System.out.println("Unable to process image input stream");
-//        return new Dimension(0,0);
-        
-        //InputStream is =  new BufferedInputStream ( input );  
-//        ByteArrayInputStream in = new ByteArrayInputStream(IOUtils.toByteArray(input));
-//        BufferedImage image = ImageIO.read(in); 
-//        System.out.println("Read B.I.S. image info");
-//        System.out.println(image);
-//        try{
-//            if(image.getHeight() > 0){
-//                System.out.println("Found a height for this jpg");
-//                return new Dimension(image.getWidth(), image.getHeight());
-//            }
-//            else{
-//                System.out.println("jpg height could not be determined.  It will be 0,0");
-//                return new Dimension(0, 0);
-//            }
-//        }
-//        catch(Exception e){
-//            System.out.println("getJPEGDimensions could not process the image stream.  NullPointer means the stream resulted in a null image.  Dimensions will be 0,0");
-//            System.out.println(e);
-//            return new Dimension(0, 0);
-//        }
-
-
+        System.out.println("image InputStream size: "+input.available());
         while (input.read() == 255) {
            int marker = input.read();
            int len = input.read() << 8 | input.read();
@@ -142,12 +93,12 @@ public class ImageUtils {
               input.skip(1);
               int h = input.read() << 8 | input.read();
               int w = input.read() << 8 | input.read();
-              System.out.println("GOT DIMENSIONS HOORAY!@!!");
+              System.out.println("getJPEGDimension has dimensions "+w+","+h);
               return new Dimension(w, h);
            }
            input.skip(len - 2);
         }
-        System.out.println("getJPEGDimensions never found marker 192");
+        System.out.println("getJPEGDimensions never found marker 192.  Dimensions are unknown and will be 0,0");
         return new Dimension(0, 0);
    }
    

@@ -1480,6 +1480,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
     //Move up all image annos
     var cnt = -1;
     if (canvasObj.images[0].resource['@id'] !== undefined && canvasObj.images[0].resource['@id'] !== "") { //Only one image
+        
         var image = new Image();
         //Check to see if we can use a preloaded image...
         if (tpen.project.folioImages.length > 0 && tpen.project.folioImages[tpen.screen.currentFolio] !== undefined && tpen.project.folioImages[tpen.screen.currentFolio].image !== null) {
@@ -2192,7 +2193,7 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
         var hiResBackground = ""
         if ($(".transcriptionImage").attr("src").includes('/full/full')) {
            // causing double vision 
-            hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
+            //hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
         }
 
         var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter

@@ -134,42 +134,41 @@ public class JsonLDExporter {
         try{
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
-            Dimension storedDims = null;
-
+            Dimension storedDims = getImageDimension(f.getFolioNumber());
             JSONArray otherContent;
-            if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-               storedDims = getImageDimension(f.getFolioNumber());
-               if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
-                  // System.out.println("Need to resolve image headers for dimensions");
-                  storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
-               }
-            }
-
             LOG.log(INFO, "pageDim={0}", pageDim);
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("@id", canvasID);
             result.put("@type", "sc:Canvas");
             result.put("label", f.getPageName());
-            int canvasHeight = pageDim.getCanvasHeight();
-            int canvasWidth = pageDim.getCanvasWidth();
-            if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
-                  if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
-                      if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.
-                          //generate canvas values for foliodim
-                          canvasHeight = 1000;
-                          canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
-                          //System.out.println("Need to make folio dims record");
-                          createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
-                      }
-                  }
-                  else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
-                      canvasHeight = 0;
-                      canvasWidth = 0;
-                  }
+            int canvasHeight = 0;
+            int canvasWidth = 0;
+            int imageHeight = 0;
+            int imageWidth = 0;
+            if(null == pageDim || pageDim.getImageHeight() <= 0 || pageDim.getImageWidth() <= 0){ 
+                //There was no FolioDims entry for this folio.  We will need to generate one using the image height and image width.
+                System.out.println("Need to resolve image headers for dimensions because there was no dimension entry for this Folio: "+f.getFolioNumber());
+                storedDims = f.getImageSize(); //Resolve the image and get the image dimensions
+                if(storedDims.height > 0 && storedDims.width > 0){
+                    //Then we were able to resolve the image and get the size
+                    canvasHeight = 1000;
+                    canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
+                    imageHeight = storedDims.height;
+                    imageWidth = storedDims.width;
+                    //Generate the FolioDims entry so we don't have to do this again.
+                    createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                }
+                else{
+                    System.out.println("No way to get dimensions.  Image height and/or width was 0.  See "+f.getImageURL());
+                }
             }
-            else{ //define a 0, 0 storedDims
-                storedDims = new Dimension(0,0);
+            else{
+                canvasHeight = pageDim.getCanvasHeight();
+                canvasWidth = pageDim.getCanvasWidth(); 
+                imageHeight = pageDim.getImageHeight();
+                imageWidth = pageDim.getImageWidth();
             }
+            
             result.put("width", canvasWidth);
             result.put("height", canvasHeight);
             List<Object> images = new ArrayList<>();

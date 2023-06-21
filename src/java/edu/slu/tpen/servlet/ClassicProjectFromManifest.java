@@ -86,7 +86,10 @@ public class ClassicProjectFromManifest extends HttpServlet {
         response.setStatus(200);
     }
     
-    
+    /**
+     * Make a project from a user provided Manifest URI.
+     * The Manifest must be IIIF Presentation API 2.1.
+     */
     public Integer createProject(HttpServletRequest request, HttpServletResponse response) throws IOException{
         try{
             int UID = -1;
@@ -104,10 +107,17 @@ public class ClassicProjectFromManifest extends HttpServlet {
                 return -1; 
             }
             JSONObject theManifest = resolveID(request.getParameter("manifest")); 
+            String type = theManifest.getString("@type");
+            //TODO: @context validation too?
+            if(!type.equals("sc:Manifest")){
+                response.sendError(400, "The object provided is not a IIIF Presentation API 2.1 Manifest.");
+                return -1;
+            }
+            //Should we be setting these to something strategic?
             //String repository = "unknown";
+            //String collection = "unkown";
             String archive = "unknown";
             String city = "unknown";
-            //String collection = "unknown";
             String label = "unknown"; 
             List<Integer> ls_folios_keys = new ArrayList();
             if(theManifest.has("@id")){
@@ -123,9 +133,8 @@ public class ClassicProjectFromManifest extends HttpServlet {
             else{
                 label = "New T-PEN Manifest";
             }
-            
-           // int [] msIDs=new int[0];
-            User u = new User(UID);
+            System.out.println("Make new manuscript");
+            textdisplay.Manuscript mss=new textdisplay.Manuscript("TPEN 2.8", archive, city, city, -999);
             JSONArray sequences = (JSONArray) theManifest.get("sequences");
             List<String> ls_pageNames = new LinkedList();
             out.println("Go over sequences");
@@ -138,11 +147,16 @@ public class ClassicProjectFromManifest extends HttpServlet {
                         JSONObject canvas = canvases.getJSONObject(j);
                         ls_pageNames.add(canvas.getString("label"));
                         JSONArray images = canvas.getJSONArray("images");
+                        /**
+                         * NOTE
+                         * We make Folios from images and not Canvases.  1 image per Folio.
+                         * We could make Folios from Canvases instead.  Canvases without images could just get a placeholder instead of being ignored.
+                         */
                         if (null != images && images.size() > 0) {
                             for (int n = 0; n < images.size(); n++) {
                                 JSONObject image = images.getJSONObject(n);
                                 if(!image.has("resource")){
-                                    // This image object does not have a resource.  Skip it instead of making a placeholder for this canvas?
+                                    // This image object does not have a resource.  Skip it.
                                     System.out.println("Image object did not have resource");
                                     continue;
                                 }
@@ -150,7 +164,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
                                 String imageName = resource.getString("@id");
                                 String[] parts = imageName.split("/");
                                 String part = parts[parts.length-1];
-                                System.out.println("URL filename.  If it has a file extension, let's keep it.  Otherwise, try to build a IIIF Image API URL.");
+                                System.out.println("Filename from URL.  Check for filename.format and keep it if it has a format.");
                                 System.out.println(part);
                                 // If we think it is already a direct link to a resource at http://not.real/some.filetype, let's keep it and just use that.
                                 if(!checkIfFileHasExtension(part)){
@@ -173,33 +187,32 @@ public class ClassicProjectFromManifest extends HttpServlet {
                                     // If there wasn't a service, then we are stuck with whatever the original image URL was.  Let's hope it resolves to an image.
                                 }
                                 out.println("Image name for Folio entry: "+imageName);
-                                //int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName, archive, mss.getID(), 0);
-                                //ls_folios_keys.add(folioKey);
+                                int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName, archive, mss.getID(), 0);
+                                ls_folios_keys.add(folioKey);
                             }
                         }
                     }
                 }
             }
-            return 11101; 
-            //out.println("Create Project Entry");
-            //create a project for them
-//            out.println("Make new manuscript");
-//            textdisplay.Manuscript mss=new textdisplay.Manuscript("TPEN 2.8", archive, city, city, -999);
-//            String tmpProjName = mss.getShelfMark()+" project";
-//            if (theManifest.has("label")) {
-//                tmpProjName = theManifest.getString("label");
-//            }
-//            Connection conn = getDBConnection();
-//            conn.setAutoCommit(false);
-//            Group newgroup = new Group(conn, tmpProjName, UID);
-//            Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
-//            newProject.setFolios(conn, mss.getFolios());
-//            newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + mss.getShelfMark(), UID);
-//            thisProject=newProject;
-//            projectID=thisProject.getProjectID();
-//            newProject.importData(UID);
-//            conn.commit();
-//            return projectID;
+            
+            String tmpProjName = mss.getShelfMark()+" project";
+            if (theManifest.has("label")) {
+                tmpProjName = theManifest.getString("label");
+            }
+            Connection conn = getDBConnection();
+            conn.setAutoCommit(false);
+            System.out.println("Set Group");
+            Group newgroup = new Group(conn, tmpProjName, UID);
+            System.out.println("Create Project Entry");
+            Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
+            newProject.setFolios(conn, mss.getFolios());
+            newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + mss.getShelfMark(), UID);
+            thisProject=newProject;
+            projectID=thisProject.getProjectID();
+            newProject.importData(UID);
+            System.out.println("Commit Project");
+            conn.commit();
+            return projectID;
         }
         catch(IOException | NumberFormatException | SQLException e){
             response.sendError(500, e.getMessage());
@@ -207,8 +220,16 @@ public class ClassicProjectFromManifest extends HttpServlet {
         }
     }
 
+    /**
+     * Resolve a URI into JSON.
+     * 
+     * @param manifestID {String} URL to resolve into JSON.
+     * @return The JSON representing the resolved resource.
+     * @throws MalformedURLException
+     * @throws IOException 
+     */
     public JSONObject resolveID(String manifestID) throws MalformedURLException, IOException{
-        out.println("Resolving ID "+manifestID);
+        System.out.println("Create project from url "+manifestID);
         JSONObject manifest = new JSONObject();
         URL id = new URL(manifestID);
         BufferedReader reader = null;
@@ -230,7 +251,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
             if(!stringBuilder.toString().trim().equals("")){
                 manifest = fromObject(stringBuilder.toString());
             }
-            out.println("resolved");
+            out.println("URL Resolved successfully.");
             return manifest;
         }
         catch(Exception e){
@@ -240,14 +261,14 @@ public class ClassicProjectFromManifest extends HttpServlet {
     }
     
     /**
-     * Within the context of what filetypes we might come across in the IIIF Image API.
+     * See if this filename contains a filetypes we might come across in the IIIF Image API.
      * See https://iiif.io/api/image/3.0/#45-format
      * @param s
      * @return 
      */
     public static boolean checkIfFileHasExtension(String s) {
         String[] extn = {"png", "jpg", "JPG", "jpeg", "JPEG", "jp2", "gif", "tif", "webp"};
-        System.out.println("Does "+s+" contain a known extension in the following list?");
+        System.out.println("Does ' "+s+" ' contain a known extension in the following list?");
         System.out.println(Arrays.toString(extn));
         System.out.println(Arrays.stream(extn).anyMatch(entry -> s.endsWith(entry)));
         return Arrays.stream(extn).anyMatch(entry -> s.endsWith(entry));

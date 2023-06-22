@@ -126,6 +126,25 @@ public class FolioDims {
         }
     }
     
+    public static void updateFolioDimsRecord(int imagew, int imageh, int canvasw, int canvash, int folioID) throws SQLException{
+        Connection j = null;
+        PreparedStatement stmt = null;
+        try {
+           String query = "update foliodim set imagewidth=?, imageheight=?, canvaswidth=?, canvasheight=? where folioID=? ";
+           j = getConnection();
+           stmt = j.prepareStatement(query, RETURN_GENERATED_KEYS);
+           stmt.setInt(1, imagew);
+           stmt.setInt(2, imageh);
+           stmt.setInt(3, canvasw);
+           stmt.setInt(4, canvash);
+           stmt.setInt(5, folioID);
+           stmt.execute();
+        } finally {
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
+        }
+    }
+    
     /*
       Create a new FolioDims record in SQL with a given width, height and folioID.  Return the ID generated.  
     */

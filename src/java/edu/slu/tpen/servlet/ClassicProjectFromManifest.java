@@ -136,16 +136,14 @@ public class ClassicProjectFromManifest extends HttpServlet {
             System.out.println("Make new manuscript");
             textdisplay.Manuscript mss=new textdisplay.Manuscript("TPEN 2.8", archive, city, city, -999);
             JSONArray sequences = (JSONArray) theManifest.get("sequences");
-            List<String> ls_pageNames = new LinkedList();
             out.println("Go over sequences");
             for (int i = 0; i < sequences.size(); i++) {
                 JSONObject inSequences = (JSONObject) sequences.get(i);
                 JSONArray canvases = inSequences.getJSONArray("canvases");
-                out.println("Go over canvases");
+                out.println("Go over "+canvases.size()+" canvases");
                 if (null != canvases && canvases.size() > 0) {
                     for (int j = 0; j < canvases.size(); j++) {
                         JSONObject canvas = canvases.getJSONObject(j);
-                        ls_pageNames.add(canvas.getString("label"));
                         JSONArray images = canvas.getJSONArray("images");
                         /**
                          * NOTE
@@ -153,11 +151,12 @@ public class ClassicProjectFromManifest extends HttpServlet {
                          * We could make Folios from Canvases instead.  Canvases without images could just get a placeholder instead of being ignored.
                          */
                         if (null != images && images.size() > 0) {
+                            System.out.println("On canvas "+j+" make "+images.size()+" TPEN Folio objects");
                             for (int n = 0; n < images.size(); n++) {
                                 JSONObject image = images.getJSONObject(n);
                                 if(!image.has("resource")){
                                     // This image object does not have a resource.  Skip it.
-                                    System.out.println("Image object did not have resource");
+                                    System.out.println("Image "+n+" on canvas "+j+" did not have resource.  It will be omitted.");
                                     continue;
                                 }
                                 JSONObject resource = image.getJSONObject("resource");
@@ -186,7 +185,8 @@ public class ClassicProjectFromManifest extends HttpServlet {
                                     }
                                     // If there wasn't a service, then we are stuck with whatever the original image URL was.  Let's hope it resolves to an image.
                                 }
-                                out.println("Image name for Folio entry: "+imageName);
+                                out.println("Create Frolio entry for image: "+imageName);
+                                // TODO actually check if this image resolves by doing a HEAD request?  If so, use it.  If not, skip it.
                                 int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName, archive, mss.getID(), 0);
                                 ls_folios_keys.add(folioKey);
                             }

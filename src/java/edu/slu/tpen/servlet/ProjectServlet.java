@@ -81,28 +81,19 @@ public class ProjectServlet extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setHeader("Access-Control-Allow-Headers", "*");
         resp.setHeader("Access-Control-Allow-Methods", "GET");
-        resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
-        //System.out.println(url_piece);
-//        if(url_piece.contains(skip_uid_check)){
-//            System.out.println("We wanna skip");
-//            uid = 0;
-//            skip = true;
-//        }
-//        else{
-//            uid = getUID(req, resp);
-//        }     
-        if (uid >= 0) {
-            try {
-                //System.out.println("Project 1");
-                String check = "transcribe";
-                String redirect = req.getPathInfo().substring(1);
-                int projInt = redirect.length();
-                if( projInt > 0) {
-                    if (redirect.contains(check)) {
-                        projID = parseInt(redirect.replace("/" + check, ""));
-                        String redirectURL = req.getContextPath() + "/transcription.html?projectID=" + projID;
-                        resp.sendRedirect(redirectURL);
-                }   else {
+        resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.    
+        try {
+            //System.out.println("Project 1");
+            String check = "transcribe";
+            String redirect = req.getPathInfo().substring(1);
+            int projInt = redirect.length();
+            if( projInt > 0) {
+                if (redirect.contains(check)) {
+                    projID = parseInt(redirect.replace("/" + check, ""));
+                    String redirectURL = req.getContextPath() + "/transcription.html?projectID=" + projID;
+                    resp.sendRedirect(redirectURL);
+                }   
+                else {
                     //System.out.println("Project 2");
                     String[] urlData = req.getPathInfo().substring(1).split("/");
                     switch (urlData.length) {
@@ -144,13 +135,13 @@ public class ProjectServlet extends HttpServlet {
                                         resp.setHeader("Expires", "0"); // Proxies.
                                         if ((req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) 
                                             || (req.getParameter("version") != null && req.getParameter("version").equals("3"))) {
-                                            
+
                                             resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
                                             resp.getWriter().write(new JsonLDExporter(proj, new User(uid), "v3").export());
 
                                         } else
                                         {
-                                            
+
                                             resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
                                         }
 
@@ -162,12 +153,6 @@ public class ProjectServlet extends HttpServlet {
                                     }
                                 } else {
                                     resp.sendError(SC_UNAUTHORIZED);
-                                }
-                                catch(DateTimeParseException ex){
-                                    System.out.println("Last-Modified Header could not be formed.  Bad date value for project "+proj.getProjectID());
-                                }
-                                catch(Exception e){
-                                
                                 }
                                 resp.setHeader("Access-Control-Allow-Headers", "*");
                                 resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
@@ -189,11 +174,11 @@ public class ProjectServlet extends HttpServlet {
                             resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
                             resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
                             resp.setHeader("Expires", "0"); // Proxies.
-                            
+
                             projID = parseInt(urlData[0]);
                             int folioNumber = parseInt(urlData[2]);
                             String canvasID = getRbTok("SERVERURL")+"canvas/"+ folioNumber;
-                            
+
                             JSONArray listArray = Canvas.getLinesForProject(projID, canvasID, folioNumber, 0);
                             if (listArray.size() != 1) resp.sendError(SC_NOT_FOUND);
                             resp.getWriter().write(export((JSONObject) listArray.get(0)));
@@ -201,15 +186,12 @@ public class ProjectServlet extends HttpServlet {
                     }
                 }
             }
-                else{
-                    resp.sendError(SC_NOT_FOUND);
-                }
-                    
-            } catch (NumberFormatException | SQLException | IOException ex) {
-                throw new ServletException(ex);
+            else{
+                resp.sendError(SC_NOT_FOUND);
             }
-        } else {
-            resp.sendError(SC_UNAUTHORIZED);
+        } 
+        catch (NumberFormatException | SQLException | IOException ex) {
+            throw new ServletException(ex);
         }
     }
 

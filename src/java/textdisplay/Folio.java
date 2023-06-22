@@ -1453,11 +1453,11 @@ public class Folio {
             } 
             else if (!onlyLocal) {
                // Limit all IIIF Image API images to size 2000.  Note during the createProjectFromManifest process, this image height will be cached.
-               // By default, the interfaces will not ask for /full/full/.  It will be up to the interface to ask for a higher resolution.
-               if(url.contains("/full/full/")){
-                   url = url.replace("/full/full/", "/full/,2000/");
-                   imageURL = new URL(url);
-               }
+               // Note this has potential to screw up the foliodim record.  Not a good idea to do this here, the front end needs to do this.
+//               if(url.contains("/full/full/")){
+//                   url = url.replace("/full/full/", "/full/,2000/");
+//                   imageURL = new URL(url);
+//               }
                LOG.log(INFO, "Loading image with URL {0}", imageURL);
                HttpURLConnection conn = (HttpURLConnection) imageURL.openConnection();
                conn.connect();
@@ -1487,7 +1487,7 @@ public class Folio {
     * associated with the document (code yet to be written).
     * @return the dimensions, or <code>null</code> if the archive type is unknown
     */
-   public Dimension getImageDimension() throws IOException, SQLException {
+   public Dimension resolveImageForDimensions() throws IOException, SQLException {
       try (InputStream stream = getImageStream(false)) {
          return getJPEGDimension(stream);
       }

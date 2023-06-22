@@ -3,7 +3,7 @@ package utils;
 
 import static edu.slu.tpen.entity.Image.Canvas.*;
 import static edu.slu.util.LangUtils.buildQuickMap;
-import static imageLines.ImageCache.getImageDimension;
+import static imageLines.ImageCache.getCachedImageDimensions;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.sql.Connection;
@@ -163,7 +163,7 @@ public class JsonHelper {
      * @param pageID
      * @param canvasID
      * @param f
-     * @param storedDims
+     * @param imageDims
      * @return
      * @throws IOException
      * @throws SQLException 
@@ -175,24 +175,24 @@ public class JsonHelper {
                 ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
                 projID = projIDs.get(0);
             }
-            Dimension storedDims = null;
+            Dimension imageDims = null;
             String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
             if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-            storedDims = getImageDimension(f.getFolioNumber());
-                if(null == storedDims || storedDims.height <=0) { //There was no imagecache entry or a bad one we can't use
+            imageDims = getCachedImageDimensions(f.getFolioNumber());
+                if(null == imageDims || imageDims.height <=0) { //There was no imagecache entry or a bad one we can't use
                 // System.out.println("Need to resolve image headers for dimensions");
-                    storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+                    imageDims = f.resolveImageForDimensions(); //Resolve the image headers and get the image dimensions
                 }
             }
             
-            else{ //define a 0, 0 storedDims
-                storedDims = new Dimension(0,0);
+            else{ //define a 0, 0 imageDims
+                imageDims = new Dimension(0,0);
             }
             Map<String, Object> annotationPage = new LinkedHashMap<>();
             annotationPage.put("id", paintingPageID);
             annotationPage.put("type", "AnnotationPage");
-            annotationPage.put("items", getPaintingAnnotations(projID, f, storedDims, pageDim));
+            annotationPage.put("items", getPaintingAnnotations(projID, f, imageDims, pageDim));
             return annotationPage;
             
             
@@ -216,10 +216,12 @@ public class JsonHelper {
       
         try{
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
+                    
+            // Wondering if foliodim alone means we don't need to access imagecache here??
             // See if we have an entry cached for all the Canvas and Image size data
             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
             // Initial check the image cache table for this image.
-            Dimension storedDims = getImageDimension(f.getFolioNumber());
+            Dimension imageDims = getCachedImageDimensions(f.getFolioNumber());
             JSONArray otherContent;
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("@id", canvasID);
@@ -229,29 +231,29 @@ public class JsonHelper {
             int canvasWidth = 0;
             boolean updateCachedDimensions = false;
             
-            // Do all the work necessary to set storedDims up front.  Only resolve the image if you have to.
+            // Do all the work necessary to set imageDims up front.  Only resolve the image if you have to.
             if(null == pageDim || pageDim.getImageWidth() <= 0 || pageDim.getImageHeight() <= 0){
-                if(storedDims == null || storedDims.width <=0 || storedDims.height <=0){
+                if(imageDims == null || imageDims.width <=0 || imageDims.height <=0){
                     // The Image dimensions are not cached.  Try to resolve the image and get them.
                     System.out.println("Need to resolve image headers for dimensions because there was no canvas dimension entry for this Folio: "+f.getFolioNumber());
-                    storedDims = f.getImageDimension(); 
-                    if(null == storedDims || storedDims.height <=0 || storedDims.width <= 0){
+                    imageDims = f.resolveImageForDimensions(); 
+                    if(null == imageDims || imageDims.height <=0 || imageDims.width <= 0){
                         // Upstream when this empty object is detected, it is omitted from the Canvas' Array
                         System.out.println("No way to get Image dimensions.  Image height and/or width was 0.  This Canvas will be omitted.  See image at "+f.getImageURL());
                         return new LinkedHashMap<>();
                     }
-                    updateCachedDimensions = true;
                 }
+                updateCachedDimensions = true;
             }
             else{
                 // pageDim has the image dimensions, let's trust them so we don't have to resolve the image.
-                storedDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
+                imageDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
             }
             
             if(null == pageDim || pageDim.getCanvasHeight() <= 0 || pageDim.getCanvasWidth() <= 0){
                 // The Canvas dimensions are not cached.  We need to generate them using the image's width and height.
                 canvasHeight = 1000;
-                canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
+                canvasWidth = imageDims.width * canvasHeight / imageDims.height; 
                 updateCachedDimensions = true;
             }
             else{
@@ -260,19 +262,15 @@ public class JsonHelper {
                 canvasWidth = pageDim.getCanvasWidth(); 
             }
             //Generate the FolioDims entry so we don't have to do this work again.  Note we can only create it, not update an existing one that may have a 0.
-            if(null == pageDim){
-                System.out.println("Create FOLIODIM record for "+f.getFolioNumber());
-                System.out.println(storedDims.width+","+ storedDims.height);
-                System.out.println(canvasWidth+","+ canvasHeight);
-                createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
+            if(null == pageDim || pageDim.getFolioDimsID() == -1){
+                createFolioDimsRecord(imageDims.width, imageDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
             }
             else{
-                System.out.println("Known deimsions for folio "+f.getFolioNumber());
+                System.out.println("Known FOLIODIM dimensions for folio "+f.getFolioNumber());
                 System.out.println(pageDim.getCanvasWidth() +", "+pageDim.getCanvasHeight() +", "+pageDim.getImageHeight() +", "+pageDim.getImageWidth());
                 if(updateCachedDimensions){
-                    updateFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                    updateFolioDimsRecord(imageDims.width, imageDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
                 }
-                
             }
             result.put("width", canvasWidth);
             result.put("height", canvasHeight);
@@ -286,10 +284,10 @@ public class JsonHelper {
             }
             Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
 
-            if (storedDims.height > 0 && storedDims.width > 0) { //We could ignore this and put the 0's into the image annotation
+            if (imageDims.height > 0 && imageDims.width > 0) { //We could ignore this and put the 0's into the image annotation
                 //doing this check will return invalid images because we will not include height and width of 0.
-                imageResource.put("width", storedDims.width ); 
-                imageResource.put("height", storedDims.height ); 
+                imageResource.put("width", imageDims.width ); 
+                imageResource.put("height", imageDims.height ); 
             }
             imageAnnot.put("resource", imageResource);
             imageAnnot.put("on", canvasID);
@@ -337,18 +335,18 @@ public class JsonHelper {
             JSONObject result = new JSONObject();
             String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
-            Dimension storedDims = null;
+            Dimension imageDims = null;
             int canvasHeight = 0;
             int canvasWidth = 0;
             JSONArray otherContent;
             
-            // Do all the work necessary to set storedDims up front.  Only resolve the image if you have to.
+            // Do all the work necessary to set imageDims up front.  Only resolve the image if you have to.
             if(null == pageDim || pageDim.getImageWidth() <= 0 || pageDim.getImageHeight() <= 0){
-                if(storedDims == null || storedDims.width <=0 || storedDims.height <=0){
+                if(imageDims == null || imageDims.width <=0 || imageDims.height <=0){
                     // The Image dimensions are not cached.  Try to resolve the image and get them.
                     System.out.println("Need to resolve image headers for dimensions because there was no canvas dimension entry for this Folio: "+f.getFolioNumber());
-                    storedDims = f.getImageDimension(); 
-                    if(null == storedDims || storedDims.height <=0 || storedDims.width <= 0){
+                    imageDims = f.resolveImageForDimensions(); 
+                    if(null == imageDims || imageDims.height <=0 || imageDims.width <= 0){
                         // Upstream when this empty object is detected, it is omitted from the Canvas' Array
                         System.out.println("No way to get Image dimensions.  Image height and/or width was 0.  See "+f.getImageURL());
                         return new JSONObject();
@@ -357,13 +355,13 @@ public class JsonHelper {
             }
             else{
                 // pageDim has the image dimensions, let's trust them so we don't have to resolve the image.
-                storedDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
+                imageDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
             }
             
             if(null == pageDim || pageDim.getCanvasHeight() <= 0 || pageDim.getCanvasWidth() <= 0){
                 // The Canvas dimensions are not cached.  We need to generate them using the image's width and height.
                 canvasHeight = 1000;
-                canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
+                canvasWidth = imageDims.width * canvasHeight / imageDims.height; 
             }
             else{
                 // The Canvas Dimensions are cached.
@@ -373,15 +371,15 @@ public class JsonHelper {
             //Generate the FolioDims entry so we don't have to do this work again.  Note we can only create it, not update an existing one that may have a 0.
             if(null == pageDim){
                 System.out.println("Create folio dim record for "+f.getFolioNumber());
-                System.out.println(storedDims.width+","+ storedDims.height);
+                System.out.println(imageDims.width+","+ imageDims.height);
                 System.out.println(canvasWidth+","+ canvasHeight);
-                createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                createFolioDimsRecord(imageDims.width, imageDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
             }
             else{
                 // Update the cached record if any values are 0
                 if(pageDim.getImageWidth() <= 0 || pageDim.getImageHeight() <= 0 || pageDim.getCanvasWidth() <= 0 || pageDim.getCanvasHeight() <= 0){
                     System.out.println("update folio dim record for "+f.getFolioNumber());
-                    updateFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                    updateFolioDimsRecord(imageDims.width, imageDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
                 }
             }
                   

@@ -129,17 +129,24 @@ public class FolioDims {
     public static void updateFolioDimsRecord(int imagew, int imageh, int canvasw, int canvash, int folioID) throws SQLException{
         Connection j = null;
         PreparedStatement stmt = null;
+        System.out.println("UPDATE FOLIOD DIMS RECORD WITH");
+        System.out.println(imagew +", "+imageh+", "+canvasw+", "+canvash);
         try {
            String query = "update foliodim set imagewidth=?, imageheight=?, canvaswidth=?, canvasheight=? where folioID=? ";
            j = getConnection();
-           stmt = j.prepareStatement(query, RETURN_GENERATED_KEYS);
+           stmt = j.prepareStatement(query);
            stmt.setInt(1, imagew);
            stmt.setInt(2, imageh);
            stmt.setInt(3, canvasw);
            stmt.setInt(4, canvash);
            stmt.setInt(5, folioID);
            stmt.execute();
-        } finally {
+        } 
+        catch(Exception e){
+            System.out.println("COULD NOT UPDATE FOLIODIM");
+            System.out.println(e);
+        }
+        finally {
             closeDBConnection(j);
             closePreparedStatement(stmt);
         }

@@ -71,7 +71,7 @@ public class AutoParse extends HttpServlet {
                     //find the image size, add 1 Transcription to cover the entirety, and done
                     int height = 1000;
                     Folio f = new Folio(folioNumber, true);
-                    int width = f.getImageDimension().width;
+                    int width = f.resolveImageForDimensions().width;
                     Rectangle r = new Rectangle(0, 0, height, width);
                     // TODO: create an agent for the application here, loaded from version.properties.
                     Transcription t = new Transcription(0, projectID, folioNumber, "", "", r);
@@ -112,7 +112,7 @@ public class AutoParse extends HttpServlet {
                     }
                     if (orderedTranscriptions.isEmpty()) {
                         int height = 1000;
-                        int width = f.getImageDimension().width;
+                        int width = f.resolveImageForDimensions().width;
                         Rectangle r = new Rectangle(0, 0, height, width);
                         // TODO: create an agent for the application here, loaded from version.properties.
                         Transcription fullPage = new Transcription(0, projectID, folioNumber, "", "", r);

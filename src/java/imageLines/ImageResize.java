@@ -17,8 +17,8 @@ package imageLines;
 import static edu.slu.util.LangUtils.getMessage;
 import static edu.slu.util.ServletUtils.getUID;
 import static edu.slu.util.ServletUtils.reportInternalError;
+import static imageLines.ImageCache.getCachedImageDimensions;
 import static imageLines.ImageCache.getImage;
-import static imageLines.ImageCache.getImageDimension;
 import static imageLines.ImageCache.setImage;
 import static imageLines.ImageHelpers.scale;
 import java.awt.Dimension;
@@ -217,10 +217,10 @@ public class ImageResize extends HttpServlet {
                 FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
                 Dimension storedDims = null;
                 if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-                    storedDims = getImageDimension(f.getFolioNumber());
+                    storedDims = getCachedImageDimensions(f.getFolioNumber());
                     if(null == storedDims || storedDims.height <=0) { //There was no imagecache entry or a bad one we can't use
                     // System.out.println("Need to resolve image headers for dimensions");
-                        storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+                        storedDims = f.resolveImageForDimensions(); //Resolve the image headers and get the image dimensions
 //                        int canvasHeight = pageDim.getCanvasHeight();
 //                        int canvasWidth = pageDim.getCanvasWidth();
 //                        createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());

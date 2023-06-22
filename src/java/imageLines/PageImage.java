@@ -17,7 +17,7 @@
 
 package imageLines;
 
-import static imageLines.ImageCache.getImageDimension;
+import static imageLines.ImageCache.getCachedImageDimensions;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -116,10 +116,10 @@ public class PageImage extends HttpServlet {
                 FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
                 Dimension storedDims = null;
                 if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-                    storedDims = getImageDimension(f.getFolioNumber());
+                    storedDims = getCachedImageDimensions(f.getFolioNumber());
                     if(null == storedDims || storedDims.height <=0) { //There was no imagecache entry or a bad one we can't use
                     // System.out.println("Need to resolve image headers for dimensions");
-                        storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+                        storedDims = f.resolveImageForDimensions(); //Resolve the image headers and get the image dimensions
 //                        int canvasHeight = pageDim.getCanvasHeight();
 //                        int canvasWidth = pageDim.getCanvasWidth();
 //                        createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());

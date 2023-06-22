@@ -1561,7 +1561,16 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
             }
             scrubNav();
         }
-        image.src = canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,'')
+        // Don't ask for the highest resolution IIIF Image API images -- takes too long to load.
+        let origImageURL = canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,'')
+        let reasonableImageURL = origImageURL
+        if(origImageURL.includes("/full/full/")){
+            reasonableImageURL = origImageURL.replace("/full/full/", "/full/,2000/")
+        }
+        else if(origImageURL.includes("/full/max/")){
+            reasonableImageURL = origImageURL.replace("/full/max/", "/full/,2000/")
+        }
+        image.src = reasonableImageURL
         image.onerror = function() {
             var image2 = new Image();
             // image2.src = "";
@@ -2192,10 +2201,10 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
         //$("#transcriptletArea").append(newAnno);
         $(".xmlClosingTags").before(newAnno);
         var hiResBackground = ""
-        if ($(".transcriptionImage").attr("src").includes('/full/full')) {
-           // causing double vision 
-            //hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
-        }
+//        if ($(".transcriptionImage").attr("src").includes('/full/full')) {
+//           // causing double vision 
+//           hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
+//        }
 
         var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter
                 + "' lineserverid='" + lineID + "' lineID='" + counter + "' class='lineColIndicator' style='left:"

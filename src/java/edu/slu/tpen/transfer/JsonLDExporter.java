@@ -58,8 +58,8 @@ public class JsonLDExporter {
 public JsonLDExporter(Project proj, User u, String profile) throws SQLException, IOException
 {   
        Folio[] folios = proj.getFolios();
-
        int projID = proj.getProjectID();
+       System.out.println("Project "+projID+" has "+folios.length+" folios.");
        String projName = getRbTok("SERVERURL") + "manifest/"+projID;
        if (profile.contains("v3")){
             manifestData = new LinkedHashMap<>();
@@ -118,6 +118,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
     */
    public JsonLDExporter(Project proj, User u) throws SQLException, IOException {
        Folio[] folios = proj.getFolios(); //System.out.println("Put all canvas together");
+       System.out.println("Project "+proj+" has "+folios.length+" folios.");
        int projID = proj.getProjectID();
        String projName = getRbTok("SERVERURL") + "manifest/"+projID;
        manifestData = new LinkedHashMap<>();

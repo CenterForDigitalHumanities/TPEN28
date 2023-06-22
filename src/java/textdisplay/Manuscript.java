@@ -211,7 +211,8 @@ public class Manuscript {
          city = c;
          repository = repo;
          archive = arch;
-         if (!"private".equals(arch)) {            
+         // Note that for ClassicProjectFromManifest, making a project from the same URI added folios to the same manuscript and duplicated projectfolios in consecutive projects.
+         if (!"private".equals(arch) && !"fromManifest".equals(arch)) {            
             try (PreparedStatement lookup = conn.prepareStatement("SELECT * FROM manuscript WHERE repository=? AND msIdentifier=? AND archive=?")) {
                lookup.setString(1, repo);
                lookup.setString(2, coll);

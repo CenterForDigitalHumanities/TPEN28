@@ -121,7 +121,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
             //Should we be setting these to something strategic?
             //String repository = "unknown";
             //String collection = "unkown";
-            String archive = "unknown";
+            String archive = "private";
             String city = "unknown";
             String label = "unknown"; 
             List<Integer> ls_folios_keys = new ArrayList();
@@ -138,13 +138,16 @@ public class ClassicProjectFromManifest extends HttpServlet {
             else{
                 label = "New T-PEN Manifest";
             }
-            textdisplay.Manuscript mss=new textdisplay.Manuscript("TPEN 2.8", archive, city, city, -999);
+            textdisplay.Manuscript mss= new textdisplay.Manuscript("TPEN Manifest Ingester", "fromManifest", archive, city, -999);
             JSONArray sequences = (JSONArray) theManifest.get("sequences");
             out.println("Go over sequences");
+            int folioscreated = 0;
+            int canvasespresent = 0;
             for (int i = 0; i < sequences.size(); i++) {
                 JSONObject inSequences = (JSONObject) sequences.get(i);
                 JSONArray canvases = inSequences.getJSONArray("canvases");
                 out.println("Go over "+canvases.size()+" canvases");
+                canvasespresent = canvases.size();
                 if (null != canvases && canvases.size() > 0) {
                     for (int j = 0; j < canvases.size(); j++) {
                         JSONObject canvas = canvases.getJSONObject(j);
@@ -190,12 +193,13 @@ public class ClassicProjectFromManifest extends HttpServlet {
                                 // TODO actually check if this image resolves by doing a HEAD request?  If so, use it.  If not, skip it.
                                 int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName, archive, mss.getID(), 0);
                                 ls_folios_keys.add(folioKey);
+                                folioscreated++;
                             }
                         }
                     }
                 }
             }
-            
+            System.out.println(folioscreated+" folios created from "+canvasespresent+" canvases");
             String tmpProjName = mss.getShelfMark()+" project";
             if (theManifest.has("label")) {
                 tmpProjName = theManifest.getString("label");
@@ -204,10 +208,12 @@ public class ClassicProjectFromManifest extends HttpServlet {
             conn.setAutoCommit(false);
             Group newgroup = new Group(conn, tmpProjName, UID);
             Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
+            
             newProject.setFolios(conn, mss.getFolios());
             newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + mss.getShelfMark(), UID);
             thisProject=newProject;
             projectID=thisProject.getProjectID();
+            System.out.println("Set "+mss.getFolios().length+" folios for newProject "+projectID);
             newProject.importData(UID);
             conn.commit();
             return projectID;

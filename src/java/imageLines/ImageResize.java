@@ -18,8 +18,10 @@ import static edu.slu.util.LangUtils.getMessage;
 import static edu.slu.util.ServletUtils.getUID;
 import static edu.slu.util.ServletUtils.reportInternalError;
 import static imageLines.ImageCache.getImage;
+import static imageLines.ImageCache.getImageDimension;
 import static imageLines.ImageCache.setImage;
 import static imageLines.ImageHelpers.scale;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +51,7 @@ import textdisplay.Archive;
 import static textdisplay.Archive.connectionType.local;
 import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
+import textdisplay.FolioDims;
 
 
 /**
@@ -170,8 +173,77 @@ public class ImageResize extends HttpServlet {
          }
       } catch (SQLException | IllegalArgumentException ex) {
          reportInternalError(response, ex);
+      } catch (Error err){
+        response.sendError(500, err.getMessage());
       }
    }
+   
+    /**
+     * Handles the HTTP <code>OPTIONS</code> preflight method.
+     * Pre-flight support.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        //These headers must be present to pass browser preflight for CORS
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Allow-Methods", "*");
+        response.setHeader("Access-Control-Max-Age", "600"); //Cache preflight responses for 10 minutes.
+        response.setStatus(200);
+    }
+    
+    /**
+     * Handles the HTTP <code>HEAD</code> preflight method.
+     * Pre-flight support.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doHead(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+            try (OutputStream os = response.getOutputStream()) {
+             String folioParam = request.getParameter("folioNum");
+             if (folioParam != null) {
+                Folio f = new Folio(parseInt(folioParam));
+                FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
+                Dimension storedDims = null;
+                if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
+                    storedDims = getImageDimension(f.getFolioNumber());
+                    if(null == storedDims || storedDims.height <=0) { //There was no imagecache entry or a bad one we can't use
+                    // System.out.println("Need to resolve image headers for dimensions");
+                        storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
+//                        int canvasHeight = pageDim.getCanvasHeight();
+//                        int canvasWidth = pageDim.getCanvasWidth();
+//                        createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                    }
+                }
+                response.setContentType("image/jpeg");
+                response.setHeader("Width", storedDims.getWidth()+"");
+                response.setHeader("Height", storedDims.getHeight()+"");
+                response.setHeader("Access-Control-Allow-Origin", "*");
+                response.setHeader("Access-Control-Allow-Headers", "*");
+                response.setHeader("Access-Control-Allow-Methods", "HEAD");
+                response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+                response.setHeader("Cache-Control", "max-age=31536000, must-revalidate"); //This is immutable (or at least there is no plan for it to change).  Let it be fresh for a year.
+                response.setStatus(200);
+             } else {
+                response.sendError(400, "Missing \"folioNum=\" parameter");
+             }
+          } catch(SQLException e) {
+             response.sendError(503, e.getMessage());
+          }  catch (Error err){
+            response.sendError(500, err.getMessage());
+          }
+    }
 
    /**
     * Returns a short description of the servlet.

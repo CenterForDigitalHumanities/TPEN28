@@ -61,7 +61,7 @@ public class GetDunbarProjectsList extends HttpServlet {
                     JSONArray folios = new JSONArray();
                     Folio fp = new Folio(p.firstPage());
                     //String thumbnailURI = fp.getImageURL(); //Hmm this doesn't work
-                    String thumbnailURI = "http://t-pen.org/TPEN/pageImage?folio="+fp.getFolioNumber();
+                    String thumbnailURI = "https://t-pen.org/TPEN/pageImage?folio="+fp.getFolioNumber();
                     Folio[] projectfolios = p.getFolios();
                     boolean finalized = true;
                     boolean extralog = false;

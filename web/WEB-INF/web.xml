@@ -220,6 +220,10 @@
         <servlet-class>edu.slu.tpen.servlet.FolioReport</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>PageServlet</servlet-name>
+        <servlet-class>edu.slu.tpen.servlet.PageServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>BulkUpdateAnnos</servlet-name>
         <servlet-class>edu.slu.tpen.servlet.BulkUpdateAnnos</servlet-class>
     </servlet>
@@ -414,6 +418,11 @@
     <servlet-mapping>
         <servlet-name>FolioReport</servlet-name>
         <url-pattern>/folioReport</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PageServlet</servlet-name>
+        <url-pattern>/annotations/*</url-pattern>
+        <url-pattern>/annotationpage/*</url-pattern>
     </servlet-mapping>
     <!-- tpen webservices for newberry starts -->
     <servlet>

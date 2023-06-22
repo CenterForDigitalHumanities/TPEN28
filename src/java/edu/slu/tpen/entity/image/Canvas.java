@@ -7,6 +7,7 @@ package edu.slu.tpen.entity.Image;
 
 import static edu.slu.tpen.servlet.Constant.ANNOTATION_SERVER_ADDR;
 import static edu.slu.util.LangUtils.buildQuickMap;
+import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -29,9 +30,12 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import static net.sf.json.JSONObject.fromObject;
 import static org.owasp.esapi.ESAPI.encoder;
+import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
+import textdisplay.FolioDims;
 import textdisplay.Transcription;
 import static textdisplay.Transcription.getProjectTranscriptions;
+import utils.JsonHelper;
 
 /**
  *
@@ -173,7 +177,6 @@ public class Canvas {
      * look like an otherContent field.
      */
     public static JSONArray getLinesForProject(Integer projectID, String canvasID, Integer folioNumber, Integer UID) throws MalformedURLException, IOException, SQLException {
-        //System.out.println("Get lines for project");
         JSONObject annotationList = new JSONObject();
         JSONArray resources_array = new JSONArray();
         String dateString = "";
@@ -233,118 +236,114 @@ public class Canvas {
         annotationLists.add(annotationList); // Only one in this version.
         return annotationLists;
     }
-
     /**
-     * Check the annotation store for the annotation list on this canvas for
-     * this project.
+     * Check the annotation store for the annotation page with textual annotations
+     * on this canvas for this project.
      *
      * @param projectID : the projectID the canvas belongs to
-     * @param canvasID: The canvas ID the annotation list is on
-     * @param UID: The current UID of the user in session.
-     * @return : The annotation lists @id property, not the object. Meant to
-     * look like an otherContent field.
+     * @param canvasID: The canvas ID the annotation page is on
+     * @param folioNumber: 
+     * @return: The annotation page of textual annotations that belong to the 
+     * specific canvas
      */
-    public static String[] getAnnotationListsForProject(Integer projectID, String canvasID, Integer UID) throws MalformedURLException, IOException {
-        URL postUrl = new URL(ANNOTATION_SERVER_ADDR + "/anno/getAnnotationByProperties.action");
-        JSONObject parameter = new JSONObject();
-        parameter.element("@type", "sc:AnnotationList");
-        if (projectID > -1) {
-            parameter.element("proj", projectID);
-        }
-        parameter.element("on", canvasID);
-        //System.out.println("Get anno list for proj "+projectID+" on canvas "+canvasID);
-        HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();
-        connection.setDoOutput(true);
-        connection.setDoInput(true);
-        connection.setRequestMethod("POST");
-        connection.setUseCaches(false);
-        connection.setInstanceFollowRedirects(true);
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        connection.connect();
-        //value to save
-        try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
-            //value to save
-            out.writeBytes("content=" + encode(parameter.toString(), "utf-8"));
-            out.flush();
-            // flush and close
-        }
-        StringBuilder sb;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
-            String line = "";
-            sb = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                //line = new String(line.getBytes(), "utf-8");
-                sb.append(line);
-            }
-        }
-        connection.disconnect();
-        //FIXME: Every now and then, this line throws an error: A JSONArray text must start with '[' at character 1 of &lt
-        JSONArray theLists = null;
-        try {
-            theLists = JSONArray.fromObject(sb.toString());
-        } catch (JSONException e) {
-            getLogger(Canvas.class.getName()).log(INFO, null, e);
-            throw e;
-            // System.out.println("Batch save response does not contain JSONARRAY in new_resouces.");
-        }
+    public static JSONArray getAnnotationLinesForAnnotationPage(Integer projectID, String canvasID, Integer folioNumber) throws MalformedURLException, IOException, SQLException {
+        JSONArray annotationsArray;
+        String dateString;
+        Transcription[] lines;
+        lines = getProjectTranscriptions(projectID, folioNumber); //Can return an empty array now.
+        int numberOfLines = lines.length;
+        List<Object> resources = new ArrayList<>();
+        for (int i = 0; i < numberOfLines; i++) { //numberOfLines can be 0 now.
+            if (lines[i] != null) {
+                dateString = "";
+                int lineID = lines[i].getLineID();
+                Map<String, Object> lineAnnot = new LinkedHashMap<>();
+                String lineURI = "line/" + lineID;
+                String annoLineID = getRbTok("SERVERURL") + "line/" + lineID;
+                lineAnnot.put("id", annoLineID);
+                lineAnnot.put("type", "Annotation");
+                lineAnnot.put("motivation", "transcribing");
+		
+		// Annotation body
+		Map<String, String> body = JsonHelper.buildAnnotationBody("cnt:ContentAsText", encoder().decodeForHTML(lines[i].getText()));
+		lineAnnot.put("body", body);
+                lineAnnot.put("target", format("%s#xywh=%d,%d,%d,%d", canvasID, lines[i].getX(), lines[i].getY(), lines[i].getWidth(), lines[i].getHeight()));
+		// `target` replaces `on` from version 2 and it seems like they don't want the dimensions on the canvas url
 
-        String[] annotationLists = new String[theLists.size()];
-        for (int i = 0; i < theLists.size(); i++) {
-            JSONObject currentList = theLists.getJSONObject(i);
-            String id = currentList.getString("@id");
-            // System.out.println("List ID: "+id);
-            annotationLists[i] = id;
-        }
-        return annotationLists;
-    }
 
-    /* 
-    @param resources: A JSON array of annotations that are all new (insert can be used).  
-    @return A JSONArray of annotations with their @id included.
+		// All these properties below are from version 2 annotations, but it seems like they are project-specific and therefore should be here as well
+		lineAnnot.put("_tpen_line_id", lineURI);
+                if (null != lines[i].getComment() && !"null".equals(lines[i].getComment())) {   
+                    lineAnnot.put("_tpen_note", lines[i].getComment());
+                } else {
+                    lineAnnot.put("_tpen_note", "");
+                }
+                lineAnnot.put("_tpen_creator", lines[i].getCreator());
+                //This is throwing Null Pointer and bubbling up to JsonLDExporter and up to getProjectTPENServlet
 
-    The resources need to be saved and a JSON array of the objects with their @ids in them needs
-    to be returneds.
-     */
-    public static JSONArray bulkSaveAnnotations(JSONArray resources) throws MalformedURLException, IOException {
-        JSONArray new_resources = new JSONArray();
-        URL postUrlCopyAnno = new URL(ANNOTATION_SERVER_ADDR + "/anno/batchSaveFromCopy.action");
-        HttpURLConnection ucCopyAnno = (HttpURLConnection) postUrlCopyAnno.openConnection();
-        ucCopyAnno.setDoInput(true);
-        ucCopyAnno.setDoOutput(true);
-        ucCopyAnno.setRequestMethod("POST");
-        ucCopyAnno.setUseCaches(false);
-        ucCopyAnno.setInstanceFollowRedirects(true);
-        ucCopyAnno.addRequestProperty("content-type", "application/x-www-form-urlencoded");
-        ucCopyAnno.connect();
-        try (DataOutputStream dataOutCopyAnno = new DataOutputStream(ucCopyAnno.getOutputStream())) {
-            String str_resources = "";
-            if (resources.size() > 0) {
-                str_resources = resources.toString();
+                dateString = lines[i].getDate().toString();
+                lineAnnot.put("modified", dateString);
+                resources.add(lineAnnot);
             } else {
-                str_resources = "[]";
-            }
-            dataOutCopyAnno.writeBytes("content=" + encode(str_resources, "utf-8"));
-            dataOutCopyAnno.flush();
-        }
-        StringBuilder sbAnnoLines;
-        try (BufferedReader returnedAnnoList = new BufferedReader(new InputStreamReader(ucCopyAnno.getInputStream(), "utf-8"))) {
-            String lines = "";
-            sbAnnoLines = new StringBuilder();
-            while ((lines = returnedAnnoList.readLine()) != null) {
-                sbAnnoLines.append(lines);
+                getLogger(Canvas.class.getName()).log(INFO, null, "Lines for list was null");
+                out.println("lines was null");
             }
         }
-        String parseThis = sbAnnoLines.toString();
-        JSONObject batchSaveResponse = fromObject(parseThis);
-        try {
-            new_resources = (JSONArray) batchSaveResponse.get("new_resources");
-        } catch (JSONException e) {
-            getLogger(Canvas.class.getName()).log(INFO, null, e);
-            throw e;
-        }
-        return new_resources;
+        annotationsArray = JSONArray.fromObject(resources); //This can be an empty array now.
+	return annotationsArray;
     }
 
+    public static JSONArray getPaintingAnnotations(Integer projectID, Folio f, Dimension storedDims, FolioDims pageDims) throws SQLException {
+        try {      
+            String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
+            String annoListID = getRbTok("SERVERURL") + "project/" + projectID + "/annotations/" + f.getFolioNumber();
+            Map<String, Object> manifestServices = JsonHelper.buildServices();
+            JSONArray paintingAnnotations = new JSONArray();
+            JSONObject annotation = new JSONObject();
+            String imageURL = f.getImageURL();
+            if (imageURL.startsWith("/")) {
+                imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
+            }
+
+            annotation.put("id", annoListID);
+            annotation.put("type", "Annotation");
+            annotation.put("motivation", "painting");
+
+            JSONObject body = new JSONObject();
+            body.put("id", imageURL);
+            body.put("type", "Image");
+            body.put("format", "image/jpeg");
+            if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
+                //doing this check will return invalid images because we will not include height and width of 0.
+               body.put("width", storedDims.width ); 
+               body.put("height", storedDims.height ); 
+            }
+            else if (pageDims.getImageHeight() > 0) {
+                body.put("width", pageDims.getImageWidth() );   
+                body.put("height", pageDims.getImageHeight() ); 
+            }
+            else{
+                 // @FIXME Same height and width as canvas maybe?
+            }
+
+            JSONObject service = new JSONObject();
+            service.put("id", manifestServices.get("id"));
+            service.put("type", manifestServices.get("type"));
+            //body.put("service", service);
+
+            annotation.put("body", body);
+
+            annotation.put("target", canvasID);
+            paintingAnnotations.add(annotation);
+            return paintingAnnotations;
+
+            } catch (Exception e)
+            {
+                    System.out.println(e);
+                    return new JSONArray();
+            }
+    }
+    
     /* 
     @param resources: A JSON array of annotations that are all new (insert can be used).  
     @return A JSONArray of annotations with their @id included.

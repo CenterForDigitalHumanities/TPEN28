@@ -1497,8 +1497,8 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
             $(".turnMsg").html("Please wait while we load the transcription interface.");
             clearTimeout(longLoadingProject);
             if (permissionForImage) {
-                $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,''));
-                $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,''));
+                $('.transcriptionImage').attr('src', image.src);
+                $("#fullPageImg").attr("src", image.src);
                 populateCompareSplit(tpen.screen.currentFolio);
                 populateHistorySplit(tpen.screen.currentFolio);
                 //FIXME At some point I had to track tpen.screen.originalCanvasHeight differently.  Not sure that
@@ -1560,7 +1560,8 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
                 image2.src = "images/missingImage.png";
             }
             scrubNav();
-        }; // the extra () ensures this only runs once.
+        }
+        image.src = canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,'')
         image.onerror = function() {
             var image2 = new Image();
             // image2.src = "";

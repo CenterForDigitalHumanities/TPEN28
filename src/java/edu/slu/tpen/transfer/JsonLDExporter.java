@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import net.sf.json.JSONArray;
@@ -98,8 +98,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                     canvases.add(page);
                 }
                 else{
-                    System.out.println("Omitting canvas from folio "+f.getFolioNumber());
-                    System.out.println("Check folio URL "+f.getImageURL());
+                    LOG.log(WARNING, "Omitting canvas from folio {0}.  Check folio URL {1}", new Object[]{f.getFolioNumber(), f.getImageURL()});
                 }
             }
             manifestData.put("items", canvases);
@@ -172,8 +171,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                pageList.add(page);
            }
            else{
-               System.out.println("Omitting canvas from folio "+f.getFolioNumber());
-               System.out.println("Check folio URL "+f.getImageURL());
+               LOG.log(WARNING, "Omitting canvas from folio {0}.  Check folio URL {1}", new Object[]{f.getFolioNumber(), f.getImageURL()});
            }
        }
        //System.out.println("Put all canvas together");

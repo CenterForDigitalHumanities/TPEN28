@@ -20,17 +20,13 @@ import static java.awt.color.ColorSpace.CS_GRAY;
 import static java.awt.color.ColorSpace.getInstance;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import org.apache.commons.io.IOUtils;
 
 
 /**
@@ -80,10 +76,10 @@ public class ImageUtils {
         if (input.read() != 255 || input.read() != 216) {
             //If we throw this exception, it breaks through to the front end.  Instead, we would rather the manifest contain a flagged bad canvas
            //throw new IOException("Missing JPEG SOI (Start Of Image) marker.");
-           System.out.println("!!!!! MISSING JPEG SOI MARKER !!!!!!");
+           LOG.log(SEVERE, "_!_    MISSING JPEG SOI MARKER    _!_");
            return new Dimension(0,0);
         }
-        System.out.println("image InputStream size: "+input.available());
+        LOG.log(INFO, "Getting image dimensions.  File size: {0}", input.available());
         while (input.read() == 255) {
            int marker = input.read();
            int len = input.read() << 8 | input.read();
@@ -91,12 +87,12 @@ public class ImageUtils {
               input.skip(1);
               int h = input.read() << 8 | input.read();
               int w = input.read() << 8 | input.read();
-              System.out.println("getJPEGDimension has dimensions "+w+","+h);
+              LOG.log(INFO, "Dimensions are {0},{1}", new Object[]{w, h});
               return new Dimension(w, h);
            }
            input.skip(len - 2);
         }
-        System.out.println("getJPEGDimensions never found marker 192.  Dimensions are unknown and will be 0,0");
+        LOG.log(WARNING, "getJPEGDimensions never found marker 192.  Dimensions are unknown and will be 0,0");
         return new Dimension(0, 0);
    }
    

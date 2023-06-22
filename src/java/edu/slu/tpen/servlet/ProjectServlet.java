@@ -34,6 +34,9 @@ import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
+import static java.util.logging.Level.WARNING;
+import java.util.logging.Logger;
+import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -285,7 +288,7 @@ public class ProjectServlet extends HttpServlet {
                 }
             }
             catch(DateTimeParseException ex){
-                System.out.println("Last-Modified Header could not be formed.  Bad date value for project "+proj.getProjectID());
+                LOG.log(WARNING, "Last-Modified Header could not be formed.  Bad date value for project {0}", proj.getProjectID());
                 return true;
             }
         }
@@ -300,4 +303,6 @@ public class ProjectServlet extends HttpServlet {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(data);
     }
+    
+    private static final Logger LOG = getLogger(JsonLDExporter.class.getName());
 }

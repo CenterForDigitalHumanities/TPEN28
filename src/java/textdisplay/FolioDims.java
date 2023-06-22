@@ -10,6 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.util.logging.Level.SEVERE;
+import java.util.logging.Logger;
+import static java.util.logging.Logger.getLogger;
 import static textdisplay.DatabaseWrapper.closeDBConnection;
 import static textdisplay.DatabaseWrapper.closePreparedStatement;
 import static textdisplay.DatabaseWrapper.getConnection;
@@ -129,8 +132,6 @@ public class FolioDims {
     public static void updateFolioDimsRecord(int imagew, int imageh, int canvasw, int canvash, int folioID) throws SQLException{
         Connection j = null;
         PreparedStatement stmt = null;
-        System.out.println("UPDATE FOLIOD DIMS RECORD WITH");
-        System.out.println(imagew +", "+imageh+", "+canvasw+", "+canvash);
         try {
            String query = "update foliodim set imagewidth=?, imageheight=?, canvaswidth=?, canvasheight=? where folioID=? ";
            j = getConnection();
@@ -143,8 +144,8 @@ public class FolioDims {
            stmt.execute();
         } 
         catch(Exception e){
-            System.out.println("COULD NOT UPDATE FOLIODIM");
-            System.out.println(e);
+            LOG.log(SEVERE, "Could not update foliodim for folio {0}", folioID);
+            throw e;
         }
         finally {
             closeDBConnection(j);
@@ -238,5 +239,5 @@ public class FolioDims {
         canvaswidth = cwidth;
     }
     
-       
+    private static final Logger LOG = getLogger(FolioDims.class.getName());   
 }

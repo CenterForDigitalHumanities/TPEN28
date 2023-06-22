@@ -5,6 +5,7 @@
  */
 package edu.slu.tpen.servlet;
 
+import edu.slu.tpen.transfer.JsonLDExporter;
 import static edu.slu.util.ServletUtils.getDBConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,9 +20,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.WARNING;
+import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,7 +35,6 @@ import static net.sf.json.JSONObject.fromObject;
 import static textdisplay.Folio.createFolioRecordFromManifest;
 import textdisplay.Project;
 import user.Group;
-import user.User;
 
 /**
  *
@@ -91,6 +92,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
      * The Manifest must be IIIF Presentation API 2.1.
      */
     public Integer createProject(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        LOG.log(INFO, "Create classic TPEN project from manifest URL");
         try{
             int UID = -1;
             if(null != request.getSession().getAttribute("UID")){
@@ -133,7 +135,6 @@ public class ClassicProjectFromManifest extends HttpServlet {
             else{
                 label = "New T-PEN Manifest";
             }
-            System.out.println("Make new manuscript");
             textdisplay.Manuscript mss=new textdisplay.Manuscript("TPEN 2.8", archive, city, city, -999);
             JSONArray sequences = (JSONArray) theManifest.get("sequences");
             out.println("Go over sequences");
@@ -151,20 +152,17 @@ public class ClassicProjectFromManifest extends HttpServlet {
                          * We could make Folios from Canvases instead.  Canvases without images could just get a placeholder instead of being ignored.
                          */
                         if (null != images && images.size() > 0) {
-                            System.out.println("On canvas "+j+" make "+images.size()+" TPEN Folio objects");
                             for (int n = 0; n < images.size(); n++) {
                                 JSONObject image = images.getJSONObject(n);
                                 if(!image.has("resource")){
                                     // This image object does not have a resource.  Skip it.
-                                    System.out.println("Image "+n+" on canvas "+j+" did not have resource.  It will be omitted.");
+                                    LOG.log(WARNING, "Image {0} on canvas {1} did not have resource.  It will be skipped.", new Object[]{n, j});
                                     continue;
                                 }
                                 JSONObject resource = image.getJSONObject("resource");
                                 String imageName = resource.getString("@id");
                                 String[] parts = imageName.split("/");
                                 String part = parts[parts.length-1];
-                                System.out.println("Filename from URL.  Check for filename.format and keep it if it has a format.");
-                                System.out.println(part);
                                 // If we think it is already a direct link to a resource at http://not.real/some.filetype, let's keep it and just use that.
                                 if(!checkIfFileHasExtension(part)){
                                     // Well then it isn't a file link.  It might resolve, but we can do better if a service exists.
@@ -185,7 +183,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
                                     }
                                     // If there wasn't a service, then we are stuck with whatever the original image URL was.  Let's hope it resolves to an image.
                                 }
-                                out.println("Create Frolio entry for image: "+imageName);
+                                LOG.log(INFO, "Create Folio entry for image: {0}", imageName);
                                 // TODO actually check if this image resolves by doing a HEAD request?  If so, use it.  If not, skip it.
                                 int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName, archive, mss.getID(), 0);
                                 ls_folios_keys.add(folioKey);
@@ -201,16 +199,13 @@ public class ClassicProjectFromManifest extends HttpServlet {
             }
             Connection conn = getDBConnection();
             conn.setAutoCommit(false);
-            System.out.println("Set Group");
             Group newgroup = new Group(conn, tmpProjName, UID);
-            System.out.println("Create Project Entry");
             Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
             newProject.setFolios(conn, mss.getFolios());
             newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + mss.getShelfMark(), UID);
             thisProject=newProject;
             projectID=thisProject.getProjectID();
             newProject.importData(UID);
-            System.out.println("Commit Project");
             conn.commit();
             return projectID;
         }
@@ -229,7 +224,6 @@ public class ClassicProjectFromManifest extends HttpServlet {
      * @throws IOException 
      */
     public JSONObject resolveID(String manifestID) throws MalformedURLException, IOException{
-        System.out.println("Create project from url "+manifestID);
         JSONObject manifest = new JSONObject();
         URL id = new URL(manifestID);
         BufferedReader reader = null;
@@ -251,7 +245,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
             if(!stringBuilder.toString().trim().equals("")){
                 manifest = fromObject(stringBuilder.toString());
             }
-            out.println("URL Resolved successfully.");
+            LOG.log(INFO, "URL ' {0} ' Resolved successfully.", manifestID);
             return manifest;
         }
         catch(Exception e){
@@ -268,9 +262,6 @@ public class ClassicProjectFromManifest extends HttpServlet {
      */
     public static boolean checkIfFileHasExtension(String s) {
         String[] extn = {"png", "jpg", "JPG", "jpeg", "JPEG", "jp2", "gif", "tif", "webp"};
-        System.out.println("Does ' "+s+" ' contain a known extension in the following list?");
-        System.out.println(Arrays.toString(extn));
-        System.out.println(Arrays.stream(extn).anyMatch(entry -> s.endsWith(entry)));
         return Arrays.stream(extn).anyMatch(entry -> s.endsWith(entry));
     }
     /**
@@ -282,5 +273,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+    
+    private static final Logger LOG = getLogger(JsonLDExporter.class.getName());
 
 }

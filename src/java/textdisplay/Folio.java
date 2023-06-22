@@ -977,24 +977,16 @@ public class Folio {
    private void detect() throws SQLException, IOException {
       try (InputStream stream = getUncachedImageStream(false)) {
           //TODO: FIXME: cubap bhaberbe  This image is broken or Null in some way and breaks when we pass it in to stuff down the line.  
-         //System.out.println("I am in detect() in FOlio.java  What is stream?");
-        // System.out.println(stream);
          BufferedImage img = read(stream);
          stream.close();
-        // System.out.println("DID I GET BUFFERED IMG +++++++++++");
-        // System.out.println(img);
-//         writeDebugImage(img, "uncached");
-
-         // @TODO:  BOZO:  What do do when the BI is null?
-
          int height = 1000;
-         System.out.println("going into imageProcessor.  Did i get height: "+height);
+         LOG.log(INFO, "going into imageProcessor.  Did i get height: {0}", height);
          imageProcessor proc = new imageProcessor(img, height);
          List<line> detectedLines;
          // There is an aggressive Line detection method that attempts to extract characters from the binarized image
          // and use those pasted on a fresh canvas to detect lines. It is only used for a few specific image hosts
          // and has some error catching for a stack overflow that has occured before due to a recursive call within
-         System.out.println("DETECT LINES");
+         LOG.log(INFO, "AutoParse: Detect Lines");
          if (getArchive().equals("CEEC") || getArchive().equals("ecodices") || new Manuscript(folioNumber).getCity().equals("Baltimore")) {
             try {
                 //System.out.println("Now I need to detect lines on the processed image");
@@ -1024,8 +1016,12 @@ public class Folio {
                top = l.getStartVertical();
             }
          }
-         System.out.println("COMMIT LINES");
+         LOG.log(INFO, "AutoParse: Commit {0} Lines", detectedLines.size());
          commit();
+      }
+      catch(Exception e){
+          LOG.log(SEVERE, "AutoParse: failure");
+          LOG.log(SEVERE, Arrays.toString(e.getStackTrace()));
       }
    }
 

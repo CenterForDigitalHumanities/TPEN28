@@ -988,12 +988,13 @@ public class Folio {
          // @TODO:  BOZO:  What do do when the BI is null?
 
          int height = 1000;
-         //System.out.println("going into imageProcessor.  Did i get height: "+height);
+         System.out.println("going into imageProcessor.  Did i get height: "+height);
          imageProcessor proc = new imageProcessor(img, height);
          List<line> detectedLines;
          // There is an aggressive Line detection method that attempts to extract characters from the binarized image
          // and use those pasted on a fresh canvas to detect lines. It is only used for a few specific image hosts
          // and has some error catching for a stack overflow that has occured before due to a recursive call within
+         System.out.println("DETECT LINES");
          if (getArchive().equals("CEEC") || getArchive().equals("ecodices") || new Manuscript(folioNumber).getCity().equals("Baltimore")) {
             try {
                 //System.out.println("Now I need to detect lines on the processed image");
@@ -1023,6 +1024,7 @@ public class Folio {
                top = l.getStartVertical();
             }
          }
+         System.out.println("COMMIT LINES");
          commit();
       }
    }
@@ -1413,7 +1415,7 @@ public class Folio {
       String archName = getArchive();
       Archive a = new Archive(archName);
       String path;
-		LOG.log(INFO, "Connection method for {0} was {1}", new Object[] { archName, a.getConnectionMethod() });
+      LOG.log(INFO, "Connection method for {0} was {1}", new Object[] { archName, a.getConnectionMethod() });
 
       switch (a.getConnectionMethod()) {
          case local:
@@ -1450,8 +1452,14 @@ public class Folio {
                return new FileInputStream(path);
             } 
             else if (!onlyLocal) {
-                LOG.log(INFO, "Loading image with URL {0}", imageURL);
-               HttpURLConnection conn = (HttpURLConnection)imageURL.openConnection();
+               // Limit all IIIF Image API images to size 2000.  Note during the createProjectFromManifest process, this image height will be cached.
+               // By default, the interfaces will not ask for /full/full/.  It will be up to the interface to ask for a higher resolution.
+//               if(url.contains("/full/full/")){
+//                   url = url.replace("/full/full/", "/full/,2000/");
+//                   imageURL = new URL(url);
+//               }
+               LOG.log(INFO, "Loading image with URL {0}", imageURL);
+               HttpURLConnection conn = (HttpURLConnection) imageURL.openConnection();
                conn.connect();
                return conn.getInputStream();
             }

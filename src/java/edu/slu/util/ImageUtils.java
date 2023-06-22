@@ -20,10 +20,17 @@ import static java.awt.color.ColorSpace.CS_GRAY;
 import static java.awt.color.ColorSpace.getInstance;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import org.apache.commons.io.IOUtils;
 
 
 /**
@@ -68,27 +75,29 @@ public class ImageUtils {
     * @param input stream containing JPEG data
     * @return dimensions of the JPEG, or <code>null</code> if header bytes not found
     */
-   public static Dimension getJPEGDimension(InputStream input) throws IOException {
-      // Check for SOI marker.
-      if (input.read() != 255 || input.read() != 216) {
-          //If we throw this exception, it breaks through to the front end.  Instead, we would rather the manifest contain a flagged bad canvas
-         //throw new IOException("Missing JPEG SOI (Start Of Image) marker.");
-         return new Dimension(0,0);
-      }
-      
-      while (input.read() == 255) {
-         int marker = input.read();
-         int len = input.read() << 8 | input.read();
-         
-         if (marker == 192) {
-            input.skip(1);
-            int h = input.read() << 8 | input.read();
-            int w = input.read() << 8 | input.read();
-            return new Dimension(w, h);
-         }
-         input.skip(len - 2);
-      }
-      return null;
+    public static Dimension getJPEGDimension(InputStream input) throws IOException {
+        // Check for SOI marker.
+        if (input.read() != 255 || input.read() != 216) {
+            //If we throw this exception, it breaks through to the front end.  Instead, we would rather the manifest contain a flagged bad canvas
+           //throw new IOException("Missing JPEG SOI (Start Of Image) marker.");
+           System.out.println("!!!!! MISSING JPEG SOI MARKER !!!!!!");
+           return new Dimension(0,0);
+        }
+        System.out.println("image InputStream size: "+input.available());
+        while (input.read() == 255) {
+           int marker = input.read();
+           int len = input.read() << 8 | input.read();
+           if (marker == 192) {
+              input.skip(1);
+              int h = input.read() << 8 | input.read();
+              int w = input.read() << 8 | input.read();
+              System.out.println("getJPEGDimension has dimensions "+w+","+h);
+              return new Dimension(w, h);
+           }
+           input.skip(len - 2);
+        }
+        System.out.println("getJPEGDimensions never found marker 192.  Dimensions are unknown and will be 0,0");
+        return new Dimension(0, 0);
    }
    
    private static final Logger LOG = getLogger(ImageUtils.class.getName());

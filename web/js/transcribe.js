@@ -1480,6 +1480,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
     //Move up all image annos
     var cnt = -1;
     if (canvasObj.images[0].resource['@id'] !== undefined && canvasObj.images[0].resource['@id'] !== "") { //Only one image
+        
         var image = new Image();
         //Check to see if we can use a preloaded image...
         if (tpen.project.folioImages.length > 0 && tpen.project.folioImages[tpen.screen.currentFolio] !== undefined && tpen.project.folioImages[tpen.screen.currentFolio].image !== null) {
@@ -1496,8 +1497,8 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
             $(".turnMsg").html("Please wait while we load the transcription interface.");
             clearTimeout(longLoadingProject);
             if (permissionForImage) {
-                $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,''));
-                $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,''));
+                $('.transcriptionImage').attr('src', image.src);
+                $("#fullPageImg").attr("src", image.src);
                 populateCompareSplit(tpen.screen.currentFolio);
                 populateHistorySplit(tpen.screen.currentFolio);
                 //FIXME At some point I had to track tpen.screen.originalCanvasHeight differently.  Not sure that
@@ -1559,7 +1560,8 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
                 image2.src = "images/missingImage.png";
             }
             scrubNav();
-        }; // the extra () ensures this only runs once.
+        }
+        image.src = canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,'')
         image.onerror = function() {
             var image2 = new Image();
             // image2.src = "";
@@ -2191,7 +2193,8 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
         $(".xmlClosingTags").before(newAnno);
         var hiResBackground = ""
         if ($(".transcriptionImage").attr("src").includes('/full/full')) {
-            hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
+           // causing double vision 
+            //hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
         }
 
         var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter

@@ -72,6 +72,7 @@ public class ProjectServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        long startTime = System.nanoTime();
         int uid = 0;
         int projID = 0;
         boolean skip = true;
@@ -162,6 +163,20 @@ public class ProjectServlet extends HttpServlet {
                                 } else {
                                     resp.sendError(SC_UNAUTHORIZED);
                                 }
+                                catch(DateTimeParseException ex){
+                                    System.out.println("Last-Modified Header could not be formed.  Bad date value for project "+proj.getProjectID());
+                                }
+                                catch(Exception e){
+                                
+                                }
+                                resp.setHeader("Access-Control-Allow-Headers", "*");
+                                resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+                                resp.setHeader("Cache-Control", "max-age=15, must-revalidate"); 
+                                resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
+                                long endTime = System.nanoTime();
+                                long elapsedTimeInSeconds = (endTime - startTime) / 1_000_000_000;
+                                System.out.println("Time to build Manifest: " + elapsedTimeInSeconds);
+                                resp.setStatus(SC_OK);
                             } else {
                                 resp.sendError(SC_NOT_FOUND);
                             }

@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import textdisplay.Folio;
 import textdisplay.FolioDims;
-import static textdisplay.FolioDims.createFolioDimsRecord;
 
 /**
  *

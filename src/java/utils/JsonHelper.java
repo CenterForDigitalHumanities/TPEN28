@@ -176,20 +176,21 @@ public class JsonHelper {
                 ArrayList<Integer> projIDs = getProjIDFromFolio(f.getFolioNumber());
                 projID = projIDs.get(0);
             }
-            Dimension imageDims = null;
-            String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
+            Dimension imageDims = getCachedImageDimensions(f.getFolioNumber());
             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
-            if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-                imageDims = getCachedImageDimensions(f.getFolioNumber());
-                if(null == imageDims || imageDims.height <=0) { //There was no imagecache entry or a bad one we can't use
-                    LOG.log(WARNING, "Must resolve image dimensions to build Annotation Page for Folio "+f.getFolioNumber()+".  It should have already been set!");
-                    imageDims = f.resolveImageForDimensions(); //Resolve the image headers and get the image dimensions
-                }
-            }
-            else{
-                LOG.log(WARNING, "Image height and/or width was 0.  The AnnotationPage for Folio "+f.getFolioNumber()+" will be omitted.  See image at "+f.getImageURL());
+            String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
+            
+            if(projID <= 0){
+                LOG.log(SEVERE, "No TPEN projectID for AnnotationPage.  Cannot generate this AnnotationPage.");
                 return new LinkedHashMap<>();
             }
+            
+            // This will always access the cached dimensions.  If the dimensions aren't there, this is an error state but we won't fail out.
+            if (pageDim == null || pageDim.getImageHeight() <= 0 || pageDim.getImageWidth() <= 0 || pageDim.getCanvasHeight() <= 0 || pageDim.getCanvasWidth() <= 0) {
+                LOG.log(SEVERE, "Image height and/or width was 0.  The AnnotationPage for Folio "+f.getFolioNumber()+" will be omitted.  See image at "+f.getImageURL());
+                return new LinkedHashMap<>();
+            }
+            
             Map<String, Object> annotationPage = new LinkedHashMap<>();
             annotationPage.put("id", paintingPageID);
             annotationPage.put("type", "AnnotationPage");

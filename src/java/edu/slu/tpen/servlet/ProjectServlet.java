@@ -155,7 +155,6 @@ public class ProjectServlet extends HttpServlet {
                                 resp.setHeader("Access-Control-Allow-Headers", "*");
                                 resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                                 resp.setHeader("Cache-Control", "max-age=15, must-revalidate"); 
-                                resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
                                 long endTime = System.nanoTime();
                                 long elapsedTimeInSeconds = (endTime - startTime) / 1_000_000_000;
                                 LOG.log(INFO, "Time (in seconds) to build Manifest: {0}", elapsedTimeInSeconds);

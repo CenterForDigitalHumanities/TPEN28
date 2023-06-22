@@ -99,7 +99,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                     canvases.add(page);
                 }
                 else{
-                    LOG.log(WARNING, "Omitting canvas from folio {0}.  Check folio URL {1}", new Object[]{f.getFolioNumber(), f.getImageURL()});
+                    LOG.log(WARNING, "Omitting canvas from folio "+f.getFolioNumber()+".  Check folio URL " + f.getImageURL());
                 }
             }
             manifestData.put("items", canvases);
@@ -172,7 +172,7 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
                pageList.add(page);
            }
            else{
-               LOG.log(WARNING, "Omitting canvas from folio {0}.  Check folio URL {1}", new Object[]{f.getFolioNumber(), f.getImageURL()});
+               LOG.log(WARNING, "Omitting canvas from folio "+f.getFolioNumber()+".  Check folio URL "+ f.getImageURL());
            }
        }
        //System.out.println("Put all canvas together");

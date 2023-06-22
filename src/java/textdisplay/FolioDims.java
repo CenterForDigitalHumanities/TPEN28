@@ -144,7 +144,7 @@ public class FolioDims {
            stmt.execute();
         } 
         catch(Exception e){
-            LOG.log(SEVERE, "Could not update foliodim for folio {0}", folioID);
+            LOG.log(SEVERE, "Could not update foliodim for folio "+folioID);
             throw e;
         }
         finally {

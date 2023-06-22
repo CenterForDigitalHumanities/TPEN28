@@ -29,6 +29,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import static net.sf.json.JSONObject.fromObject;
@@ -101,17 +104,17 @@ public class ClassicProjectFromManifest extends HttpServlet {
             int projectID = 0;
             textdisplay.Project thisProject = null;
             if(request.getParameter("manifest")==null){
-                response.sendError(400, "You must provide a manifest ID via ?manifest={ID}");
+                response.sendError(SC_BAD_REQUEST, "You must provide a manifest ID via ?manifest={ID}");
                 return -1;
             }
             if (UID <= 0) {
-                response.sendError(401, "You must log in first.");
+                response.sendError(SC_UNAUTHORIZED, "You must log in first.");
                 return -1; 
             }
             JSONObject theManifest = resolveID(request.getParameter("manifest")); 
             //TODO: @context validation too?
             if(!theManifest.has("@type") || !theManifest.getString("@type").equals("sc:Manifest")){
-                response.sendError(400, "The object provided is not a IIIF Presentation API 2.1 Manifest.");
+                response.sendError(SC_BAD_REQUEST, "The object provided is not a IIIF Presentation API 2.1 Manifest.");
                 return -1;
             }
             String type = theManifest.getString("@type");
@@ -126,7 +129,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
                 archive = theManifest.getString("@id");
             }
             else{
-                response.sendError(500, "Manifest does not contain '@id'");
+                response.sendError(SC_INTERNAL_SERVER_ERROR, "Manifest does not contain '@id'");
                 return -1;
             }
             if(theManifest.has("label")){

@@ -105,57 +105,53 @@ public class ProjectServlet extends HttpServlet {
                             //System.out.println("Project 3");
                             if (proj.getProjectID() > 0) {
                                 //System.out.println("Project 4");
-                                if (new Group(proj.getGroupID()).isMember(uid)) {
-                                   // System.out.println("export");
-                                    if (checkModified(req, proj)) {
-                                       // System.out.println("Project 5");
-                                        resp.setContentType("application/ld+json; charset=UTF-8");
-                                        //resp.setHeader("Etag", req.getContextPath() + "/manifest/"+proj.getProjectID());
-                                        //We expect projects to change, often.  Let's just help quick page refresh.
-                                        try{
-                                            String lastModifiedDate = proj.getModification().toString().replace(" ", "T");
-                                            //Note that dates like 2021-05-26T10:39:19.328 have been rounded to 2021-05-26T10:39:19.328 in browser headers.  Account for that here.
-                                            if(lastModifiedDate.contains(".")){
-                                                //If-Modified-Since and Last-Modified headers are rounded.  Wed, 26 May 2021 10:39:19.629 GMT becomes Wed, 26 May 2021 10:39:19 GMT.
-                                                lastModifiedDate = lastModifiedDate.split("\\.")[0];
-                                            }
-                                            LocalDateTime ldt = LocalDateTime.parse(lastModifiedDate, DateTimeFormatter.ISO_DATE_TIME);
-                                            ZonedDateTime fromObject = ldt.atZone(ZoneId.of("GMT"));
-                                            resp.setHeader("Last-Modified", fromObject.format(DateTimeFormatter.RFC_1123_DATE_TIME));
-                                        }
-                                        catch(DateTimeParseException ex){
-                                            LOG.log(WARNING, "Last-Modified Header could not be formed.  Bad date value for project {0}", proj.getProjectID());
-                                        }
-                                        catch(Exception e){
-                                            LOG.log(WARNING, "Last-Modified Header could not be formed  for project {0}", proj.getProjectID());
-                                            LOG.log(WARNING, Arrays.toString(e.getStackTrace()));
-                                        }
-                                        resp.setHeader("Access-Control-Allow-Headers", "*");
-                                        resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
-                                        resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
-                                        resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
-                                        resp.setHeader("Expires", "0"); // Proxies.
-                                        if ((req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) 
-                                            || (req.getParameter("version") != null && req.getParameter("version").equals("3"))) {
+                                // System.out.println("export");
+                                 if (checkModified(req, proj)) {
+                                    // System.out.println("Project 5");
+                                     resp.setContentType("application/ld+json; charset=UTF-8");
+                                     //resp.setHeader("Etag", req.getContextPath() + "/manifest/"+proj.getProjectID());
+                                     //We expect projects to change, often.  Let's just help quick page refresh.
+                                     try{
+                                         String lastModifiedDate = proj.getModification().toString().replace(" ", "T");
+                                         //Note that dates like 2021-05-26T10:39:19.328 have been rounded to 2021-05-26T10:39:19.328 in browser headers.  Account for that here.
+                                         if(lastModifiedDate.contains(".")){
+                                             //If-Modified-Since and Last-Modified headers are rounded.  Wed, 26 May 2021 10:39:19.629 GMT becomes Wed, 26 May 2021 10:39:19 GMT.
+                                             lastModifiedDate = lastModifiedDate.split("\\.")[0];
+                                         }
+                                         LocalDateTime ldt = LocalDateTime.parse(lastModifiedDate, DateTimeFormatter.ISO_DATE_TIME);
+                                         ZonedDateTime fromObject = ldt.atZone(ZoneId.of("GMT"));
+                                         resp.setHeader("Last-Modified", fromObject.format(DateTimeFormatter.RFC_1123_DATE_TIME));
+                                     }
+                                     catch(DateTimeParseException ex){
+                                         LOG.log(WARNING, "Last-Modified Header could not be formed.  Bad date value for project {0}", proj.getProjectID());
+                                     }
+                                     catch(Exception e){
+                                         LOG.log(WARNING, "Last-Modified Header could not be formed  for project {0}", proj.getProjectID());
+                                         LOG.log(WARNING, Arrays.toString(e.getStackTrace()));
+                                     }
+                                     resp.setHeader("Access-Control-Allow-Headers", "*");
+                                     resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+                                     resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+                                     resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+                                     resp.setHeader("Expires", "0"); // Proxies.
+                                     if ((req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) 
+                                         || (req.getParameter("version") != null && req.getParameter("version").equals("3"))) {
 
-                                            resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
-                                            resp.getWriter().write(new JsonLDExporter(proj, new User(uid), "v3").export());
+                                         resp.setHeader("Content-Type", "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"");
+                                         resp.getWriter().write(new JsonLDExporter(proj, new User(uid), "v3").export());
 
-                                        } else
-                                        {
+                                     } else
+                                     {
 
-                                            resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
-                                        }
+                                         resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
+                                     }
 
-                                        resp.setStatus(SC_OK);
-                                    } else {
-                                        //FIXME we seem to make it here, but the response is still 200 with the object in the body...doesn't seem to save any time.
-                                        //No work necessary, send out the 304.
-                                        resp.setStatus(SC_NOT_MODIFIED);
-                                    }
-                                } else {
-                                    resp.sendError(SC_UNAUTHORIZED);
-                                }
+                                     resp.setStatus(SC_OK);
+                                 } else {
+                                     //FIXME we seem to make it here, but the response is still 200 with the object in the body...doesn't seem to save any time.
+                                     //No work necessary, send out the 304.
+                                     resp.setStatus(SC_NOT_MODIFIED);
+                                 }
                                 resp.setHeader("Access-Control-Allow-Headers", "*");
                                 resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                                 resp.setHeader("Cache-Control", "max-age=15, must-revalidate"); 

@@ -182,12 +182,12 @@ public class JsonHelper {
             if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
                 imageDims = getCachedImageDimensions(f.getFolioNumber());
                 if(null == imageDims || imageDims.height <=0) { //There was no imagecache entry or a bad one we can't use
-                    LOG.log(WARNING, "Must resolve image dimensions to build Annotation Page for Folio {0}.  It should have already been set!", f.getFolioNumber());
+                    LOG.log(WARNING, "Must resolve image dimensions to build Annotation Page for Folio "+f.getFolioNumber()+".  It should have already been set!");
                     imageDims = f.resolveImageForDimensions(); //Resolve the image headers and get the image dimensions
                 }
             }
             else{
-                LOG.log(WARNING, "Image height and/or width was 0.  The AnnotationPage for Folio {0} will be omitted.  See image at {1}", new Object[]{f.getFolioNumber(), f.getImageURL()});
+                LOG.log(WARNING, "Image height and/or width was 0.  The AnnotationPage for Folio "+f.getFolioNumber()+" will be omitted.  See image at "+f.getImageURL());
                 return new LinkedHashMap<>();
             }
             Map<String, Object> annotationPage = new LinkedHashMap<>();
@@ -234,11 +234,11 @@ public class JsonHelper {
             if(null == pageDim || pageDim.getImageWidth() <= 0 || pageDim.getImageHeight() <= 0){
                 if(imageDims == null || imageDims.width <=0 || imageDims.height <=0){
                     // The Image dimensions are not cached.  Try to resolve the image and get them.
-                    LOG.log(INFO, "Must resolve image dimensions for folio {0}", f.getFolioNumber());
+                    LOG.log(INFO, "Must resolve image dimensions for folio "+f.getFolioNumber());
                     imageDims = f.resolveImageForDimensions(); 
                     if(null == imageDims || imageDims.height <=0 || imageDims.width <= 0){
                         // Upstream when this empty object is detected, it is omitted from the Canvas' Array
-                        LOG.log(WARNING, "Image height and/or width was 0.  The Canvas for Folio {0} will be omitted.  See image at {1}", new Object[]{f.getFolioNumber(), f.getImageURL()});
+                        LOG.log(WARNING, "Image height and/or width was 0.  The Canvas for Folio "+f.getFolioNumber()+" will be omitted.  See image at "+f.getImageURL());
                         return new LinkedHashMap<>();
                     }
                 }
@@ -338,11 +338,11 @@ public class JsonHelper {
             if(null == pageDim || pageDim.getImageWidth() <= 0 || pageDim.getImageHeight() <= 0){
                 if(imageDims == null || imageDims.width <=0 || imageDims.height <=0){
                     // The Image dimensions are not cached.  Try to resolve the image and get them.
-                    LOG.log(INFO, "Must resolve image dimensions for folio {0}", f.getFolioNumber());
+                    LOG.log(INFO, "Must resolve image dimensions for folio "+f.getFolioNumber());
                     imageDims = f.resolveImageForDimensions(); 
                     if(null == imageDims || imageDims.height <=0 || imageDims.width <= 0){
                         // Upstream when this empty object is detected, it is omitted from the Canvas' Array
-                        LOG.log(WARNING, "Image height and/or width was 0.  The Canvas for Folio {0} will be omitted.  See image at {1}", new Object[]{f.getFolioNumber(), f.getImageURL()});
+                        LOG.log(WARNING, "Image height and/or width was 0.  The Canvas for Folio "+f.getFolioNumber()+" will be omitted.  See image at " + f.getImageURL());
                         return new JSONObject();
                     }
                 }

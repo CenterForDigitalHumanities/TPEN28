@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
@@ -179,25 +180,24 @@ public class JsonHelper {
             String paintingPageID = getRbTok("SERVERURL")+"annotationpage/"+f.getFolioNumber();
             FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
             if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-            imageDims = getCachedImageDimensions(f.getFolioNumber());
+                imageDims = getCachedImageDimensions(f.getFolioNumber());
                 if(null == imageDims || imageDims.height <=0) { //There was no imagecache entry or a bad one we can't use
+                    LOG.log(WARNING, "Must resolve image dimensions to build Annotation Page for Folio {0}.  It should have already been set!", f.getFolioNumber());
                     imageDims = f.resolveImageForDimensions(); //Resolve the image headers and get the image dimensions
                 }
             }
-            
-            else{ //define a 0, 0 imageDims
-                imageDims = new Dimension(0,0);
+            else{
+                LOG.log(WARNING, "Image height and/or width was 0.  The AnnotationPage for Folio {0} will be omitted.  See image at {1}", new Object[]{f.getFolioNumber(), f.getImageURL()});
+                return new LinkedHashMap<>();
             }
             Map<String, Object> annotationPage = new LinkedHashMap<>();
             annotationPage.put("id", paintingPageID);
             annotationPage.put("type", "AnnotationPage");
             annotationPage.put("items", getPaintingAnnotations(projID, f, imageDims, pageDim));
             return annotationPage;
-            
-            
         } catch (Exception e) {
             LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
-            return new JSONObject();   
+            return new LinkedHashMap<>();
         }
     }
     
@@ -234,6 +234,7 @@ public class JsonHelper {
             if(null == pageDim || pageDim.getImageWidth() <= 0 || pageDim.getImageHeight() <= 0){
                 if(imageDims == null || imageDims.width <=0 || imageDims.height <=0){
                     // The Image dimensions are not cached.  Try to resolve the image and get them.
+                    LOG.log(INFO, "Must resolve image dimensions for folio {0}", f.getFolioNumber());
                     imageDims = f.resolveImageForDimensions(); 
                     if(null == imageDims || imageDims.height <=0 || imageDims.width <= 0){
                         // Upstream when this empty object is detected, it is omitted from the Canvas' Array
@@ -306,7 +307,7 @@ public class JsonHelper {
         }
         catch(Exception e){
             Map<String, Object> empty = new LinkedHashMap<>();
-            LOG.log(SEVERE, "Could not build page for canvas/{0}", f.getFolioNumber());
+            LOG.log(SEVERE, "Could not build page foArraysr canvas/{0}", f.getFolioNumber());
             LOG.log(SEVERE, Arrays.toString(e.getStackTrace()));
             return empty;
         }
@@ -337,6 +338,7 @@ public class JsonHelper {
             if(null == pageDim || pageDim.getImageWidth() <= 0 || pageDim.getImageHeight() <= 0){
                 if(imageDims == null || imageDims.width <=0 || imageDims.height <=0){
                     // The Image dimensions are not cached.  Try to resolve the image and get them.
+                    LOG.log(INFO, "Must resolve image dimensions for folio {0}", f.getFolioNumber());
                     imageDims = f.resolveImageForDimensions(); 
                     if(null == imageDims || imageDims.height <=0 || imageDims.width <= 0){
                         // Upstream when this empty object is detected, it is omitted from the Canvas' Array

@@ -34,6 +34,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
+import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
@@ -78,9 +79,6 @@ public class ProjectServlet extends HttpServlet {
         long startTime = System.nanoTime();
         int uid = 0;
         int projID = 0;
-        boolean skip = true;
-        String url_piece = req.getRequestURI() + req.getPathInfo().substring(1).replace("/", "").replace("manifest.json","");
-        String skip_uid_check = "manifest";
         resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setHeader("Access-Control-Allow-Headers", "*");
         resp.setHeader("Access-Control-Allow-Methods", "GET");
@@ -107,7 +105,7 @@ public class ProjectServlet extends HttpServlet {
                             //System.out.println("Project 3");
                             if (proj.getProjectID() > 0) {
                                 //System.out.println("Project 4");
-                                if (new Group(proj.getGroupID()).isMember(uid) || skip) {
+                                if (new Group(proj.getGroupID()).isMember(uid)) {
                                    // System.out.println("export");
                                     if (checkModified(req, proj)) {
                                        // System.out.println("Project 5");
@@ -126,10 +124,11 @@ public class ProjectServlet extends HttpServlet {
                                             resp.setHeader("Last-Modified", fromObject.format(DateTimeFormatter.RFC_1123_DATE_TIME));
                                         }
                                         catch(DateTimeParseException ex){
-                                            System.out.println("Last-Modified Header could not be formed.  Bad date value for project "+proj.getProjectID());
+                                            LOG.log(WARNING, "Last-Modified Header could not be formed.  Bad date value for project {0}", proj.getProjectID());
                                         }
                                         catch(Exception e){
-
+                                            LOG.log(WARNING, "Last-Modified Header could not be formed  for project {0}", proj.getProjectID());
+                                            LOG.log(WARNING, Arrays.toString(e.getStackTrace()));
                                         }
                                         resp.setHeader("Access-Control-Allow-Headers", "*");
                                         resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
@@ -163,7 +162,7 @@ public class ProjectServlet extends HttpServlet {
                                 resp.getWriter().write(new JsonLDExporter(proj, new User(uid)).export());
                                 long endTime = System.nanoTime();
                                 long elapsedTimeInSeconds = (endTime - startTime) / 1_000_000_000;
-                                System.out.println("Time to build Manifest: " + elapsedTimeInSeconds);
+                                LOG.log(INFO, "Time (in seconds) to build Manifest: {0}", elapsedTimeInSeconds);
                                 resp.setStatus(SC_OK);
                             } else {
                                 resp.sendError(SC_NOT_FOUND);

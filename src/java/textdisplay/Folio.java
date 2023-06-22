@@ -1556,7 +1556,6 @@ public class Folio {
             }
          }
        }
-        out.println("Report Generated!");
        return responseString;       
    }
 

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
@@ -181,13 +182,13 @@ public JsonLDExporter(Project proj, User u, String profile) throws SQLException,
 
    public String export() throws JsonProcessingException {
       if(manifestData.containsKey("@id")){
-          out.println("Send out manifest "+manifestData.get("@id"));
+          LOG.log(INFO, "Send out manifest {0}", manifestData.get("@id"));
       }
       else if (manifestData.containsKey("id")){
-          out.println("Send out manifest "+manifestData.get("id"));
+          LOG.log(INFO, "Send out manifest {0}", manifestData.get("id"));
       }
       else{
-          out.println("Send out manifest");
+          LOG.log(INFO, "Send out manifest");
       }
       ObjectMapper mapper = new ObjectMapper();
       return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(manifestData);

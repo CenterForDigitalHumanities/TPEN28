@@ -216,15 +216,15 @@ public class ImageResize extends HttpServlet {
              if (folioParam != null) {
                 Folio f = new Folio(parseInt(folioParam));
                 FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
-                Dimension storedDims = getCachedImageDimensions(f.getFolioNumber());
-                if(null == storedDims || storedDims.height <=0 || storedDims.width <=0) { //There was no imagecache entry or a bad one we can't use
+                Dimension imageDims = getCachedImageDimensions(f.getFolioNumber());
+                if(null == imageDims || imageDims.height <=0 || imageDims.width <=0) { //There was no imagecache entry or a bad one we can't use
                     // System.out.println("Need to resolve image headers for dimensions");
                     if (pageDim != null && pageDim.getImageHeight() > 0 && pageDim.getImageWidth() > 0) { //There was no foliodim entry
-                        storedDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
+                        imageDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
                     }
                     else{
                         try{
-                            storedDims = f.resolveImageForDimensions(); 
+                            imageDims = f.resolveImageForDimensions(); 
                         }
                         catch (java.net.SocketTimeoutException e) {
                             // There was a timeout on the Image URL.  We could not resolve the image for dimensions.
@@ -234,8 +234,8 @@ public class ImageResize extends HttpServlet {
                     }
                 }
                 response.setContentType("image/jpeg");
-                response.setHeader("Width", storedDims.getWidth()+"");
-                response.setHeader("Height", storedDims.getHeight()+"");
+                response.setHeader("Width", imageDims.getWidth()+"");
+                response.setHeader("Height", imageDims.getHeight()+"");
                 response.setHeader("Access-Control-Allow-Origin", "*");
                 response.setHeader("Access-Control-Allow-Headers", "*");
                 response.setHeader("Access-Control-Allow-Methods", "HEAD");

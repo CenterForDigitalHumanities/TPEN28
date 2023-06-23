@@ -70,7 +70,7 @@ public class AutoParse extends HttpServlet {
         Project p = new Project(projectID);
         Project.imageBounding preferedBounding = p.getProjectImageBounding();
         FolioDims pageDim = null;
-        Dimension storedDims = null;       
+        Dimension imageDims = null;       
         if (null != preferedBounding) {
             switch (preferedBounding) {
                 case fullimage: {
@@ -78,26 +78,26 @@ public class AutoParse extends HttpServlet {
                     int height = 1000;
                     Folio f = new Folio(folioNumber, true);
                     pageDim = new FolioDims(f.getFolioNumber(), true);
-                    storedDims = getCachedImageDimensions(f.getFolioNumber());
-                    if(null == storedDims || storedDims.height <=0 || storedDims.width <=0) { //There was no imagecache entry or a bad one we can't use
+                    imageDims = getCachedImageDimensions(f.getFolioNumber());
+                    if(null == imageDims || imageDims.height <=0 || imageDims.width <=0) { //There was no imagecache entry or a bad one we can't use
                         // System.out.println("Need to resolve image headers for dimensions");
                         if (pageDim != null && pageDim.getImageHeight() > 1 && pageDim.getImageWidth() > 1) { //There was no foliodim entry
-                            storedDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
+                            imageDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
                         }
                         else{
                             try{
-                                storedDims = f.resolveImageForDimensions(); 
+                                imageDims = f.resolveImageForDimensions(); 
                             }
                             catch (java.net.SocketTimeoutException e) {
                                 // There was a timeout on the Image URL.  We could not resolve the image for dimensions.
                                 // We can't parse it, the canvas will be 1000, 1000.  Lets make a column that is 1000, 1000.
                                 //response.sendError(502, "Timeout.  Could not resolve imageURL to AutoParse "+f.getImageURL());
                                 LOG.log(WARNING, "AutoParser could not load image {0}.  A column of 1000, 1000 will be used.", f.getImageURL());
-                                storedDims = new Dimension(1000, 1000);
+                                imageDims = new Dimension(1000, 1000);
                             }
                         }
                     }
-                    int width = storedDims.width;
+                    int width = imageDims.width;
                     Rectangle r = new Rectangle(0, 0, height, width);
                     Transcription t = new Transcription(0, projectID, folioNumber, "", "", r);
                     orderedTranscriptions.add(t);
@@ -128,20 +128,20 @@ public class AutoParse extends HttpServlet {
                 case lines: {
                     Folio f = new Folio(folioNumber, true);
                     pageDim = new FolioDims(f.getFolioNumber(), true);
-                    storedDims = getCachedImageDimensions(f.getFolioNumber());
+                    imageDims = getCachedImageDimensions(f.getFolioNumber());
                     int height = 1000;
                     int width = 1000;
                     Line[] lines = {};
                     Rectangle r = null;
                     Transcription fullPage = null;
-                    if(null == storedDims || storedDims.height <=0 || storedDims.width<=0) { //There was no imagecache entry or a bad one we can't use
+                    if(null == imageDims || imageDims.height <=0 || imageDims.width<=0) { //There was no imagecache entry or a bad one we can't use
                         // System.out.println("Need to resolve image headers for dimensions");
                         if (pageDim != null && pageDim.getImageHeight() > 1 && pageDim.getImageWidth() > 1) { //There was no foliodim entry
-                            storedDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
+                            imageDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
                         }
                         else{
                             try{
-                                storedDims = f.resolveImageForDimensions(); 
+                                imageDims = f.resolveImageForDimensions(); 
                                 lines = f.getlines();
                             }
                             catch (java.net.SocketTimeoutException e) {
@@ -149,7 +149,7 @@ public class AutoParse extends HttpServlet {
                                 // We can't parse it, the canvas will be 1000, 1000.  Lets make a column that is 1000, 1000.
                                 //response.sendError(502, "Timeout.  Could not resolve imageURL to AutoParse "+f.getImageURL());
                                 LOG.log(WARNING, "AutoParser could not load image {0}.  A single column of 1000, 1000 will be used.", f.getImageURL());
-                                storedDims = new Dimension(1000, 1000);
+                                imageDims = new Dimension(1000, 1000);
                             }
                         }
                     }
@@ -161,7 +161,7 @@ public class AutoParse extends HttpServlet {
                         orderedTranscriptions.add(t);
                     }
                     if (orderedTranscriptions.isEmpty()) {
-                        width = storedDims.width;
+                        width = imageDims.width;
                         r = new Rectangle(0, 0, height, width);
                         fullPage = new Transcription(0, projectID, folioNumber, "", "", r);
                         orderedTranscriptions.add(fullPage);

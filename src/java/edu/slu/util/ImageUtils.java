@@ -79,7 +79,7 @@ public class ImageUtils {
            LOG.log(SEVERE, "_!_    MISSING JPEG SOI MARKER    _!_");
            return new Dimension(0,0);
         }
-        LOG.log(INFO, "Getting image dimensions.  File size: {0}", input.available());
+        //LOG.log(INFO, "Getting image dimensions.  File size: {0}", input.available());
         while (input.read() == 255) {
            int marker = input.read();
            int len = input.read() << 8 | input.read();
@@ -87,7 +87,7 @@ public class ImageUtils {
               input.skip(1);
               int h = input.read() << 8 | input.read();
               int w = input.read() << 8 | input.read();
-              LOG.log(INFO, "Dimensions are "+w+","+h);
+              //LOG.log(INFO, "Dimensions are "+w+","+h);
               return new Dimension(w, h);
            }
            input.skip(len - 2);

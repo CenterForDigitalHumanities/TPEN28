@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import javax.imageio.IIOImage;
@@ -216,8 +217,12 @@ public class ImageResize extends HttpServlet {
                 Folio f = new Folio(parseInt(folioParam));
                 FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
                 Dimension storedDims = getCachedImageDimensions(f.getFolioNumber());
-                if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-                    if(null == storedDims || storedDims.height <=0) { //There was no imagecache entry or a bad one we can't use
+                if(null == storedDims || storedDims.height <=0 || storedDims.width <=0) { //There was no imagecache entry or a bad one we can't use
+                    // System.out.println("Need to resolve image headers for dimensions");
+                    if (pageDim != null && pageDim.getImageHeight() > 0 && pageDim.getImageWidth() > 0) { //There was no foliodim entry
+                        storedDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
+                    }
+                    else{
                         try{
                             storedDims = f.resolveImageForDimensions(); 
                         }

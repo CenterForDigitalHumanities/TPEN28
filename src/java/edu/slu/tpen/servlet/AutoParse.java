@@ -79,9 +79,12 @@ public class AutoParse extends HttpServlet {
                     Folio f = new Folio(folioNumber, true);
                     pageDim = new FolioDims(f.getFolioNumber(), true);
                     storedDims = getCachedImageDimensions(f.getFolioNumber());
-                    if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-                        storedDims =  f.resolveImageForDimensions(); 
-                        if(null == storedDims || storedDims.height <=0) { //There was no imagecache entry or a bad one we can't use
+                    if(null == storedDims || storedDims.height <=0 || storedDims.width <=0) { //There was no imagecache entry or a bad one we can't use
+                        // System.out.println("Need to resolve image headers for dimensions");
+                        if (pageDim != null && pageDim.getImageHeight() > 1 && pageDim.getImageWidth() > 1) { //There was no foliodim entry
+                            storedDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
+                        }
+                        else{
                             try{
                                 storedDims = f.resolveImageForDimensions(); 
                             }
@@ -131,10 +134,12 @@ public class AutoParse extends HttpServlet {
                     Line[] lines = {};
                     Rectangle r = null;
                     Transcription fullPage = null;
-                    if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-                        storedDims =  f.resolveImageForDimensions(); 
-                        if(null == storedDims || storedDims.height <=0) { //There was no imagecache entry or a bad one we can't use
+                    if(null == storedDims || storedDims.height <=0 || storedDims.width<=0) { //There was no imagecache entry or a bad one we can't use
                         // System.out.println("Need to resolve image headers for dimensions");
+                        if (pageDim != null && pageDim.getImageHeight() > 1 && pageDim.getImageWidth() > 1) { //There was no foliodim entry
+                            storedDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
+                        }
+                        else{
                             try{
                                 storedDims = f.resolveImageForDimensions(); 
                                 lines = f.getlines();
@@ -144,6 +149,7 @@ public class AutoParse extends HttpServlet {
                                 // We can't parse it, the canvas will be 1000, 1000.  Lets make a column that is 1000, 1000.
                                 //response.sendError(502, "Timeout.  Could not resolve imageURL to AutoParse "+f.getImageURL());
                                 LOG.log(WARNING, "AutoParser could not load image {0}.  A single column of 1000, 1000 will be used.", f.getImageURL());
+                                storedDims = new Dimension(1000, 1000);
                             }
                         }
                     }

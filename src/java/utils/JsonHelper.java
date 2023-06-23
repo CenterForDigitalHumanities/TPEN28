@@ -192,7 +192,13 @@ public class JsonHelper {
                 if(imageDims == null || imageDims.width <=0 || imageDims.height <=0){
                     // The Image dimensions are not cached.  Try to resolve the image and get them.
                     LOG.log(INFO, "Must resolve image dimensions for folio "+f.getFolioNumber());
-                    imageDims = f.resolveImageForDimensions(); 
+                    try{
+                        imageDims = f.resolveImageForDimensions(); 
+                    }
+                    catch (java.net.SocketTimeoutException e) {
+                        // There was a timeout on the Image URL.  We could not resolve the image for dimensions.
+                        imageDims = null;
+                    }
                     if(null == imageDims || imageDims.height <=0 || imageDims.width <= 0){
                         // Upstream when this empty object is detected, it is omitted from the Canvas' Array
                         LOG.log(WARNING, "Image height and/or width was 0.  The Canvas for Folio "+f.getFolioNumber()+" will be strange.  See image at "+f.getImageURL());
@@ -277,7 +283,13 @@ public class JsonHelper {
                 if(imageDims == null || imageDims.width <=0 || imageDims.height <=0){
                     // The Image dimensions are not cached.  Try to resolve the image and get them.
                     LOG.log(INFO, "Must resolve image dimensions for folio "+f.getFolioNumber());
-                    imageDims = f.resolveImageForDimensions(); 
+                    try{
+                        imageDims = f.resolveImageForDimensions(); 
+                    }
+                    catch (java.net.SocketTimeoutException e) {
+                        // There was a timeout on the Image URL.  We could not resolve the image for dimensions.
+                        imageDims = null;
+                    }
                     if(null == imageDims || imageDims.height <=0 || imageDims.width <= 0){
                         // Upstream when this empty object is detected, it is omitted from the Canvas' Array
                         LOG.log(WARNING, "Image height and/or width was 0.  The Canvas for Folio "+f.getFolioNumber()+" will be strange.  See image at "+f.getImageURL());
@@ -384,7 +396,13 @@ public class JsonHelper {
                 if(imageDims == null || imageDims.width <=0 || imageDims.height <=0){
                     // The Image dimensions are not cached.  Try to resolve the image and get them.
                     LOG.log(INFO, "Must resolve image dimensions for folio "+f.getFolioNumber());
-                    imageDims = f.resolveImageForDimensions(); 
+                    try{
+                        imageDims = f.resolveImageForDimensions(); 
+                    }
+                    catch (java.net.SocketTimeoutException e) {
+                        // There was a timeout on the Image URL.  We could not resolve the image for dimensions.
+                        imageDims = null;
+                    }
                     if(null == imageDims || imageDims.height <=0 || imageDims.width <= 0){
                         // Upstream when this empty object is detected, it is omitted from the Canvas' Array
                         LOG.log(WARNING, "Image height and/or width was 0.  The Canvas for Folio "+f.getFolioNumber()+" will be strange.  See image at " + f.getImageURL());

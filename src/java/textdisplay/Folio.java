@@ -1454,8 +1454,10 @@ public class Folio {
                    url = url.replace("/full/full/", "/full/,150/");
                    imageURL = new URL(url);
                }
+               
                LOG.log(INFO, "Loading image with URL {0}", imageURL);
                HttpURLConnection conn = (HttpURLConnection) imageURL.openConnection();
+               conn.setConnectTimeout(150); //Remember this determines (time)*manifest.canvas for the /manifest servlet and transcription interface.
                conn.connect();
                return conn.getInputStream();
             }

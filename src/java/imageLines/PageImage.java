@@ -113,15 +113,16 @@ public class PageImage extends HttpServlet {
              if (folioParam != null) {
                 Folio f = new Folio(parseInt(folioParam));
                 FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
-                Dimension storedDims = null;
+                Dimension storedDims = getCachedImageDimensions(f.getFolioNumber());
                 if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-                    storedDims = getCachedImageDimensions(f.getFolioNumber());
                     if(null == storedDims || storedDims.height <=0) { //There was no imagecache entry or a bad one we can't use
-                    // System.out.println("Need to resolve image headers for dimensions");
-                        storedDims = f.resolveImageForDimensions(); //Resolve the image headers and get the image dimensions
-//                        int canvasHeight = pageDim.getCanvasHeight();
-//                        int canvasWidth = pageDim.getCanvasWidth();
-//                        createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
+                        try{
+                            storedDims = f.resolveImageForDimensions(); 
+                        }
+                        catch (java.net.SocketTimeoutException e) {
+                            // There was a timeout on the Image URL.  We could not resolve the image for dimensions.
+                            response.sendError(502, "Timeout.  Could not resolve imageURL "+f.getImageURL());
+                        }
                     }
                 }
                 response.setContentType("image/jpeg");

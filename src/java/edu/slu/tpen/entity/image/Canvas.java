@@ -6,6 +6,7 @@
 package edu.slu.tpen.entity.Image;
 
 import static edu.slu.tpen.servlet.Constant.ANNOTATION_SERVER_ADDR;
+import edu.slu.tpen.transfer.JsonLDExporter;
 import static edu.slu.util.LangUtils.buildQuickMap;
 import java.awt.Dimension;
 import java.io.BufferedReader;
@@ -20,10 +21,13 @@ import java.net.URL;
 import static java.net.URLEncoder.encode;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -51,6 +55,7 @@ public class Canvas {
     private Integer width;
     private List<Image> ls_images;
     private List<OtherContent> ls_otherContent;
+    private static final Logger LOG = getLogger(JsonLDExporter.class.getName());
 
     public Canvas() {
     }
@@ -325,22 +330,21 @@ public class Canvas {
             else{
                  // @FIXME Same height and width as canvas maybe?
             }
-
             JSONObject service = new JSONObject();
             service.put("id", manifestServices.get("id"));
             service.put("type", manifestServices.get("type"));
             //body.put("service", service);
-
             annotation.put("body", body);
-
             annotation.put("target", canvasID);
             paintingAnnotations.add(annotation);
             return paintingAnnotations;
 
             } catch (Exception e)
             {
-                    System.out.println(e);
-                    return new JSONArray();
+                LOG.log(SEVERE, "Could not AnnotationPage for canvas "+f.getFolioNumber());
+                LOG.log(SEVERE, e.getMessage());
+                LOG.log(SEVERE, Arrays.toString(e.getStackTrace()));
+                return new JSONArray();
             }
     }
     

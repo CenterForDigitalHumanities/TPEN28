@@ -1451,7 +1451,7 @@ public class Folio {
                // Limit all IIIF Image API images to size 2000.  Note during the createProjectFromManifest process, this image height will be cached.
                // Note this has potential to screw up the foliodim record.  Not a good idea to do this here, the front end needs to do this.
                if(url.contains("/full/full/")){
-                   url = url.replace("/full/full/", "/full/,2000/");
+                   url = url.replace("/full/full/", "/full/,150/");
                    imageURL = new URL(url);
                }
                LOG.log(INFO, "Loading image with URL {0}", imageURL);

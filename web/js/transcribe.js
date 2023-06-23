@@ -600,6 +600,7 @@ function setTPENObjectData(data) {
     }
     else{
         clearTimeout(longLoadingProject);
+        $("#tipArea").hide();
         $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
         return false;
@@ -609,6 +610,7 @@ function setTPENObjectData(data) {
             tpen.project.tools = JSON.parse(data.projectTool);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -619,6 +621,7 @@ function setTPENObjectData(data) {
             tpen.project.userTools = JSON.parse(data.userTool);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -629,6 +632,7 @@ function setTPENObjectData(data) {
             tpen.project.user_list = JSON.parse(data.ls_u);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -639,6 +643,7 @@ function setTPENObjectData(data) {
             tpen.project.leaders = JSON.parse(data.ls_leader);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -649,6 +654,7 @@ function setTPENObjectData(data) {
             tpen.project.specialChars = JSON.parse(data.projectButtons);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -659,6 +665,7 @@ function setTPENObjectData(data) {
             tpen.project.hotkeys = JSON.parse(data.ls_hk);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -669,6 +676,7 @@ function setTPENObjectData(data) {
             tpen.project.xml = JSON.parse(data.xml);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -679,6 +687,7 @@ function setTPENObjectData(data) {
             tpen.project.permissions = JSON.parse(data.projper);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -689,6 +698,7 @@ function setTPENObjectData(data) {
             tpen.project.metadata = JSON.parse(data.metadata);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -699,6 +709,7 @@ function setTPENObjectData(data) {
             tpen.project.folios = JSON.parse(data.ls_fs);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -732,6 +743,7 @@ function setTPENObjectData(data) {
             tpen.manifest = JSON.parse(data.manifest);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -743,6 +755,7 @@ function setTPENObjectData(data) {
             tpen.user.UID = parseInt(data.cuser);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -754,6 +767,7 @@ function setTPENObjectData(data) {
             tpen.user.authorizedManuscripts = JSON.parse(data.user_mans_auth);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -865,6 +879,7 @@ function loadTranscription(pid, tool) {
                         activeProject = JSON.parse(activeProject);
                     } catch (e) {
                         clearTimeout(longLoadingProject);
+                        $("#tipArea").hide();
                         $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                         return false;
@@ -874,6 +889,7 @@ function loadTranscription(pid, tool) {
                 if (!activeProject.manifest) {
                     //The return must contain the manifest, otherwise we cannot use it
                     clearTimeout(longLoadingProject);
+                    $("#tipArea").hide();
                     $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                     $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                     return false;
@@ -927,6 +943,8 @@ function loadTranscription(pid, tool) {
                     //load Iframes after user check and project information data call
                     loadIframes();
                 } else {
+                    clearTimeout(longLoadingProject);
+                    $("#tipArea").hide();
                     $(".turnMsg").html("The Manifest associated with this Project does not contain Canvases.  Refresh the page to try again.");
                     $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                     throw new Error("This Manifest object is malformed. No canvas sequence is defined.");
@@ -1023,6 +1041,7 @@ function loadTranscription(pid, tool) {
                     $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
                 } else {
                     clearTimeout(longLoadingProject);
+                    $("#tipArea").hide();
                     $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
                     $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                 }
@@ -1037,6 +1056,7 @@ function loadTranscription(pid, tool) {
             tpen.manifest = userTranscription = JSON.parse(userTranscription);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -1119,6 +1139,7 @@ function loadTranscription(pid, tool) {
                         projectPermissions = JSON.parse(activeProject.projper);
                     } catch (e) {
                         clearTimeout(longLoadingProject);
+                        $("#tipArea").hide();
                         $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                         return false;
@@ -1215,6 +1236,7 @@ function loadTranscription(pid, tool) {
                         $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
                     } else {
                         clearTimeout(longLoadingProject);
+                        $("#tipArea").hide();
                         $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
                         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                     }

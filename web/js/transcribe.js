@@ -1603,19 +1603,22 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
                     $("#noLineWarning").hide();
                     $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
                     $("#imgTop img, #imgBottom img").css("width", "100%");
-                    $('.transcriptionImage').attr('src', "images/missingImage.png");
-                    $("#fullPageImg").attr("src", "images/missingImage.png");
-                    $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
-                    $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
+//                    $('.transcriptionImage').attr('src', "images/missingImage.png");
+//                    $("#fullPageImg").attr("src", "images/missingImage.png");
+//                    $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
+//                    $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
                     $("#imgTop").css("height", "0%");
                     $("#imgBottom img").css("top", "0px");
                     $("#imgBottom").css("height", "inherit");
                     $("#parsingButton").attr("disabled", "disabled");
                     $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
                     $("#parsingBtn").attr("disabled", "disabled");
-                    $("#transTemplateLoading").hide();
+                    //$("#transTemplateLoading").hide();
                     resetImageTools();
-                    alert("No image for this canvas or it could not be resolved.  Not drawing lines.");
+                    clearTimeout(longLoadingProject);
+                    $("#tipArea").hide();
+                    $(".turnMsg").html("No image for this canvas or it could not be resolved.  Refresh the page to try again.");
+                    $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                 };
             image2.src = "images/missingImage.png";
         };
@@ -4174,19 +4177,21 @@ function removeClosingTag(thisTag) {
 function updateClosingTags() {
     var tagIndex = 0;
     var tagFolioLocation = 0;
-    var currentLineLocation = tpen.screen.focusItem[1].index();
-    var currentFolioLocation = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
-    tpen.screen.focusItem[1].find("div.tags").each(function () {
-        tagFolioLocation = parseInt($(this).attr("data-folio"), 10);
-        tagIndex = $(".transcriptlet[lineserverid='" + $(this).attr("data-line") + "']").index();
-        if (tagFolioLocation == currentFolioLocation && tagIndex > currentLineLocation) {
-            // tag is from this page, but a later line
-            $(this).hide();
-        } else {
-            //tag is from a previous page or line
-            $(this).show();
-        }
-    });
+    if(tpen.screen.focusItem[1]){
+        var currentLineLocation = tpen.screen.focusItem[1].index();
+        var currentFolioLocation = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
+        tpen.screen.focusItem[1].find("div.tags").each(function () {
+            tagFolioLocation = parseInt($(this).attr("data-folio"), 10);
+            tagIndex = $(".transcriptlet[lineserverid='" + $(this).attr("data-line") + "']").index();
+            if (tagFolioLocation == currentFolioLocation && tagIndex > currentLineLocation) {
+                // tag is from this page, but a later line
+                $(this).hide();
+            } else {
+                //tag is from a previous page or line
+                $(this).show();
+            }
+        });
+    }
 }
 //use String[] from TagTracker.getTagsAfterFolio() to build the live tags list
 /**
@@ -4672,8 +4677,12 @@ function updateLine(line, cleanup, updateList) {
 //        }
 //    }
 //    else if (currentAnnoListID){
-    var lineID = (line != null) ? $(line).attr("lineserverid") : -1;
-    lineID = parseInt(lineID.replace("line/", "")); //TODO check this in the future to make sure you are getting the lineID and not some string here.
+    var lineID = -1
+    if(line !== undefined && $(line).attr("lineserverid") !== undefined){
+         lineID = $(line).attr("lineserverid");
+         lineID = parseInt(lineID.replace("line/", "")); //TODO check this in the future to make sure you are getting the lineID and not some string here.
+    }
+    
     if (parseInt(lineID) > 0 || $(line).attr("id") == "dummy") {
         params.push(
                 {name: "updatey", value: lineTop},

@@ -152,7 +152,9 @@ public class JsonHelper {
             annotationPage.put("items", getAnnotationLinesForAnnotationPage(projID, canvasID, f.getFolioNumber()));
             return annotationPage;
         } catch (Exception e) {
-            LOG.log(SEVERE, "Could not build page for canvas "+f.getFolioNumber());
+            LOG.log(SEVERE, "Could not build AnnotationPage for canvas "+f.getFolioNumber());
+            LOG.log(SEVERE, e.getMessage());
+            LOG.log(SEVERE, Arrays.toString(e.getStackTrace()));
             return new JSONObject();   
         }
     }
@@ -199,11 +201,12 @@ public class JsonHelper {
                         // There was a timeout on the Image URL.  We could not resolve the image for dimensions.
                         imageDims = null;
                     }
+                    catch (Exception e) {
+                        // There was an unexpected issue resolving the image
+                        imageDims = null;
+                    }
                     if(null == imageDims || imageDims.height <=0 || imageDims.width <= 0){
-                        // Upstream when this empty object is detected, it is omitted from the Canvas' Array
-                        LOG.log(WARNING, "Image height and/or width was 0.  The Canvas for Folio "+f.getFolioNumber()+" will be strange.  See image at "+f.getImageURL());
-                        //return new LinkedHashMap<>();
-                        
+                        LOG.log(WARNING, "Image height and/or width was 0.  The Canvas for Folio "+f.getFolioNumber()+" will be strange.  See image at "+f.getImageURL());                        
                         //A hack to avoid errors involved with 0
                         imageDims = new Dimension(1,1);
                     }
@@ -242,7 +245,7 @@ public class JsonHelper {
             annotationPage.put("items", getPaintingAnnotations(projID, f, imageDims, pageDim));
             return annotationPage;
         } catch (Exception e) {
-            LOG.log(SEVERE, "Could not build page for canvas "+f.getFolioNumber());
+            LOG.log(SEVERE, "Could not build AnnotationPage for canvas "+f.getFolioNumber());
             LOG.log(SEVERE, e.getMessage());
             LOG.log(SEVERE, Arrays.toString(e.getStackTrace()));
             return new LinkedHashMap<>();
@@ -290,10 +293,13 @@ public class JsonHelper {
                         // There was a timeout on the Image URL.  We could not resolve the image for dimensions.
                         imageDims = null;
                     }
+                    catch (Exception e) {
+                        // There was an unexpected issue resolving the image
+                        imageDims = null;
+                    }
                     if(null == imageDims || imageDims.height <=0 || imageDims.width <= 0){
                         // Upstream when this empty object is detected, it is omitted from the Canvas' Array
                         LOG.log(WARNING, "Image height and/or width was 0.  The Canvas for Folio "+f.getFolioNumber()+" will be strange.  See image at "+f.getImageURL());
-                        //return new LinkedHashMap<>();
                         
                         //A hack to avoid errors involved with 0
                         imageDims = new Dimension(1,1);
@@ -364,7 +370,7 @@ public class JsonHelper {
         }
         catch(Exception e){
             Map<String, Object> empty = new LinkedHashMap<>();
-            LOG.log(SEVERE, "Could not build page for canvas" + f.getFolioNumber());
+            LOG.log(SEVERE, "Could not buildPage for canvas" + f.getFolioNumber());
             LOG.log(SEVERE, e.getMessage());
             LOG.log(SEVERE, Arrays.toString(e.getStackTrace()));
             return empty;
@@ -404,10 +410,11 @@ public class JsonHelper {
                         // There was a timeout on the Image URL.  We could not resolve the image for dimensions.
                         imageDims = null;
                     }
+                    catch (Exception e) {
+                        // There was an unexpected issue resolving the image
+                        imageDims = null;
+                    }
                     if(null == imageDims || imageDims.height <=0 || imageDims.width <= 0){
-                        // Upstream when this empty object is detected, it is omitted from the Canvas' Array
-                        LOG.log(WARNING, "Image height and/or width was 0.  The Canvas for Folio "+f.getFolioNumber()+" will be strange.  See image at " + f.getImageURL());
-                        //return new JSONObject();
                         //A hack to avoid errors involved with 0
                         imageDims = new Dimension(1,1);
                     }
@@ -492,7 +499,9 @@ public class JsonHelper {
         }
         catch (Exception e)
         {
-            LOG.log(SEVERE, "Could not build page for canvas "+f.getFolioNumber());
+            LOG.log(SEVERE, "Could not buildPage for canvas "+f.getFolioNumber());
+            LOG.log(SEVERE, e.getMessage());
+            LOG.log(SEVERE, Arrays.toString(e.getStackTrace()));
             return new JSONObject();
         }
     }

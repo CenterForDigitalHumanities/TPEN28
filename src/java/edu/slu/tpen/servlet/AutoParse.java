@@ -95,6 +95,11 @@ public class AutoParse extends HttpServlet {
                                 LOG.log(WARNING, "AutoParser could not load image {0}.  A column of 1000, 1000 will be used.", f.getImageURL());
                                 imageDims = new Dimension(1000, 1000);
                             }
+                            catch (Exception e) {
+                                // There was an unexpected issue resolving the image
+                                LOG.log(WARNING, "AutoParser could not load image {0}.  A column of 1000, 1000 will be used.", f.getImageURL());
+                                imageDims = new Dimension(1000, 1000);
+                            }
                         }
                     }
                     int width = imageDims.width;
@@ -149,6 +154,11 @@ public class AutoParse extends HttpServlet {
                                 // We can't parse it, the canvas will be 1000, 1000.  Lets make a column that is 1000, 1000.
                                 //response.sendError(502, "Timeout.  Could not resolve imageURL to AutoParse "+f.getImageURL());
                                 LOG.log(WARNING, "AutoParser could not load image {0}.  A single column of 1000, 1000 will be used.", f.getImageURL());
+                                imageDims = new Dimension(1000, 1000);
+                            }
+                            catch (Exception e) {
+                                // There was an unexpected issue resolving the image
+                                LOG.log(WARNING, "AutoParser could not load image {0}.  A column of 1000, 1000 will be used.", f.getImageURL());
                                 imageDims = new Dimension(1000, 1000);
                             }
                         }

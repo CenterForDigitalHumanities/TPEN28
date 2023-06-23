@@ -128,6 +128,10 @@ public class PageImage extends HttpServlet {
                             // There is no image to return.  Send an error.
                             response.sendError(502, "Timeout.  Could not resolve imageURL "+f.getImageURL());
                         }
+                        catch (Exception e) {
+                            // There was an unexpected issue resolving the image
+                            response.sendError(500, "Could not resolve imageURL "+f.getImageURL());
+                        }
                     }
                 }
                 response.setContentType("image/jpeg");

@@ -1021,6 +1021,7 @@ public class Folio {
       }
       catch(Exception e){
           LOG.log(SEVERE, "AutoParse: failure");
+          LOG.log(SEVERE, e.getMessage());
           LOG.log(SEVERE, Arrays.toString(e.getStackTrace()));
       }
    }
@@ -1411,7 +1412,7 @@ public class Folio {
       String archName = getArchive();
       Archive a = new Archive(archName);
       String path;
-      LOG.log(INFO, "Connection method for {0} was {1}", new Object[] { archName, a.getConnectionMethod() });
+      //LOG.log(INFO, "Connection method for {0} was {1}", new Object[] { archName, a.getConnectionMethod() });
 
       switch (a.getConnectionMethod()) {
          case local:

@@ -127,7 +127,6 @@ public class ProjectServlet extends HttpServlet {
                                      }
                                      catch(Exception e){
                                          LOG.log(WARNING, "Last-Modified Header could not be formed for project {0}", proj.getProjectID());
-                                         LOG.log(WARNING, Arrays.toString(e.getStackTrace()));
                                      }
                                      resp.setHeader("Access-Control-Allow-Headers", "*");
                                      resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.

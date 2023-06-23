@@ -927,7 +927,9 @@ function loadTranscription(pid, tool) {
                     //load Iframes after user check and project information data call
                     loadIframes();
                 } else {
-                    throw new Error("This transcription object is malformed. No canvas sequence is defined.");
+                    $(".turnMsg").html("The Manifest associated with this Project does not contain Canvases.  Refresh the page to try again.");
+                    $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                    throw new Error("This Manifest object is malformed. No canvas sequence is defined.");
                 }
                 $.each(tpen.project.userTools, function (index, tool) {
                     var label;

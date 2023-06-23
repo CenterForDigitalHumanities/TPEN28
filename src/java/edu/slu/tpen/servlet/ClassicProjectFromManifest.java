@@ -190,7 +190,6 @@ public class ClassicProjectFromManifest extends HttpServlet {
                                     // If there wasn't a service, then we are stuck with whatever the original image URL was.  Let's hope it resolves to an image.
                                 }
                                 LOG.log(INFO, "Create Folio entry for image: {0}", imageName);
-                                // TODO actually check if this image resolves by doing a HEAD request?  If so, use it.  If not, skip it.
                                 int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName, archive, mss.getID(), 0);
                                 ls_folios_keys.add(folioKey);
                                 folioscreated++;

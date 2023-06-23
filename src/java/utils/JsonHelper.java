@@ -152,7 +152,7 @@ public class JsonHelper {
             annotationPage.put("items", getAnnotationLinesForAnnotationPage(projID, canvasID, f.getFolioNumber()));
             return annotationPage;
         } catch (Exception e) {
-            LOG.log(SEVERE, null, "Could not build page for canvas "+f.getFolioNumber());
+            LOG.log(SEVERE, "Could not build page for canvas "+f.getFolioNumber());
             return new JSONObject();   
         }
     }
@@ -365,6 +365,7 @@ public class JsonHelper {
         catch(Exception e){
             Map<String, Object> empty = new LinkedHashMap<>();
             LOG.log(SEVERE, "Could not build page for canvas" + f.getFolioNumber());
+            LOG.log(SEVERE, e.getMessage());
             LOG.log(SEVERE, Arrays.toString(e.getStackTrace()));
             return empty;
         }
@@ -491,7 +492,7 @@ public class JsonHelper {
         }
         catch (Exception e)
         {
-            LOG.log(SEVERE, null, "Could not build page for canvas "+f.getFolioNumber());
+            LOG.log(SEVERE, "Could not build page for canvas "+f.getFolioNumber());
             return new JSONObject();
         }
     }

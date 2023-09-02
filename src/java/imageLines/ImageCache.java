@@ -91,7 +91,7 @@ public class ImageCache {
     * @throws SQLException
     * @throws IOException
     */
-   public static Dimension getImageDimension(int folioNum) throws SQLException, IOException {
+   public static Dimension getCachedImageDimensions(int folioNum) throws SQLException, IOException {
       try (Connection j = getConnection()) {
          try (PreparedStatement ps = j.prepareStatement("select image from imagecache where folio = ?")) {
             ps.setInt(1, folioNum);

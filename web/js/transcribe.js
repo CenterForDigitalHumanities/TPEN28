@@ -600,6 +600,7 @@ function setTPENObjectData(data) {
     }
     else{
         clearTimeout(longLoadingProject);
+        $("#tipArea").hide();
         $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
         return false;
@@ -609,6 +610,7 @@ function setTPENObjectData(data) {
             tpen.project.tools = JSON.parse(data.projectTool);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -619,6 +621,7 @@ function setTPENObjectData(data) {
             tpen.project.userTools = JSON.parse(data.userTool);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -629,6 +632,7 @@ function setTPENObjectData(data) {
             tpen.project.user_list = JSON.parse(data.ls_u);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -639,6 +643,7 @@ function setTPENObjectData(data) {
             tpen.project.leaders = JSON.parse(data.ls_leader);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -649,6 +654,7 @@ function setTPENObjectData(data) {
             tpen.project.specialChars = JSON.parse(data.projectButtons);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -659,6 +665,7 @@ function setTPENObjectData(data) {
             tpen.project.hotkeys = JSON.parse(data.ls_hk);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -669,6 +676,7 @@ function setTPENObjectData(data) {
             tpen.project.xml = JSON.parse(data.xml);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -679,6 +687,7 @@ function setTPENObjectData(data) {
             tpen.project.permissions = JSON.parse(data.projper);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -689,6 +698,7 @@ function setTPENObjectData(data) {
             tpen.project.metadata = JSON.parse(data.metadata);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -699,6 +709,7 @@ function setTPENObjectData(data) {
             tpen.project.folios = JSON.parse(data.ls_fs);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -732,6 +743,7 @@ function setTPENObjectData(data) {
             tpen.manifest = JSON.parse(data.manifest);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -743,6 +755,7 @@ function setTPENObjectData(data) {
             tpen.user.UID = parseInt(data.cuser);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -754,6 +767,7 @@ function setTPENObjectData(data) {
             tpen.user.authorizedManuscripts = JSON.parse(data.user_mans_auth);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -865,6 +879,7 @@ function loadTranscription(pid, tool) {
                         activeProject = JSON.parse(activeProject);
                     } catch (e) {
                         clearTimeout(longLoadingProject);
+                        $("#tipArea").hide();
                         $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                         return false;
@@ -874,6 +889,7 @@ function loadTranscription(pid, tool) {
                 if (!activeProject.manifest) {
                     //The return must contain the manifest, otherwise we cannot use it
                     clearTimeout(longLoadingProject);
+                    $("#tipArea").hide();
                     $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                     $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                     return false;
@@ -927,7 +943,11 @@ function loadTranscription(pid, tool) {
                     //load Iframes after user check and project information data call
                     loadIframes();
                 } else {
-                    throw new Error("This transcription object is malformed. No canvas sequence is defined.");
+                    clearTimeout(longLoadingProject);
+                    $("#tipArea").hide();
+                    $(".turnMsg").html("The Manifest associated with this Project does not contain Canvases.  Refresh the page to try again.");
+                    $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
+                    throw new Error("This Manifest object is malformed. No canvas sequence is defined.");
                 }
                 $.each(tpen.project.userTools, function (index, tool) {
                     var label;
@@ -1021,6 +1041,7 @@ function loadTranscription(pid, tool) {
                     $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
                 } else {
                     clearTimeout(longLoadingProject);
+                    $("#tipArea").hide();
                     $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
                     $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                 }
@@ -1035,6 +1056,7 @@ function loadTranscription(pid, tool) {
             tpen.manifest = userTranscription = JSON.parse(userTranscription);
         } catch (e) {
             clearTimeout(longLoadingProject);
+            $("#tipArea").hide();
             $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
             $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
             return false;
@@ -1117,6 +1139,7 @@ function loadTranscription(pid, tool) {
                         projectPermissions = JSON.parse(activeProject.projper);
                     } catch (e) {
                         clearTimeout(longLoadingProject);
+                        $("#tipArea").hide();
                         $(".turnMsg").html("Sorry! We had trouble fetching this project.  Refresh the page to try again.");
                         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                         return false;
@@ -1213,6 +1236,7 @@ function loadTranscription(pid, tool) {
                         $(".transLoader").find("img").attr("src", "../TPEN/images/missingImage.png");
                     } else {
                         clearTimeout(longLoadingProject);
+                        $("#tipArea").hide();
                         $(".turnMsg").html("This project appears to be broken.  Refresh the page to try to load it again or contact your T&#8209;PEN admin.");
                         $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                     }
@@ -1480,6 +1504,7 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
     //Move up all image annos
     var cnt = -1;
     if (canvasObj.images[0].resource['@id'] !== undefined && canvasObj.images[0].resource['@id'] !== "") { //Only one image
+        
         var image = new Image();
         //Check to see if we can use a preloaded image...
         if (tpen.project.folioImages.length > 0 && tpen.project.folioImages[tpen.screen.currentFolio] !== undefined && tpen.project.folioImages[tpen.screen.currentFolio].image !== null) {
@@ -1496,8 +1521,8 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
             $(".turnMsg").html("Please wait while we load the transcription interface.");
             clearTimeout(longLoadingProject);
             if (permissionForImage) {
-                $('.transcriptionImage').attr('src', canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,''));
-                $("#fullPageImg").attr("src", canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,''));
+                $('.transcriptionImage').attr('src', image.src);
+                $("#fullPageImg").attr("src", image.src);
                 populateCompareSplit(tpen.screen.currentFolio);
                 populateHistorySplit(tpen.screen.currentFolio);
                 //FIXME At some point I had to track tpen.screen.originalCanvasHeight differently.  Not sure that
@@ -1559,7 +1584,17 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
                 image2.src = "images/missingImage.png";
             }
             scrubNav();
-        }; // the extra () ensures this only runs once.
+        }
+        // Don't ask for the highest resolution IIIF Image API images -- takes too long to load.
+        let origImageURL = canvasObj.images[0].resource['@id'].replace('amp;', '').replace(/^https?:/,'')
+        let reasonableImageURL = origImageURL
+        if(origImageURL.includes("/full/full/")){
+            reasonableImageURL = origImageURL.replace("/full/full/", "/full/,2000/")
+        }
+        else if(origImageURL.includes("/full/max/")){
+            reasonableImageURL = origImageURL.replace("/full/max/", "/full/,2000/")
+        }
+        image.src = reasonableImageURL
         image.onerror = function() {
             var image2 = new Image();
             // image2.src = "";
@@ -1568,19 +1603,22 @@ function loadTranscriptionCanvas(canvasObj, parsing, tool, restore) {
                     $("#noLineWarning").hide();
                     $("#imgTop, #imgTop img, #imgBottom img, #imgBottom, #transcriptionCanvas").css("height", "auto");
                     $("#imgTop img, #imgBottom img").css("width", "100%");
-                    $('.transcriptionImage').attr('src', "images/missingImage.png");
-                    $("#fullPageImg").attr("src", "images/missingImage.png");
-                    $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
-                    $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
+//                    $('.transcriptionImage').attr('src', "images/missingImage.png");
+//                    $("#fullPageImg").attr("src", "images/missingImage.png");
+//                    $('#transcriptionCanvas').css('height', $("#imgTop img").height() + "px");
+//                    $('.lineColIndicatorArea').css('height', $("#imgTop img").height() + "px");
                     $("#imgTop").css("height", "0%");
                     $("#imgBottom img").css("top", "0px");
                     $("#imgBottom").css("height", "inherit");
                     $("#parsingButton").attr("disabled", "disabled");
                     $("#parseOptions").find(".tpenButton").attr("disabled", "disabled");
                     $("#parsingBtn").attr("disabled", "disabled");
-                    $("#transTemplateLoading").hide();
+                    //$("#transTemplateLoading").hide();
                     resetImageTools();
-                    alert("No image for this canvas or it could not be resolved.  Not drawing lines.");
+                    clearTimeout(longLoadingProject);
+                    $("#tipArea").hide();
+                    $(".turnMsg").html("No image for this canvas or it could not be resolved.  Refresh the page to try again.");
+                    $(".transLoader").find("img").attr("src", "../TPEN/images/BrokenBook01.jpg");
                 };
             image2.src = "images/missingImage.png";
         };
@@ -2190,9 +2228,10 @@ function drawLinesDesignateColumns(lines, tool, RTL, shift, preview, restore) {
         //$("#transcriptletArea").append(newAnno);
         $(".xmlClosingTags").before(newAnno);
         var hiResBackground = ""
-        if ($(".transcriptionImage").attr("src").includes('/full/full')) {
-            hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
-        }
+//        if ($(".transcriptionImage").attr("src").includes('/full/full')) {
+//           // causing double vision 
+//           hiResBackground = "background-image:url(" + $(".transcriptionImage").attr("src").replace('/full/full', `/pct:${left},${top},${width},${height}/full`).replace(/^https?:/,'') + ");";
+//        }
 
         var lineColumnIndicator = $("<div onclick='loadTranscriptlet(" + counter + ");' pair='" + col + "" + colCounter
                 + "' lineserverid='" + lineID + "' lineID='" + counter + "' class='lineColIndicator' style='left:"
@@ -4138,19 +4177,21 @@ function removeClosingTag(thisTag) {
 function updateClosingTags() {
     var tagIndex = 0;
     var tagFolioLocation = 0;
-    var currentLineLocation = tpen.screen.focusItem[1].index();
-    var currentFolioLocation = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
-    tpen.screen.focusItem[1].find("div.tags").each(function () {
-        tagFolioLocation = parseInt($(this).attr("data-folio"), 10);
-        tagIndex = $(".transcriptlet[lineserverid='" + $(this).attr("data-line") + "']").index();
-        if (tagFolioLocation == currentFolioLocation && tagIndex > currentLineLocation) {
-            // tag is from this page, but a later line
-            $(this).hide();
-        } else {
-            //tag is from a previous page or line
-            $(this).show();
-        }
-    });
+    if(tpen.screen.focusItem[1]){
+        var currentLineLocation = tpen.screen.focusItem[1].index();
+        var currentFolioLocation = tpen.project.folios[tpen.screen.currentFolio].folioNumber;
+        tpen.screen.focusItem[1].find("div.tags").each(function () {
+            tagFolioLocation = parseInt($(this).attr("data-folio"), 10);
+            tagIndex = $(".transcriptlet[lineserverid='" + $(this).attr("data-line") + "']").index();
+            if (tagFolioLocation == currentFolioLocation && tagIndex > currentLineLocation) {
+                // tag is from this page, but a later line
+                $(this).hide();
+            } else {
+                //tag is from a previous page or line
+                $(this).show();
+            }
+        });
+    }
 }
 //use String[] from TagTracker.getTagsAfterFolio() to build the live tags list
 /**
@@ -4636,8 +4677,12 @@ function updateLine(line, cleanup, updateList) {
 //        }
 //    }
 //    else if (currentAnnoListID){
-    var lineID = (line != null) ? $(line).attr("lineserverid") : -1;
-    lineID = parseInt(lineID.replace("line/", "")); //TODO check this in the future to make sure you are getting the lineID and not some string here.
+    var lineID = -1
+    if(line !== undefined && $(line).attr("lineserverid") !== undefined){
+         lineID = $(line).attr("lineserverid");
+         lineID = parseInt(lineID.replace("line/", "")); //TODO check this in the future to make sure you are getting the lineID and not some string here.
+    }
+    
     if (parseInt(lineID) > 0 || $(line).attr("id") == "dummy") {
         params.push(
                 {name: "updatey", value: lineTop},

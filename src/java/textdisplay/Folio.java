@@ -345,6 +345,28 @@ public class Folio {
          //j.close();
       }
    }
+    public static boolean exists(int folioID) throws SQLException{
+       boolean result = false;
+       String query = "select * from folios where pageNumber=?";
+       Connection j = null;
+       PreparedStatement ps = null;
+      try {
+         j = getConnection();
+         ps = j.prepareStatement(query);
+         ps.setInt(1,folioID);
+         ResultSet rs = ps.executeQuery();
+         if (rs.next()) {
+            int ans = rs.getInt(11);
+            if(ans>0){
+                return true;
+            }
+         }
+      } finally {
+            closeDBConnection(j);
+            closePreparedStatement(ps);
+      }
+       return result;
+   }
 
    /**
     * Find the folio number of the folio with the given canvas
@@ -648,7 +670,7 @@ public class Folio {
                } else {
                         // If it's a reference to the T-PEN pageImage servlet, point it at the
                         // current T-PEN instance.
-                        url = url.replace("http://t-pen.org/TPEN/", getRbTok("SERVERURL"));
+                        url = url.replace("https://t-pen.org/TPEN/", getRbTok("SERVERURL"));
                 }
             }
          }
@@ -955,23 +977,16 @@ public class Folio {
    private void detect() throws SQLException, IOException {
       try (InputStream stream = getUncachedImageStream(false)) {
           //TODO: FIXME: cubap bhaberbe  This image is broken or Null in some way and breaks when we pass it in to stuff down the line.  
-         //System.out.println("I am in detect() in FOlio.java  What is stream?");
-        // System.out.println(stream);
          BufferedImage img = read(stream);
          stream.close();
-        // System.out.println("DID I GET BUFFERED IMG +++++++++++");
-        // System.out.println(img);
-//         writeDebugImage(img, "uncached");
-
-         // @TODO:  BOZO:  What do do when the BI is null?
-
          int height = 1000;
-         //System.out.println("going into imageProcessor.  Did i get height: "+height);
+         LOG.log(INFO, "going into imageProcessor.  Did i get height: {0}", height);
          imageProcessor proc = new imageProcessor(img, height);
          List<line> detectedLines;
          // There is an aggressive Line detection method that attempts to extract characters from the binarized image
          // and use those pasted on a fresh canvas to detect lines. It is only used for a few specific image hosts
          // and has some error catching for a stack overflow that has occured before due to a recursive call within
+         LOG.log(INFO, "AutoParse: Detect Lines");
          if (getArchive().equals("CEEC") || getArchive().equals("ecodices") || new Manuscript(folioNumber).getCity().equals("Baltimore")) {
             try {
                 //System.out.println("Now I need to detect lines on the processed image");
@@ -1001,7 +1016,13 @@ public class Folio {
                top = l.getStartVertical();
             }
          }
+         LOG.log(INFO, "AutoParse: Commit {0} Lines", detectedLines.size());
          commit();
+      }
+      catch(Exception e){
+          LOG.log(SEVERE, "AutoParse: failure");
+          LOG.log(SEVERE, e.getMessage());
+          LOG.log(SEVERE, Arrays.toString(e.getStackTrace()));
       }
    }
 
@@ -1208,10 +1229,10 @@ public class Folio {
       Property rdfType = model.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
       Resource viewFrag = model.createResource("http://www.openannotation.org/ns/Annotation");
       Property isPartOf = model.createProperty("http://purl.org/dc/terms/", "isPartOf");
-      Resource fullImage = model.createResource("http://t-pen.org/views/" + this.folioNumber);
+      Resource fullImage = model.createResource("https://t-pen.org/views/" + this.folioNumber);
 
       // String[] uuids = new String[transcriptions.length];
-      Resource thisPage = model.createResource("http://t-pen.org/transcription/" + this.folioNumber);
+      Resource thisPage = model.createResource("https://t-pen.org/transcription/" + this.folioNumber);
       // Resource[] items = new Resource[uuids.length];
       Property aggregates = model.createProperty("http://www.openarchives.org/ore/terms/", "aggregates");
 //      for (int i = 0; i < transcriptions.length; i++) {
@@ -1231,7 +1252,7 @@ public class Folio {
 //         /**
 //          * @TODO change to use Transcription.getProjectTranscriptions
 //          */
-//         Resource thisLine = model.createResource("http://t-pen.org/transcription/" + this.folioNumber + "/" + i);
+//         Resource thisLine = model.createResource("https://t-pen.org/transcription/" + this.folioNumber + "/" + i);
 //         String xyhw = "#xywh=" + transcriptions[i].getX() + ", " + transcriptions[i].getY() + ", " + transcriptions[i].getHeight() + ", " + transcriptions[i].getWidth();
 //         Resource image = model.createResource(f.getArchiveLink());//+"#xyhw="+xyhw);
 //         Literal text = model.createLiteral(transcriptions[i].getText());
@@ -1269,6 +1290,7 @@ public class Folio {
          }
       }
    }
+
 
    /**
     * @deprecated use Manuscript.getNextFolio instead Return the Folio number of the next page, a value of
@@ -1390,7 +1412,7 @@ public class Folio {
       String archName = getArchive();
       Archive a = new Archive(archName);
       String path;
-		LOG.log(INFO, "Connection method for {0} was {1}", new Object[] { archName, a.getConnectionMethod() });
+      //LOG.log(INFO, "Connection method for {0} was {1}", new Object[] { archName, a.getConnectionMethod() });
 
       switch (a.getConnectionMethod()) {
          case local:
@@ -1427,8 +1449,16 @@ public class Folio {
                return new FileInputStream(path);
             } 
             else if (!onlyLocal) {
-                LOG.log(INFO, "Loading image with URL {0}", imageURL);
-               HttpURLConnection conn = (HttpURLConnection)imageURL.openConnection();
+               // Limit all IIIF Image API images to size 2000.  Note during the createProjectFromManifest process, this image height will be cached.
+               // Note this has potential to screw up the foliodim record.  Not a good idea to do this here, the front end needs to do this.
+               if(url.contains("/full/full/")){
+                   url = url.replace("/full/full/", "/full/,150/");
+                   imageURL = new URL(url);
+               }
+               
+               LOG.log(INFO, "Loading image with URL {0}", imageURL);
+               HttpURLConnection conn = (HttpURLConnection) imageURL.openConnection();
+               conn.setConnectTimeout(150); //Remember this determines (time)*manifest.canvas for the /manifest servlet and transcription interface.
                conn.connect();
                return conn.getInputStream();
             }
@@ -1456,7 +1486,7 @@ public class Folio {
     * associated with the document (code yet to be written).
     * @return the dimensions, or <code>null</code> if the archive type is unknown
     */
-   public Dimension getImageDimension() throws IOException, SQLException {
+   public Dimension resolveImageForDimensions() throws IOException, SQLException {
       try (InputStream stream = getImageStream(false)) {
          return getJPEGDimension(stream);
       }
@@ -1529,7 +1559,6 @@ public class Folio {
             }
          }
        }
-        out.println("Report Generated!");
        return responseString;       
    }
 

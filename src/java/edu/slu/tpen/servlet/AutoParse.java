@@ -6,6 +6,8 @@
 package edu.slu.tpen.servlet;
 
 import static edu.slu.util.LangUtils.buildQuickMap;
+import static imageLines.ImageCache.getCachedImageDimensions;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
@@ -19,6 +21,7 @@ import java.util.Stack;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
+import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,6 +34,7 @@ import net.sf.json.JSONObject;
 import static org.owasp.esapi.ESAPI.encoder;
 import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
+import textdisplay.FolioDims;
 import textdisplay.Line;
 import textdisplay.Project;
 import textdisplay.Transcription;
@@ -65,15 +69,41 @@ public class AutoParse extends HttpServlet {
         //create Transcription(s) based on Project settings and Line parsing
         Project p = new Project(projectID);
         Project.imageBounding preferedBounding = p.getProjectImageBounding();
+        FolioDims pageDim = null;
+        Dimension imageDims = null;       
         if (null != preferedBounding) {
             switch (preferedBounding) {
                 case fullimage: {
                     //find the image size, add 1 Transcription to cover the entirety, and done
                     int height = 1000;
                     Folio f = new Folio(folioNumber, true);
-                    int width = f.getImageDimension().width;
+                    pageDim = new FolioDims(f.getFolioNumber(), true);
+                    imageDims = getCachedImageDimensions(f.getFolioNumber());
+                    if(null == imageDims || imageDims.height <=0 || imageDims.width <=0) { //There was no imagecache entry or a bad one we can't use
+                        // System.out.println("Need to resolve image headers for dimensions");
+                        if (pageDim != null && pageDim.getImageHeight() > 1 && pageDim.getImageWidth() > 1) { //There was no foliodim entry
+                            imageDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
+                        }
+                        else{
+                            try{
+                                imageDims = f.resolveImageForDimensions(); 
+                            }
+                            catch (java.net.SocketTimeoutException e) {
+                                // There was a timeout on the Image URL.  We could not resolve the image for dimensions.
+                                // We can't parse it, the canvas will be 1000, 1000.  Lets make a column that is 1000, 1000.
+                                //response.sendError(502, "Timeout.  Could not resolve imageURL to AutoParse "+f.getImageURL());
+                                LOG.log(WARNING, "AutoParser could not load image {0}.  A column of 1000, 1000 will be used.", f.getImageURL());
+                                imageDims = new Dimension(1000, 1000);
+                            }
+                            catch (Exception e) {
+                                // There was an unexpected issue resolving the image
+                                LOG.log(WARNING, "AutoParser could not load image {0}.  A column of 1000, 1000 will be used.", f.getImageURL());
+                                imageDims = new Dimension(1000, 1000);
+                            }
+                        }
+                    }
+                    int width = imageDims.width;
                     Rectangle r = new Rectangle(0, 0, height, width);
-                    // TODO: create an agent for the application here, loaded from version.properties.
                     Transcription t = new Transcription(0, projectID, folioNumber, "", "", r);
                     orderedTranscriptions.add(t);
                     break;
@@ -102,20 +132,48 @@ public class AutoParse extends HttpServlet {
                 }
                 case lines: {
                     Folio f = new Folio(folioNumber, true);
-                    Line[] lines = f.getlines();
+                    pageDim = new FolioDims(f.getFolioNumber(), true);
+                    imageDims = getCachedImageDimensions(f.getFolioNumber());
+                    int height = 1000;
+                    int width = 1000;
+                    Line[] lines = {};
+                    Rectangle r = null;
+                    Transcription fullPage = null;
+                    if(null == imageDims || imageDims.height <=0 || imageDims.width<=0) { //There was no imagecache entry or a bad one we can't use
+                        // System.out.println("Need to resolve image headers for dimensions");
+                        if (pageDim != null && pageDim.getImageHeight() > 1 && pageDim.getImageWidth() > 1) { //There was no foliodim entry
+                            imageDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
+                        }
+                        else{
+                            try{
+                                imageDims = f.resolveImageForDimensions(); 
+                                lines = f.getlines();
+                            }
+                            catch (java.net.SocketTimeoutException e) {
+                                // There was a timeout on the Image URL.  We could not resolve the image for dimensions.
+                                // We can't parse it, the canvas will be 1000, 1000.  Lets make a column that is 1000, 1000.
+                                //response.sendError(502, "Timeout.  Could not resolve imageURL to AutoParse "+f.getImageURL());
+                                LOG.log(WARNING, "AutoParser could not load image {0}.  A single column of 1000, 1000 will be used.", f.getImageURL());
+                                imageDims = new Dimension(1000, 1000);
+                            }
+                            catch (Exception e) {
+                                // There was an unexpected issue resolving the image
+                                LOG.log(WARNING, "AutoParser could not load image {0}.  A column of 1000, 1000 will be used.", f.getImageURL());
+                                imageDims = new Dimension(1000, 1000);
+                            }
+                        }
+                    }
                     //make a Transcription for each Line
                     for (Line line : lines) {
-                        Rectangle r = new Rectangle(line.getLeft(), line.getTop(), line.getHeight(), line.getWidth());
+                        r = new Rectangle(line.getLeft(), line.getTop(), line.getHeight(), line.getWidth());
                         // TODO: create an agent for the application here, loaded from version.properties.
                         Transcription t = new Transcription(0, projectID, folioNumber, "", "", r);
                         orderedTranscriptions.add(t);
                     }
                     if (orderedTranscriptions.isEmpty()) {
-                        int height = 1000;
-                        int width = f.getImageDimension().width;
-                        Rectangle r = new Rectangle(0, 0, height, width);
-                        // TODO: create an agent for the application here, loaded from version.properties.
-                        Transcription fullPage = new Transcription(0, projectID, folioNumber, "", "", r);
+                        width = imageDims.width;
+                        r = new Rectangle(0, 0, height, width);
+                        fullPage = new Transcription(0, projectID, folioNumber, "", "", r);
                         orderedTranscriptions.add(fullPage);
                     }
                     break;
@@ -206,5 +264,7 @@ public class AutoParse extends HttpServlet {
     public String getServletInfo() {
         return "Supply a projectID and a folioNumber to fire the auto parser on.  Return the lines created by the process as a stringified JSON sc:AnnotationList";
     }
+    
+    private static final Logger LOG = getLogger(Folio.class.getName());
 
 }

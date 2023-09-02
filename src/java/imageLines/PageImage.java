@@ -17,6 +17,8 @@
 
 package imageLines;
 
+import static imageLines.ImageCache.getCachedImageDimensions;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,6 +30,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import textdisplay.Folio;
+import textdisplay.FolioDims;
 
 /**
  *
@@ -52,11 +55,12 @@ public class PageImage extends HttpServlet {
             BufferedImage img = f.loadLocalImage();
             if (img != null) {
                response.setContentType("image/jpeg");
+               response.setHeader("Access-Control-Allow-Origin", "*");
                response.setHeader("Access-Control-Allow-Headers", "*");
                response.setHeader("Access-Control-Allow-Methods", "GET");
                response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                response.setHeader("Cache-Control", "max-age=31536000, must-revalidate"); //This is immutable (or at least there is no plan for it to change).  Let it be fresh for a year.
-                    write(img, "jpg", os);
+               write(img, "jpg", os);
             } else {
                response.sendError(400, "Unknown image archive");
             }
@@ -64,9 +68,92 @@ public class PageImage extends HttpServlet {
             response.sendError(400, "Missing \"folio=\" parameter");
          }
       } catch(SQLException e) {
-         response.sendError(503);
+          System.out.println(e);
+         response.sendError(503, e.getMessage());
+      } catch(Error err){
+          System.out.println(err);
+          response.sendError(500, err.getMessage());
       }
    } 
+   
+    /**
+     * Handles the HTTP <code>OPTIONS</code> preflight method.
+     * Pre-flight support.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        //These headers must be present to pass browser preflight for CORS
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Allow-Methods", "*");
+        response.setHeader("Access-Control-Max-Age", "600"); //Cache preflight responses for 10 minutes.
+        response.setStatus(200);
+    }
+    
+    /**
+     * Handles the HTTP <code>HEAD</code> preflight method.
+     * Pre-flight support.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doHead(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+            try (OutputStream os = response.getOutputStream()) {
+             String folioParam = request.getParameter("folio");
+             if (folioParam != null) {
+                Folio f = new Folio(parseInt(folioParam));
+                FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
+                Dimension imageDims = getCachedImageDimensions(f.getFolioNumber());
+               if(null == imageDims || imageDims.height <=0 || imageDims.width <=0) { //There was no imagecache entry or a bad one we can't use
+                    // System.out.println("Need to resolve image headers for dimensions");
+                    if (pageDim != null && pageDim.getImageHeight() > 0 && pageDim.getImageWidth() > 0) { //There was no foliodim entry
+                        imageDims = new Dimension(pageDim.getImageWidth(), pageDim.getImageHeight());
+                    }
+                    else{
+                        try{
+                            imageDims = f.resolveImageForDimensions(); 
+                        }
+                        catch (java.net.SocketTimeoutException e) {
+                            // There was a timeout on the Image URL.  We could not resolve the image for dimensions.
+                            // There is no image to return.  Send an error.
+                            response.sendError(502, "Timeout.  Could not resolve imageURL "+f.getImageURL());
+                        }
+                        catch (Exception e) {
+                            // There was an unexpected issue resolving the image
+                            response.sendError(500, "Could not resolve imageURL "+f.getImageURL());
+                        }
+                    }
+                }
+                response.setContentType("image/jpeg");
+                response.setHeader("Width", imageDims.getWidth()+"");
+                response.setHeader("Height", imageDims.getHeight()+"");
+                response.setHeader("Access-Control-Allow-Origin", "*");
+                response.setHeader("Access-Control-Allow-Headers", "*");
+                response.setHeader("Access-Control-Allow-Methods", "HEAD");
+                response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+                response.setHeader("Cache-Control", "max-age=31536000, must-revalidate"); //This is immutable (or at least there is no plan for it to change).  Let it be fresh for a year.
+                response.setStatus(200);
+             } else {
+                response.sendError(400, "Missing \"folio=\" parameter");
+             }
+          } catch(SQLException e) {
+              System.out.println(e);
+             response.sendError(503, "SQL ERRROR");
+          } catch (Error err){
+              System.out.println(err);
+            response.sendError(500, err.getMessage());
+          }
+    }
 
    /** 
     * Returns a short description of the servlet.

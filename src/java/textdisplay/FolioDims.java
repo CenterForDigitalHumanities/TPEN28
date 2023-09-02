@@ -10,6 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.util.logging.Level.SEVERE;
+import java.util.logging.Logger;
+import static java.util.logging.Logger.getLogger;
 import static textdisplay.DatabaseWrapper.closeDBConnection;
 import static textdisplay.DatabaseWrapper.closePreparedStatement;
 import static textdisplay.DatabaseWrapper.getConnection;
@@ -126,6 +129,30 @@ public class FolioDims {
         }
     }
     
+    public static void updateFolioDimsRecord(int imagew, int imageh, int canvasw, int canvash, int folioID) throws SQLException{
+        Connection j = null;
+        PreparedStatement stmt = null;
+        try {
+           String query = "update foliodim set imagewidth=?, imageheight=?, canvaswidth=?, canvasheight=? where folioID=? ";
+           j = getConnection();
+           stmt = j.prepareStatement(query);
+           stmt.setInt(1, imagew);
+           stmt.setInt(2, imageh);
+           stmt.setInt(3, canvasw);
+           stmt.setInt(4, canvash);
+           stmt.setInt(5, folioID);
+           stmt.execute();
+        } 
+        catch(Exception e){
+            LOG.log(SEVERE, "Could not update foliodim for folio "+folioID);
+            throw e;
+        }
+        finally {
+            closeDBConnection(j);
+            closePreparedStatement(stmt);
+        }
+    }
+    
     /*
       Create a new FolioDims record in SQL with a given width, height and folioID.  Return the ID generated.  
     */
@@ -212,5 +239,5 @@ public class FolioDims {
         canvaswidth = cwidth;
     }
     
-       
+    private static final Logger LOG = getLogger(FolioDims.class.getName());   
 }

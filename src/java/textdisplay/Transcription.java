@@ -725,7 +725,7 @@ public class Transcription {
         final Property contentChars = model.createProperty("http://www.w3.org/2008/content#", "rest");
         final Property encoding = model.createProperty("http://www.w3.org/2008/content#", "characterEncoding");
         Resource item;
-        item = model.createResource("http://t-pen.org/transcriptions/" + this.lineID);
+        item = model.createResource("https://t-pen.org/transcriptions/" + this.lineID);
         final Property rdfType = model.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "type");
         final Resource thisLine = model.createResource("urn:uuid:" + randomUUID().toString());
         final Property stringContent = model.createProperty("http://www.w3.org/2008/content#ContentAsText");

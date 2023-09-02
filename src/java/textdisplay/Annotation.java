@@ -312,6 +312,7 @@ PreparedStatement ps=null;
         while(rs.next())
         {
             Annotation a=new Annotation(rs.getInt("id"));
+            System.out.println(a);
             tmp.push(a);
         }
         toret=new Annotation[tmp.size()];

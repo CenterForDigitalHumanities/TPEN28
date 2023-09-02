@@ -13,16 +13,10 @@
  * permissions and limitations under the License.
  */
 package edu.slu.tpen.transfer;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static edu.slu.tpen.entity.Image.Canvas.getLinesForProject;
-import static edu.slu.util.LangUtils.buildQuickMap;
-import static imageLines.ImageCache.getImageDimension;
-import java.awt.Dimension;
+import static utils.JsonHelper.buildNoneLanguageMap;     
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import static java.lang.String.format;
 import static java.lang.System.out;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -30,17 +24,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import static java.util.logging.Level.INFO;
-import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import textdisplay.Folio;
 import static textdisplay.Folio.getRbTok;
-import textdisplay.FolioDims;
-import static textdisplay.FolioDims.createFolioDimsRecord;
 import static textdisplay.Metadata.getMetadataAsJSON;
 import textdisplay.Project;
 import user.User;
+import static utils.JsonHelper.*;
 
 /**
  * Class which manages serialisation to JSON-LD. Builds a Map containing the
@@ -50,73 +44,151 @@ import user.User;
  */
 public class JsonLDExporter {
 
+   
    /**
     * Holds data which will be serialised to JSON.
     */
    Map<String, Object> manifestData;
+   /*
+   A seperate constructor that still takes Project and User, but with the includement of Profile
+   we are able to distinguish which constructor to use by searching the url and if finding presi 3 would send it to them
+   But if we are unable to determine what version the User request, we will send presi 2
+   Values for profile: "v3, iiif/v3, version3, ... etc..."
+   */
+public JsonLDExporter(Project proj, User u, String profile) throws SQLException, IOException
+{   
+       Folio[] folios = proj.getFolios();
+       int projID = proj.getProjectID();
+       String projName = getRbTok("SERVERURL") + "manifest/"+projID;
+       if (profile.contains("v3")){
+            manifestData = new LinkedHashMap<>();
+            manifestData.put("@context", "http://iiif.io/api/presentation/3/context.json");
+            // Fix value of context
+            manifestData.put("id", projName + "/manifest.json");
+            manifestData.put("type", "Manifest");
+            // Not preferred value
+            //Remember that this is a Metadata title, not project name...
+            manifestData.put("label",buildNoneLanguageMap(proj.getProjectName()));
+            manifestData.put("metadata", getMetadataAsJSON(projID, profile));
+            //Map<String, Object> services = JsonHelper.buildServices();
+            //manifestData.put("services", new Object[] { services });
+            JSONArray canvases = new JSONArray(); 
+            JSONArray thumbnail = new JSONArray();
+            JSONObject thumbObj = new JSONObject();
+            
+            /**
+             * Default the thumbnail for this Manifest to the first folios image
+             */
+            Folio thumbFolio = folios[0];
+            String imageURL = thumbFolio.getImageURL();
+            if (imageURL.startsWith("/")) {
+                imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), thumbFolio.getFolioNumber());
+            }
+            thumbObj.accumulate("id", imageURL);
+            thumbObj.accumulate("type", "Image");
+            thumbObj.accumulate("format", "image/jpeg");
+            //thumbObj.accumulate("width", 300);
+            //thumbObj.accumulate("height", 200);
+            thumbnail.add(thumbObj);
+            manifestData.put("thumbnail", thumbnail);            
+            for (Folio f : folios) {
+                //Map<String, Object> page = buildPage(proj.getProjectID(), projName, f, u);
+                JSONObject page = buildPage(proj.getProjectID(), f, u, "v3");
+                if(!page.isEmpty()){
+                    canvases.add(page);
+                }
+                else{
+                    LOG.log(WARNING, "Omitting canvas from folio "+f.getFolioNumber()+".  Check folio URL " + f.getImageURL());
+                }
+            }
+            manifestData.put("items", canvases);
+            manifestData.put("annotations", new JSONArray());
+       }
+         
+}
 
    /**
     * Populate a map which will contain all the relevant project information.
     *
     * @param proj the project to be exported.
+     * @param u  
     * @throws SQLException
+     * @throws IOException <--ß
     */
    public JsonLDExporter(Project proj, User u) throws SQLException, IOException {
-      Folio[] folios = proj.getFolios();
-      int projID = proj.getProjectID();
-      try {
-          //System.out.println("Export project "+projID);
-         String projName = getRbTok("SERVERURL") + "manifest/"+projID;
-         manifestData = new LinkedHashMap<>();
-         manifestData.put("@context", "http://www.shared-canvas.org/ns/context.json");
-         manifestData.put("@id", projName + "/manifest.json");
-         manifestData.put("@type", "sc:Manifest");
-         //Remember that this is a Metadata title, not project name...
-         manifestData.put("label", proj.getProjectName());
-         manifestData.put("metadata", getMetadataAsJSON(projID));
-
-           Map<String, Object> service = new LinkedHashMap<>();
-         service.put("@context", "http://iiif.io/api/auth/1/context.json");
-         service.put("@id","https://t-pen.org/TPEN/login.jsp");
-         service.put("profile", "http://iiif.io/api/auth/1/login");
-         service.put("label", "T-PEN Login");
-         service.put("header", "Login for image access");
-         service.put("description", "Agreement requires an open T-PEN session to view images");
-         service.put("confirmLabel", "Login");
-         service.put("failureHeader", "T-PEN Login Failed");
-         service.put("failureDescription", "<a href=\"https://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
-        Map<String, Object> logout = new LinkedHashMap<>();
-         logout.put("@id", "https://t-pen.org/TPEN/login.jsp");
-         logout.put("profile", "http://iiif.io/api/auth/1/logout");
-         logout.put("label", "End T-PEN Session");
-        service.put("service",new Object[] { logout });
-
-         manifestData.put("service",new Object[] { service });
-      
-         
-         Map<String, Object> pages = new LinkedHashMap<>();
-         pages.put("@id", getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
-         pages.put("@type", "sc:Sequence");
-         pages.put("label", "Current Page Order");
-
-         List<Map<String, Object>> pageList = new ArrayList<>();
-         //System.out.println("I found "+folios.length+" pages");
-         int index = 0;
-         for (Folio f : folios) {
-             index++;
-             //System.out.println("Build page "+index);
-            pageList.add(buildPage(proj.getProjectID(), projName, f, u));
-         }
-         //System.out.println("Put all canvas together");
-         pages.put("canvases", pageList);
-         manifestData.put("sequences", new Object[] { pages });
-      } 
-      catch (UnsupportedEncodingException ignored) {
-      }
+       Folio[] folios = proj.getFolios(); //System.out.println("Put all canvas together");
+       int projID = proj.getProjectID();
+       String projName = getRbTok("SERVERURL") + "manifest/"+projID;
+       manifestData = new LinkedHashMap<>();
+       manifestData.put("@context", "http://iiif.io/api/presentation/2/context.json");
+       manifestData.put("@id", projName + "/manifest.json");
+       manifestData.put("@type", "sc:Manifest");
+       //Remember that this is a Metadata title, not project name...
+       manifestData.put("label", proj.getProjectName());
+       manifestData.put("metadata", getMetadataAsJSON(projID));
+       /**
+        * Default the thumbnail for this Manifest to the first folios image
+        */
+       Folio thumbFolio = folios[0];
+       JSONObject thumbObj = new JSONObject();
+       String imageURL = thumbFolio.getImageURL();
+       if (imageURL.startsWith("/")) {
+           imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), thumbFolio.getFolioNumber());
+       }
+       thumbObj.accumulate("@id", imageURL);
+       thumbObj.accumulate("@type", "dctypes:Image");
+       thumbObj.accumulate("format", "image/jpeg");
+       //thumbObj.accumulate("width", 300);
+       //thumbObj.accumulate("height", 200);
+       Map<String, Object> service = new LinkedHashMap<>();
+       service.put("@context", "http://iiif.io/api/auth/1/context.json");
+       service.put("@id","https://t-pen.org/TPEN/login.jsp");
+       service.put("profile", "http://iiif.io/api/auth/1/login");
+       service.put("label", "T-PEN Login");
+       service.put("header", "Login for image access");
+       service.put("description", "Agreement requires an open T-PEN session to view images");
+       service.put("confirmLabel", "Login");
+       service.put("failureHeader", "T-PEN Login Failed");
+       service.put("failureDescription", "<a href=\"https://t-pen.org/TPEN/about.jsp\">Read Agreement</a>");
+       Map<String, Object> logout = new LinkedHashMap<>();
+       logout.put("@id", "https://t-pen.org/TPEN/login.jsp");
+       logout.put("profile", "http://iiif.io/api/auth/1/logout");
+       logout.put("label", "End T-PEN Session");
+       service.put("service",new Object[] { logout });
+       //manifestData.put("service",new Object[] { service });
+       Map<String, Object> pages = new LinkedHashMap<>();
+       pages.put("@id", getRbTok("SERVERURL")+"manifest/"+projID + "/sequence/normal");
+       pages.put("@type", "sc:Sequence");
+       pages.put("label", "Current Page Order");
+       List<Map<String, Object>> pageList = new ArrayList<>();
+       //System.out.println("I found "+folios.length+" pages");
+       int index = 0;
+       for (Folio f : folios) {
+           index++;
+           //System.out.println("Build page "+index);
+           Map<String, Object> page = buildPage(proj.getProjectID(), f, u);
+           if(!page.isEmpty()){
+               pageList.add(page);
+           }
+           else{
+               LOG.log(WARNING, "Omitting canvas from folio "+f.getFolioNumber()+".  Check folio URL "+ f.getImageURL());
+           }
+       }
+       //System.out.println("Put all canvas together");
+       pages.put("canvases", pageList);
+       manifestData.put("sequences", new Object[] { pages });
    }
 
    public String export() throws JsonProcessingException {
-        out.println("Send out manifest");
+      if(manifestData.containsKey("@id")){
+          LOG.log(INFO, "Send out manifest {0}", manifestData.get("@id"));
+      }
+      else if (manifestData.containsKey("id")){
+          LOG.log(INFO, "Send out manifest {0}", manifestData.get("id"));
+      }
+      else{
+          LOG.log(INFO, "Send out manifest");
+      }
       ObjectMapper mapper = new ObjectMapper();
       return mapper.writer().withDefaultPrettyPrinter().writeValueAsString(manifestData);
    }
@@ -129,82 +201,6 @@ public class JsonLDExporter {
     * @return a map containing the relevant info, suitable for Jackson
     * serialisation
     */
-    private Map<String, Object> buildPage(int projID, String projName, Folio f, User u) throws SQLException, IOException {
-      
-        try{
-            String canvasID = getRbTok("SERVERURL")+"canvas/"+f.getFolioNumber();
-            FolioDims pageDim = new FolioDims(f.getFolioNumber(), true);
-            Dimension storedDims = null;
-
-            JSONArray otherContent;
-            if (pageDim.getImageHeight() <= 0) { //There was no foliodim entry
-               storedDims = getImageDimension(f.getFolioNumber());
-               if(null == storedDims || storedDims.height <=0){ //There was no imagecache entry or a bad one we can't use
-                  // System.out.println("Need to resolve image headers for dimensions");
-                  storedDims = f.getImageDimension(); //Resolve the image headers and get the image dimensions
-               }
-            }
-
-            LOG.log(INFO, "pageDim={0}", pageDim);
-            Map<String, Object> result = new LinkedHashMap<>();
-            result.put("@id", canvasID);
-            result.put("@type", "sc:Canvas");
-            result.put("label", f.getPageName());
-            int canvasHeight = pageDim.getCanvasHeight();
-            int canvasWidth = pageDim.getCanvasWidth();
-            if (storedDims != null) {//Then we were able to resolve image headers and we have good values to run this code block
-                  if(storedDims.height > 0){//The image header resolved to 0, so actually we have bad values.
-                      if(pageDim.getImageHeight() <= 0){ //There was no foliodim entry, so make one.
-                          //generate canvas values for foliodim
-                          canvasHeight = 1000;
-                          canvasWidth = storedDims.width * canvasHeight / storedDims.height; 
-                          //System.out.println("Need to make folio dims record");
-                          createFolioDimsRecord(storedDims.width, storedDims.height, canvasWidth, canvasHeight, f.getFolioNumber());
-                      }
-                  }
-                  else{ //We were unable to resolve the image or for some reason it is 0, we must continue forward with values of 0
-                      canvasHeight = 0;
-                      canvasWidth = 0;
-                  }
-            }
-            else{ //define a 0, 0 storedDims
-                storedDims = new Dimension(0,0);
-            }
-            result.put("width", canvasWidth);
-            result.put("height", canvasHeight);
-            List<Object> images = new ArrayList<>();
-            Map<String, Object> imageAnnot = new LinkedHashMap<>();
-            imageAnnot.put("@type", "oa:Annotation");
-            imageAnnot.put("motivation", "sc:painting");
-            String imageURL = f.getImageURL();
-            if (imageURL.startsWith("/")) {
-                imageURL = String.format("%spageImage?folio=%s",getRbTok("SERVERURL"), f.getFolioNumber());
-            }
-            Map<String, Object> imageResource = buildQuickMap("@id", imageURL, "@type", "dctypes:Image", "format", "image/jpeg");
-
-            if (storedDims.height > 0) { //We could ignore this and put the 0's into the image annotation
-                //doing this check will return invalid images because we will not include height and width of 0.
-               imageResource.put("height", storedDims.height ); 
-               imageResource.put("width", storedDims.width ); 
-            }
-            imageAnnot.put("resource", imageResource);
-            imageAnnot.put("on", canvasID);
-            images.add(imageAnnot);
-            //If this list was somehow stored in the SQL DB, we could skip calling to the store every time.
-            //System.out.println("Get otherContent");
-            //System.out.println(projID + "  " + canvasID + "  " + f.getFolioNumber() + "  " + u.getUID());
-            otherContent = getLinesForProject(projID, canvasID, f.getFolioNumber(), u.getUID()); //Can be an empty array now.
-            //System.out.println("Finalize result");
-            result.put("otherContent", otherContent);
-            result.put("images", images);
-            //System.out.println("Return");
-            return result;
-        }
-        catch(Exception e){
-            Map<String, Object> empty = new LinkedHashMap<>();
-            LOG.log(SEVERE, null, "Could not build page for canvas/"+f.getFolioNumber());
-            return empty;
-        }
-   }
+    
    private static final Logger LOG = getLogger(JsonLDExporter.class.getName());
 }

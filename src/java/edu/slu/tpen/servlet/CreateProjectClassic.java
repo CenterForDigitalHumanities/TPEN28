@@ -36,7 +36,7 @@ public class CreateProjectClassic extends HttpServlet {
 
     public String createProject(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException, SQLException {
-        int UID = 0;
+        int UID;
         try {
             UID = parseInt(request.getSession().getAttribute("UID").toString());
             if (UID < 1) {
@@ -45,45 +45,55 @@ public class CreateProjectClassic extends HttpServlet {
         } catch (NumberFormatException e) {
             throw new ServletException("User Session is unrecognizable.");
         }
-        int projectID = 0;
-        textdisplay.Project thisProject = null;
-        if (request.getParameter("ms") != null) {
-            textdisplay.Manuscript mss = new textdisplay.Manuscript(parseInt(request.getParameter("ms")), true);
-            int[] msIDs = new int[0];
-            User u = new User(UID);
-            textdisplay.Project[] p = u.getUserProjects();
-            msIDs = new int[p.length];
-            for (int i = 0; i < p.length; i++) {
-                try {
-                    msIDs[i] = new textdisplay.Manuscript(p[i].firstPage()).getID();
-                } catch (Exception e) {
-                    msIDs[i] = -1;
-                }
-            }
-            for (int l = 0; l < msIDs.length; l++) {
-                if (msIDs[l] == mss.getID()) {
-                    projectID = p[l].getProjectID();
-                    thisProject = p[l];
-                }
-            }
-            if (projectID < 1) {
-                String tmpProjName = mss.getShelfMark() + " project";
-                if (request.getParameter("title") != null) {
-                    tmpProjName = org.owasp.encoder.Encode.forHtml(request.getParameter("title"));
-                }
-                try (Connection conn = getDBConnection()) {
-                    conn.setAutoCommit(false);
-                    Group newgroup = new Group(conn, tmpProjName, UID);
-                    Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
-                    newProject.setFolios(conn, mss.getFolios());
-                    newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + mss.getShelfMark(), UID);
-                    thisProject = newProject;
-                    projectID = thisProject.getProjectID();
-                    newProject.importData(UID);
-                    conn.commit();
-                }
+
+        if (request.getParameter("ms") == null) {
+            throw new ServletException("No manuscript ID provided.");
+        }
+
+        textdisplay.Manuscript mss = new textdisplay.Manuscript(parseInt(request.getParameter("ms")), true);
+        int[] msIDs = new int[0];
+        User u = new User(UID);
+        textdisplay.Project[] p = u.getUserProjects();
+        msIDs = new int[p.length];
+        for (int i = 0; i < p.length; i++) {
+            try {
+                msIDs[i] = new textdisplay.Manuscript(p[i].firstPage()).getID();
+            } catch (Exception e) {
+                msIDs[i] = -1;
             }
         }
+
+        int projectID = 0;
+        textdisplay.Project thisProject = null;
+        for (int l = 0; l < msIDs.length; l++) {
+            if (msIDs[l] == mss.getID()) {
+                projectID = p[l].getProjectID();
+                thisProject = p[l];
+                break;
+            }
+        }
+
+        if (projectID > 0) {
+            return "" + projectID;
+        }
+
+        String tmpProjName = mss.getShelfMark() + " project";
+        if (request.getParameter("title") != null) {
+            tmpProjName = org.owasp.encoder.Encode.forHtml(request.getParameter("title"));
+        }
+
+        try (Connection conn = getDBConnection()) {
+            conn.setAutoCommit(false);
+            Group newgroup = new Group(conn, tmpProjName, UID);
+            Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
+            newProject.setFolios(conn, mss.getFolios());
+            newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + mss.getShelfMark(), UID);
+            thisProject = newProject;
+            projectID = thisProject.getProjectID();
+            newProject.importData(UID);
+            conn.commit();
+        }
+
         return "" + projectID;
     }
 }

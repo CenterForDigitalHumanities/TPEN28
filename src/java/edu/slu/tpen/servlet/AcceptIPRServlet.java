@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 import static net.sf.json.JSONObject.fromObject;
 import user.User;
+import org.owasp.encoder.Encode;
 
 /**
  *
@@ -35,7 +36,7 @@ public class AcceptIPRServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String content = request.getParameter("content");
+        String content = Encode.forHtml(request.getParameter("content"));
         JSONObject params = fromObject(content);
         User user = null;
         int folioNum = params.getInt("folio");

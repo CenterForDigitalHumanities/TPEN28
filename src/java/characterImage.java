@@ -67,8 +67,8 @@ public class characterImage extends HttpServlet {
         int blobIdentifier;
 
         try {
-            blobIdentifier = parseInt(request.getParameter("blob"));
-            pageIdentifier = request.getParameter("page");
+            blobIdentifier = parseInt(request.getParameter("blob").replaceAll("[^\\d]", ""));
+            pageIdentifier = request.getParameter("page").replaceAll("[^\\w]", "");
         } catch (NumberFormatException | NullPointerException e) {
             return;
         }

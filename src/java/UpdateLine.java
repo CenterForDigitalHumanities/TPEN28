@@ -52,7 +52,7 @@ public class UpdateLine extends HttpServlet {
                 response.sendError(SC_BAD_REQUEST);
             }
             else{
-                String text = request.getParameter("text");
+                String text = encoder().encodeForHTML(request.getParameter("text"));
                 String comment = "";
                 int projectID = parseInt(request.getParameter("projectID"));
                 int uid = parseInt(session.getAttribute("UID").toString());
@@ -60,7 +60,7 @@ public class UpdateLine extends HttpServlet {
                 try{
                     Project thisProject = new Project(projectID);
                     if (request.getParameter("comment") != null) {
-                        comment = request.getParameter("comment");
+                        comment = encoder().encodeForHTML(request.getParameter("comment"));
                     }
                     if (line == null) {
                         if (request.getParameter("projectID") != null) {

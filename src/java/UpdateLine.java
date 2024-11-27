@@ -6,6 +6,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import textdisplay.Project;
+import textdisplay.Transcription;
+import user.Group;
+
 import static java.lang.Integer.parseInt;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Logger.getLogger;
@@ -13,9 +17,6 @@ import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static org.owasp.esapi.ESAPI.encoder;
-import textdisplay.Project;
-import textdisplay.Transcription;
-import user.Group;
 
 /**
  *
@@ -36,21 +37,21 @@ public class UpdateLine extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             HttpSession session = request.getSession();
             if (session.getAttribute("UID") == null) {
-                response.sendError(SC_FORBIDDEN);
+                response.sendError(SC_FORBIDDEN, "User not logged in.");
                 return;
             }
             if (request.getParameter("text") == null) {
-                getLogger(UpdateLine.class.getName()).log(SEVERE, null, "'text' was not provided.");
-                response.sendError(SC_BAD_REQUEST);
+                getLogger(UpdateLine.class.getName()).log(SEVERE, "'text' was not provided.");
+                response.sendError(SC_BAD_REQUEST, "'text' parameter is missing.");
                 return;
             }
             if (request.getParameter("projectID") == null) {
-                getLogger(UpdateLine.class.getName()).log(SEVERE, null, "'projectID' was not provided.");
-                response.sendError(SC_BAD_REQUEST);
+                getLogger(UpdateLine.class.getName()).log(SEVERE, "'projectID' was not provided.");
+                response.sendError(SC_BAD_REQUEST, "'projectID' parameter is missing.");
                 return;
             }
 
-            String text = encoder().encodeForHTML(request.getParameter("text"));
+            String text = request.getParameter("text");
             String comment = "";
             int projectID = parseInt(request.getParameter("projectID"));
             int uid = parseInt(session.getAttribute("UID").toString());
@@ -59,22 +60,24 @@ public class UpdateLine extends HttpServlet {
             try {
                 Project thisProject = new Project(projectID);
                 if (request.getParameter("comment") != null) {
-                    comment = encoder().encodeForHTML(request.getParameter("comment"));
-                }
-                if (line == null) {
-                    if (new Group(thisProject.getGroupID()).isMember(uid)) {
+                    if (line == null) {
+                        if (!new Group(thisProject.getGroupID()).isMember(uid)) {
+                            response.sendError(SC_FORBIDDEN, "User is not a member of the project group.");
+                            return;
+                        }
                         thisProject.setLinebreakText(text);
-                    }
-                } else {
-                    if (new Group(thisProject.getGroupID()).isMember(uid)) {
+                        out.print(encoder().decodeForHTML(thisProject.getLinebreakText()));
+                    } else {
+                        if (!new Group(thisProject.getGroupID()).isMember(uid)) {
+                            response.sendError(SC_FORBIDDEN, "User is not a member of the project group.");
+                            return;
+                        }
                         Transcription t = new Transcription(line);
                         t.archive(); //create an archived version before making changes
                         t.setText(text);
                         t.setComment(comment);
                         t.setCreator(uid);
-                        out.print(encoder().decodeForHTML(new Transcription(line).getText()));
-                    } else {
-                        response.sendError(SC_FORBIDDEN);
+                        out.print(encoder().decodeForHTML(t.getText()));
                     }
                 }
             } catch (SQLException e) {
@@ -107,8 +110,7 @@ public class UpdateLine extends HttpServlet {
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws ServletException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

@@ -1,22 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 import java.io.IOException;
 import java.io.PrintWriter;
-import static java.lang.Integer.parseInt;
 import java.sql.SQLException;
-import static java.util.logging.Level.SEVERE;
-import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import static java.lang.Integer.parseInt;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-import javax.servlet.http.HttpSession;
 import static org.owasp.esapi.ESAPI.encoder;
 import textdisplay.Project;
 import textdisplay.Transcription;
@@ -42,33 +37,35 @@ public class UpdateLine extends HttpServlet {
             HttpSession session = request.getSession();
             if (session.getAttribute("UID") == null) {
                 response.sendError(SC_FORBIDDEN);
+                return;
             }
-            else if (request.getParameter("text") == null) {
+            if (request.getParameter("text") == null) {
                 getLogger(UpdateLine.class.getName()).log(SEVERE, null, "'text' was not provided.");
                 response.sendError(SC_BAD_REQUEST);
+                return;
             }
-            else if (request.getParameter("projectID") == null) {
+            if (request.getParameter("projectID") == null) {
                 getLogger(UpdateLine.class.getName()).log(SEVERE, null, "'projectID' was not provided.");
                 response.sendError(SC_BAD_REQUEST);
+                return;
             }
-            else{
-                String text = encoder().encodeForHTML(request.getParameter("text"));
-                String comment = "";
-                int projectID = parseInt(request.getParameter("projectID"));
-                int uid = parseInt(session.getAttribute("UID").toString());
-                String line = request.getParameter("line");
-                try{
-                    Project thisProject = new Project(projectID);
-                    if (request.getParameter("comment") != null) {
-                        comment = encoder().encodeForHTML(request.getParameter("comment"));
+
+            String text = encoder().encodeForHTML(request.getParameter("text"));
+            String comment = "";
+            int projectID = parseInt(request.getParameter("projectID"));
+            int uid = parseInt(session.getAttribute("UID").toString());
+            String line = request.getParameter("line");
+
+            try {
+                Project thisProject = new Project(projectID);
+                if (request.getParameter("comment") != null) {
+                    comment = encoder().encodeForHTML(request.getParameter("comment"));
+                }
+                if (line == null) {
+                    if (new Group(thisProject.getGroupID()).isMember(uid)) {
+                        thisProject.setLinebreakText(text);
                     }
-                    if (line == null) {
-                        if (request.getParameter("projectID") != null) {
-                            if (new Group(thisProject.getGroupID()).isMember(uid)) {
-                                thisProject.setLinebreakText(text);
-                            }
-                        }
-                    }
+                } else {
                     if (new Group(thisProject.getGroupID()).isMember(uid)) {
                         Transcription t = new Transcription(line);
                         t.archive(); //create an archived version before making changes
@@ -76,19 +73,16 @@ public class UpdateLine extends HttpServlet {
                         t.setComment(comment);
                         t.setCreator(uid);
                         out.print(encoder().decodeForHTML(new Transcription(line).getText()));
-                    } 
-                    else {
+                    } else {
                         response.sendError(SC_FORBIDDEN);
                     }
                 }
-                catch(SQLException e){
-                    System.out.println("UpdateLine SQL failure");
-                    getLogger(UpdateLine.class.getName()).log(SEVERE, null, e);
-                    response.sendError(SC_INTERNAL_SERVER_ERROR);
-                }
+            } catch (SQLException e) {
+                System.out.println("UpdateLine SQL failure");
+                getLogger(UpdateLine.class.getName()).log(SEVERE, null, e);
+                response.sendError(SC_INTERNAL_SERVER_ERROR);
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             System.out.println("UpdateLine generic failure");
             getLogger(UpdateLine.class.getName()).log(SEVERE, null, e);
             response.sendError(SC_INTERNAL_SERVER_ERROR);

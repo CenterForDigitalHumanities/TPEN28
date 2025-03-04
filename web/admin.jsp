@@ -11,7 +11,7 @@
 <%@page import="utils.Tool"%>
 <%@page import="utils.UserTool"%>
 <%@page import="textdisplay.Manuscript" %>
-<%@page import="textdisplay.Folio.getRbTok" %>
+<%@page import="static textdisplay.Folio.getRbTok" %>
 <%@page import="textdisplay.CityMap" %>
 <%@page import ="user.*"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>

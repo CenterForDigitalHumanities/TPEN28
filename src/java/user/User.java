@@ -719,7 +719,7 @@ public class User {
             textdisplay.mailer m = new textdisplay.mailer();
             String body = "Your TPEN password has been reset to " + newPass + "\n"
                     + "You may head to https://t-pen.org and change it.";
-            m.sendMail(getRbTok("EMAILSERVER"), "TPEN@t-pen.org", this.Uname, "TPEN Password Reset", body);
+            m.sendMail(getRbTok("EMAILSERVER"), getRbTok("NOTIFICATIONEMAIL"), this.Uname, "TPEN Password Reset", body);
         }
         return newPass;
     }

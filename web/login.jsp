@@ -22,10 +22,17 @@
                 String jsessionId = session.getId();
 
                     if (redirectUri != null && !redirectUri.isEmpty()) {
-                        String separator = redirectUri.contains("?") ? "&" : "?";
+                        URI uri = new URI(redirectUri);
+                        String redirectDomain = uri.getHost();
                         String encodedSessionId = URLEncoder.encode(jsessionId, "UTF-8");
-                        String redirectWithSession = redirectUri + separator + "jsessionid=" + encodedSessionId;
-                        response.sendRedirect(redirectWithSession);
+                        Cookie sessionCookie = new Cookie("JSESSIONID", encodedSessionId);
+                        sessionCookie.setPath("/");
+                        sessionCookie.setHttpOnly(true);
+                        sessionCookie.setSecure(true);
+                        sessionCookie.setMaxAge(-1);
+                        sessionCookie.setDomain(redirectDomain);
+                        response.addCookie(sessionCookie);
+                        response.sendRedirect(redirectUri);
                         return;
                     }
                 if(request.getHeader("referer")==null || request.getHeader("referer").compareTo("")==0 || request.getHeader("referer").contains("login")){

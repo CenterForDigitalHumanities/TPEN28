@@ -20,6 +20,7 @@
                 String tmpref=request.getHeader("referer");
                 String redirectUri = request.getParameter("redirect_uri");
                 String jsessionId = session.getId();
+                String userToken = request.getParameter("userToken");
 
                     if (redirectUri != null && !redirectUri.isEmpty()) {
                         URI uri = new URI(redirectUri);
@@ -32,6 +33,17 @@
                         sessionCookie.setMaxAge(-1);
                         sessionCookie.setDomain(redirectDomain);
                         response.addCookie(sessionCookie);
+                        
+                        if (userToken != null && !userToken.isEmpty()) {
+                            Cookie tokenCookie = new Cookie("userToken", userToken);
+                            tokenCookie.setHttpOnly(true);
+                            tokenCookie.setSecure(true);
+                            tokenCookie.setPath("/");
+                            tokenCookie.setDomain(redirectDomain);
+                            tokenCookie.setMaxAge(3600);
+                            response.addCookie(tokenCookie);
+                        }
+                        
                         response.sendRedirect(redirectUri);
                         return;
                     }

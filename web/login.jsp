@@ -23,7 +23,8 @@
 
                     if (redirectUri != null && !redirectUri.isEmpty()) {
                         String separator = redirectUri.contains("?") ? "&" : "?";
-                        String redirectWithSession = redirectUri + separator + "jsessionid=" + jsessionId;
+                        String encodedSessionId = URLEncoder.encode(jsessionId, "UTF-8");
+                        String redirectWithSession = redirectUri + separator + "jsessionid=" + encodedSessionId;
                         response.sendRedirect(redirectWithSession);
                         return;
                     }

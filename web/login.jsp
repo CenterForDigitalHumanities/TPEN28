@@ -5,6 +5,7 @@
 --%>
 <%@page import ="java.sql.*"%>
 <%@page import ="user.*"%>
+<%@page import ="java.net.*, java.io.*"%>
 <%@page contentType="text/html; charset=UTF-8"  pageEncoding="UTF-8" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
@@ -16,7 +17,36 @@
                 {
                 session.setAttribute("UID", ""+thisOne.getUID());
                 String ref="";
-                String tmpref=request.getHeader("referer");               
+                String tmpref=request.getHeader("referer");
+                String redirectUri = request.getParameter("redirect_uri");
+                String jsessionId = session.getId();
+                String userToken = request.getParameter("userToken");
+
+                    if (redirectUri != null && !redirectUri.isEmpty()) {
+                        URI uri = new URI(redirectUri);
+                        String redirectDomain = uri.getHost();
+                        String encodedSessionId = URLEncoder.encode(jsessionId, "UTF-8");
+                        Cookie sessionCookie = new Cookie("JSESSIONID", encodedSessionId);
+                        sessionCookie.setPath("/");
+                        sessionCookie.setHttpOnly(true);
+                        sessionCookie.setSecure(true);
+                        sessionCookie.setMaxAge(-1);
+                        sessionCookie.setDomain(redirectDomain);
+                        response.addCookie(sessionCookie);
+                        
+                        if (userToken != null && !userToken.isEmpty()) {
+                            Cookie tokenCookie = new Cookie("userToken", userToken);
+                            tokenCookie.setHttpOnly(true);
+                            tokenCookie.setSecure(true);
+                            tokenCookie.setPath("/");
+                            tokenCookie.setDomain(redirectDomain);
+                            tokenCookie.setMaxAge(3600);
+                            response.addCookie(tokenCookie);
+                        }
+                        
+                        response.sendRedirect(redirectUri);
+                        return;
+                    }
                 if(request.getHeader("referer")==null || request.getHeader("referer").compareTo("")==0 || request.getHeader("referer").contains("login")){
                     %>
                     <script>
@@ -135,6 +165,7 @@ session.setAttribute("ref",request.getParameter("referer"));
                                 <label for="uname">Email</label><input class="text" type="text" name="uname"/><br/>
                                 <label for="password">Password</label><input  class="text" type="password" name="password"/><br/>
                             <input type="hidden" name="ref" value="<%out.print(session.getAttribute("ref"));%>"/>
+                            <input type="hidden" name="redirect_uri" value="<%= request.getParameter("redirect_uri") != null ? request.getParameter("redirect_uri") : "" %>"/>
                             <input class="ui-button ui-state-default ui-corner-all right" type="submit" title="Log In" value="Log In">
                             </fieldset>
                             </form>

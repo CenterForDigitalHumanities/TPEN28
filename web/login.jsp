@@ -44,7 +44,7 @@
                             response.addCookie(tokenCookie);
                         }
                         
-                        response.sendRedirect(redirectUri);
+                        response.sendRedirect(redirectUri+"?UID="+thisOne.getUID());
                         return;
                     }
                 if(request.getHeader("referer")==null || request.getHeader("referer").compareTo("")==0 || request.getHeader("referer").contains("login")){

@@ -43,7 +43,7 @@
                             tokenCookie.setMaxAge(3600);
                             response.addCookie(tokenCookie);
                         }
-                        
+
                         response.sendRedirect(redirectUri+"?UID="+thisOne.getUID());
                         return;
                     }

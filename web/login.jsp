@@ -31,7 +31,7 @@
                         sessionCookie.setHttpOnly(true);
                         sessionCookie.setSecure(true);
                         sessionCookie.setMaxAge(-1);
-                        sessionCookie.setDomain("t-pen.org");
+                        sessionCookie.setDomain(redirectDomain);
                         response.addCookie(sessionCookie);
                         
                         if (userToken != null && !userToken.isEmpty()) {
@@ -39,7 +39,7 @@
                             tokenCookie.setHttpOnly(true);
                             tokenCookie.setSecure(true);
                             tokenCookie.setPath("/");
-                            tokenCookie.setDomain("t-pen.org");
+                            tokenCookie.setDomain(redirectDomain);
                             tokenCookie.setMaxAge(3600);
                             response.addCookie(tokenCookie);
                         }

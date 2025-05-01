@@ -24,7 +24,19 @@
 
                     if (redirectUri != null && !redirectUri.isEmpty()) {
                         URI uri = new URI(redirectUri);
-                        String redirectDomain = uri.getHost();
+                        String redirectDomain = uri.getHost(); 
+                      
+                        if(redirectDomain.contains("t-pen.org")) {
+                            redirectDomain = "t-pen.org";
+                        }
+                        
+                        if(redirectDomain.contains("localhost")) {
+                            redirectDomain = "localhost";
+                        }
+                        
+                        System.out.println("REDIRECT HOST");
+                        System.out.println(redirectDomain);
+                        
                         String encodedSessionId = URLEncoder.encode(jsessionId, "UTF-8");
                         Cookie sessionCookie = new Cookie("JSESSIONID", encodedSessionId);
                         sessionCookie.setPath("/");

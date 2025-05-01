@@ -166,6 +166,7 @@ session.setAttribute("ref",request.getParameter("referer"));
                                 <label for="password">Password</label><input  class="text" type="password" name="password"/><br/>
                             <input type="hidden" name="ref" value="<%out.print(session.getAttribute("ref"));%>"/>
                             <input type="hidden" name="redirect_uri" value="<%= request.getParameter("redirect_uri") != null ? request.getParameter("redirect_uri") : "" %>"/>
+                            <input type="hidden" name="userToken" value="<%= request.getParameter("userToken") != null ? request.getParameter("userToken") : "" %>"/>
                             <input class="ui-button ui-state-default ui-corner-all right" type="submit" title="Log In" value="Log In">
                             </fieldset>
                             </form>

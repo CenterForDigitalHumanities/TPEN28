@@ -34,9 +34,6 @@
                             redirectDomain = "localhost";
                         }
                         
-                        System.out.println("REDIRECT HOST");
-                        System.out.println(redirectDomain);
-                        
                         String encodedSessionId = URLEncoder.encode(jsessionId, "UTF-8");
                         Cookie sessionCookie = new Cookie("JSESSIONID", encodedSessionId);
                         sessionCookie.setPath("/");

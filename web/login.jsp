@@ -24,7 +24,16 @@
 
                     if (redirectUri != null && !redirectUri.isEmpty()) {
                         URI uri = new URI(redirectUri);
-                        String redirectDomain = uri.getHost();
+                        String redirectDomain = uri.getHost(); 
+                      
+                        if(redirectDomain.contains("t-pen.org")) {
+                            redirectDomain = "t-pen.org";
+                        }
+                        
+                        if(redirectDomain.contains("localhost")) {
+                            redirectDomain = "localhost";
+                        }
+                        
                         String encodedSessionId = URLEncoder.encode(jsessionId, "UTF-8");
                         Cookie sessionCookie = new Cookie("JSESSIONID", encodedSessionId);
                         sessionCookie.setPath("/");
@@ -44,7 +53,7 @@
                             response.addCookie(tokenCookie);
                         }
                         
-                        response.sendRedirect(redirectUri);
+                        response.sendRedirect(redirectUri + "?UID=" + thisOne.getUID());
                         return;
                     }
                 if(request.getHeader("referer")==null || request.getHeader("referer").compareTo("")==0 || request.getHeader("referer").contains("login")){
@@ -166,6 +175,7 @@ session.setAttribute("ref",request.getParameter("referer"));
                                 <label for="password">Password</label><input  class="text" type="password" name="password"/><br/>
                             <input type="hidden" name="ref" value="<%out.print(session.getAttribute("ref"));%>"/>
                             <input type="hidden" name="redirect_uri" value="<%= request.getParameter("redirect_uri") != null ? request.getParameter("redirect_uri") : "" %>"/>
+                            <input type="hidden" name="userToken" value="<%= request.getParameter("userToken") != null ? request.getParameter("userToken") : "" %>"/>
                             <input class="ui-button ui-state-default ui-corner-all right" type="submit" title="Log In" value="Log In">
                             </fieldset>
                             </form>

@@ -222,8 +222,8 @@ public class GetProjectTPENServlet extends HttpServlet {
                             jsonMap.put("xml", allProjectButtons);
                             //get special characters
                             jsonMap.put("projectButtons", hk.javascriptToAddProjectButtonsRawData(projectID));
-                            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-                            response.setHeader("Access-Control-Expose-Headers", "Content-Type, Authorization"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+                            response.setHeader("Access-Control-Allow-Headers", "*");
+                            response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                             //response.setHeader("Etag", request.getContextPath() + "/getProjectTPENServlet/project/"+proj.getProjectID());
                             response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
                             response.setHeader("Access-Control-Allow-Credentials", "true");

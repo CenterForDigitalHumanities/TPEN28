@@ -20,7 +20,13 @@
                 String tmpref=request.getHeader("referer");
                 String redirectUri = request.getParameter("redirect_uri");
                 String jsessionId = session.getId();
-                String userToken = request.getParameter("userToken");
+                String userToken = null;
+                for (Cookie c : request.getCookies()) {
+                    if ("userToken".equals(c.getName())) {
+                        userToken = c.getValue();
+                        break;
+                    }
+                }
 
                     if (redirectUri != null && !redirectUri.isEmpty()) {
                         URI uri = new URI(redirectUri);

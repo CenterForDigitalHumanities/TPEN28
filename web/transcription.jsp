@@ -692,7 +692,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a64129', end
                 out.println("nextFolio = \"" + thisProject.getFollowingPage(pageno) + "\";");
             }
             if (request.getParameter("tool") != null){
-                out.println("liveTool = '"+request.getParameter("tool")+"';");
+                // XSS prevent on input
+                out.println("liveTool = '"+ESAPI.encoder().encodeForJavaScript(request.getParameter("tool"))+"';");
             }
             if (request.getParameter("compareIndex") != null){
                 out.println("compareIndex = '"+request.getParameter("compareIndex")+"';");

@@ -5,23 +5,19 @@
  */
 package edu.slu.tpen.servlet;
 
-import static edu.slu.tpen.servlet.Constant.ANNOTATION_SERVER_ADDR;
-import static edu.slu.tpen.servlet.util.CreateAnnoListUtil.createEmptyAnnoList;
-import static edu.slu.util.ServletUtils.getDBConnection;
-import static edu.slu.util.ServletUtils.getUID;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import static java.lang.Integer.parseInt;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import static java.net.URLEncoder.encode;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Logger.getLogger;
 import javax.servlet.ServletException;
@@ -30,13 +26,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import servlets.createManuscript;
 import textdisplay.Folio;
-import static textdisplay.Folio.getRbTok;
 import textdisplay.Manuscript;
 import textdisplay.Metadata;
 import textdisplay.Project;
 import user.Group;
+
+import static edu.slu.tpen.servlet.Constant.ANNOTATION_SERVER_ADDR;
+import static edu.slu.tpen.servlet.util.CreateAnnoListUtil.createEmptyAnnoList;
+import static edu.slu.util.ServletUtils.getDBConnection;
+import static edu.slu.util.ServletUtils.getUID;
+import static java.lang.Integer.parseInt;
+import static java.net.URLEncoder.encode;
+import static textdisplay.Folio.getRbTok;
 
 /**
  *
@@ -47,7 +49,7 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try (PrintWriter writer = response.getWriter()) {
-            writer.print(creatManuscriptFolioProject(request, response)); //To change body of generated methods, choose Tools | Templates.
+            writer.print(createManuscriptFolioProject(request, response)); //To change body of generated methods, choose Tools | Templates.
         } //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -67,7 +69,7 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
      * @throws javax.servlet.ServletException
      * @throws java.io.IOException
      */
-    public String creatManuscriptFolioProject(HttpServletRequest request, HttpServletResponse response)
+    public String createManuscriptFolioProject(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             //receive parameters.
@@ -104,14 +106,14 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
             array_folios = man.getFolios();
             String tmpProjName = man.getShelfMark() + " project";
             if (request.getParameter("title") != null) {
-                tmpProjName = request.getParameter("title");
+                tmpProjName = org.owasp.encoder.Encode.forHtml(request.getParameter("title"));
             }
             try (Connection conn = getDBConnection()) {
                 conn.setAutoCommit(false);
                 Group newgroup = new Group(conn, tmpProjName, UID);
                 Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
                 man.setArchive(getRbTok("SERVERURL") + "/project/" + newProject.getProjectID());
-                if (array_folios.length > 0) {
+                if (array_folios != null && array_folios.length > 0) {
                     for (Folio folio : array_folios) {
                         //This needs to be the same one the JSON Exporter creates and needs to be unique and unchangeable.
                         String canvasID_check = folio.getCanvas();
@@ -156,11 +158,10 @@ public class CreateProjectFromMSIDServlet extends HttpServlet {
                 conn.commit();
                 //String propVal = Folio.getRbTok("CREATE_PROJECT_RETURN_DOMAIN");
                 return "project/" + projectID_return; //TODO: Make this the resolvable project url?
-            }
+            Logger.getLogger(CreateProjectFromMSIDServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            getLogger(createManuscript.class.getName()).log(SEVERE, null, ex);
+            getLogger(CreateProjectFromMSIDServlet.class.getName()).log(SEVERE, null, ex);
+            return "500: Database error";
         }
-        return "500";
     }
-
 }

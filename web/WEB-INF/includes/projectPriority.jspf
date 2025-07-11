@@ -63,20 +63,30 @@ if (request.getParameter("priority")!=null){
             var url =  window.location.pathname;
             // Check for other parameters
             var append = new Array();
-            <%if(request.getParameter("p") != null) {
-                out.println("append.push('p='+"
-                        + request.getParameter("p") + ");");
-            }else if(request.getParameter("pageno") != null) {
-                out.println("append.push('p='+"
-                        + request.getParameter("pageno") + ");");
-            }else if(request.getParameter("folio") != null) {
-                out.println("append.push('p='+"
-                        + request.getParameter("folio") + ");");
-            }; 
+            <% 
+            if(request.getParameter("p") != null) {
+                try {
+                    int p = Integer.parseInt(request.getParameter("p"));
+                    out.println("append.push('p='+" + p + ");");
+                } catch (NumberFormatException e) { }
+            } else if(request.getParameter("pageno") != null) {
+                try {
+                    int pageno = Integer.parseInt(request.getParameter("pageno"));
+                    out.println("append.push('p='+" + pageno + ");");
+                } catch (NumberFormatException e) { }
+            } else if(request.getParameter("folio") != null) {
+                try {
+                    int folio = Integer.parseInt(request.getParameter("folio"));
+                    out.println("append.push('p='+" + folio + ");");
+                } catch (NumberFormatException e) { }
+            } 
             if(request.getParameter("projectID") != null) {
-                out.println("append.push('projectID='+"
-                        + request.getParameter("projectID") + ");");
-            };%> 
+                try {
+                    int projectID = Integer.parseInt(request.getParameter("projectID"));
+                    out.println("append.push('projectID='+" + projectID + ");");
+                } catch (NumberFormatException e) { }
+            }
+            %> 
             if (!isNaN($("#tabs").tabs("option","selected"))){
                 // Retain selected tab on page reload
                 append.push("selecTab="+$("#tabs").tabs("option","selected"));

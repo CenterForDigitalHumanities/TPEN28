@@ -46,7 +46,10 @@ public class CanvasServlet extends HttpServlet{
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+            resp.setHeader("Access-Control-Allow-Origin", "*");
+            resp.setHeader("Access-Control-Allow-Headers", "*");
+            resp.setHeader("Access-Control-Allow-Methods", "GET");
+            resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.    
             int folioID = 0;
             try {
                 folioID = parseInt(req.getPathInfo().substring(1).replace("/", ""));
@@ -55,8 +58,6 @@ public class CanvasServlet extends HttpServlet{
                 if (folioID > 0 && Folio.exists(folioID)) {
                     Folio f = new Folio(folioID);
                     resp.setContentType("application/json; charset=UTF-8");
-                    resp.setHeader("Access-Control-Allow-Headers", "*");
-                    resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
                     resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
                     resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
                     resp.setHeader("Expires", "0"); // Proxies.
@@ -102,6 +103,26 @@ public class CanvasServlet extends HttpServlet{
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
        doGet(req, resp);
+    }
+    
+    /**
+     * Handles the HTTP <code>OPTIONS</code> preflight method.
+     * Pre-flight support.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        //These headers must be present to pass browser preflight for CORS
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Allow-Methods", "*");
+        response.setHeader("Access-Control-Max-Age", "600"); //Cache preflight responses for 10 minutes.
+        response.setStatus(200);
     }
 
     /**

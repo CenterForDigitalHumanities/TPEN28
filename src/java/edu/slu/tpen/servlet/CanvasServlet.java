@@ -61,6 +61,7 @@ public class CanvasServlet extends HttpServlet{
                     resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
                     resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
                     resp.setHeader("Expires", "0"); // Proxies.
+                    resp.setStatus(SC_OK);
                     if ((req.getHeader("Accept") != null && req.getHeader("Accept").contains("iiif/v3")) 
                             || (req.getParameter("version") != null && req.getParameter("version").equals("3"))) {
                         
@@ -75,7 +76,6 @@ public class CanvasServlet extends HttpServlet{
                         User u = new User(0);
                         resp.getWriter().write(export(JsonHelper.buildPage(projID, f, u)));
                     }
-                    resp.setStatus(SC_OK);
                 } else {
                     getLogger(CanvasServlet.class.getName()).log(SEVERE, null, "No ID provided for canvas");
                     resp.sendError(SC_NOT_FOUND);

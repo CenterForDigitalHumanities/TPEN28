@@ -222,9 +222,12 @@ public class GetProjectTPENServlet extends HttpServlet {
                             jsonMap.put("xml", allProjectButtons);
                             //get special characters
                             jsonMap.put("projectButtons", hk.javascriptToAddProjectButtonsRawData(projectID));
-                            response.setHeader("Access-Control-Allow-Headers", "*");
-                            response.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+                            response.setHeader("Access-Control-Allow-Headers", "Etag,Location,Content-Type,Content-Length,Date,Authorization");
+                            response.setHeader("Access-Control-Expose-Headers", "Etag,Location,Content-Type,Content-Length,Date,Authorization"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+                            response.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
                             //response.setHeader("Etag", request.getContextPath() + "/getProjectTPENServlet/project/"+proj.getProjectID());
+                            response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+                            response.setHeader("Access-Control-Allow-Credentials", "true");
                             response.setHeader("Cache-Control", "max-age=15, must-revalidate");
                             try{
                                 String lastModifiedDateProj = proj.getModification().toString().replace(" ", "T");

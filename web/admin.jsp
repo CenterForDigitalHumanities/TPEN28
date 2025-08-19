@@ -11,6 +11,7 @@
 <%@page import="utils.Tool"%>
 <%@page import="utils.UserTool"%>
 <%@page import="textdisplay.Manuscript" %>
+<%@page import="static textdisplay.Folio.getRbTok" %>
 <%@page import="textdisplay.CityMap" %>
 <%@page import ="user.*"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -285,25 +286,6 @@
                             if (thisUser != null) {
                                 //String to return completion information to user on Tabs-3
                                 StringBuilder manageUserFeedback = new StringBuilder("");
-                                //a request to approve a new user, generate a password and email it to them
-                                if (request.getParameterValues("approveUser[]") != null) {
-                                    String[] approveUser = request.getParameterValues("approveUser[]");
-                                    if (thisUser.isAdmin()) {
-                                        for (int i = 0; i < approveUser.length; i++) {
-                                            user.User newUser = new user.User(Integer.parseInt(approveUser[i]));
-                                            if (newUser.requiresApproval()) {
-                                                newUser.resetPassword();
-                                                // load tools
-                                                Tool.initializeTools(newUser.getUID());
-                                                manageUserFeedback.append("<span title=' has been notified of account approval.' class='approved'><span class='left ui-icon ui-icon-check'></span>").append(newUser.getFname()).append(" ").append(newUser.getLname()).append("</span>");
-                                            } else {
-                                                //out.print("That user is not awaiting your approval!");
-                                                manageUserFeedback.append("<span title=' no longer required approval.' class='approved'><span class='left ui-icon ui-icon-check'></span>").append(newUser.getFname()).append(" ").append(newUser.getLname()).append("</span>");
-                                                return;
-                                            }
-                                        }
-                                    }
-                                }
                                 //a request to deactivate a user so they can no longer log in. Does NOT delete any associated content
                                 if (request.getParameterValues("deactivateUser[]") != null) {
                                     String[] deactivateUser = request.getParameterValues("deactivateUser[]");
@@ -384,8 +366,8 @@
                                     user.User toReset = new user.User(request.getParameter("email"));
                                     if (toReset.getUID() > 0) {
                                         if (!toReset.requiresApproval()) {
-                                            toReset.resetPassword();
-                                            out.print("<br><br><h3>Password reset!</h3><br>Please check your e-mail from TPEN@T&#8209;PEN.org for a new password.  If your e-mail does not arrive, please verify that it has not been caught by a spam filter.<br>");
+                                            toReset.resetPassword(true);
+                                            out.print("<br><br><h3>Password reset!</h3><br>Please check your e-mail from "+getRbTok("NOTIFICATIONEMAIL")+" for a new password.  If your e-mail does not arrive, please verify that it has not been caught by a spam filter.<br>");
                                         } else {
                                             out.print("This user does not exist or needs administrator approval before they can log in!");
                                             return;
@@ -571,7 +553,7 @@
                                                 var src = [
                                                     "https://maps.googleapis.com/maps/api/staticmap?",
                                                     "center=",city,
-                                                    "&markers=icon:https://www.t-pen.org/TPEN/images/quillpin.png|",city,
+                                                    "&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png|",city,
                                                     "&sensor=false&scale=1&zoom=3&visibility=simplified&maptype=terrain",
                                                     "&size=",$("#cityMap").width(),"x",$("#cityMap").height()
                                                 ].join("");
@@ -612,9 +594,9 @@
                                 <h3>Display City Map</h3>
                                 <form id="updateCityMap" class="cityMap" action="admin.jsp" method="post" onsubmit="mapFilter();">
                                     <div id="cityMapContain">
-                                        <img id="cityMap" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=3&sensor=false&scale=1&size=300x200&maptype=terrain&visibility=simplified&markers=icon:https://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis" />
+                                        <img id="cityMap" src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=3&sensor=false&scale=1&size=300x200&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis" />
                                         <div id="cityMapZoom">
-                                            <img src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=10&sensor=false&scale=1&size=100x140&maptype=terrain&visibility=simplified&markers=icon:https://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis" />
+                                            <img src="https://maps.googleapis.com/maps/api/staticmap?center=St.%20Louis&zoom=10&sensor=false&scale=1&size=100x140&maptype=terrain&visibility=simplified&markers=icon:http://www.t-pen.org/TPEN/images/quillpin.png%257St.%20Louis" />
                                         </div>
                                     </div>
                                     <div class="right" id="mapSearch">
@@ -849,7 +831,7 @@
                         <ul id="about">
                             <li class="gui-tab-section">
                                 <h3>T&#8209;PEN</h3>
-                                <p>The Transcription for Paleographical and Editorial Notation (T&#8209;PEN) project is coordinated by the <a href="https://www.slu.edu/x27122.xml" target="_blank">Center for Digital Theology</a> at <a href="www.slu.edu" target="_blank">Saint Louis University</a> (SLU) and funded by the <a href="//www.mellon.org/" target="_blank">Andrew W. Mellon Foundation</a> and the <a title="National Endowment for the Humanities" target="_blank" href="//www.neh.gov/">NEH</a>. The <a target="_blank" href="ENAP/">Electronic Norman Anonymous Project</a> developed several abilities at the core of this project's functionality.</p>
+                                <p>The Transcription for Paleographical and Editorial Notation (T&#8209;PEN) project is coordinated by the <a href="http://www.slu.edu/x27122.xml" target="_blank">Center for Digital Theology</a> at <a href="www.slu.edu" target="_blank">Saint Louis University</a> (SLU) and funded by the <a href="http://www.mellon.org/" target="_blank">Andrew W. Mellon Foundation</a> and the <a title="National Endowment for the Humanities" target="_blank" href="http://www.neh.gov/">NEH</a>. The <a target="_blank" href="ENAP/">Electronic Norman Anonymous Project</a> developed several abilities at the core of this project's functionality.</p>
                                 <p>T&#8209;PEN is released under <a href="http://www.opensource.org/licenses/ecl2.php" title="Educational Community License" target="_blank">ECL v.2.0</a> as free and open-source software (<a href="https://github.com/jginther/T-PEN/tree/master/trunk" target="_blank">git</a>), the primary instance of which is maintained by SLU at <a href="www.T&#8209;PEN.org" target="_blank">T&#8209;PEN.org</a>.
                                 </p>
                             </li>
@@ -857,7 +839,7 @@
                                 <h3>Contact Us</h3>
                                 <div>
 <!--                                    <div class="tpenButton contact">Directed Communication</div>
-                                    <div class="contactDiv" style="display:none;">
+                                    <div class="contactDiv" style="display:block;">
                                         <form id="bugForm" onsubmit="$('#FBextra').change();" method="POST" action="http://165.134.241.72/ScoutSubmit.asp" target="_blank">
                                             <input type="hidden" value="James Ginther" name="ScoutUserName" />
                                             <input type="hidden" value="T-PEN" name="ScoutProject" />
@@ -1008,7 +990,7 @@
                                     <dt>Dr. Jim Ginther, Principal Investigator</dt>
                                     <dd>Director, Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
                                     <dt>Dr. Abigail Firey, co-Principal Investigator</dt>
-                                    <dd><a href="//ccl.rch.uky.edu" target="_blank" title="Carolingian Canon Law">CCL</a>&nbsp;Project&nbsp;Director, University&nbsp;of&nbsp;Kentucky</dd>
+                                    <dd><a href="http://ccl.rch.uky.edu" target="_blank" title="Carolingian Canon Law">CCL</a>&nbsp;Project&nbsp;Director, University&nbsp;of&nbsp;Kentucky</dd>
                                     <dt>Dr. Tomás O’Sullivan, Research Fellow (2010-11)</dt>
                                     <dd>Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
                                     <dt>Dr. Alison Walker, Research Fellow (2011-12)</dt>
@@ -1027,7 +1009,7 @@
                                         <dt>Dr. Jim Ginther, Principal Investigator</dt>
                                         <dd>Dean of the Faculty of Theology at University of St. Michael’s College </dd>
                                         <dt>Dr. Abigail Firey, co-Principal Investigator</dt>
-                                        <dd><a href="//ccl.rch.uky.edu" target="_blank" title="Carolingian Canon Law">CCL</a>&nbsp;Project&nbsp;Director, University&nbsp;of&nbsp;Kentucky</dd>
+                                        <dd><a href="http://ccl.rch.uky.edu" target="_blank" title="Carolingian Canon Law">CCL</a>&nbsp;Project&nbsp;Director, University&nbsp;of&nbsp;Kentucky</dd>
                                         <dt>Dr. Tomás O’Sullivan, Research Fellow (2010-11)</dt>
                                         <dd>Center&nbsp;for&nbsp;Digital&nbsp;Theology, Saint&nbsp;Louis&nbsp;University</dd>
                                         <dt>Dr. Alison Walker, Research Fellow (2011-12)</dt>
@@ -1055,15 +1037,15 @@
                                 <h3>Contributors</h3>
                                 <h5>Repositories</h5>
                                 <dl>
-                                    <dt><a target="_blank" href="//parkerweb.stanford.edu/">Parker Library on the Web</a></dt>
-                                    <dt><a target="_blank" href="//www.e-codices.unifr.ch/">e-codices</a></dt>
-                                    <dt><a target="_blank" href="//www.ceec.uni-koeln.de/">Codices Electronici Ecclesiae Coloniensis</a></dt>
-                                    <dt><a target="_blank" href="//hcl.harvard.edu/libraries/houghton/collections/early.cfm">Harvard Houghton Library</a></dt>
-                                    <dt><a target="_blank" href="//www.sisf-assisi.it/" title="Società internazionale di Studi francescani">SISF - Assisi</a></dt>
+                                    <dt><a target="_blank" href="http://parkerweb.stanford.edu/">Parker Library on the Web</a></dt>
+                                    <dt><a target="_blank" href="http://www.e-codices.unifr.ch/">e-codices</a></dt>
+                                    <dt><a target="_blank" href="http://www.ceec.uni-koeln.de/">Codices Electronici Ecclesiae Coloniensis</a></dt>
+                                    <dt><a target="_blank" href="http://hcl.harvard.edu/libraries/houghton/collections/early.cfm">Harvard Houghton Library</a></dt>
+                                    <dt><a target="_blank" href="http://www.sisf-assisi.it/" title="Società internazionale di Studi francescani">SISF - Assisi</a></dt>
                                 </dl>
                                 <h5>Institutions</h5>
                                 <dl>
-                                    <dt><a target="_blank" href="//www-sul.stanford.edu/">Stanford University Libraries</a></dt>
+                                    <dt><a target="_blank" href="http://www-sul.stanford.edu/">Stanford University Libraries</a></dt>
                                 </dl>
                             </li>
                             <li class="gui-tab-section">

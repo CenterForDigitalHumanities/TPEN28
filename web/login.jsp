@@ -62,8 +62,9 @@
                         tokenCookie.append("; SameSite=Strict");
                         response.addHeader("Set-Cookie", tokenCookie.toString());
                     }
-
-                    response.sendRedirect(redirectUri + "?UID=" + thisOne.getUID());
+ 
+                    String separator = redirectUri.contains("?") ? "&" : "?";
+                    response.sendRedirect(redirectUri + separator + "UID=" + thisOne.getUID());
                     return;
                 }
                 if(request.getHeader("referer")==null || request.getHeader("referer").compareTo("")==0 || request.getHeader("referer").contains("login")){

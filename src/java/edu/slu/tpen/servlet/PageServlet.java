@@ -35,6 +35,7 @@ public class PageServlet extends HttpServlet {
         resp.setContentType("application/json; charset=UTF-8");
         resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setHeader("Access-Control-Allow-Headers", "*");
+        resp.setHeader("Access-Control-Allow-Methods", "GET");
         resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
         resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
         resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.

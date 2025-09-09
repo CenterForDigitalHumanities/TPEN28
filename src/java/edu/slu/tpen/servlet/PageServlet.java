@@ -32,19 +32,20 @@ public class PageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int folioID = 0, projID = 0;    
+        resp.setContentType("application/json; charset=UTF-8");
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Headers", "*");
+        resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
+        resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+        resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+        resp.setHeader("Expires", "0"); // Proxies.
         try {
             String[] URLParts = req.getPathInfo().substring(1).split("/");
             folioID = parseInt(URLParts[0]);
             
             if (folioID > 0 && Folio.exists(folioID)) {
                 Folio f = new Folio(folioID);
-                resp.setContentType("application/json; charset=UTF-8");
-                resp.setHeader("Access-Control-Allow-Headers", "*");
-                resp.setHeader("Access-Control-Expose-Headers", "*"); //Headers are restricted, unless you explicitly expose them.  Darn Browsers.
-                resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
-                resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
-                resp.setHeader("Expires", "0"); // Proxies.
-                
+         
                 switch (req.getServletPath().substring(1)) {
                     case "annotations":
                         if (URLParts.length == 3 && URLParts[1].equals("project")) {

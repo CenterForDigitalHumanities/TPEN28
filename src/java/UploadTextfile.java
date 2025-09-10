@@ -1,9 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,49 +36,63 @@ public class UploadTextfile extends HttpServlet {
     throws ServletException, IOException, SQLException, FileUploadException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-           int projectID=0;
+            int projectID = 0;
+            textdisplay.Project thisProject = null;
 
-        textdisplay.Project thisProject=null;
-        if(request.getParameter("projectID")!=null)
-            {
+            if (request.getParameter("projectID") == null) {
+                out.print("projectID parameter is missing.");
+                return;
+            }
+
             String location = "";
-            projectID=parseInt(request.getParameter("projectID"));
-            location = (parseInt(request.getParameter("p"))>0) ? "?projectID="+projectID+"&p="+request.getParameter("p") : "?projectID="+projectID;
-            thisProject=new textdisplay.Project(projectID);
-            if (isMultipartContent(request)){
-  ServletFileUpload servletFileUpload = new ServletFileUpload(new DiskFileItemFactory());
-  List fileItemsList = servletFileUpload.parseRequest(request);
+            try {
+                projectID = parseInt(request.getParameter("projectID"));
+            } catch (NumberFormatException e) {
+                out.print("Invalid projectID format.");
+                return;
+            }
 
-  String optionalFileName = "";
-  FileItem fileItem = null;
-  Iterator it = fileItemsList.iterator();
-  while (it.hasNext()){
-    FileItem fileItemTemp = (FileItem)it.next();
-    String tmp=fileItemTemp.getFieldName();
-    if (fileItemTemp.getFieldName().compareTo("file")==0 && (fileItemTemp.getName().endsWith("txt") || fileItemTemp.getName().endsWith("xml"))){
+            try {
+                int p = request.getParameter("p") != null ? parseInt(request.getParameter("p")) : 0;
+                location = (p > 0) ? "?projectID=" + projectID + "&p=" + p : "?projectID=" + projectID;
+            } catch (NumberFormatException e) {
+                location = "?projectID=" + projectID;
+            }
 
-    String textData;//=fileItemTemp.getString();
-    BufferedReader in = new BufferedReader(new InputStreamReader(fileItemTemp.getInputStream() , "UTF-8"));
-    StringBuilder b=new StringBuilder("");
-    while(in.ready())
-    {
-        b.append(in.readLine());
-    }
-    textData=b.toString();
-    thisProject.setLinebreakText(textData);
-    response.sendRedirect("transcription.html"+location);
-    return;
+            thisProject = new textdisplay.Project(projectID);
 
-    }
-    else
-    {
-        out.print("You must upload a .txt or .xml file, other formats are not supported at this time.");
-    }
-  }
-}
+            if (!isMultipartContent(request)) {
+                out.print("Request is not multipart.");
+                return;
+            }
+
+            ServletFileUpload servletFileUpload = new ServletFileUpload(new DiskFileItemFactory());
+            List fileItemsList = servletFileUpload.parseRequest(request);
+
+            String optionalFileName = "";
+            FileItem fileItem = null;
+            Iterator it = fileItemsList.iterator();
+            while (it.hasNext()) {
+                FileItem fileItemTemp = (FileItem) it.next();
+                String tmp = fileItemTemp.getFieldName();
+                if (fileItemTemp.getFieldName().compareTo("file") == 0 && (fileItemTemp.getName().endsWith("txt") || fileItemTemp.getName().endsWith("xml"))) {
+                    String textData;
+                    try (BufferedReader in = new BufferedReader(new InputStreamReader(fileItemTemp.getInputStream(), "UTF-8"))) {
+                        StringBuilder b = new StringBuilder("");
+                        String line;
+                        while ((line = in.readLine()) != null) {
+                            b.append(line).append("\n");
+                        }
+                        textData = b.toString();
+                    }
+                    thisProject.setLinebreakText(textData);
+                    response.sendRedirect("transcription.html" + location);
+                    return;
+                }
+            }
+            out.print("You must upload a .txt or .xml file, other formats are not supported at this time.");
         }
-        }
-    } 
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
@@ -97,14 +105,12 @@ public class UploadTextfile extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        try
-            {
+        try {
             processRequest(request, response);
-            } catch (SQLException | FileUploadException ex)
-            {
+        } catch (SQLException | FileUploadException ex) {
             getLogger(UploadTextfile.class.getName()).log(SEVERE, null, ex);
-            }
-    } 
+        }
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.
@@ -116,13 +122,11 @@ public class UploadTextfile extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        try
-            {
+        try {
             processRequest(request, response);
-            } catch (SQLException | FileUploadException ex)
-            {
+        } catch (SQLException | FileUploadException ex) {
             getLogger(UploadTextfile.class.getName()).log(SEVERE, null, ex);
-            }
+        }
     }
 
     /** 
@@ -133,5 +137,4 @@ public class UploadTextfile extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

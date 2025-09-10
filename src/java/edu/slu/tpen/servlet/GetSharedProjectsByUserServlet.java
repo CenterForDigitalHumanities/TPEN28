@@ -22,6 +22,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import static textdisplay.DatabaseWrapper.getConnection;
 import static user.Group.roles.Contributor;
+import org.owasp.esapi.ESAPI;
 
 /**
  * Retrieve all a user's shared projects. 
@@ -42,6 +43,11 @@ public class GetSharedProjectsByUserServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) {
         String uName = request.getParameter("username");
+        if (uName == null || uName.trim().isEmpty() || !uName.matches("^[a-zA-Z0-9_]+$")) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid username");
+            return;
+        }
+        uName = ESAPI.encoder().encodeForHTML(uName);
         String query = "select p.id, p.name from groupmembers as gm, groups as g, project as p, users as u where gm.UID = u.UID and g.GID=gm.GID and p.grp=g.GID AND u.Uname = ? AND gm.role = ?";
         Connection conn = getConnection();
         try {

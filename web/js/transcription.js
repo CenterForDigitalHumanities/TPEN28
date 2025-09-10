@@ -3038,6 +3038,9 @@ var Data = {
      */
     saveLine: function(transcription,notes,lineid,folioNum){
         if(!isMember && !permitModify && !permitNotes)return false;
+        // avoid XSS and SQL injection
+        transcription = transcription.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        notes = notes.replace(/</g, "&lt;").replace(/>/g, "&gt;");
         $.ajax({
             url:"updateLine",
             type:"POST",

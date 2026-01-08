@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Stack;
+import java.util.regex.Pattern;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 import static java.util.logging.Level.INFO;
@@ -49,6 +50,12 @@ import user.User;
  * user uploaded zip file full of JPEG images.
  */
 public class UserImageCollection {
+    
+    // Compiled regex patterns for filename sanitization (performance optimization)
+    private static final Pattern SPACES_AND_DOTS_PATTERN = Pattern.compile("[\\s.]+");
+    private static final Pattern SPECIAL_CHARS_PATTERN = Pattern.compile("[^a-zA-Z0-9_-]+");
+    private static final Pattern MULTIPLE_DASHES_PATTERN = Pattern.compile("-+");
+    private static final Pattern LEADING_TRAILING_DASHES_PATTERN = Pattern.compile("^-|-$");
 
     /**
      * Delete a manuscript created on a set of private images
@@ -110,9 +117,17 @@ public class UserImageCollection {
         File newZippedFile = new File(dir.getAbsoluteFile() + "/" + zippedFile.getName());
         
         // Check if the zip file already exists to prevent overwriting
-        if (newZippedFile.exists() && !zippedFile.equals(newZippedFile)) {
-            LOG.log(WARNING, "Zip file already exists at destination: {0}", newZippedFile.getAbsolutePath());
-            throw new IOException("Cannot overwrite existing zip file: " + newZippedFile.getName());
+        // Use canonical paths for reliable comparison
+        try {
+            if (newZippedFile.exists() && !newZippedFile.getCanonicalPath().equals(zippedFile.getCanonicalPath())) {
+                LOG.log(WARNING, "Zip file already exists at destination: {0}", newZippedFile.getAbsolutePath());
+                throw new IOException("Cannot overwrite existing zip file: " + newZippedFile.getName());
+            }
+        } catch (IOException e) {
+            if (e.getMessage().contains("Cannot overwrite")) {
+                throw e;
+            }
+            LOG.log(WARNING, "Unable to get canonical path for file comparison, proceeding with caution", e);
         }
         
         zippedFile.renameTo(newZippedFile);
@@ -289,7 +304,7 @@ public class UserImageCollection {
      * and other special characters that could cause issues.
      * 
      * @param filename The original filename
-     * @return The sanitized filename
+     * @return The sanitized filename, or the original if null/empty
      */
     private static String sanitizeFilename(String filename) {
         if (filename == null || filename.isEmpty()) {
@@ -311,10 +326,10 @@ public class UserImageCollection {
             // Replace spaces, dots, and other problematic characters with dashes
             // Keep alphanumeric, hyphens, and underscores
             pathParts[i] = pathParts[i].trim()
-                .replaceAll("[\\s.]+", "-")  // Replace spaces and dots with single dash
-                .replaceAll("[^a-zA-Z0-9_-]+", "-")  // Replace other special chars
-                .replaceAll("-+", "-")  // Collapse multiple dashes
-                .replaceAll("^-|-$", "");  // Remove leading/trailing dashes
+                .replaceAll(SPACES_AND_DOTS_PATTERN.pattern(), "-")
+                .replaceAll(SPECIAL_CHARS_PATTERN.pattern(), "-")
+                .replaceAll(MULTIPLE_DASHES_PATTERN.pattern(), "-")
+                .replaceAll(LEADING_TRAILING_DASHES_PATTERN.pattern(), "");
         }
         
         // Rejoin path parts

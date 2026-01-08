@@ -24,6 +24,9 @@ import java.io.*;
 import static java.lang.Integer.parseInt;
 import java.sql.Connection;
 import java.util.*;
+import java.util.logging.Logger;
+import static java.util.logging.Logger.getLogger;
+import static java.util.logging.Level.WARNING;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -42,6 +45,8 @@ import user.User;
  * @author obi1one
  */
 public class FileUpload extends HttpServlet implements Servlet {
+   
+   private static final Logger LOG = getLogger(FileUpload.class.getName());
 
    /**
     *
@@ -155,7 +160,7 @@ public class FileUpload extends HttpServlet implements Servlet {
                try {
                   conn.close();
                } catch (Exception closeEx) {
-                  // Log but don't throw
+                  LOG.log(WARNING, "Failed to close database connection", closeEx);
                }
             }
             session.setAttribute("LISTENER", null);

@@ -30,6 +30,8 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Stack;
 import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+import static java.util.logging.Level.INFO;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import java.util.zip.ZipEntry;
@@ -106,18 +108,52 @@ public class UserImageCollection {
         }
 
         File newZippedFile = new File(dir.getAbsoluteFile() + "/" + zippedFile.getName());
+        
+        // Check if the zip file already exists to prevent overwriting
+        if (newZippedFile.exists() && !zippedFile.equals(newZippedFile)) {
+            LOG.log(WARNING, "Zip file already exists at destination: {0}", newZippedFile.getAbsolutePath());
+            throw new IOException("Cannot overwrite existing zip file: " + newZippedFile.getName());
+        }
+        
         zippedFile.renameTo(newZippedFile);
         zippedFile = newZippedFile;
-        extractFolder(zippedFile.getAbsolutePath());
+        
+        try {
+            extractFolder(zippedFile.getAbsolutePath());
+        } catch (Exception e) {
+            LOG.log(SEVERE, "Failed to extract zip file: " + zippedFile.getAbsolutePath(), e);
+            throw new Exception("Failed to extract uploaded zip file", e);
+        }
+        
         File[] images = getAllJPGsRecursive(dir);
+        
+        if (images == null || images.length == 0) {
+            LOG.log(WARNING, "No valid JPG images found in uploaded zip file for manuscript {0}", ms.getID());
+            throw new Exception("No valid JPG images found in the uploaded zip file");
+        }
+        
+        // Validate all images before creating folio records
+        int validImageCount = 0;
         for (int i = 0; i < images.length; i++) {
             if (!validateImage(images[i])) {
-                out.print("bad image " + images[i].getName() + ", would do something\n");
+                LOG.log(WARNING, "Invalid image removed: {0}", images[i].getName());
+                // Delete the invalid image file
+                if (images[i].exists()) {
+                    images[i].delete();
+                }
                 images = removeItem(images, i);
                 i--;
+            } else {
+                validImageCount++;
             }
-
         }
+        
+        if (validImageCount == 0) {
+            LOG.log(SEVERE, "No valid images after validation for manuscript {0}", ms.getID());
+            throw new Exception("All images failed validation. No valid images to process.");
+        }
+        
+        LOG.log(INFO, "Successfully validated {0} images for manuscript {1}", new Object[]{validImageCount, ms.getID()});
         createFolioRecords(conn, ms.getCollection(), images, "private", ms.getID(), "");
     }
 
@@ -206,10 +242,17 @@ public class UserImageCollection {
 
             if (currentEntry.endsWith(".jpg") && !entry.isDirectory() && (entry.getSize() > 2000)) {
 
-                // scrub filenames
-                currentEntry = currentEntry.trim().replaceAll("\\s|\\.(?!jpg)", "-");
+                // scrub filenames - replace spaces and dots (except the final .jpg) with dashes
+                currentEntry = sanitizeFilename(currentEntry);
 
                 File destFile = new File(newPath, currentEntry);
+                
+                // Check if file already exists to prevent overwriting
+                if (destFile.exists()) {
+                    LOG.log(WARNING, "File already exists, skipping: {0}", destFile.getAbsolutePath());
+                    continue;
+                }
+                
                 File destinationParent = destFile.getParentFile();
 
                 // create the parent directory structure if needed
@@ -228,9 +271,56 @@ public class UserImageCollection {
                         }
                         dest.flush();
                     }
+                } catch (IOException e) {
+                    LOG.log(SEVERE, "Failed to extract file: " + destFile.getAbsolutePath(), e);
+                    // Clean up partial file if extraction failed
+                    if (destFile.exists()) {
+                        destFile.delete();
+                    }
+                    throw e;
                 }
             }
         }
+    }
+
+    /**
+     * Sanitize filename by replacing problematic characters.
+     * Removes or replaces spaces, dots (except the final .jpg extension), 
+     * and other special characters that could cause issues.
+     * 
+     * @param filename The original filename
+     * @return The sanitized filename
+     */
+    private static String sanitizeFilename(String filename) {
+        if (filename == null || filename.isEmpty()) {
+            return filename;
+        }
+        
+        // Split filename and extension
+        String name = filename;
+        String extension = "";
+        int lastDotIndex = filename.lastIndexOf('.');
+        if (lastDotIndex > 0 && lastDotIndex < filename.length() - 1) {
+            name = filename.substring(0, lastDotIndex);
+            extension = filename.substring(lastDotIndex);
+        }
+        
+        // Handle directory separators (keep them)
+        String[] pathParts = name.split("[/\\\\]");
+        for (int i = 0; i < pathParts.length; i++) {
+            // Replace spaces, dots, and other problematic characters with dashes
+            // Keep alphanumeric, hyphens, and underscores
+            pathParts[i] = pathParts[i].trim()
+                .replaceAll("[\\s.]+", "-")  // Replace spaces and dots with single dash
+                .replaceAll("[^a-zA-Z0-9_-]+", "-")  // Replace other special chars
+                .replaceAll("-+", "-")  // Collapse multiple dashes
+                .replaceAll("^-|-$", "");  // Remove leading/trailing dashes
+        }
+        
+        // Rejoin path parts
+        name = String.join("/", pathParts);
+        
+        return name + extension;
     }
 
     /**
@@ -240,10 +330,22 @@ public class UserImageCollection {
     private static Boolean validateImage(File f) {
         try {
             BufferedImage img = readAsBufferedImage(f.getAbsolutePath());
+            if (img == null) {
+                LOG.log(WARNING, "Failed to read image as BufferedImage: {0}", f.getAbsolutePath());
+                return false;
+            }
+            
+            // Validate image dimensions are reasonable
+            if (img.getWidth() <= 0 || img.getHeight() <= 0) {
+                LOG.log(WARNING, "Image has invalid dimensions: {0}x{1} for file: {2}", 
+                    new Object[]{img.getWidth(), img.getHeight(), f.getAbsolutePath()});
+                return false;
+            }
+            
             img = scale(img, 2000);
             write(img, "jpg", f);
         } catch (Exception e) {
-            LOG.log(SEVERE, e.getMessage());
+            LOG.log(SEVERE, "Failed to validate image: " + f.getAbsolutePath(), e);
             return false;
         }
         return true;

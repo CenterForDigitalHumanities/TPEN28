@@ -104,8 +104,10 @@ public class FileUpload extends HttpServlet implements Servlet {
          upload.setProgressListener(listener);
 
          session.setAttribute("LISTENER", listener);
-
-         try (Connection conn = getDBConnection()) {
+         
+         Connection conn = null;
+         try {
+            conn = getDBConnection();
             conn.setAutoCommit(false);
             User thisUser = new User(uid);
             String city = req.getParameter("city");
@@ -116,6 +118,7 @@ public class FileUpload extends HttpServlet implements Servlet {
             long maxSize = parseInt(getRbTok("maxUploadSize")); //200 megs
             List uploadedItems = upload.parseRequest(req);
             Iterator i = uploadedItems.iterator();
+            boolean processedFile = false;
             while (i.hasNext()) {
                FileItem fileItem = (FileItem)i.next();
                if (fileItem.isFormField() == false) {
@@ -123,17 +126,38 @@ public class FileUpload extends HttpServlet implements Servlet {
                      File f = new File(getRbTok("uploadLocation") + "images/userimages/" + thisUser.getLname() + thisUser.getUID() + ".zip");
                      fileItem.write(f);
                      Manuscript ms = new Manuscript(repository, archive, collection, city, -999);
-                            create(conn, f, thisUser, ms);
+                     create(conn, f, thisUser, ms);
                      Group g = new Group(conn, ms.getShelfMark(), thisUser.getUID());
                      Project p = new Project(conn, ms.getShelfMark(), g.getGroupID());
                      p.setFolios(conn, ms.getFolios());
+                     processedFile = true;
                   }
                }
             }
-            conn.commit();
+            
+            if (processedFile) {
+               conn.commit();
+            } else {
+               conn.rollback();
+            }
          } catch (Exception ex) {
+            if (conn != null) {
+               try {
+                  conn.rollback();
+               } catch (Exception rollbackEx) {
+                  // Log rollback failure but throw original exception
+                  ex.addSuppressed(rollbackEx);
+               }
+            }
             reportInternalError(resp, ex);
          } finally {
+            if (conn != null) {
+               try {
+                  conn.close();
+               } catch (Exception closeEx) {
+                  // Log but don't throw
+               }
+            }
             session.setAttribute("LISTENER", null);
          }
       } else {

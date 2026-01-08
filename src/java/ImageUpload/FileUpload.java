@@ -24,9 +24,6 @@ import java.io.*;
 import static java.lang.Integer.parseInt;
 import java.sql.Connection;
 import java.util.*;
-import java.util.logging.Logger;
-import static java.util.logging.Logger.getLogger;
-import static java.util.logging.Level.WARNING;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -45,8 +42,6 @@ import user.User;
  * @author obi1one
  */
 public class FileUpload extends HttpServlet implements Servlet {
-   
-   private static final Logger LOG = getLogger(FileUpload.class.getName());
 
    /**
     *
@@ -109,10 +104,8 @@ public class FileUpload extends HttpServlet implements Servlet {
          upload.setProgressListener(listener);
 
          session.setAttribute("LISTENER", listener);
-         
-         Connection conn = null;
-         try {
-            conn = getDBConnection();
+
+         try (Connection conn = getDBConnection()) {
             conn.setAutoCommit(false);
             User thisUser = new User(uid);
             String city = req.getParameter("city");
@@ -146,23 +139,8 @@ public class FileUpload extends HttpServlet implements Servlet {
                conn.rollback();
             }
          } catch (Exception ex) {
-            if (conn != null) {
-               try {
-                  conn.rollback();
-               } catch (Exception rollbackEx) {
-                  // Log rollback failure but throw original exception
-                  ex.addSuppressed(rollbackEx);
-               }
-            }
             reportInternalError(resp, ex);
          } finally {
-            if (conn != null) {
-               try {
-                  conn.close();
-               } catch (Exception closeEx) {
-                  LOG.log(WARNING, "Failed to close database connection", closeEx);
-               }
-            }
             session.setAttribute("LISTENER", null);
          }
       } else {

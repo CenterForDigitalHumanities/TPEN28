@@ -316,8 +316,17 @@ public class UserImageCollection {
         String extension = "";
         int lastDotIndex = filename.lastIndexOf('.');
         if (lastDotIndex > 0 && lastDotIndex < filename.length() - 1) {
-            name = filename.substring(0, lastDotIndex);
-            extension = filename.substring(lastDotIndex);
+            String potentialExtension = filename.substring(lastDotIndex).toLowerCase();
+            // Validate extension is a known image type (only .jpg supported currently)
+            if (potentialExtension.equals(".jpg") || potentialExtension.equals(".jpeg")) {
+                name = filename.substring(0, lastDotIndex);
+                extension = filename.substring(lastDotIndex);
+            } else {
+                // If not a valid image extension, treat the whole filename as name
+                // This prevents files like "document.pdf" from being treated as images
+                name = filename;
+                extension = "";
+            }
         }
         
         // Handle directory separators (keep them)
@@ -340,7 +349,10 @@ public class UserImageCollection {
 
     /**
      * Check that the image is actually a valid jpg image by loading it as a
-     * BufferedImage BH TODO strip invalid characters!
+     * BufferedImage and re-saving it as JPG.
+     * 
+     * NOTE: This system only supports JPG format for private uploads as documented
+     * in the upload UI. Images are always scaled to max 2000px height and saved as JPG.
      */
     private static Boolean validateImage(File f) {
         try {
@@ -357,6 +369,7 @@ public class UserImageCollection {
                 return false;
             }
             
+            // Scale image to max 2000px height and save as JPG (system only supports JPG)
             img = scale(img, 2000);
             write(img, "jpg", f);
         } catch (Exception e) {

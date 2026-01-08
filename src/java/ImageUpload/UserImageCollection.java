@@ -124,7 +124,7 @@ public class UserImageCollection {
                 throw new IOException("Cannot overwrite existing zip file: " + newZippedFile.getName());
             }
         } catch (IOException e) {
-            if (e.getMessage().contains("Cannot overwrite")) {
+            if (e.getMessage() != null && e.getMessage().contains("Cannot overwrite")) {
                 throw e;
             }
             LOG.log(WARNING, "Unable to get canonical path for file comparison, proceeding with caution", e);
@@ -234,17 +234,17 @@ public class UserImageCollection {
      * @throws IOException if the file doesnt exist..
      */
     static public void extractFolder(String zipFile) throws ZipException, IOException {
-        out.println(zipFile);
+        LOG.log(INFO, "Extracting folder: {0}", zipFile);
         int BUFFER = 2048;
         File file = new File(zipFile);
 
-        ZipFile zip = new ZipFile(file);
-        String newPath = zipFile.substring(0, zipFile.length() - 4);
-        // scrub dirname
-        newPath = newPath.trim().replaceAll("\\s|\\.", "_");
+        try (ZipFile zip = new ZipFile(file)) {
+            String newPath = zipFile.substring(0, zipFile.length() - 4);
+            // scrub dirname
+            newPath = newPath.trim().replaceAll("\\s|\\.", "_");
 
-        new File(newPath).mkdir();
-        Enumeration zipFileEntries = zip.entries();
+            new File(newPath).mkdir();
+            Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
 
         // Process each entry
         while (zipFileEntries.hasMoreElements()) {
@@ -296,6 +296,10 @@ public class UserImageCollection {
                 }
             }
         }
+        } catch (IOException e) {
+            LOG.log(SEVERE, "Failed to process zip file: " + zipFile, e);
+            throw e;
+        }
     }
 
     /**
@@ -334,11 +338,11 @@ public class UserImageCollection {
         for (int i = 0; i < pathParts.length; i++) {
             // Replace spaces, dots, and other problematic characters with dashes
             // Keep alphanumeric, hyphens, and underscores
-            pathParts[i] = pathParts[i].trim()
-                .replaceAll(SPACES_AND_DOTS_PATTERN.pattern(), "-")
-                .replaceAll(SPECIAL_CHARS_PATTERN.pattern(), "-")
-                .replaceAll(MULTIPLE_DASHES_PATTERN.pattern(), "-")
-                .replaceAll(LEADING_TRAILING_DASHES_PATTERN.pattern(), "");
+            String part = pathParts[i].trim();
+            part = SPACES_AND_DOTS_PATTERN.matcher(part).replaceAll("-");
+            part = SPECIAL_CHARS_PATTERN.matcher(part).replaceAll("-");
+            part = MULTIPLE_DASHES_PATTERN.matcher(part).replaceAll("-");
+            pathParts[i] = LEADING_TRAILING_DASHES_PATTERN.matcher(part).replaceAll("");
         }
         
         // Rejoin path parts

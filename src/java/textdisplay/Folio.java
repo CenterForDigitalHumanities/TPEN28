@@ -614,8 +614,10 @@ public class Folio {
          if (rs.next()) {
             toret += rs.getString("imageName");
          }
-         if (toret.contains(".jpg")) {
-            toret = toret.replaceAll("\\.jpg", "");
+         // Strip .jpg/.JPG/.jpeg/.JPEG extension (case-insensitive)
+         // This handles both new lowercase .jpg and old uppercase .JPG files
+         if (toret.toLowerCase().contains(".jpg") || toret.toLowerCase().contains(".jpeg")) {
+            toret = toret.replaceAll("(?i)\\.jpe?g$", "");
          }
          return toret;
       } finally {
@@ -640,8 +642,10 @@ public class Folio {
          if (rs.next()) {
             toret += rs.getString("imageName");
          }
-         if (toret.contains(".jpg")) {
-            toret = toret.replaceAll("\\.jpg", "");
+         // Strip .jpg/.JPG/.jpeg/.JPEG extension (case-insensitive)
+         // This handles both new lowercase .jpg and old uppercase .JPG files
+         if (toret.toLowerCase().contains(".jpg") || toret.toLowerCase().contains(".jpeg")) {
+            toret = toret.replaceAll("(?i)\\.jpe?g$", "");
          }
          return toret;
       } finally {

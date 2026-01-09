@@ -147,6 +147,8 @@ public class FileUpload extends HttpServlet implements Servlet {
                }
                reportInternalError(resp, ex);
             }
+         } catch (java.sql.SQLException ex) {
+            reportInternalError(resp, ex);
          } finally {
             session.setAttribute("LISTENER", null);
          }

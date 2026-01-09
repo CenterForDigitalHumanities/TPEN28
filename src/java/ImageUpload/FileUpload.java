@@ -28,6 +28,9 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import java.util.logging.Logger;
+import static java.util.logging.Level.WARNING;
+import static java.util.logging.Logger.getLogger;
 import org.apache.commons.fileupload.*;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -42,6 +45,8 @@ import user.User;
  * @author obi1one
  */
 public class FileUpload extends HttpServlet implements Servlet {
+
+   private static final Logger LOG = getLogger(FileUpload.class.getName());
 
    /**
     *
@@ -143,7 +148,7 @@ public class FileUpload extends HttpServlet implements Servlet {
                try {
                   conn.rollback();
                } catch (Exception rollbackEx) {
-                  // Log but don't mask the original exception
+                  LOG.log(WARNING, "Failed to rollback transaction after error", rollbackEx);
                }
                reportInternalError(resp, ex);
             }

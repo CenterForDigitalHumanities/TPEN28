@@ -261,12 +261,22 @@ public class UserImageCollection {
                 // lets not get fooled by a true jpg
                 currentEntry = currentEntry.replaceAll("(?i)\\.jpe?g\\b", ".jpg");
 
-                if (currentEntry.endsWith(".jpg") && !entry.isDirectory() && (entry.getSize() > 2000)) {
+                long entrySize = entry.getSize();
+                // Include entry if size is unknown (-1) or if size > 2000 bytes
+                if (currentEntry.endsWith(".jpg") && !entry.isDirectory() && (entrySize == -1 || entrySize > 2000)) {
 
                     // scrub filenames - replace spaces and dots (except the final .jpg) with dashes
                     currentEntry = sanitizeFilename(currentEntry);
 
                     File destFile = new File(newPath, currentEntry);
+
+                    // Validate path traversal - ensure destFile is within extractDir
+                    String destCanonical = destFile.getCanonicalPath();
+                    String extractCanonical = extractDir.getCanonicalPath();
+                    if (!destCanonical.startsWith(extractCanonical + File.separator)) {
+                        LOG.log(WARNING, "Path traversal attempt blocked: {0}", currentEntry);
+                        continue;
+                    }
 
                     // Check if file already exists to prevent overwriting
                     if (destFile.exists()) {
@@ -279,19 +289,18 @@ public class UserImageCollection {
                     // create the parent directory structure if needed
                     destinationParent.mkdirs();
 
-                    try (BufferedInputStream is = new BufferedInputStream(zip.getInputStream(entry))) {
+                    try (BufferedInputStream is = new BufferedInputStream(zip.getInputStream(entry));
+                         FileOutputStream fos = new FileOutputStream(destFile);
+                         BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER)) {
                         int currentByte;
                         // establish buffer for writing file
                         byte data[] = new byte[BUFFER];
 
                         // write the current file to disk
-                        FileOutputStream fos = new FileOutputStream(destFile);
-                        try (BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER)) {
-                            while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
-                                dest.write(data, 0, currentByte);
-                            }
-                            dest.flush();
+                        while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
+                            dest.write(data, 0, currentByte);
                         }
+                        dest.flush();
                     } catch (IOException e) {
                         LOG.log(SEVERE, "Failed to extract file: " + destFile.getAbsolutePath(), e);
                         // Clean up partial file if extraction failed
@@ -330,7 +339,7 @@ public class UserImageCollection {
             // Validate extension is a known image type (only .jpg supported currently)
             if (potentialExtension.equals(".jpg") || potentialExtension.equals(".jpeg")) {
                 name = filename.substring(0, lastDotIndex);
-                extension = filename.substring(lastDotIndex);
+                extension = ".jpg";  // Normalize to lowercase .jpg
             } else {
                 // If not a valid image extension, treat the whole filename as name
                 // This prevents files like "document.pdf" from being treated as images
@@ -362,6 +371,11 @@ public class UserImageCollection {
             }
         }
         name = sb.toString();
+
+        // If name is empty after sanitization, use a default
+        if (name.isEmpty()) {
+            name = "image";
+        }
 
         return name + extension;
     }

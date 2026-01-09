@@ -242,7 +242,14 @@ public class UserImageCollection {
             // scrub dirname
             newPath = newPath.trim().replaceAll("\\s|\\.", "_");
 
-            new File(newPath).mkdir();
+            File extractDir = new File(newPath);
+            if (!extractDir.exists()) {
+                if (!extractDir.mkdirs() && !extractDir.isDirectory()) {
+                    throw new IOException("Failed to create extraction directory: " + extractDir.getAbsolutePath());
+                }
+            } else if (!extractDir.isDirectory()) {
+                throw new IOException("Extraction path exists but is not a directory: " + extractDir.getAbsolutePath());
+            }
             Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
 
             // Process each entry
@@ -344,9 +351,18 @@ public class UserImageCollection {
             pathParts[i] = LEADING_TRAILING_DASHES_PATTERN.matcher(part).replaceAll("");
         }
         
-        // Rejoin path parts
-        name = String.join("/", pathParts);
-        
+        // Rejoin path parts, filtering out empty segments
+        StringBuilder sb = new StringBuilder();
+        for (String part : pathParts) {
+            if (!part.isEmpty()) {
+                if (sb.length() > 0) {
+                    sb.append("/");
+                }
+                sb.append(part);
+            }
+        }
+        name = sb.toString();
+
         return name + extension;
     }
 

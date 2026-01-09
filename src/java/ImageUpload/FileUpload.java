@@ -107,39 +107,46 @@ public class FileUpload extends HttpServlet implements Servlet {
 
          try (Connection conn = getDBConnection()) {
             conn.setAutoCommit(false);
-            User thisUser = new User(uid);
-            String city = req.getParameter("city");
-            String collection = req.getParameter("collection");
-            String repository = req.getParameter("repository");
-            String archive = "private";
+            try {
+               User thisUser = new User(uid);
+               String city = req.getParameter("city");
+               String collection = req.getParameter("collection");
+               String repository = req.getParameter("repository");
+               String archive = "private";
 
-            long maxSize = parseInt(getRbTok("maxUploadSize")); //200 megs
-            List uploadedItems = upload.parseRequest(req);
-            Iterator i = uploadedItems.iterator();
-            boolean processedFile = false;
-            while (i.hasNext()) {
-               FileItem fileItem = (FileItem)i.next();
-               if (fileItem.isFormField() == false) {
-                  if (fileItem.getSize() > 0 && fileItem.getSize() < maxSize && fileItem.getName().toLowerCase().endsWith("zip")) {
-                     File f = new File(getRbTok("uploadLocation") + "images/userimages/" + thisUser.getLname() + thisUser.getUID() + ".zip");
-                     fileItem.write(f);
-                     Manuscript ms = new Manuscript(repository, archive, collection, city, -999);
-                     create(conn, f, thisUser, ms);
-                     Group g = new Group(conn, ms.getShelfMark(), thisUser.getUID());
-                     Project p = new Project(conn, ms.getShelfMark(), g.getGroupID());
-                     p.setFolios(conn, ms.getFolios());
-                     processedFile = true;
+               long maxSize = parseInt(getRbTok("maxUploadSize")); //200 megs
+               List uploadedItems = upload.parseRequest(req);
+               Iterator i = uploadedItems.iterator();
+               boolean processedFile = false;
+               while (i.hasNext()) {
+                  FileItem fileItem = (FileItem)i.next();
+                  if (fileItem.isFormField() == false) {
+                     if (fileItem.getSize() > 0 && fileItem.getSize() < maxSize && fileItem.getName().toLowerCase().endsWith("zip")) {
+                        File f = new File(getRbTok("uploadLocation") + "images/userimages/" + thisUser.getLname() + thisUser.getUID() + ".zip");
+                        fileItem.write(f);
+                        Manuscript ms = new Manuscript(repository, archive, collection, city, -999);
+                        create(conn, f, thisUser, ms);
+                        Group g = new Group(conn, ms.getShelfMark(), thisUser.getUID());
+                        Project p = new Project(conn, ms.getShelfMark(), g.getGroupID());
+                        p.setFolios(conn, ms.getFolios());
+                        processedFile = true;
+                     }
                   }
                }
+
+               if (processedFile) {
+                  conn.commit();
+               } else {
+                  conn.rollback();
+               }
+            } catch (Exception ex) {
+               try {
+                  conn.rollback();
+               } catch (Exception rollbackEx) {
+                  // Log but don't mask the original exception
+               }
+               reportInternalError(resp, ex);
             }
-            
-            if (processedFile) {
-               conn.commit();
-            } else {
-               conn.rollback();
-            }
-         } catch (Exception ex) {
-            reportInternalError(resp, ex);
          } finally {
             session.setAttribute("LISTENER", null);
          }

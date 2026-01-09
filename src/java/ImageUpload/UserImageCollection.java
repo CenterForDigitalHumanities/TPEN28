@@ -24,7 +24,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import static java.lang.System.out;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Enumeration;
@@ -246,56 +245,56 @@ public class UserImageCollection {
             new File(newPath).mkdir();
             Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
 
-        // Process each entry
-        while (zipFileEntries.hasMoreElements()) {
-            // grab a zip file entry
-            ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
-            String currentEntry = entry.getName();
+            // Process each entry
+            while (zipFileEntries.hasMoreElements()) {
+                // grab a zip file entry
+                ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
+                String currentEntry = entry.getName();
 
-            // lets not get fooled by a true jpg
-            currentEntry = currentEntry.replaceAll("(?i)\\.jpe?g\\b", ".jpg");
+                // lets not get fooled by a true jpg
+                currentEntry = currentEntry.replaceAll("(?i)\\.jpe?g\\b", ".jpg");
 
-            if (currentEntry.endsWith(".jpg") && !entry.isDirectory() && (entry.getSize() > 2000)) {
+                if (currentEntry.endsWith(".jpg") && !entry.isDirectory() && (entry.getSize() > 2000)) {
 
-                // scrub filenames - replace spaces and dots (except the final .jpg) with dashes
-                currentEntry = sanitizeFilename(currentEntry);
+                    // scrub filenames - replace spaces and dots (except the final .jpg) with dashes
+                    currentEntry = sanitizeFilename(currentEntry);
 
-                File destFile = new File(newPath, currentEntry);
-                
-                // Check if file already exists to prevent overwriting
-                if (destFile.exists()) {
-                    LOG.log(WARNING, "File already exists, skipping: {0}", destFile.getAbsolutePath());
-                    continue;
-                }
-                
-                File destinationParent = destFile.getParentFile();
+                    File destFile = new File(newPath, currentEntry);
 
-                // create the parent directory structure if needed
-                destinationParent.mkdirs();
-
-                try (BufferedInputStream is = new BufferedInputStream(zip.getInputStream(entry))) {
-                    int currentByte;
-                    // establish buffer for writing file
-                    byte data[] = new byte[BUFFER];
-
-                    // write the current file to disk
-                    FileOutputStream fos = new FileOutputStream(destFile);
-                    try (BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER)) {
-                        while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
-                            dest.write(data, 0, currentByte);
-                        }
-                        dest.flush();
-                    }
-                } catch (IOException e) {
-                    LOG.log(SEVERE, "Failed to extract file: " + destFile.getAbsolutePath(), e);
-                    // Clean up partial file if extraction failed
+                    // Check if file already exists to prevent overwriting
                     if (destFile.exists()) {
-                        destFile.delete();
+                        LOG.log(WARNING, "File already exists, skipping: {0}", destFile.getAbsolutePath());
+                        continue;
                     }
-                    throw e;
+
+                    File destinationParent = destFile.getParentFile();
+
+                    // create the parent directory structure if needed
+                    destinationParent.mkdirs();
+
+                    try (BufferedInputStream is = new BufferedInputStream(zip.getInputStream(entry))) {
+                        int currentByte;
+                        // establish buffer for writing file
+                        byte data[] = new byte[BUFFER];
+
+                        // write the current file to disk
+                        FileOutputStream fos = new FileOutputStream(destFile);
+                        try (BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER)) {
+                            while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
+                                dest.write(data, 0, currentByte);
+                            }
+                            dest.flush();
+                        }
+                    } catch (IOException e) {
+                        LOG.log(SEVERE, "Failed to extract file: " + destFile.getAbsolutePath(), e);
+                        // Clean up partial file if extraction failed
+                        if (destFile.exists()) {
+                            destFile.delete();
+                        }
+                        throw e;
+                    }
                 }
             }
-        }
         } catch (IOException e) {
             LOG.log(SEVERE, "Failed to process zip file: " + zipFile, e);
             throw e;

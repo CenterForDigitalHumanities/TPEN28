@@ -1,3 +1,45 @@
+#announcementBanner.platform-announcement {
+    background: linear-gradient(90deg, #ffe066 0%, #ffd700 100%);
+    color: #333;
+    border: 2px solid #ffae00;
+    border-radius: 8px;
+    padding: 1em 2em;
+    margin: 0.5em auto 0.5em auto;
+    max-width: 700px;
+    font-size: 1.15em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 12px rgba(255, 174, 0, 0.15);
+    animation: pulseBanner 1.2s infinite alternate;
+    z-index: 100;
+}
+
+.announcement-icon {
+    font-size: 2em;
+    margin-right: 0.75em;
+    animation: bounceIcon 1.2s infinite alternate;
+}
+
+.announcement-text a {
+    color: #a65c00;
+    text-decoration: underline;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+.announcement-text a:hover {
+    color: #ff6600;
+}
+
+@keyframes pulseBanner {
+    0% { box-shadow: 0 2px 12px rgba(255, 174, 0, 0.15); }
+    100% { box-shadow: 0 4px 24px 4px rgba(255, 174, 0, 0.35); }
+}
+
+@keyframes bounceIcon {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px) scale(1.1); }
+}
 /* Reset */
 body *{                     /* Change default behavior from content-box */
     -webkit-box-sizing:border-box;

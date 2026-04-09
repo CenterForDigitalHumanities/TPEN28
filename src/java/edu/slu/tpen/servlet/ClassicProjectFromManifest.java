@@ -159,6 +159,10 @@ public class ClassicProjectFromManifest extends HttpServlet {
                     folioscreated++;
                 }
             }
+            if(folioscreated <= 0){
+                response.sendError(SC_BAD_REQUEST, "Manifest contained canvases, but no importable images were found.");
+                return -1;
+            }
             System.out.println(folioscreated+" folios created from "+canvasespresent+" canvases");
             String tmpProjName = mss.getShelfMark()+" project";
             if (theManifest.has("label")) {
@@ -424,6 +428,16 @@ public class ClassicProjectFromManifest extends HttpServlet {
                 JSONArray none = safeArray(labelObj.get("none"));
                 if (!none.isEmpty()) {
                     String value = String.valueOf(none.get(0));
+                    if (!value.trim().isEmpty()) {
+                        return value;
+                    }
+                }
+            }
+            // After checking "none", check "en" before iterating all keys
+            if (labelObj.has("en")) {
+                JSONArray en = safeArray(labelObj.get("en"));
+                if (!en.isEmpty()) {
+                    String value = String.valueOf(en.get(0));
                     if (!value.trim().isEmpty()) {
                         return value;
                     }

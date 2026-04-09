@@ -251,7 +251,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
             }
         }
 
-        if (manifest.has("items")) {
+        if (canvases.isEmpty() && manifest.has("items")) {
             JSONArray items = safeArray(manifest.get("items"));
             for (int i = 0; i < items.size(); i++) {
                 JSONObject item = safeObject(items.get(i));

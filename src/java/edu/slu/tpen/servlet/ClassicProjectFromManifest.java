@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.WARNING;
 import java.util.logging.Logger;
@@ -92,7 +93,7 @@ public class ClassicProjectFromManifest extends HttpServlet {
     
     /**
      * Make a project from a user provided Manifest URI.
-     * The Manifest must be IIIF Presentation API 2.1.
+     * The Manifest should be IIIF Presentation API 2.1 or 3.0.
      */
     public Integer createProject(HttpServletRequest request, HttpServletResponse response) throws IOException{
         LOG.log(INFO, "Create classic TPEN project from manifest URL");
@@ -111,97 +112,61 @@ public class ClassicProjectFromManifest extends HttpServlet {
                 response.sendError(SC_UNAUTHORIZED, "You must log in first.");
                 return -1; 
             }
-            JSONObject theManifest = resolveID(request.getParameter("manifest")); 
-            //TODO: @context validation too?
-            if(!theManifest.has("@type") || !theManifest.getString("@type").equals("sc:Manifest")){
-                response.sendError(SC_BAD_REQUEST, "The object provided is not a IIIF Presentation API 2.1 Manifest.");
+            JSONObject theManifest = resolveID(request.getParameter("manifest"));
+            if(!isSupportedManifest(theManifest)){
+                response.sendError(SC_BAD_REQUEST, "The object provided is not a recognized IIIF Presentation Manifest.");
                 return -1;
             }
-            String type = theManifest.getString("@type");
             //Should we be setting these to something strategic?
             //String repository = "unknown";
             //String collection = "unkown";
             String archive = "private";
             String city = "unknown";
-            String label = "unknown"; 
             List<Integer> ls_folios_keys = new ArrayList();
-            if(theManifest.has("@id")){
-                archive = theManifest.getString("@id");
+            String manifestId = getStringValue(theManifest, "id", "@id");
+            if(manifestId != null && !manifestId.trim().isEmpty()){
+                archive = manifestId;
             }
             else{
-                response.sendError(SC_INTERNAL_SERVER_ERROR, "Manifest does not contain '@id'");
-                return -1;
-            }
-            if(theManifest.has("label")){
-                label = theManifest.getString("label");
-            }
-            else{
-                label = "New T-PEN Manifest";
+                archive = request.getParameter("manifest");
             }
             textdisplay.Manuscript mss= new textdisplay.Manuscript("TPEN Manifest Ingester", "fromManifest", archive, city, -999);
-            JSONArray sequences = (JSONArray) theManifest.get("sequences");
-            out.println("Go over sequences");
+            List<JSONObject> canvases = extractCanvases(theManifest);
+            if(canvases.isEmpty()){
+                response.sendError(SC_BAD_REQUEST, "Manifest did not contain any canvases to import.");
+                return -1;
+            }
+            out.println("Go over " + canvases.size() + " canvases");
             int folioscreated = 0;
-            int canvasespresent = 0;
-            for (int i = 0; i < sequences.size(); i++) {
-                JSONObject inSequences = (JSONObject) sequences.get(i);
-                JSONArray canvases = inSequences.getJSONArray("canvases");
-                out.println("Go over "+canvases.size()+" canvases");
-                canvasespresent = canvases.size();
-                if (null != canvases && canvases.size() > 0) {
-                    for (int j = 0; j < canvases.size(); j++) {
-                        JSONObject canvas = canvases.getJSONObject(j);
-                        JSONArray images = canvas.getJSONArray("images");
-                        /**
-                         * NOTE
-                         * We make Folios from images and not Canvases.  1 image per Folio.
-                         * We could make Folios from Canvases instead.  Canvases without images could just get a placeholder instead of being ignored.
-                         */
-                        if (null != images && images.size() > 0) {
-                            for (int n = 0; n < images.size(); n++) {
-                                JSONObject image = images.getJSONObject(n);
-                                if(!image.has("resource")){
-                                    // This image object does not have a resource.  Skip it.
-                                    LOG.log(WARNING, "Image {0} on canvas {1} did not have resource.  It will be skipped.", new Object[]{n, j});
-                                    continue;
-                                }
-                                JSONObject resource = image.getJSONObject("resource");
-                                String imageName = resource.getString("@id");
-                                String[] parts = imageName.split("/");
-                                String part = parts[parts.length-1];
-                                // If we think it is already a direct link to a resource at http://not.real/some.filetype, let's keep it and just use that.
-                                if(!checkIfFileHasExtension(part)){
-                                    // Well then it isn't a file link.  It might resolve, but we can do better if a service exists.
-                                    if(resource.has("service")){
-                                        // Then it is probably IIIF Image API compliant.  Let's build from the image service link
-                                        JSONObject service = resource.getJSONObject("service");
-                                        if(service.has("@id")){
-                                            String serviceImageName = service.getString("@id");
-                                            if(serviceImageName.endsWith("/")){
-                                                serviceImageName += "full/full/0/default.jpg";
-                                            }
-                                            else{
-                                                serviceImageName += "/full/full/0/default.jpg";
-                                            }
-                                            imageName = serviceImageName;
-                                        }
-                                        // If there wasn't a service @id, then we are stuck with whatever the original image URL was.  Let's hope it resolves to an image.
-                                    }
-                                    // If there wasn't a service, then we are stuck with whatever the original image URL was.  Let's hope it resolves to an image.
-                                }
-                                LOG.log(INFO, "Create Folio entry for image: {0}", imageName);
-                                int folioKey = createFolioRecordFromManifest(city, canvas.getString("label"), imageName, archive, mss.getID(), 0);
-                                ls_folios_keys.add(folioKey);
-                                folioscreated++;
-                            }
-                        }
-                    }
+            int canvasespresent = canvases.size();
+            for (int j = 0; j < canvases.size(); j++) {
+                JSONObject canvas = canvases.get(j);
+                String canvasLabel = readLabel(canvas, "Canvas " + (j + 1));
+                List<String> imageUrls = extractImageUrlsFromCanvas(canvas);
+                /**
+                 * NOTE
+                 * We make Folios from images and not Canvases.  1 image per Folio.
+                 * Canvases without images are ignored.
+                 */
+                if(imageUrls.isEmpty()){
+                    LOG.log(WARNING, "Canvas {0} had no importable image resources. It will be skipped.", j);
+                    continue;
                 }
+                for (String imageName : imageUrls) {
+                    LOG.log(INFO, "Create Folio entry for image: {0}", imageName);
+                    int folioKey = createFolioRecordFromManifest(city, canvasLabel, imageName, archive, mss.getID(), 0);
+                    ls_folios_keys.add(folioKey);
+                    folioscreated++;
+                }
+            }
+            if(folioscreated <= 0){
+                response.sendError(SC_BAD_REQUEST, "Manifest contained canvases, but no importable images were found.");
+                return -1;
             }
             System.out.println(folioscreated+" folios created from "+canvasespresent+" canvases");
             String tmpProjName = mss.getShelfMark()+" project";
             if (theManifest.has("label")) {
-                tmpProjName = theManifest.getString("label");
+                tmpProjName = readLabel(theManifest, "New T-PEN Manifest");
             }
             Connection conn = getDBConnection();
             conn.setAutoCommit(false);
@@ -261,6 +226,245 @@ public class ClassicProjectFromManifest extends HttpServlet {
         }
         
     }
+
+    private static boolean isSupportedManifest(JSONObject manifest) {
+        String type = getStringValue(manifest, "type", "@type");
+        if ("Manifest".equals(type) || "sc:Manifest".equals(type)) {
+            return true;
+        }
+        // Be tolerant of real-world manifests with weak or missing type metadata.
+        return manifest.has("items") || manifest.has("sequences");
+    }
+
+    private static List<JSONObject> extractCanvases(JSONObject manifest) {
+        List<JSONObject> canvases = new ArrayList<>();
+        if (manifest.has("sequences")) {
+            JSONArray sequences = safeArray(manifest.get("sequences"));
+            for (int i = 0; i < sequences.size(); i++) {
+                JSONObject sequence = safeObject(sequences.get(i));
+                if (sequence == null || !sequence.has("canvases")) {
+                    continue;
+                }
+                JSONArray seqCanvases = safeArray(sequence.get("canvases"));
+                for (int j = 0; j < seqCanvases.size(); j++) {
+                    JSONObject canvas = safeObject(seqCanvases.get(j));
+                    if (canvas != null) {
+                        canvases.add(canvas);
+                    }
+                }
+            }
+        }
+
+        if (canvases.isEmpty() && manifest.has("items")) {
+            JSONArray items = safeArray(manifest.get("items"));
+            for (int i = 0; i < items.size(); i++) {
+                JSONObject item = safeObject(items.get(i));
+                if (item == null) {
+                    continue;
+                }
+                String type = getStringValue(item, "type", "@type");
+                if (type == null || type.trim().isEmpty() || "Canvas".equals(type) || "sc:Canvas".equals(type)) {
+                    canvases.add(item);
+                }
+            }
+        }
+        return canvases;
+    }
+
+    private static List<String> extractImageUrlsFromCanvas(JSONObject canvas) {
+        List<String> imageUrls = new ArrayList<>();
+
+        // IIIF Presentation 2.x: canvas.images[*].resource
+        if (canvas.has("images")) {
+            JSONArray images = safeArray(canvas.get("images"));
+            for (int i = 0; i < images.size(); i++) {
+                JSONObject image = safeObject(images.get(i));
+                if (image == null || !image.has("resource")) {
+                    continue;
+                }
+                JSONObject resource = safeObject(image.get("resource"));
+                String imageUrl = resolveImageUrl(resource);
+                if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                    imageUrls.add(imageUrl);
+                }
+            }
+        }
+
+        // IIIF Presentation 3.x: canvas.items[*].items[*].body
+        if (canvas.has("items")) {
+            JSONArray annotationPages = safeArray(canvas.get("items"));
+            for (int i = 0; i < annotationPages.size(); i++) {
+                JSONObject annotationPage = safeObject(annotationPages.get(i));
+                if (annotationPage == null || !annotationPage.has("items")) {
+                    continue;
+                }
+                JSONArray annotations = safeArray(annotationPage.get("items"));
+                for (int j = 0; j < annotations.size(); j++) {
+                    JSONObject annotation = safeObject(annotations.get(j));
+                    if (annotation == null || !annotation.has("body")) {
+                        continue;
+                    }
+                    Object body = annotation.get("body");
+                    if (body instanceof JSONObject) {
+                        String imageUrl = resolveImageUrl((JSONObject) body);
+                        if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                            imageUrls.add(imageUrl);
+                        }
+                        continue;
+                    }
+                    if (body instanceof JSONArray) {
+                        JSONArray bodyArray = (JSONArray) body;
+                        for (int k = 0; k < bodyArray.size(); k++) {
+                            JSONObject bodyObj = safeObject(bodyArray.get(k));
+                            String imageUrl = resolveImageUrl(bodyObj);
+                            if (imageUrl != null && !imageUrl.trim().isEmpty()) {
+                                imageUrls.add(imageUrl);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return imageUrls;
+    }
+
+    private static String resolveImageUrl(JSONObject resource) {
+        if (resource == null) {
+            return null;
+        }
+        String imageName = getStringValue(resource, "id", "@id");
+        if (imageName == null || imageName.trim().isEmpty()) {
+            return null;
+        }
+
+        String[] parts = imageName.split("/");
+        String part = parts[parts.length - 1];
+        if (checkIfFileHasExtension(part)) {
+            return imageName;
+        }
+
+        String serviceId = getServiceId(resource);
+        if (serviceId == null || serviceId.trim().isEmpty()) {
+            return imageName;
+        }
+        if (serviceId.endsWith("/")) {
+            return serviceId + "full/!4000,5000/0/default.jpg";
+        }
+        return serviceId + "/full/!4000,5000/0/default.jpg";
+    }
+
+    private static String getServiceId(JSONObject resource) {
+        if (!resource.has("service")) {
+            return null;
+        }
+        Object service = resource.get("service");
+        if (service instanceof JSONObject) {
+            return getStringValue((JSONObject) service, "id", "@id");
+        }
+        if (service instanceof JSONArray) {
+            JSONArray serviceArray = (JSONArray) service;
+            if (serviceArray.isEmpty()) {
+                return null;
+            }
+            JSONObject serviceObj = safeObject(serviceArray.get(0));
+            return getStringValue(serviceObj, "id", "@id");
+        }
+        return null;
+    }
+
+    private static JSONArray safeArray(Object value) {
+        if (value instanceof JSONArray) {
+            return (JSONArray) value;
+        }
+        return new JSONArray();
+    }
+
+    private static JSONObject safeObject(Object value) {
+        if (value instanceof JSONObject) {
+            return (JSONObject) value;
+        }
+        return null;
+    }
+
+    private static String getStringValue(JSONObject obj, String... keys) {
+        if (obj == null || keys == null) {
+            return null;
+        }
+        for (String key : keys) {
+            if (!obj.has(key)) {
+                continue;
+            }
+            Object value = obj.get(key);
+            if (value == null) {
+                continue;
+            }
+            String asString = String.valueOf(value);
+            if (!asString.trim().isEmpty() && !"null".equalsIgnoreCase(asString.trim())) {
+                return asString;
+            }
+        }
+        return null;
+    }
+
+    private static String readLabel(JSONObject obj, String fallback) {
+        if (obj == null || !obj.has("label")) {
+            return fallback;
+        }
+        Object label = obj.get("label");
+        if (label instanceof String) {
+            String text = ((String) label).trim();
+            return text.isEmpty() ? fallback : text;
+        }
+        if (label instanceof JSONObject) {
+            JSONObject labelObj = (JSONObject) label;
+            if (labelObj.has("@value")) {
+                String value = getStringValue(labelObj, "@value");
+                if (value != null && !value.trim().isEmpty()) {
+                    return value;
+                }
+            }
+            if (labelObj.has("none")) {
+                JSONArray none = safeArray(labelObj.get("none"));
+                if (!none.isEmpty()) {
+                    String value = String.valueOf(none.get(0));
+                    if (!value.trim().isEmpty()) {
+                        return value;
+                    }
+                }
+            }
+            // After checking "none", check "en" before iterating all keys
+            if (labelObj.has("en")) {
+                JSONArray en = safeArray(labelObj.get("en"));
+                if (!en.isEmpty()) {
+                    String value = String.valueOf(en.get(0));
+                    if (!value.trim().isEmpty()) {
+                        return value;
+                    }
+                }
+            }
+            for (Object keyObj : labelObj.keySet()) {
+                String key = String.valueOf(keyObj);
+                JSONArray localized = safeArray(labelObj.get(key));
+                if (!localized.isEmpty()) {
+                    String value = String.valueOf(localized.get(0));
+                    if (!value.trim().isEmpty()) {
+                        return value;
+                    }
+                }
+            }
+        }
+        if (label instanceof JSONArray) {
+            JSONArray labelArray = (JSONArray) label;
+            if (!labelArray.isEmpty()) {
+                String value = String.valueOf(labelArray.get(0));
+                if (!value.trim().isEmpty()) {
+                    return value;
+                }
+            }
+        }
+        return fallback;
+    }
     
     /**
      * See if this filename contains a filetypes we might come across in the IIIF Image API.
@@ -269,8 +473,21 @@ public class ClassicProjectFromManifest extends HttpServlet {
      * @return 
      */
     public static boolean checkIfFileHasExtension(String s) {
-        String[] extn = {"png", "jpg", "JPG", "jpeg", "JPEG", "jp2", "gif", "tif", "webp"};
-        return Arrays.stream(extn).anyMatch(entry -> s.endsWith(entry));
+        if (s == null || s.trim().isEmpty()) {
+            return false;
+        }
+        String normalized = s.trim();
+        int queryIndex = normalized.indexOf('?');
+        if (queryIndex >= 0) {
+            normalized = normalized.substring(0, queryIndex);
+        }
+        int fragmentIndex = normalized.indexOf('#');
+        if (fragmentIndex >= 0) {
+            normalized = normalized.substring(0, fragmentIndex);
+        }
+        String lower = normalized.toLowerCase(Locale.ROOT);
+        String[] extn = {"png", "jpg", "jpeg", "gif", "webp", "avif", "apng", "bmp", "svg", "ico", "tif", "tiff", "jp2"};
+        return Arrays.stream(extn).anyMatch(entry -> lower.endsWith(entry));
     }
     /**
      * Returns a short description of the servlet.

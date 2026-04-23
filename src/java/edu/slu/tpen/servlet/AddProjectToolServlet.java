@@ -21,10 +21,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Logger.getLogger;
+import java.net.MalformedURLException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.owasp.encoder.Encode;
 import utils.UserTool;
 
 /**
@@ -36,10 +38,19 @@ public class AddProjectToolServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            Connection conn = getDBConnection();
+            String name = Encode.forHtml(request.getParameter("name"));
             UserTool ut = new UserTool();
-            ut.saveUserTool(conn, request.getParameter("name"), request.getParameter("url"), parseInt(request.getParameter("projectID")));
-            response.getWriter().print("1");
+            String urlParam = request.getParameter("url");
+            String url = Encode.forHtml(urlParam);
+            new java.net.URL(urlParam);
+            } catch (MalformedURLException e) {
+                throw new ServletException("Invalid URL format", e);
+            }
+            int projectID = parseInt(request.getParameter("projectID"));
+            ut.saveUserTool(conn, name, url, projectID);
+            Connection conn = getDBConnection();
+            ut.saveUserTool(conn, name, url, projectID);
+            conn.close();
         } catch (SQLException ex) {
             getLogger(AddProjectToolServlet.class.getName()).log(SEVERE, null, ex);
         } 

@@ -55,7 +55,10 @@
     //Initialize search parameters, populate if available
     String searchWord="";                                   //query
     if (request.getParameter("searchWord") != null) {
-        searchWord = request.getParameter("searchWord");
+        searchWord = request.getParameter("searchWord")
+            .replaceAll("<script.*?>.*?</script>", "") // Remove script tags and content
+            .replaceAll("[<>]", "") // Remove angle brackets
+            .replaceAll("'", "''"); // Escape single quotes for SQL
         if(manuscript>0)
             searchWord += " AND manuscript:"+manuscript;
         if(projectID>0)

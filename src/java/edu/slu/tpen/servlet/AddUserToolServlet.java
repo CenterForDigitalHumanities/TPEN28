@@ -34,7 +34,8 @@ public class AddUserToolServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            saveTool(request.getParameter("toolName"), parseInt(request.getParameter("uid")));
+            String toolName = request.getParameter("toolName").replaceAll("[^a-zA-Z0-9]", "");
+            saveTool(toolName, parseInt(request.getParameter("uid")));
             response.getWriter().print("1");
         } catch (SQLException ex) {
             getLogger(AddUserToolServlet.class.getName()).log(SEVERE, null, ex);

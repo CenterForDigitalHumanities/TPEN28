@@ -1,18 +1,5 @@
-/*
- * Copyright 2014- Saint Louis University. Licensed under the
- *	Educational Community License, Version 2.0 (the "License"); you may
- * not use this file except in compliance with the License. You may
- * obtain a copy of the License at
- *
- * http://www.osedu.org/licenses/ECL-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an "AS IS"
- * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- */
 package edu.slu.tpen.servlet;
+
 import static edu.slu.util.ServletUtils.getDBConnection;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -47,59 +34,66 @@ public class CreateProjectClassic extends HttpServlet {
         this.doPost(request, response);
     }
 
-    /*
-     * Create manuscript, folio and project.  Servlet taken from transcription.jsp code for creating a project from T-PEN 1.0
-     *
-     * Bryan H:  FIXME:   This servlet fails sometimes and sends this into a very deep loop.  Why?
-     */
     public String createProject(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException, SQLException {
-            int UID = parseInt(request.getSession().getAttribute("UID").toString());
-            int projectID = 0;
-            textdisplay.Project thisProject = null;
-            if (UID > 0 && request.getParameter("ms")!=null) {
-                textdisplay.Manuscript mss=new textdisplay.Manuscript(parseInt(request.getParameter("ms")),true);
-                int [] msIDs=new int[0];
-                User u = new User(UID);
-                textdisplay.Project[] p = u.getUserProjects();
-                msIDs = new int[p.length];
-                // firstPage() fails ALOT
-                // Cambridge, Cologny
-                for (int i = 0; i < p.length; i++) {
-                    try {
-                        msIDs[i] = new textdisplay.Manuscript(p[i].firstPage()).getID();
-                    } catch (Exception e) {
-                        msIDs[i] = -1;
-                    }
-                }
-                for (int l = 0; l < msIDs.length; l++) {
-                    if (msIDs[l] == mss.getID()) {
-                        projectID=p[l].getProjectID();
-                        thisProject=p[l];
-                    }
-                }
-                if(projectID<1) {
-                    //create a project for them
-                    String tmpProjName = mss.getShelfMark()+" project";
-                    if (request.getParameter("title") != null) {
-                        tmpProjName = request.getParameter("title");
-                    }
-                    try (Connection conn = getDBConnection()) {
-                       conn.setAutoCommit(false);
-                       Group newgroup = new Group(conn, tmpProjName, UID);
-                       Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
-                       newProject.setFolios(conn, mss.getFolios());
-                       newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + mss.getShelfMark(), UID);
-                       thisProject=newProject;
-                       projectID=thisProject.getProjectID();
-                       newProject.importData(UID);
-                       conn.commit();
-                    }
-                }
+        int UID;
+        try {
+            UID = parseInt(request.getSession().getAttribute("UID").toString());
+            if (UID < 1) {
+                throw new ServletException("User Session is not valid.");
             }
-            return ""+projectID;
+        } catch (NumberFormatException e) {
+            throw new ServletException("User Session is unrecognizable.");
         }
-    
+
+        if (request.getParameter("ms") == null) {
+            throw new ServletException("No manuscript ID provided.");
+        }
+
+        textdisplay.Manuscript mss = new textdisplay.Manuscript(parseInt(request.getParameter("ms")), true);
+        int[] msIDs = new int[0];
+        User u = new User(UID);
+        textdisplay.Project[] p = u.getUserProjects();
+        msIDs = new int[p.length];
+        for (int i = 0; i < p.length; i++) {
+            try {
+                msIDs[i] = new textdisplay.Manuscript(p[i].firstPage()).getID();
+            } catch (Exception e) {
+                msIDs[i] = -1;
+            }
+        }
+
+        int projectID = 0;
+        textdisplay.Project thisProject = null;
+        for (int l = 0; l < msIDs.length; l++) {
+            if (msIDs[l] == mss.getID()) {
+                projectID = p[l].getProjectID();
+                thisProject = p[l];
+                break;
+            }
+        }
+
+        if (projectID > 0) {
+            return "" + projectID;
+        }
+
+        String tmpProjName = mss.getShelfMark() + " project";
+        if (request.getParameter("title") != null) {
+            tmpProjName = org.owasp.encoder.Encode.forHtml(request.getParameter("title"));
+        }
+
+        try (Connection conn = getDBConnection()) {
+            conn.setAutoCommit(false);
+            Group newgroup = new Group(conn, tmpProjName, UID);
+            Project newProject = new Project(conn, tmpProjName, newgroup.getGroupID());
+            newProject.setFolios(conn, mss.getFolios());
+            newProject.addLogEntry(conn, "<span class='log_manuscript'></span>Added manuscript " + mss.getShelfMark(), UID);
+            thisProject = newProject;
+            projectID = thisProject.getProjectID();
+            newProject.importData(UID);
+            conn.commit();
+        }
+
+        return "" + projectID;
+    }
 }
-
-

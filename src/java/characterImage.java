@@ -67,15 +67,26 @@ public class characterImage extends HttpServlet {
         int blobIdentifier;
 
         try {
-            blobIdentifier = parseInt(request.getParameter("blob"));
-            pageIdentifier = request.getParameter("page");
-        } catch (NumberFormatException | NullPointerException e) {
+            String blobParam = request.getParameter("blob");
+            String pageParam = request.getParameter("page");
+            if (blobParam == null || pageParam == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameters");
+                return;
+            }
+            blobIdentifier = parseInt(blobParam.replaceAll("[^\\d]", ""));
+            pageIdentifier = pageParam.replaceAll("[^\\w]", "");
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid parameters");
             return;
         }
         blobGetter thisBlob = new blobGetter(pageIdentifier, blobIdentifier);
         String s = (getRbTok("SERVERCONTEXT") + "imageResize?folioNum=" + pageIdentifier + "&height=2000");
         out.print(s + "\n");
-        BufferedImage originalImg = getImage(parseInt(pageIdentifier));//imageHelpers.readAsBufferedImage(new URL(Folio.getRbTok("SERVERCONTEXT")+"imageResize?folioNum="+pageIdentifier+"&height=2000&code="+Folio.getRbTok("imageCode")));
+        BufferedImage originalImg = getImage(parseInt(pageIdentifier));
+        if (originalImg == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image not found");
+            return;
+        }
         width = thisBlob.getHeight();
         height = thisBlob.getWidth();
         x = thisBlob.getX();

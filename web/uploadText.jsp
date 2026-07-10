@@ -21,18 +21,25 @@
 int projectID=0;
 int p=0;
 String location = "";
-   if(request.getParameter("projectID")!=null)
-        {
-        if (request.getParameter("p")!=null) p=Integer.parseInt(request.getParameter("p"));
-        projectID=Integer.parseInt(request.getParameter("projectID"));
-        location = (p>0) ? 
-            "?projectID="+projectID+"&p="+p : 
-            "?projectID="+projectID;
-        }
-    else{
-        out.print("no project specified!");
+if (request.getParameter("projectID") == null) {
+    out.print("no project specified!");
+    return;
+}
+try {
+    projectID = Integer.parseInt(request.getParameter("projectID"));
+} catch (NumberFormatException e) {
+    out.print("Invalid project ID!");
+    return;
+}
+if (request.getParameter("p") != null) {
+    try {
+        p = Integer.parseInt(request.getParameter("p"));
+    } catch (NumberFormatException e) {
+        location = "?projectID=" + projectID;
         return;
-        }
+    }
+}
+location = "?projectID=" + projectID + "&p=" + p;
         %>
 <html>
     <head>

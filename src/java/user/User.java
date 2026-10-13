@@ -422,6 +422,11 @@ public class User {
      * @throws SQLException
      */
     public static int signup(String uname, String lname, String fname) throws SQLException {
+        User existingUser = new User(uname);
+        if (existingUser.getUID() > 0) {
+            err.println("Did not create User at signup, email already registered: "+uname);
+            return 1; // email already registered
+        }
         User newUser = new User(uname, lname, fname, "");
         if (newUser.getUID() > 0) {
             // textdisplay.mailer m = new textdisplay.mailer();

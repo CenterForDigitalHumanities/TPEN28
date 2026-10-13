@@ -46,39 +46,29 @@ public class GetManuscriptsByCityAndRepository extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("application/json");
         JSONObject jo = new JSONObject();
-        if (null != request.getParameter("city")) {
-            if (null != request.getParameter("repository")) {
-                try {
-                    String city = request.getParameter("city");
-                    String repo = request.getParameter("repository");
-                    Manuscript[] mss = getManuscriptsByCityAndRepository(city, repo);
-                    jo.element("ls_manu", mss);
-                } catch (SQLException ex) {
-                    getLogger(GetManuscriptsByCityAndRepository.class.getName()).log(SEVERE, null, ex);
-                }
-            }else{
-                try {
-                    String city = request.getParameter("city");
-                    Manuscript[] mss = getManuscriptsByCity(city);
-                    jo.element("ls_manu", mss);
-                } catch (SQLException ex) {
-                    getLogger(GetManuscriptsByCityAndRepository.class.getName()).log(SEVERE, null, ex);
-                }
-            }
-        }else{
-            if (request.getParameter("repository") != null) {
-                try {
-                    String repo = request.getParameter("repository");
-                    Manuscript[] mss = getManuscriptsByRepository(repo);
-                    jo.element("ls_manu", mss);
-                } catch (SQLException ex) {
-                    getLogger(GetManuscriptsByCityAndRepository.class.getName()).log(SEVERE, null, ex);
-                }
-            }else{
+        
+        String city = sanitize(request.getParameter("city"));
+        String repo = sanitize(request.getParameter("repository"));
+        
+        try {
+            if (city != null && repo != null) {
+                Manuscript[] mss = getManuscriptsByCityAndRepository(city, repo);
+                jo.element("ls_manu", mss);
+            } else if (city != null) {
+                Manuscript[] mss = getManuscriptsByCity(city);
+                jo.element("ls_manu", mss);
+            } else if (repo != null) {
+                Manuscript[] mss = getManuscriptsByRepository(repo);
+                jo.element("ls_manu", mss);
+            } else {
                 jo.element("error", "no city or repository specified");
             }
+        } catch (SQLException ex) {
+            getLogger(GetManuscriptsByCityAndRepository.class.getName()).log(SEVERE, null, ex);
         }
+        
         try (PrintWriter out = response.getWriter()) {
             out.print(jo);
         }
@@ -86,7 +76,13 @@ public class GetManuscriptsByCityAndRepository extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp); //To change body of generated methods, choose Tools | Templates.
+        doPost(req, resp);
     }
     
+    private String sanitize(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replaceAll("[<>\"'%;()&+]", "");
+    }
 }

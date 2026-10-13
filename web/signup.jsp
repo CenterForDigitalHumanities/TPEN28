@@ -59,13 +59,12 @@
                 <h1><script type="text/javascript">document.write(document.title); </script></h1>
                 <div id="main" class="ui-widget ui-widget-content ui-corner-all ui-tabs ui-helper-reset ui-helper-clearfix">
                     <%
-                        if (request.getParameter("uname") != null
-                                && request.getParameter("uname").contains("@") 
-                                && request.getParameter("uname").contains(".")
-                                && request.getParameter("fname") != null
-                                && request.getParameter("lname") != null) {
+                    String emailParam = request.getParameter("uname");
+                    String fnameParam = request.getParameter("fname");
+                    String lnameParam = request.getParameter("lname");
+                    if (emailParam.contains("@") && emailParam.contains(".") && fnameParam != null && lnameParam != null) {
                             //create a user with a blank password. Their password will be set when they are approved by an admin
-                            int result = user.User.signup(request.getParameter("uname"), request.getParameter("lname"), request.getParameter("fname"));
+                            int result = user.User.signup(emailParam, fnameParam, lnameParam);
                             //total success
                             if (result == 0) {
                                 out.println("<div class=\"success\"><p style=\"font-size:2em;\">Your account was created. You will recieve an email from TPEN@t-pen.org when an administrator has activated your account. If your e-mail does not arrive, please verify that it has not been caught by a spam filter.</p></div>");
@@ -80,20 +79,15 @@
                                 out.println("<div class=\"error\"><p style=\"font-size:2em;\">Account created but the emails could not be sent! Contact the TPEN team.</p></div>");
                             }
                         } else {
-                            if (request.getParameter("uname") != null){
                                 out.println("<div class=\"error\"><p style=\"font-size:2em;\">There was an error with your submission. Please check the form and try again.</p></div>");
-                            }
                     %>                       
-                    <form action="signup.jsp" name="signup" onsubmit="return simpleFormValidation();">
-                        Email<input class="reginput" type="text" name="uname" <%if (request.getParameter("uname") != null) {
-                               out.print("value=\"" + request.getParameter("uname") + "\"");
-                           }%>/><br/><br/>
-                        first name<input class="reginput" type="text" name="fname" <%if (request.getParameter("fname") != null) {
-                               out.print("value=\"" + request.getParameter("fname") + "\"");
-                           }%>/><br/><br/>
-                        last name<input class="reginput" type="text" name="lname" <%if (request.getParameter("lname") != null) {
-                               out.print("value=\"" + request.getParameter("lname") + "\"");
-                           }%>/><br/><br/>
+                    <form action="signup.jsp" name="signup" onsubmit="return checkEmail();">
+                        Email<input class="reginput" type="email" name="uname" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required 
+                            value="<%=request.getParameter("uname") != null ? org.apache.commons.text.StringEscapeUtils.escapeHtml4(request.getParameter("uname")) : ""%>"/><br/><br/>
+                        first name<input class="reginput" type="text" name="fname" pattern="[A-Za-z]+" required maxlength="50"
+                            value="<%=request.getParameter("fname") != null ? org.apache.commons.text.StringEscapeUtils.escapeHtml4(request.getParameter("fname")) : ""%>"/><br/><br/>
+                        last name<input class="reginput" type="text" name="lname" pattern="[A-Za-z]+" required maxlength="50"
+                            value="<%=request.getParameter("lname") != null ? org.apache.commons.text.StringEscapeUtils.escapeHtml4(request.getParameter("lname")) : ""%>"/><br/><br/>
                         <input class="ui-button tpenButton" type="submit" value="Register"/>
                     </form>
                     <%}%>

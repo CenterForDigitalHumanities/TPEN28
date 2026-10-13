@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import javax.servlet.http.HttpSession;
+import org.owasp.encoder.Encode;
 import textdisplay.Project;
 import user.Group;
 import user.User;
@@ -42,19 +43,21 @@ public class AddUserToProjectServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        //System.out.println("Add user to project ID:"+request.getParameter("projectID"));
         if (session.getAttribute("UID") != null) {
             int UID = parseInt(session.getAttribute("UID").toString());
             try {
                 User thisUser = new user.User(UID);
                 if(null != request.getParameter("uname") && null != request.getParameter("projectID")){
+                    String uname = Encode.forHtml(request.getParameter("uname"));
+                    String fname = Encode.forHtml(request.getParameter("fname"));
+                    String lname = Encode.forHtml(request.getParameter("lname"));
                     Project thisProject = new Project(parseInt(request.getParameter("projectID")));
-                    int result = thisUser.invite(request.getParameter("uname"), request.getParameter("fname"), request.getParameter("lname"));
+                    int result = thisUser.invite(uname, fname, lname);
                     if (result == 0) {
                         //successfully send out email to user
                         Group g = new Group(thisProject.getGroupID());
                         if (g.isAdmin(thisUser.getUID())) {
-                            User newUser = new User(request.getParameter("uname"));
+                            User newUser = new User(uname);
                             g.addMember(newUser.getUID());
                             response.getWriter().print(newUser.getUID());
                         }else{
@@ -65,7 +68,7 @@ public class AddUserToProjectServlet extends HttpServlet {
                         //account created but email issue occured, usually happens in dev environments with no email server.
                         user.Group g = new user.Group(thisProject.getGroupID());
                         if (g.isAdmin(thisUser.getUID())) {
-                            User newUser = new User(request.getParameter("uname"));
+                            User newUser = new User(uname);
                             g.addMember(newUser.getUID());
                             response.getWriter().print(newUser.getUID());
                         }else{
@@ -76,7 +79,7 @@ public class AddUserToProjectServlet extends HttpServlet {
                         //user exits
                         user.Group g = new user.Group(thisProject.getGroupID());
                         if (g.isAdmin(thisUser.getUID())) {
-                            User newUser = new User(request.getParameter("uname"));
+                            User newUser = new User(uname);
                             g.addMember(newUser.getUID());
                             response.getWriter().print(newUser.getUID());
                         }else{

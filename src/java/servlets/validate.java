@@ -69,13 +69,12 @@ public class validate extends HttpServlet {
                     schemaType=RELAXNG_COMPACT;
                 XmlSchema s=new XmlSchema(p.getSchemaURL(),schemaType);
            
-            Manuscript ms=new Manuscript(5);
             String content=getFullDocument(p, remove,false,false,false);
             if(!(s.validate(content)))
                 out.print("validation failed: "+s.getMessages()+"\n");
             else
                 out.print("valid");
-            } catch (SAXException | SQLException ex) {
+            } catch (SAXException | SQLException | IOException ex) {
                 getLogger(validate.class.getName()).log(SEVERE, null, ex);
             }
 

@@ -5,8 +5,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-   "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <%
 int UID = 0;
             if (session.getAttribute("UID") == null)
@@ -35,9 +34,9 @@ int projectID=0;
         <title>JSP Page</title>
     </head>
     <body>
-        <form id="fileUpload" action="uploadHeader?projectID=<%out.print(""+projectID);%>" ENCTYPE="multipart/form-data" method="POST">
+        <form id="fileUpload" action="uploadHeader?projectID=<%out.print(""+projectID);%>" enctype="multipart/form-data" method="POST">
             <input class="ui-button tpenButton" type="file" id="file" name="file"/><br/>
-     <br/><input class="ui-button tpenButton" type="submit" value="Upload" name="Upload"/>
+            <input class="ui-button tpenButton" type="submit" value="Upload" name="Upload"/>
      <input class="ui-button tpenButton" type="reset" value="Cancel" name="cancel" onclick="history.back();return false;" />
         </form>
     </body>

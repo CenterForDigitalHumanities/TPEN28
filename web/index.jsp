@@ -402,12 +402,20 @@
             <div align="center" class="tagline">
                 transcription for paleographical and editorial notation</div>
             <div id="header2">
-                <div id="maintenance" class="loud">
+                <!-- <div id="maintenance" class="loud">
                     <span class="ui-icon ui-icon-info left"></span>
                     Scheduled Maintenance: <span id="schedmaintenance"></span>
                     <span id="countdown"></span> <br>
                     <span id="upgradeMessage"></span>
-                    <script type="text/javascript">maintenanceDate();</script>
+                    <script type="text/javascript">maintenanceDate();</script> -->
+                <div id="announcementBanner" class="platform-announcement">
+                    <span class="announcement-icon" aria-hidden="true">🚀</span>
+                    <span class="announcement-text">
+                        <strong>New Platform Early Access:</strong>
+                        <a href="https://three.t-pen.org/announcements/2026/03/17/early-access-announcement.html" target="_blank" rel="noopener noreferrer">
+                            Try the freedom of TPEN 3.0! Developing in early access&hellip;
+                        </a>
+                    </span>
                 </div>
                     <%
                     // #266 This only returns the person in session at the moment...

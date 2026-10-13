@@ -24,12 +24,14 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import static java.lang.System.out;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Stack;
+import java.util.regex.Pattern;
 import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+import static java.util.logging.Level.INFO;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 import java.util.zip.ZipEntry;
@@ -47,6 +49,12 @@ import user.User;
  * user uploaded zip file full of JPEG images.
  */
 public class UserImageCollection {
+    
+    // Compiled regex patterns for filename sanitization (performance optimization)
+    private static final Pattern SPACES_AND_DOTS_PATTERN = Pattern.compile("[\\s.]+");
+    private static final Pattern SPECIAL_CHARS_PATTERN = Pattern.compile("[^a-zA-Z0-9_-]+");
+    private static final Pattern MULTIPLE_DASHES_PATTERN = Pattern.compile("-+");
+    private static final Pattern LEADING_TRAILING_DASHES_PATTERN = Pattern.compile("^-|-$");
 
     /**
      * Delete a manuscript created on a set of private images
@@ -106,18 +114,60 @@ public class UserImageCollection {
         }
 
         File newZippedFile = new File(dir.getAbsoluteFile() + "/" + zippedFile.getName());
+        
+        // Check if the zip file already exists to prevent overwriting
+        // Use canonical paths for reliable comparison
+        try {
+            if (newZippedFile.exists() && !newZippedFile.getCanonicalPath().equals(zippedFile.getCanonicalPath())) {
+                LOG.log(WARNING, "Zip file already exists at destination: {0}", newZippedFile.getAbsolutePath());
+                throw new IOException("Cannot overwrite existing zip file: " + newZippedFile.getName());
+            }
+        } catch (IOException e) {
+            if (e.getMessage() != null && e.getMessage().contains("Cannot overwrite")) {
+                throw e;
+            }
+            LOG.log(WARNING, "Unable to get canonical path for file comparison, proceeding with caution", e);
+        }
+        
         zippedFile.renameTo(newZippedFile);
         zippedFile = newZippedFile;
-        extractFolder(zippedFile.getAbsolutePath());
+        
+        try {
+            extractFolder(zippedFile.getAbsolutePath());
+        } catch (Exception e) {
+            LOG.log(SEVERE, "Failed to extract zip file: " + zippedFile.getAbsolutePath(), e);
+            throw new Exception("Failed to extract uploaded zip file", e);
+        }
+        
         File[] images = getAllJPGsRecursive(dir);
+        
+        if (images == null || images.length == 0) {
+            LOG.log(WARNING, "No valid JPG images found in uploaded zip file for manuscript {0}", ms.getID());
+            throw new Exception("No valid JPG images found in the uploaded zip file");
+        }
+        
+        // Validate all images before creating folio records
+        int validImageCount = 0;
         for (int i = 0; i < images.length; i++) {
             if (!validateImage(images[i])) {
-                out.print("bad image " + images[i].getName() + ", would do something\n");
+                LOG.log(WARNING, "Invalid image removed: {0}", images[i].getName());
+                // Delete the invalid image file
+                if (images[i].exists()) {
+                    images[i].delete();
+                }
                 images = removeItem(images, i);
                 i--;
+            } else {
+                validImageCount++;
             }
-
         }
+        
+        if (validImageCount == 0) {
+            LOG.log(SEVERE, "No valid images after validation for manuscript {0}", ms.getID());
+            throw new Exception("All images failed validation. No valid images to process.");
+        }
+        
+        LOG.log(INFO, "Successfully validated {0} images for manuscript {1}", new Object[]{validImageCount, ms.getID()});
         createFolioRecords(conn, ms.getCollection(), images, "private", ms.getID(), "");
     }
 
@@ -183,67 +233,180 @@ public class UserImageCollection {
      * @throws IOException if the file doesnt exist..
      */
     static public void extractFolder(String zipFile) throws ZipException, IOException {
-        out.println(zipFile);
+        LOG.log(INFO, "Extracting folder: {0}", zipFile);
         int BUFFER = 2048;
         File file = new File(zipFile);
 
-        ZipFile zip = new ZipFile(file);
-        String newPath = zipFile.substring(0, zipFile.length() - 4);
-        // scrub dirname
-        newPath = newPath.trim().replaceAll("\\s|\\.", "_");
+        try (ZipFile zip = new ZipFile(file)) {
+            String newPath = zipFile.substring(0, zipFile.length() - 4);
+            // scrub dirname
+            newPath = newPath.trim().replaceAll("\\s|\\.", "_");
 
-        new File(newPath).mkdir();
-        Enumeration zipFileEntries = zip.entries();
+            File extractDir = new File(newPath);
+            if (!extractDir.exists()) {
+                if (!extractDir.mkdirs() && !extractDir.isDirectory()) {
+                    throw new IOException("Failed to create extraction directory: " + extractDir.getAbsolutePath());
+                }
+            } else if (!extractDir.isDirectory()) {
+                throw new IOException("Extraction path exists but is not a directory: " + extractDir.getAbsolutePath());
+            }
+            Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
 
-        // Process each entry
-        while (zipFileEntries.hasMoreElements()) {
-            // grab a zip file entry
-            ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
-            String currentEntry = entry.getName();
+            // Process each entry
+            while (zipFileEntries.hasMoreElements()) {
+                // grab a zip file entry
+                ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
+                String currentEntry = entry.getName();
 
-            // lets not get fooled by a true jpg
-            currentEntry = currentEntry.replaceAll("(?i)\\.jpe?g\\b", ".jpg");
+                // lets not get fooled by a true jpg
+                currentEntry = currentEntry.replaceAll("(?i)\\.jpe?g\\b", ".jpg");
 
-            if (currentEntry.endsWith(".jpg") && !entry.isDirectory() && (entry.getSize() > 2000)) {
+                long entrySize = entry.getSize();
+                // Include entry if size is unknown (-1) or if size > 2000 bytes
+                if (currentEntry.endsWith(".jpg") && !entry.isDirectory() && (entrySize == -1 || entrySize > 2000)) {
 
-                // scrub filenames
-                currentEntry = currentEntry.trim().replaceAll("\\s|\\.(?!jpg)", "-");
+                    // scrub filenames - replace spaces and dots (except the final .jpg) with dashes
+                    currentEntry = sanitizeFilename(currentEntry);
 
-                File destFile = new File(newPath, currentEntry);
-                File destinationParent = destFile.getParentFile();
+                    File destFile = new File(newPath, currentEntry);
 
-                // create the parent directory structure if needed
-                destinationParent.mkdirs();
+                    // Validate path traversal - ensure destFile is within extractDir
+                    String destCanonical = destFile.getCanonicalPath();
+                    String extractCanonical = extractDir.getCanonicalPath();
+                    if (!destCanonical.startsWith(extractCanonical + File.separator)) {
+                        LOG.log(WARNING, "Path traversal attempt blocked: {0}", currentEntry);
+                        continue;
+                    }
 
-                try (BufferedInputStream is = new BufferedInputStream(zip.getInputStream(entry))) {
-                    int currentByte;
-                    // establish buffer for writing file
-                    byte data[] = new byte[BUFFER];
+                    // Check if file already exists to prevent overwriting
+                    if (destFile.exists()) {
+                        LOG.log(WARNING, "File already exists, skipping: {0}", destFile.getAbsolutePath());
+                        continue;
+                    }
 
-                    // write the current file to disk
-                    FileOutputStream fos = new FileOutputStream(destFile);
-                    try (BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER)) {
+                    File destinationParent = destFile.getParentFile();
+
+                    // create the parent directory structure if needed
+                    destinationParent.mkdirs();
+
+                    try (BufferedInputStream is = new BufferedInputStream(zip.getInputStream(entry));
+                         FileOutputStream fos = new FileOutputStream(destFile);
+                         BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER)) {
+                        int currentByte;
+                        // establish buffer for writing file
+                        byte data[] = new byte[BUFFER];
+
+                        // write the current file to disk
                         while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
                             dest.write(data, 0, currentByte);
                         }
                         dest.flush();
+                    } catch (IOException e) {
+                        LOG.log(SEVERE, "Failed to extract file: " + destFile.getAbsolutePath(), e);
+                        // Clean up partial file if extraction failed
+                        if (destFile.exists()) {
+                            destFile.delete();
+                        }
+                        throw e;
                     }
                 }
             }
+        } catch (IOException e) {
+            LOG.log(SEVERE, "Failed to process zip file: " + zipFile, e);
+            throw e;
         }
     }
 
     /**
+     * Sanitize filename by replacing problematic characters.
+     * Removes or replaces spaces, dots (except the final .jpg extension), 
+     * and other special characters that could cause issues.
+     * 
+     * @param filename The original filename
+     * @return The sanitized filename, or the original if null/empty
+     */
+    private static String sanitizeFilename(String filename) {
+        if (filename == null || filename.isEmpty()) {
+            return filename;
+        }
+        
+        // Split filename and extension
+        String name = filename;
+        String extension = "";
+        int lastDotIndex = filename.lastIndexOf('.');
+        if (lastDotIndex > 0 && lastDotIndex < filename.length() - 1) {
+            String potentialExtension = filename.substring(lastDotIndex).toLowerCase();
+            // Validate extension is a known image type (only .jpg supported currently)
+            if (potentialExtension.equals(".jpg") || potentialExtension.equals(".jpeg")) {
+                name = filename.substring(0, lastDotIndex);
+                extension = ".jpg";  // Normalize to lowercase .jpg
+            } else {
+                // If not a valid image extension, treat the whole filename as name
+                // This prevents files like "document.pdf" from being treated as images
+                name = filename;
+                extension = "";
+            }
+        }
+        
+        // Handle directory separators (keep them)
+        String[] pathParts = name.split("[/\\\\]");
+        for (int i = 0; i < pathParts.length; i++) {
+            // Replace spaces, dots, and other problematic characters with dashes
+            // Keep alphanumeric, hyphens, and underscores
+            String part = pathParts[i].trim();
+            part = SPACES_AND_DOTS_PATTERN.matcher(part).replaceAll("-");
+            part = SPECIAL_CHARS_PATTERN.matcher(part).replaceAll("-");
+            part = MULTIPLE_DASHES_PATTERN.matcher(part).replaceAll("-");
+            pathParts[i] = LEADING_TRAILING_DASHES_PATTERN.matcher(part).replaceAll("");
+        }
+        
+        // Rejoin path parts, filtering out empty segments
+        StringBuilder sb = new StringBuilder();
+        for (String part : pathParts) {
+            if (!part.isEmpty()) {
+                if (sb.length() > 0) {
+                    sb.append("/");
+                }
+                sb.append(part);
+            }
+        }
+        name = sb.toString();
+
+        // If name is empty after sanitization, use a default
+        if (name.isEmpty()) {
+            name = "image";
+        }
+
+        return name + extension;
+    }
+
+    /**
      * Check that the image is actually a valid jpg image by loading it as a
-     * BufferedImage BH TODO strip invalid characters!
+     * BufferedImage and re-saving it as JPG.
+     * 
+     * NOTE: This system only supports JPG format for private uploads as documented
+     * in the upload UI. Images are always scaled to max 2000px height and saved as JPG.
      */
     private static Boolean validateImage(File f) {
         try {
             BufferedImage img = readAsBufferedImage(f.getAbsolutePath());
+            if (img == null) {
+                LOG.log(WARNING, "Failed to read image as BufferedImage: {0}", f.getAbsolutePath());
+                return false;
+            }
+            
+            // Validate image dimensions are reasonable
+            if (img.getWidth() <= 0 || img.getHeight() <= 0) {
+                LOG.log(WARNING, "Image has invalid dimensions: {0}x{1} for file: {2}", 
+                    new Object[]{img.getWidth(), img.getHeight(), f.getAbsolutePath()});
+                return false;
+            }
+            
+            // Scale image to max 2000px height and save as JPG (system only supports JPG)
             img = scale(img, 2000);
             write(img, "jpg", f);
         } catch (Exception e) {
-            LOG.log(SEVERE, e.getMessage());
+            LOG.log(SEVERE, "Failed to validate image: " + f.getAbsolutePath(), e);
             return false;
         }
         return true;

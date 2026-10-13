@@ -28,6 +28,9 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import java.util.logging.Logger;
+import static java.util.logging.Level.WARNING;
+import static java.util.logging.Logger.getLogger;
 import org.apache.commons.fileupload.*;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -42,6 +45,8 @@ import user.User;
  * @author obi1one
  */
 public class FileUpload extends HttpServlet implements Servlet {
+
+   private static final Logger LOG = getLogger(FileUpload.class.getName());
 
    /**
     *
@@ -107,31 +112,47 @@ public class FileUpload extends HttpServlet implements Servlet {
 
          try (Connection conn = getDBConnection()) {
             conn.setAutoCommit(false);
-            User thisUser = new User(uid);
-            String city = req.getParameter("city");
-            String collection = req.getParameter("collection");
-            String repository = req.getParameter("repository");
-            String archive = "private";
+            try {
+               User thisUser = new User(uid);
+               String city = req.getParameter("city");
+               String collection = req.getParameter("collection");
+               String repository = req.getParameter("repository");
+               String archive = "private";
 
-            long maxSize = parseInt(getRbTok("maxUploadSize")); //200 megs
-            List uploadedItems = upload.parseRequest(req);
-            Iterator i = uploadedItems.iterator();
-            while (i.hasNext()) {
-               FileItem fileItem = (FileItem)i.next();
-               if (fileItem.isFormField() == false) {
-                  if (fileItem.getSize() > 0 && fileItem.getSize() < maxSize && fileItem.getName().toLowerCase().endsWith("zip")) {
-                     File f = new File(getRbTok("uploadLocation") + "images/userimages/" + thisUser.getLname() + thisUser.getUID() + ".zip");
-                     fileItem.write(f);
-                     Manuscript ms = new Manuscript(repository, archive, collection, city, -999);
-                            create(conn, f, thisUser, ms);
-                     Group g = new Group(conn, ms.getShelfMark(), thisUser.getUID());
-                     Project p = new Project(conn, ms.getShelfMark(), g.getGroupID());
-                     p.setFolios(conn, ms.getFolios());
+               long maxSize = parseInt(getRbTok("maxUploadSize")); //200 megs
+               List uploadedItems = upload.parseRequest(req);
+               Iterator i = uploadedItems.iterator();
+               boolean processedFile = false;
+               while (i.hasNext()) {
+                  FileItem fileItem = (FileItem)i.next();
+                  if (fileItem.isFormField() == false) {
+                     if (fileItem.getSize() > 0 && fileItem.getSize() < maxSize && fileItem.getName().toLowerCase().endsWith("zip")) {
+                        File f = new File(getRbTok("uploadLocation") + "images/userimages/" + thisUser.getLname() + thisUser.getUID() + ".zip");
+                        fileItem.write(f);
+                        Manuscript ms = new Manuscript(repository, archive, collection, city, -999);
+                        create(conn, f, thisUser, ms);
+                        Group g = new Group(conn, ms.getShelfMark(), thisUser.getUID());
+                        Project p = new Project(conn, ms.getShelfMark(), g.getGroupID());
+                        p.setFolios(conn, ms.getFolios());
+                        processedFile = true;
+                     }
                   }
                }
+
+               if (processedFile) {
+                  conn.commit();
+               } else {
+                  conn.rollback();
+               }
+            } catch (Exception ex) {
+               try {
+                  conn.rollback();
+               } catch (Exception rollbackEx) {
+                  LOG.log(WARNING, "Failed to rollback transaction after error", rollbackEx);
+               }
+               reportInternalError(resp, ex);
             }
-            conn.commit();
-         } catch (Exception ex) {
+         } catch (java.sql.SQLException ex) {
             reportInternalError(resp, ex);
          } finally {
             session.setAttribute("LISTENER", null);

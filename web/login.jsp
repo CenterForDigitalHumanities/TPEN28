@@ -28,40 +28,45 @@
                     }
                 }
 
-                    if (redirectUri != null && !redirectUri.isEmpty()) {
-                        URI uri = new URI(redirectUri);
-                        String redirectDomain = uri.getHost(); 
-                      
-                        if(redirectDomain.contains("t-pen.org")) {
-                            redirectDomain = "t-pen.org";
-                        }
-                        
-                        if(redirectDomain.contains("localhost")) {
-                            redirectDomain = "localhost";
-                        }
-                        
-                        String encodedSessionId = URLEncoder.encode(jsessionId, "UTF-8");
-                        Cookie sessionCookie = new Cookie("JSESSIONID", encodedSessionId);
-                        sessionCookie.setPath("/");
-                        sessionCookie.setHttpOnly(true);
-                        sessionCookie.setSecure(true);
-                        sessionCookie.setMaxAge(-1);
-                        sessionCookie.setDomain(redirectDomain);
-                        response.addCookie(sessionCookie);
-                        
-                        if (userToken != null && !userToken.isEmpty()) {
-                            Cookie tokenCookie = new Cookie("userToken", userToken);
-                            tokenCookie.setHttpOnly(true);
-                            tokenCookie.setSecure(true);
-                            tokenCookie.setPath("/");
-                            tokenCookie.setDomain(redirectDomain);
-                            tokenCookie.setMaxAge(3600);
-                            response.addCookie(tokenCookie);
-                        }
-                        
-                        response.sendRedirect(redirectUri + "?UID=" + thisOne.getUID());
-                        return;
+                if (redirectUri != null && !redirectUri.isEmpty()) {
+                    URI uri = new URI(redirectUri);
+                    String redirectDomain = uri.getHost();
+ 
+                    boolean isLocalhost = redirectDomain != null && redirectDomain.contains("localhost");
+ 
+                    if (redirectDomain != null && redirectDomain.contains("t-pen.org")) {
+                        redirectDomain = "t-pen.org";
                     }
+ 
+                    String encodedSessionId = URLEncoder.encode(jsessionId, "UTF-8");
+                    StringBuilder sessionCookie = new StringBuilder();
+                    sessionCookie.append("JSESSIONID=").append(encodedSessionId).append("; Path=/; HttpOnly");
+ 
+                    if (!isLocalhost && redirectDomain != null) {
+                        sessionCookie.append("; Domain=").append(redirectDomain);
+                        sessionCookie.append("; Secure");
+                    }
+ 
+                    sessionCookie.append("; SameSite=Strict");
+                    response.addHeader("Set-Cookie", sessionCookie.toString());
+ 
+                    if (userToken != null && !userToken.isEmpty()) {
+                        StringBuilder tokenCookie = new StringBuilder();
+                        tokenCookie.append("userToken=").append(URLEncoder.encode(userToken, "UTF-8")).append("; Path=/; HttpOnly; Max-Age=3600");
+ 
+                        if (!isLocalhost && redirectDomain != null) {
+                            tokenCookie.append("; Domain=").append(redirectDomain);
+                            tokenCookie.append("; Secure");
+                        }
+ 
+                        tokenCookie.append("; SameSite=Strict");
+                        response.addHeader("Set-Cookie", tokenCookie.toString());
+                    }
+ 
+                    String separator = redirectUri.contains("?") ? "&" : "?";
+                    response.sendRedirect(redirectUri + separator + "UID=" + thisOne.getUID());
+                    return;
+                }
                 if(request.getHeader("referer")==null || request.getHeader("referer").compareTo("")==0 || request.getHeader("referer").contains("login")){
                     %>
                     <script>
